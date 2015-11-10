@@ -17,6 +17,8 @@ TreeCompare = (function() {
     var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
 
     var padding = 20;
+    var paddingVertical = 50;
+    var paddingHorizontal = 100;
 
     var scaleTextColor = "white";
 
@@ -208,12 +210,19 @@ TreeCompare = (function() {
             name: name,
             data: {}
         };
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
         trees.push(fullTree);
-        //add backup tree for re-rooting, otherwise lengths will be messed up when re-rooting multiple times
-        //trees.pop(fullTree);
-        //var str = JSON.stringify(tree);
-        //console.log(fullTree);
         return fullTree;
+    }
+
+    function getRecommendedAutoCollapse(root) {
+        var leafCount = root.leaves.length;
+        if (leafCount < 50) {
+            return null;
+        } else {
+            return (Math.floor(Math.log(leafCount)) + 1);
+        }
+
     }
 
     function getTrees() {
@@ -357,6 +366,23 @@ TreeCompare = (function() {
         return getMax_internal(root, max);
     }
 
+    function getMaxLengthVisible(root) {
+        var max = 0;
+
+        function getMax_internal(d, max) {
+            if (d.children) {
+                var children = d.children;
+                for (var i = 0; i < children.length; i++) {
+                    max = Math.max(getMax_internal(children[i], max), max)
+                }
+                return max;
+            } else {
+                return (d.length ? Math.max(d.length, max) : max)
+            }
+        }
+        return getMax_internal(root, max);
+    }
+
     /*
         get total length of a node from root
     */
@@ -391,10 +417,11 @@ TreeCompare = (function() {
                 postorderTraverse(children[i], f, do_children);
             }
             f(d);
+            return;
 
         } else {
             f(d);
-
+            return;
         }
     }
 
@@ -427,7 +454,7 @@ TreeCompare = (function() {
         var leavesVisible = getVisibleLeaves(treeData.root);
         var width = $("#" + treeData.canvasId).width();
         var height = $("#" + treeData.canvasId).height();
-        var renderHeight = height - padding * 2;
+        var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
         postorderTraverse(treeData.root, function(d) {
@@ -528,7 +555,7 @@ TreeCompare = (function() {
             //console.log(d);
         }
 
-        var maxLength = getMaxLength(treeData.root);
+        var maxLength = getMaxLengthVisible(treeData.root);
         //console.log("maxLenght: "+maxLength);
 
         var lengthMult = treeData.treeWidth;
@@ -544,7 +571,6 @@ TreeCompare = (function() {
             }
             d.y = d.y + padding;
         });
-
         setXPos(treeData.root, 0);
 
 
@@ -779,6 +805,27 @@ TreeCompare = (function() {
                     .text(function(d) {
                         var text = d.leaves[0].name + " ... " + d.leaves[d.leaves.length - 1].name;
                         return text;
+                    })
+                    .style("fill", function(d) {
+                        var allHighlighted = true;
+                        var allNotHighlighted = true;
+                        for (var i = 0; i < d.leaves.length; i++) {
+                            if (!d.leaves[i].correspondingHighlight) {
+                                allHighlighted = false;
+                            } else {
+                                allNotHighlighted = false;
+                            }
+                        }
+                        if (allHighlighted) {
+                            d3.select(this).style("font-weight", "bold")
+                            return "green";
+                        } else if (!allHighlighted && !allNotHighlighted) {
+                            d3.select(this).style("font-weight", "bold")
+                            return "#99CC00";
+                        } else {
+                            d3.select(this).style("font-weight", "normal")
+                            return "black";
+                        }
                     })
                     .attr("x", function(d) {
                         var xpos = (avg - (getLength(d) * (lengthMult / maxLength))) + 5;
@@ -1192,16 +1239,26 @@ TreeCompare = (function() {
             $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
             $("#" + canvasId + " #zoomButtons").css({
                 "width": "78px",
-                "margin-left": "10px",
-                "margin-right": "10px",
-                "margin-top": topMargin,
+                "top": "50px",
+                "left": "10px",
                 "position": "absolute"
             });
             $("#" + canvasId + " .zoomButton").css({
                 "font-size": "10px",
                 "width": "26px",
                 "height": "26px",
-                "vertical-align": "top"
+                "vertical-align": "top",
+                "opacity":"0.3"
+            });
+            $("#" + canvasId + " .zoomButton").on("mouseover", function() {
+                $(this).css({
+                    "opacity": "1"
+                })
+            });
+            $("#" + canvasId + " .zoomButton").on("mouseout", function() {
+                $(this).css({
+                    "opacity": "0.3"
+                })
             });
             $("#" + canvasId + " .zoomButton span").css({
                 "vertical-align": "middle"
@@ -1528,7 +1585,7 @@ TreeCompare = (function() {
 
 
         if (settings.fitTree === "scale") {
-            var renderHeight = height - padding * 2;
+            var renderHeight = height - paddingVertical * 2;
             var leavesVisible = getVisibleLeaves(baseTree.root);
             var leavesHidden = 0;
             var triangles = 0;
@@ -1555,13 +1612,20 @@ TreeCompare = (function() {
                     longest = l;
                 }
             });
-            var maxLength = getMaxLength(baseTree.data.root);
-            var newWidth = (width / longest) * maxLength - padding * 2;
+            var maxLength = getMaxLengthVisible(baseTree.data.root);
+            var newWidth = (width / longest) * maxLength - paddingHorizontal * 2;
+            if (newWidth < 0) {
+                newWidth = (width / longest) * maxLength;
+            }
             baseTree.data.treeWidth = newWidth;
             baseTree.data.treeHeight = newHeight;
             //console.log(baseTree)
         }
         update(baseTree.root, baseTree.data);
+        baseTree.data.zoomBehaviour.translate([100, 100]);
+        baseTree.data.zoomBehaviour.scale(0.8);
+        d3.select("#" + baseTree.data.canvasId + " svg g")
+            .attr("transform", "translate(" + [100, 100] + ") scale(0.8)");
         getFisheye();
 
 
@@ -1717,26 +1781,26 @@ TreeCompare = (function() {
                 } else {
                     zoomBehaviourSemantic.translate([0, 0]);
                 }} else if (prev == scale) {
-                var padding = 100;
+                var zoomPadding = 100;
                 var wcanvas = $("#" + canvasId + " svg").width();
                 var hcanvas = $("#" + canvasId + " svg").height();
                 var displayedWidth = w;
                 var h = d3.select("#" + canvasId + " svg g").node().getBBox().height;
                 var w = d3.select("#" + canvasId + " svg g").node().getBBox().width;
                 var translation = d3.event.translate;
-                var tbound = -(h - hcanvas) - (padding * scale);
-                var bbound = padding;
-                var lbound = -(w - wcanvas) - (padding * scale);
-                var rbound = padding;
+                var tbound = -(h - hcanvas) - (zoomPadding * scale);
+                var bbound = zoomPadding;
+                var lbound = -(w - wcanvas) - (zoomPadding * scale);
+                var rbound = zoomPadding;
                 applyScaleText(scaleText, scale, root);
                 // limit translation to thresholds
-                if (h < (hcanvas - (padding * 2))) {
-                    bbound = tbound - padding;
-                    tbound = padding;
+                if (h < (hcanvas - (zoomPadding * 2))) {
+                    bbound = tbound - zoomPadding;
+                    tbound = zoomPadding;
                 }
-                if (w < (wcanvas - (padding * 2))) {
-                    rbound = lbound - padding;
-                    lbound = padding;
+                if (w < (wcanvas - (zoomPadding * 2))) {
+                    rbound = lbound - zoomPadding;
+                    lbound = zoomPadding;
                 }
                 translation = [
                     Math.max(Math.min(translation[0], rbound), lbound),
@@ -1752,7 +1816,7 @@ TreeCompare = (function() {
         }
 
         function zoom() {
-            var padding = 100;
+            var zoomPadding = 100;
             var wcanvas = $("#" + canvasId + " svg").width();
             var hcanvas = $("#" + canvasId + " svg").height();
             var displayedWidth = w * scale;
@@ -1760,19 +1824,19 @@ TreeCompare = (function() {
             var h = d3.select("#" + canvasId + " svg g").node().getBBox().height * scale;
             var w = d3.select("#" + canvasId + " svg g").node().getBBox().width * scale;
             var translation = d3.event.translate;
-            var tbound = -(h - hcanvas) - (padding * scale);
-            var bbound = padding;
-            var lbound = -(w - wcanvas) - (padding * scale);
-            var rbound = padding;
+            var tbound = -(h - hcanvas) - (zoomPadding * scale);
+            var bbound = zoomPadding;
+            var lbound = -(w - wcanvas) - (zoomPadding * scale);
+            var rbound = zoomPadding;
             applyScaleText(scaleText, scale, root);
             // limit translation to thresholds
-            if (h < (hcanvas - (padding * 2))) {
-                bbound = tbound - padding;
-                tbound = padding;
+            if (h < (hcanvas - (zoomPadding * 2))) {
+                bbound = tbound - zoomPadding;
+                tbound = zoomPadding;
             }
-            if (w < (wcanvas - (padding * 2))) {
-                rbound = lbound - padding;
-                lbound = padding;
+            if (w < (wcanvas - (zoomPadding * 2))) {
+                rbound = lbound - zoomPadding;
+                lbound = zoomPadding;
             }
 
             translation = [
@@ -1886,12 +1950,12 @@ TreeCompare = (function() {
                 if (recalculate || !d.elementBCN) {
                     BCN(d, t);
                 }
-
+                return;
             } else {
                 if (recalculate || !d.elementBCN) {
                     BCN(d, t);
                 }
-
+                return;
             }
         }
         getAllBCNs(tree1, tree2);
@@ -1967,10 +2031,10 @@ TreeCompare = (function() {
                 for (var i = 0; i < children.length; i++) {
                     buildDeepLeafList(children[i]);
                 }
-
+                return;
             } else {
                 deepLeafList.push(d.name);
-
+                return;
             }
         }
         buildDeepLeafList(v);
