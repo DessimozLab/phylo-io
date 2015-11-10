@@ -13,7 +13,19 @@ TreeCompare = (function() {
     /*
         colors for the color scale for comparing nodes to best common node
     */
-    var colorScaleRange = ['rgb(254,240,217)', 'rgb(253,212,158)', 'rgb(253,187,132)', 'rgb(252,141,89)', 'rgb(227,74,51)', 'rgb(179,0,0)'];
+    //orange:
+    //var colorScaleRange = ['rgb(254,240,217)', 'rgb(253,212,158)', 'rgb(253,187,132)', 'rgb(252,141,89)', 'rgb(227,74,51)', 'rgb(179,0,0)'];
+
+    //blue - green - yellow - red
+    //var colorScaleRange = ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
+
+    //red - blue
+    //var colorScaleRange = ['rgb(0,33,229)', 'rgb(70,8,225)', 'rgb(162,16,221)', 'rgb(218,24,190)', 'rgb(214,31,110)', 'rgb(210,39,39)'];
+
+    //grey - black
+    var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
+
+
     var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
 
     var padding = 20;
@@ -629,8 +641,20 @@ TreeCompare = (function() {
             .attr("x", function(d) {
                 return d.children || d._children ? -13 : 13;
             })
-            .attr("dy", "-.3em")
-            .attr("dx", ".3em")
+            .attr("dy", function(d) {
+                if(!(d.children || d._children)) { //ensures that length labels are on top of branch
+                    return ".3em";
+                } else {
+                    return "-.3em";
+                }
+            })
+            .attr("dx", function(d) {
+                if(d.children || d._children) {
+                    return ".3em";
+                } else {
+                    return "-.3em";
+                }
+            })
             .attr("text-anchor", function(d) {
                 return d.children || d._children ? "end" : "start";
             })
@@ -661,7 +685,7 @@ TreeCompare = (function() {
                 return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "bold" : "normal";
             })
             .style("fill", function(d) { // change the colour of the leaf text
-                return d.searchHighlight ? "red" : ((d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green " : "black");
+                return d.searchHighlight ? "red" : ((d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : "black");
             })
             .attr("font-size", function(d) {
                 return settings.fontSize + "px"
@@ -676,6 +700,7 @@ TreeCompare = (function() {
             })
             .style("fill", function(d) {
                 if (d.bcnhighlight) {
+                    d.bcnhighlight  ="green";
                     return d.bcnhighlight;
                 } else if (d.searchHighlight) {
                     return "red";
@@ -691,22 +716,24 @@ TreeCompare = (function() {
 
         node.select("rect")
             .attr("width", function(d) {
-                if (d.clickedHighlight) {
+                if (d.clickedHighlight || d.bcnhighlight) {
                     return (settings.nodeSize * 2) + "px";
                 } else {
                     return "0px";
                 }
             })
             .attr("height", function(d) {
-                if (d.clickedHighlight) {
+                if (d.clickedHighlight || d.bcnhighlight) {
                     return (settings.nodeSize * 2) + "px";
                 } else {
                     return "0px";
                 }
             })
             .style("fill", function(d) {
-                if (d.clickedHighlight) {
-                    return d.clickedHighlight;
+                if (d.clickedHighlight || d.bcnhighlight) {
+                    console.log(d);
+                    //return d.clickedHighlight;
+                    return "red";
                 }
             })
             .attr("y", -settings.nodeSize + "px")
@@ -873,10 +900,10 @@ TreeCompare = (function() {
                             return colorScale(d[currentS])
                         } else {
                             if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                                console.log("bunt1");
+                                //console.log("bunt1");
                                 return "green";
                             } else {
-                                console.log("black1");
+                                //console.log("black1");
                                 return defaultLineColor;
                             }
 
@@ -978,6 +1005,7 @@ TreeCompare = (function() {
                 })
                 .style("fill", function(d) {
                     if (d.clickedHighlight) {
+                        //console.log(d.clickedHighlight);
                         return d.clickedHighlight;
                     }
                 })
@@ -2676,6 +2704,9 @@ TreeCompare = (function() {
                     if (!_.contains(highlightedNodes, d)) {
                         if (highlightedNodes.length < maxHighlightedNodes) {
                             d.clickedHighlight = bcnColors(highlightedNodes.length);
+                            //d.clickedHighlight = "red";
+                            console.log(d);
+                            console.log("here")
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
                             highlightedNodes.push(d);
                             var leaves = d.leaves;
