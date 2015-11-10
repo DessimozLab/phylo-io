@@ -2284,14 +2284,11 @@ TreeCompare = (function() {
                 .text(function(d) {
                     if (d._children) { // if object d has only one child
                         textDone += textInc;
-                        return "uncollapse >";
+                        return "expand >";
                     } else if (d.children) {
                         textDone += textInc;
                         return "collapse >";
-                    } /*else if (d.children || d._children) {
-                        textDone += textInc;
-                        return "rotate";
-                    }*/
+                    }
                 })
                 .on("click", function(d) {
                     postorderTraverse(d, function(e) {
@@ -2311,7 +2308,7 @@ TreeCompare = (function() {
                         .text(function(d) {
                             if (d._children) {
                                 textDone += textInc;
-                                return "uncollapse all >";
+                                return "expand all >";
                             } else if (d.children) {
                                 textDone += textInc;
                                 return "collapse all >";
@@ -2342,7 +2339,6 @@ TreeCompare = (function() {
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
-                    //TODO: add function to rotate branches!!!
                     rotate(d);
                     removeTooltips(svg);
                 });
@@ -2387,11 +2383,6 @@ TreeCompare = (function() {
             });
         }
         return nodeClick;
-
-        //function to allow to click on branches http://bl.ocks.org/robschmuecker/0f29a2c867dcb1b44d18
-        //function linkClick(d){...}
-        //return linkClick;
-
     }
 
     //get the best corresponding node in tree for node v
