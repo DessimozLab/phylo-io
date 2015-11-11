@@ -731,7 +731,6 @@ TreeCompare = (function() {
             })
             .style("fill", function(d) {
                 if (d.clickedHighlight || d.bcnhighlight) {
-                    console.log(d);
                     //return d.clickedHighlight;
                     return "red";
                 }
@@ -974,7 +973,6 @@ TreeCompare = (function() {
                                 console.log("bunt");
                                 return "green";
                             } else {
-                                console.log("balck");
                                 return defaultLineColor;
                             }
                         }
@@ -2355,8 +2353,8 @@ TreeCompare = (function() {
             d.tooltipActive = true;
 
 
-            function kn_new_node() { // private method
-                return {parent:null, children:[], name:"", ID:makeId("node_"),length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false};
+            function kn_new_node(d) { // private method
+                return {parent:null, children:[], name:"", ID:makeId("node_"),length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
             }
             /*
              Function to dynamically reroot a tree at a specific node
@@ -2399,10 +2397,11 @@ TreeCompare = (function() {
                      * i: previous position of q in p
                      * d: previous distance p->d
                      */
-                    q = new_root = kn_new_node();
+                    q = new_root = kn_new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
                     q.children[0] = node;
                     q.children[0].length = dist;
                     p = node.parent;
+                    console.log(q);
                     q.children[0].parent = q;
                     for (i = 0; i < p.children.length; ++i)
                         if (p.children[i] == node) break;
@@ -2438,9 +2437,9 @@ TreeCompare = (function() {
                         --p.children.length;
                     }
                     postorderTraverse(new_root, function(d) {
-                        d.bcnhighlight = null;
-                        d.highlight = 0;
-                        d.clickedHighlight = null;
+                        //d.bcnhighlight = null;
+                        //d.highlight = 0;
+                        //d.clickedHighlight = null;
                         d.leaves = getChildLeaves(d);
                     });
 
@@ -2471,7 +2470,6 @@ TreeCompare = (function() {
 
             function getSimilarity(tree1, tree2) {
                 for (var i = 0; i < tree1.leaves.length; i++) {
-                    //  console.log(tree1.leaves[i]);
                     for (var j = 0; j < tree2.leaves.length; j++) {
                         if (tree1.leaves[i].name === tree2.leaves[j].name) {
                             tree1.leaves[i].correspondingLeaf = tree2.leaves[j];
@@ -2705,8 +2703,6 @@ TreeCompare = (function() {
                         if (highlightedNodes.length < maxHighlightedNodes) {
                             d.clickedHighlight = bcnColors(highlightedNodes.length);
                             //d.clickedHighlight = "red";
-                            console.log(d);
-                            console.log("here")
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
                             highlightedNodes.push(d);
                             var leaves = d.leaves;
