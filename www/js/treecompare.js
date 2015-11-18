@@ -513,8 +513,8 @@ TreeCompare = (function() {
 
             function getCollapsedHeight(d) {
                 if (d._children) {
-                    //collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
-                    collapsedHeightInner += leafHeight * d.leaves.length;
+                    collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
+                    //collapsedHeightInner += leafHeight * d.leaves.length;
                     leavesHiddenInner += d.leaves.length;
                 } else if (d.children) {
                     for (var i = 0; i < d.children.length; i++) {
@@ -1532,7 +1532,6 @@ TreeCompare = (function() {
             }
 
             $("#" + canvasId + " svg").click(function() {
-                console.log("here");
                 hideSearchBar();
             });
 
