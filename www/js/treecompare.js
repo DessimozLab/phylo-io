@@ -1498,8 +1498,11 @@ TreeCompare = (function() {
                         $("#searchInput" + canvasId).focus();
                     });
 
-                } else {
-
+                } else { //if search unselected then remove red light from branches
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
                     hideSearchBar();
                 }
             });
@@ -1510,6 +1513,7 @@ TreeCompare = (function() {
             }
 
             $("#" + canvasId + " svg").click(function() {
+                console.log("here");
                 hideSearchBar();
             });
 
