@@ -2225,7 +2225,6 @@ TreeCompare = (function() {
     function uncollapseAll(root) {
         postorderTraverse(root, function(d) {
             if (d._children) {
-                d.children.
                 d.children = d._children;
                 d._children = null;
             }
@@ -2616,8 +2615,7 @@ TreeCompare = (function() {
                 });
             //console.log(this);
 
-            //TODO: Black highlighting on mouseover doesn't work correctly
-            d3.select(this).selectAll(".tooltipElemText").each(function(d) {
+            d3.select(this.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "black");
                 });
