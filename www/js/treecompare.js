@@ -1226,16 +1226,35 @@ TreeCompare = (function() {
 
     /*
         Helper function to see if a string starts with another string (used in the real time search)
-    */
+        returns vector with false and true statements
+
     function startsWith(string, start) {
+        console.log(string.length);
+        console.log(start.length);
         var does = true;
         for (var i = 0; i < string.length; i++) {
             if (string[i] && start[i]) {
                 does = does && (string[i] === start[i]);
             }
         }
+        console.log(does);
+        return does;
+    }*/
+
+    /*
+        Helper function allows to search even partial strings
+     */
+    function stringSearch(string, start){
+        var does = true;
+        var n = string.search(start);
+            //console.log(n);
+        if (n==-1) {
+            does = false;
+        }
         return does;
     }
+
+
 
     /*
         Find the heighest collapsed node in the parents of a node
@@ -1523,7 +1542,8 @@ TreeCompare = (function() {
                 $("#resultsList" + canvasId).empty();
                 var text = $(this).val();
                 var results = _.filter(leafObjs, function(leaf) {
-                    return startsWith(leaf.name.toLowerCase(), text.toLowerCase());
+                    //return startsWith(leaf.name.toLowerCase(), text.toLowerCase());
+                    return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
                 });
                 if (text !== "") {
                     $("#resultsBox" + canvasId).slideDown(200);
