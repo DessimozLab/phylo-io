@@ -462,8 +462,9 @@ TreeCompare = (function() {
         var links = treeData.tree.links(nodes);
         //console.log(links)
         var leaves = treeData.root.leaves.length;
-        //console.log(leaves)
+
         var leavesVisible = getVisibleLeaves(treeData.root);
+        //console.log(leavesVisible)
         var width = $("#" + treeData.canvasId).width();
         var height = $("#" + treeData.canvasId).height();
         var renderHeight = height - paddingVertical * 2;
@@ -512,7 +513,8 @@ TreeCompare = (function() {
 
             function getCollapsedHeight(d) {
                 if (d._children) {
-                    collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
+                    //collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
+                    collapsedHeightInner += leafHeight * d.leaves.length;
                     leavesHiddenInner += d.leaves.length;
                 } else if (d.children) {
                     for (var i = 0; i < d.children.length; i++) {
@@ -529,22 +531,20 @@ TreeCompare = (function() {
 
 
         var params = getCollapsedParams(treeData.root); //helper function getCollapsedParams(e) above is called and saved in params
-        var collapsedHeight = params.collapsedHeight; // height of collapsed triangle
-        //console.log(collapsedHeight);
+        var collapsedHeight = params.collapsedHeight; // height of tree with collapsed branches
         var leavesHidden = params.leavesHidden; // number of hidden leaves
-        //console.log(leavesHidden);
 
         // Set parameters for setXPos function....
-        var divisor = ((treeData.root.leaves.length - leavesHidden) > 0) ? (treeData.root.leaves.length - leavesHidden) : 1;
+        var divisor = ((treeData.root.leaves.length - leavesHidden) > 0) ? (treeData.root.leaves.length - leavesHidden) : 1; //number of leaves when collapsed
         var amendedLeafHeight = ((treeData.root.leaves.length * leafHeight) - collapsedHeight) / (divisor);
         var center = (leaves / 2) * leafHeight;
 
         //calculate the vertical position for a node in the visualisation
         //yes x is vertical position, blame d3's tree vis structure not me...
-        //TODO: here has to be changed in order that the node for the parents is in the center between the highest and lowest of its children
         function setXPos(d, upperBound) {
-            if (d.children) {
+            if (d.children) { // defines the vertical position of the inner nodes
                 var originalUpperBound = upperBound;
+
                 for (var i = 0; i < d.children.length; i++) {
                     setXPos(d.children[i], upperBound);
                     //var collapsedHeight = 0;
@@ -552,20 +552,49 @@ TreeCompare = (function() {
                     var params = getCollapsedParams(d.children[i]);
                     var collapsedHeight = params.collapsedHeight;
                     var leavesHidden = params.leavesHidden;
+
                     upperBound += (((d.children[i].leaves.length - leavesHidden) * amendedLeafHeight) + collapsedHeight);
                 }
-                d.x = originalUpperBound + ((upperBound - originalUpperBound) / 2)
-            } else if (d._children) {
+
+                //d.x = originalUpperBound + ((upperBound - originalUpperBound) / 2);
+                d.x = d.children[0].x+((d.children[d.children.length-1].x- d.children[0].x)/2)
+
+              } else if (d._children) {
                 var params = getCollapsedParams(d);
                 var collapsedHeight = params.collapsedHeight;
+
                 d.x = upperBound + (collapsedHeight / 2);
-            } else {
-                d.x = upperBound + amendedLeafHeight / 2;
+            } else { // defines the vertical position of the leaves
+
+                d.x = upperBound + (amendedLeafHeight /2);
             }
-            //d.x = d.x
-            d.x = d.x + padding;
-            //console.log(d);
+            d.x = d.x;
         }
+
+
+        function getRightMostSibling(d) {
+
+            while (d.children)
+            {
+                //console.log("here");
+                d = d.children[d.children.length-1];
+            }
+            return d;
+        }
+
+        function setXPosLeaves(d,upperBound){
+            if(d.children){
+                var newBound = upperBound;
+                for (var i =0; i< d.children.length; i++){
+                    setXPosLeaves(d.children[i],newBound)
+                    upperBound += d.children[i].leaves.length * amendedLeafHeight;
+                }
+            }
+            //console.log(upperBound)
+        }
+
+
+
 
         var maxLength = getMaxLengthVisible(treeData.root);
         //console.log("maxLenght: "+maxLength);
@@ -1485,6 +1514,7 @@ TreeCompare = (function() {
             });
 
             //main event handler, performs search every time a char is typed so can get realtime results
+            //TODO: make it possible to search substrings anywhere in the word
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
                 var text = $(this).val();
