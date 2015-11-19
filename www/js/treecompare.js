@@ -154,6 +154,11 @@ TreeCompare = (function() {
         var ancestors = [];
         var tree = {};
         var tokens = s.split(/\s*(;|\(|\)|,|:)\s*/);
+        try { //catch error when newick is not in place
+            if (tokens=="") throw "empty";// calls convert function from above
+        } catch (err) {
+            throw "Invalid Newick";
+        }
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];
             switch (token) {
@@ -2453,7 +2458,6 @@ TreeCompare = (function() {
                     q.children[0] = node;
                     q.children[0].length = dist;
                     p = node.parent;
-                    console.log(q);
                     q.children[0].parent = q;
                     for (i = 0; i < p.children.length; ++i)
                         if (p.children[i] == node) break;
