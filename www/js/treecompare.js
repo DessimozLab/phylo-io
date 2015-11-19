@@ -150,12 +150,13 @@ TreeCompare = (function() {
         Newick to JSON converter, just copied code from newick.js
     */
     function convertTree(s) { //s is newick file format
-        //TODO: add a variable that counts how many nodes there are in the tree
         var ancestors = [];
         var tree = {};
-        var tokens = s.split(/\s*(;|\(|\)|,|:)\s*/);
+        var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
+        //console.log(tokens);
+        //console.log(tokens.indexOf("["));
         try { //catch error when newick is not in place
-            if (tokens=="") throw "empty";// calls convert function from above
+            if (tokens=="" || tokens.indexOf("[")!=-1) throw "empty";// calls convert function from above
         } catch (err) {
             throw "Invalid Newick";
         }
@@ -173,6 +174,10 @@ TreeCompare = (function() {
                     ancestors[ancestors.length - 1].children.push(subtree);
                     tree = subtree;
                     //console.log(ancestors);
+                    break;
+                case '['://TODO: input NHX format
+                    break;
+                case ']':
                     break;
                 case ')': // optional name next
                     tree = ancestors.pop();
@@ -443,10 +448,40 @@ TreeCompare = (function() {
     }
 
     /*
+     Function to write JSON structure to gist
+     */
+    function writeJSONtoGist(source){
+        //save D3 JSON
+        var seen = [];
+        var dataOut = JSON.stringify(source, function(key, val) {
+            if (val != null && typeof val == "object") {
+                if (seen.indexOf(val) >= 0) {
+                    return;
+                }
+                seen.push(val);
+            }
+            return val;
+        });
+        $.ajax({
+                url: 'https://api.github.com/gists',
+                type: 'POST',
+                dataType: 'json',
+                data: dataOut
+            })
+            .success( function(e) {
+                console.log(e);
+            })
+            .error( function(e) {
+                console.warn("gist save error", e);
+            });
+    }
+
+    /*
      Main update function for updating visualisation
      */
     var updateTimes = 0;
     function update(source, treeData, duration) {
+        writeJSONtoGist(source);
         updateTimes++;
         location.hash = updateTimes;
         //console.log(location.hash);
