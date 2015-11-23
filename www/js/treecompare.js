@@ -450,30 +450,58 @@ TreeCompare = (function() {
     /*
      Function to write JSON structure to gist
      */
-    function writeJSONtoGist(source){
+    function writeJSONtoGist(sourceData, callback){
         //save D3 JSON
-        var seen = [];
-        var dataOut = JSON.stringify(source, function(key, val) {
-            if (val != null && typeof val == "object") {
-                if (seen.indexOf(val) >= 0) {
-                    return;
-                }
-                seen.push(val);
-            }
-            return val;
-        });
+        //var seen = [];
+        var gistID;
+        //var node_data = sourceData;
+        console.log(sourceData);
+        var dataOut = CircularJSON.stringify(sourceData);
+        var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
+
         $.ajax({
-                url: 'https://api.github.com/gists',
-                type: 'POST',
-                dataType: 'json',
-                data: dataOut
-            })
-            .success( function(e) {
-                console.log(e);
-            })
-            .error( function(e) {
-                console.warn("gist save error", e);
-            });
+            async: false, // in order to be able to obtain the gist.id
+            url: 'https://api.github.com/gists',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+            },
+            dataType: 'json',
+            data: JSON.stringify(tmp),
+            success: function (data) {
+                callback(data);
+            }
+        });
+        return gistID;
+    }
+
+    function gistToJSON(gistid) {
+        var objects = [];
+        $.ajax({
+            url: 'https://api.github.com/gists/'+gistid,
+            type: 'GET',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+            },
+            dataType: 'json'
+        }).success( function(gistdata) {
+            // This can be less complicated if you know the gist file name
+            for (file in gistdata.files) {
+                if (gistdata.files.hasOwnProperty(file)) {
+                    var o = JSON.parse(gistdata.files[file].content);
+                    if (o) {
+                        objects.push(o);
+                    }
+                }
+            }
+            if (objects.length > 0) {
+                console.log(objects);
+                // DoSomethingWith(objects[0])
+            }
+        }).error( function(e) {
+            // ajax error
+        });
+        return objects;
     }
 
     /*
@@ -481,9 +509,17 @@ TreeCompare = (function() {
      */
     var updateTimes = 0;
     function update(source, treeData, duration) {
-        writeJSONtoGist(source);
+        var gistID;
+        writeJSONtoGist(source, function(returnedData){ //anonymous callback function
+            gistID = returnedData.id;
+            console.log(gistID);
+        });
+        console.log(gistID);
+        var newJSON = gistToJSON(gistID);
+        console.log(newJSON);
+        console.log(source);
         updateTimes++;
-        location.hash = updateTimes;
+        location.hash = gistID;
         //console.log(location.hash);
 
         //time taken for animations in ms
