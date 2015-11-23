@@ -148,7 +148,10 @@
     #renderButton {
         margin-left: 20px;
     }
-    
+
+    #exportButton {
+        margin-left: 20px;
+    }
     .alert {
         width: 200px;
         margin-left: 20px;
@@ -329,6 +332,13 @@
                         </input>
                         <input type="checkbox" id="zoomOnMouseOver">Zoom On Mouseover</input>
                         <br>
+                    </div>
+                </li>
+                <li>
+                <a href="#" id="settings"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Export Tree</a>
+                    <div id="settingsPanel">
+                        <b class="noExtraMargin">Auto-Collapse Depth:</b>
+                        <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="1" cols="50"></textarea>
                     </div>
                 </li>
                 <li>
@@ -526,6 +536,7 @@
             }
         }
     });
+
 
     $("#simpleSingle").click(function() {
         $("#newickInSingle").val("((sba:0.03984952076326608861,(sca:0.24212307199678842484,(cgl:0.29957965624763355228,(((kla:0.32829009627835226137,ago:0.35217085340006204497):0.05741546733669361524,(skl:0.15813405639248145906,kwa:0.25658337062111585825):0.04348414441988464330):0.03689776646512240438,(yli:1.00856143917930674014,(((lel:0.28806785996189482324,(cal:0.11643570498932501178,ctr:0.12746420698315982789):0.08774131940069260227):0.12449843844102517765,pst:0.20187483296288805112):0.04951181210826986756,(pgu:0.32083506939774530942,dha:0.19121342958249643029):0.04448806563879210280):0.37619889625745939199):0.45090563411571948915):0.08921537612721808230):0.03625000527459597971):0.17548658899657892940):0.01414267170946369515,((sce:0.02228625922028022385,spa:0.01687593406907536564):0.01282179619059338992,smi:0.03661027033511007195):0.01331228080676675335,sku:0.04268512407808848497):0.0;");

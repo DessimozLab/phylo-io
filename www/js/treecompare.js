@@ -451,16 +451,12 @@ TreeCompare = (function() {
      Function to write JSON structure to gist
      */
     function writeJSONtoGist(sourceData, callback){
-        //save D3 JSON
-        //var seen = [];
-        var gistID;
-        //var node_data = sourceData;
+
         console.log(sourceData);
         var dataOut = CircularJSON.stringify(sourceData);
         var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
-
         $.ajax({
-            async: false, // in order to be able to obtain the gist.id
+            async: false,
             url: 'https://api.github.com/gists',
             type: 'POST',
             beforeSend: function (xhr) {
@@ -469,13 +465,12 @@ TreeCompare = (function() {
             dataType: 'json',
             data: JSON.stringify(tmp),
             success: function (data) {
-                callback(data);
+                return callback(data);
             }
         });
-        return gistID;
     }
 
-    function gistToJSON(gistid) {
+    function gistToJSON(gistid, callback) {
         var objects = [];
         $.ajax({
             url: 'https://api.github.com/gists/'+gistid,
@@ -488,7 +483,7 @@ TreeCompare = (function() {
             // This can be less complicated if you know the gist file name
             for (file in gistdata.files) {
                 if (gistdata.files.hasOwnProperty(file)) {
-                    var o = JSON.parse(gistdata.files[file].content);
+                    var o = CircularJSON.parse(gistdata.files[file].content);
                     if (o) {
                         objects.push(o);
                     }
@@ -510,14 +505,16 @@ TreeCompare = (function() {
     var updateTimes = 0;
     function update(source, treeData, duration) {
         var gistID;
+
+
         writeJSONtoGist(source, function(returnedData){ //anonymous callback function
             gistID = returnedData.id;
-            console.log(gistID);
+            //return gistID;
         });
         console.log(gistID);
         var newJSON = gistToJSON(gistID);
         console.log(newJSON);
-        console.log(source);
+        //console.log(source);
         updateTimes++;
         location.hash = gistID;
         //console.log(location.hash);
