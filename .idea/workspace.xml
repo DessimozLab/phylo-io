@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a474329-c1bc-424d-91a5-f418efb5f2fe" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.html" afterPath="$PROJECT_DIR$/www/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/treecompare.js" afterPath="$PROJECT_DIR$/www/js/treecompare.js" />
     </list>
@@ -28,8 +27,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.8846154">
-              <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+            <state vertical-scroll-proportion="-3.2692308">
+              <caret line="473" column="42" selection-start-line="473" selection-start-column="42" selection-end-line="473" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -45,20 +44,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="treecompare.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="treecompare.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/js/treecompare.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.592592">
-              <caret line="501" column="10" selection-start-line="501" selection-start-column="10" selection-end-line="501" selection-end-column="10" />
+            <state vertical-scroll-proportion="0.71162283">
+              <caret line="549" column="83" selection-start-line="549" selection-start-column="83" selection-end-line="549" selection-end-column="83" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="biojs-io-newick.min.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="biojs-io-newick.min.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/biojs-io-newick.min.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.5248307">
+            <state vertical-scroll-proportion="0.28301886">
               <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
               <folding />
             </state>
@@ -110,9 +109,9 @@
         <option value="$PROJECT_DIR$/README.MD" />
         <option value="$PROJECT_DIR$/code.txt" />
         <option value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript5.js" />
+        <option value="$PROJECT_DIR$/www/js/biojs-io-newick.min.js" />
         <option value="$PROJECT_DIR$/www/index.html" />
         <option value="$PROJECT_DIR$/www/js/treecompare.js" />
-        <option value="$PROJECT_DIR$/www/js/biojs-io-newick.min.js" />
       </list>
     </option>
   </component>
@@ -556,26 +555,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/biojs-io-newick.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28301886">
+          <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.8846154">
-          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+        <state vertical-scroll-proportion="-3.2692308">
+          <caret line="473" column="42" selection-start-line="473" selection-start-column="42" selection-end-line="473" selection-end-column="42" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/js/treecompare.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.592592">
-          <caret line="501" column="10" selection-start-line="501" selection-start-column="10" selection-end-line="501" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/biojs-io-newick.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.5248307">
-          <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.71162283">
+          <caret line="549" column="83" selection-start-line="549" selection-start-column="83" selection-end-line="549" selection-end-column="83" />
           <folding />
         </state>
       </provider>

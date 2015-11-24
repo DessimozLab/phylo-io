@@ -245,7 +245,7 @@
     .exportIn {
         width: 200px;
         margin-top: 4px;
-        height: 200px;
+        height: 100px;
         line-height: 20px;
     }
 
@@ -443,6 +443,8 @@
     var spinner = new Spinner(spinnerOpts);
     var spinnerTarget = document.getElementById("page-content-wrapper");
 
+    var gistID = $(location).attr('hash').split("#"); //get gist id from url
+    console.log(gistID[1]);
 
     var treecomp = TreeCompare.init({
         scaleColor: "white",
@@ -462,6 +464,15 @@
         enableFisheyeZoom: $("#zoomOnMouseOver").is(":checked"),
         autoCollapse: $("#collapseAmount").html()
     });
+
+    if (gistID.length > 1){
+        var tree1 = treecomp.addTreeGistURL("tree1",gistID[1]);
+        $("#page-content-wrapper").empty();
+        $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
+        treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
+        $("#colorScale").empty();
+        $("#newickInSingle").val(tree1.nwk);
+    }
 
     $("#menu-toggle").click(function(e) {
         e.preventDefault();

@@ -485,10 +485,38 @@ TreeCompare = (function() {
             });
         }
 
-        function gistToJSON(gistid, callback) {
+        var gistID;
+
+        writeJSONtoGist(trees[0].data.root, function(returnedData){ //anonymous callback function
+            gistID = returnedData.id;
+            return gistID;
+        });
+
+        var outURL = window.location.href + gistID;
+        return outURL;
+    }
+
+
+    /*---------------
+     /
+     /    EXTERNAL: Function to obtain visualization using tree obtained from gist
+     /
+     ---------------*/
+    function addTreeGistURL(name,gistID){
+        console.log(gistID);
+        if (name === undefined) {
+            var num = trees.length;
+            name = "Tree " + num;
+        }
+
+        /*
+         Function to obtain json tree structure from gist
+         */
+        function gistToJSON(id, callback) {
             var objects = [];
             $.ajax({
-                url: 'https://api.github.com/gists/'+gistid,
+                async: false,
+                url: 'https://api.github.com/gists/'+id,
                 type: 'GET',
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
@@ -505,45 +533,40 @@ TreeCompare = (function() {
                     }
                 }
                 if (objects.length > 0) {
-                    console.log(objects);
-                    var parser = require("biojs-io-newick");
-                    console.log(parser.parse_json(objects[0]));
-                    // DoSomethingWith(objects[0])
+                    return callback(objects[0]);
                 }
             }).error( function(e) {
                 // ajax error
             });
-            return objects;
         }
-        console.log(trees[0].data.root);
 
-        var gistID;
-        console.log(trees[0].data.root);
-
-
-        writeJSONtoGist(trees[0].data.root, function(returnedData){ //anonymous callback function
-            gistID = returnedData.id;
-            return gistID;
-        });
+        var newTree;
         console.log(gistID);
-        var newJSON = gistToJSON(gistID);
+        gistToJSON(gistID, function(data){
+            newTree = data;
+            return newTree;
+        });
 
-        //var parser = require("biojs-io-newick");
-        //console.log(parser.parse_json(trees[0].data.root));
+        var parser = require("biojs-io-newick"); //important to reparse json to nwk
+        //console.log(parser.parse_json(newTree));
 
+        var fullTree = {
+            root: newTree,
+            name: name,
+            data: {},
+            nwk: parser.parse_json(newTree)
+        };
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(newTree);
 
-        var out = window.location.href + gistID;
-        console.log(out);
-        return out;
+        trees.push(fullTree);
+        return fullTree;
     }
 
     /*
      Main update function for updating visualisation
      */
-    var updateTimes = 0;
     function update(source, treeData, duration) {
         //console.log(newJSON);
-        //updateTimes++;
         //location.hash = gistID;
         //console.log(location.hash);
 
@@ -3093,6 +3116,7 @@ TreeCompare = (function() {
         viewTree: viewTree,
         renderColorScale: renderColorScale,
         addTree: addTree,
+        addTreeGistURL: addTreeGistURL,
         exportTree: exportTree,
         removeTree: removeTree,
         getTrees: getTrees,
