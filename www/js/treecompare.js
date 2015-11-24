@@ -447,56 +447,94 @@ TreeCompare = (function() {
         }
     }
 
-    /*
-     Function to write JSON structure to gist
-     */
-    function writeJSONtoGist(sourceData, callback){
+    /*---------------
+    /
+    /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
+    /
+    ---------------*/
+    function exportTree(){
 
-        console.log(sourceData);
-        var dataOut = CircularJSON.stringify(sourceData);
-        var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
-        $.ajax({
-            async: false,
-            url: 'https://api.github.com/gists',
-            type: 'POST',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
-            },
-            dataType: 'json',
-            data: JSON.stringify(tmp),
-            success: function (data) {
-                return callback(data);
+        /*
+            Function to write JSON structure to gist
+        */
+        function writeJSONtoGist(sourceData, callback){
+
+            //console.log(sourceData);
+            //remove parts of datastructure that is not needed to re-obtain the visualisation
+            var workData = sourceData;
+            var keys = ["ID", "source", "target", "clickedParentHighlight", "correspondingHighlight", "mouseoverHighlight", "mouseoverLinkHighlight"];
+            for(var i=0; i<keys.length; i++){
+                delete workData[keys[i]];
             }
-        });
-    }
 
-    function gistToJSON(gistid, callback) {
-        var objects = [];
-        $.ajax({
-            url: 'https://api.github.com/gists/'+gistid,
-            type: 'GET',
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
-            },
-            dataType: 'json'
-        }).success( function(gistdata) {
-            // This can be less complicated if you know the gist file name
-            for (file in gistdata.files) {
-                if (gistdata.files.hasOwnProperty(file)) {
-                    var o = CircularJSON.parse(gistdata.files[file].content);
-                    if (o) {
-                        objects.push(o);
+
+            var dataOut = CircularJSON.stringify(workData);
+            var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
+            $.ajax({
+                async: false,
+                url: 'https://api.github.com/gists',
+                type: 'POST',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+                },
+                dataType: 'json',
+                data: JSON.stringify(tmp),
+                success: function (data) {
+                    return callback(data);
+                }
+            });
+        }
+
+        function gistToJSON(gistid, callback) {
+            var objects = [];
+            $.ajax({
+                url: 'https://api.github.com/gists/'+gistid,
+                type: 'GET',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+                },
+                dataType: 'json'
+            }).success( function(gistdata) {
+                // This can be less complicated if you know the gist file name
+                for (file in gistdata.files) {
+                    if (gistdata.files.hasOwnProperty(file)) {
+                        var o = CircularJSON.parse(gistdata.files[file].content);
+                        if (o) {
+                            objects.push(o);
+                        }
                     }
                 }
-            }
-            if (objects.length > 0) {
-                console.log(objects);
-                // DoSomethingWith(objects[0])
-            }
-        }).error( function(e) {
-            // ajax error
+                if (objects.length > 0) {
+                    console.log(objects);
+                    var parser = require("biojs-io-newick");
+                    console.log(parser.parse_json(objects[0]));
+                    // DoSomethingWith(objects[0])
+                }
+            }).error( function(e) {
+                // ajax error
+            });
+            return objects;
+        }
+        console.log(trees[0].data.root);
+
+        var gistID;
+        console.log(trees[0].data.root);
+
+
+        writeJSONtoGist(trees[0].data.root, function(returnedData){ //anonymous callback function
+            gistID = returnedData.id;
+            return gistID;
         });
-        return objects;
+        console.log(gistID);
+        var newJSON = gistToJSON(gistID);
+
+        //var parser = require("biojs-io-newick");
+        //console.log(parser.parse_json(trees[0].data.root));
+
+
+        var out = window.location.href + gistID;
+        console.log(out);
+        return out;
     }
 
     /*
@@ -504,19 +542,9 @@ TreeCompare = (function() {
      */
     var updateTimes = 0;
     function update(source, treeData, duration) {
-        var gistID;
-
-
-        writeJSONtoGist(source, function(returnedData){ //anonymous callback function
-            gistID = returnedData.id;
-            //return gistID;
-        });
-        console.log(gistID);
-        var newJSON = gistToJSON(gistID);
-        console.log(newJSON);
-        //console.log(source);
-        updateTimes++;
-        location.hash = gistID;
+        //console.log(newJSON);
+        //updateTimes++;
+        //location.hash = gistID;
         //console.log(location.hash);
 
         //time taken for animations in ms
@@ -2896,7 +2924,7 @@ TreeCompare = (function() {
 
             d3.selectAll(".tooltipElem").remove();// ensures that not multiple reactangles are open when clicking on another node
             //console.log(d3.select(this));
-            if(d.name==="" || isCompared){ //ensures that final leaves are only showing a tooltip when in comparison mode
+            if(d.children || d._children || isCompared){ //ensures that final leaves are only showing a tooltip when in comparison mode
                 // this is defining the path of the tooltip
                 d3.select(this).append("path")
                     .attr("class", "tooltipElem")
@@ -3065,6 +3093,7 @@ TreeCompare = (function() {
         viewTree: viewTree,
         renderColorScale: renderColorScale,
         addTree: addTree,
+        exportTree: exportTree,
         removeTree: removeTree,
         getTrees: getTrees,
         compareTrees: compareTrees,

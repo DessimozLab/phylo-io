@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./js/d3.min.js"></script>
     <script type="text/javascript" src="./js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/circular-json.js"></script>
+    <script type="text/javascript" src="./js/biojs-io-newick.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/simple-sidebar.css">
     <style>
@@ -172,6 +173,14 @@
         -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
         box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
     }
+
+    #exportPanel {
+        display: none;
+        background-color: #999;
+        -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+        -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+        box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    }
     
     .sizeAdjust {
         width: 200px !important;
@@ -181,6 +190,7 @@
     b {
         margin-left: 20px;
     }
+
     
     input[type="radio"] {
         margin-right: 5px;
@@ -229,6 +239,27 @@
     }
     
     #newickInputs {
+        min-height: 260px;
+    }
+
+    .exportIn {
+        width: 200px;
+        margin-top: 4px;
+        height: 200px;
+        line-height: 20px;
+    }
+
+    #exportInputs p {
+        color: white;
+        margin-bottom: -10px;
+    }
+
+    #exportInputs b {
+        margin: 0px;
+        color: #999;
+    }
+
+    #exportInputs {
         min-height: 260px;
     }
     
@@ -335,10 +366,9 @@
                     </div>
                 </li>
                 <li>
-                <a href="#" id="settings"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Export Tree</a>
-                    <div id="settingsPanel">
-                        <b class="noExtraMargin">Auto-Collapse Depth:</b>
-                        <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="1" cols="50"></textarea>
+                <a href="#" id="export"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Export Tree</a>
+                    <div id="exportPanel">
+                        <textarea class="exportIn noExtraMargin" id="exportURLInSingle" rows="1" cols="50"></textarea>
                     </div>
                 </li>
                 <li>
@@ -564,6 +594,30 @@
         } else {
             $("#settingsPanel").slideUp(300, function() {
                 settingsShown = false;
+                $(this).css({
+                    "display": "none"
+                });
+            });
+        }
+    });
+
+    var exportShown = false;
+
+    $("#export").click(function(e) {
+        if (!exportShown) {
+            $("#exportPanel").slideDown(300);
+            exportShown = true;
+
+            try {
+                $("#exportURLInSingle").val(treecomp.exportTree());
+            } catch (e) {
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+            }
+
+
+        } else {
+            $("#exportPanel").slideUp(300, function() {
+                exportShown = false;
                 $(this).css({
                     "display": "none"
                 });
