@@ -498,7 +498,9 @@ TreeCompare = (function() {
             return gistID;
         });
 
-        var outURL = window.location.href + gistID;
+        var tmpURL = window.location.href.split("#");
+
+        var outURL = tmpURL[0] + "#" + gistID;
         return outURL;
     }
 
@@ -567,6 +569,7 @@ TreeCompare = (function() {
         $.each(fullTree.root, function(key,val){
             // do something with key and val
         });
+        console.log(fullTree);
 
         //fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(newTree);
 
