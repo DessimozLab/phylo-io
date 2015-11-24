@@ -226,6 +226,7 @@ TreeCompare = (function() {
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
             d.correspondingHighlight = false;
+            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
         var fullTree = {
             root: tree,
@@ -459,16 +460,21 @@ TreeCompare = (function() {
         */
         function writeJSONtoGist(sourceData, callback){
 
+            postorderTraverse(sourceData, function(e) {
+                if (e.collapsed === true) {
+                    //console.log(e.children);
+                    //delete e("_children");
+                    e.children = e._children;
+                    e._children = null;
+                }
+            });
+
             //console.log(sourceData);
-            //remove parts of datastructure that is not needed to re-obtain the visualisation
-            var workData = sourceData;
-            var keys = ["ID", "source", "target", "clickedParentHighlight", "correspondingHighlight", "mouseoverHighlight", "mouseoverLinkHighlight"];
-            for(var i=0; i<keys.length; i++){
-                delete workData[keys[i]];
-            }
+            //console.log(JSON.stringify(JSON.decycle(sourceData)));
+            var dataOut = CircularJSON.stringify(sourceData);
+            //var dataOut = JSON.stringify(JSON.decycle(sourceData));
 
-
-            var dataOut = CircularJSON.stringify(workData);
+            //console.log(dataOut);
             var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
             $.ajax({
                 async: false,
@@ -487,7 +493,7 @@ TreeCompare = (function() {
 
         var gistID;
 
-        writeJSONtoGist(trees[0].data.root, function(returnedData){ //anonymous callback function
+        writeJSONtoGist(renderedTrees[0].data.root, function(returnedData){ //anonymous callback function
             gistID = returnedData.id;
             return gistID;
         });
@@ -503,7 +509,9 @@ TreeCompare = (function() {
      /
      ---------------*/
     function addTreeGistURL(name,gistID){
-        console.log(gistID);
+
+        settings.autoCollapse = null;
+
         if (name === undefined) {
             var num = trees.length;
             name = "Tree " + num;
@@ -513,6 +521,7 @@ TreeCompare = (function() {
          Function to obtain json tree structure from gist
          */
         function gistToJSON(id, callback) {
+
             var objects = [];
             $.ajax({
                 async: false,
@@ -541,14 +550,12 @@ TreeCompare = (function() {
         }
 
         var newTree;
-        console.log(gistID);
         gistToJSON(gistID, function(data){
             newTree = data;
             return newTree;
         });
 
         var parser = require("biojs-io-newick"); //important to reparse json to nwk
-        //console.log(parser.parse_json(newTree));
 
         var fullTree = {
             root: newTree,
@@ -556,7 +563,12 @@ TreeCompare = (function() {
             data: {},
             nwk: parser.parse_json(newTree)
         };
-        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(newTree);
+
+        $.each(fullTree.root, function(key,val){
+            // do something with key and val
+        });
+
+        //fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(newTree);
 
         trees.push(fullTree);
         return fullTree;
@@ -569,6 +581,8 @@ TreeCompare = (function() {
         //console.log(newJSON);
         //location.hash = gistID;
         //console.log(location.hash);
+
+        //console.log(source);
 
         //time taken for animations in ms
         if (duration === undefined) {
@@ -1123,7 +1137,7 @@ TreeCompare = (function() {
                             return colorScale(d[currentS])
                         } else {
                             if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight){ //here the color of the branches after the selected node is set to green
-                                console.log("bunt");
+                                //console.log("bunt");
                                 return "green";
                             } else {
                                 return defaultLineColor;
@@ -2310,6 +2324,16 @@ TreeCompare = (function() {
         setTimeout(function() {
             uncollapseAll(trees[index].root);
             stripPreprocessing(trees[index].root);
+
+            // this part is important to obtain the correct collapsing when important from gist
+            postorderTraverse(trees[index].root, function(d) {
+                if (d.collapsed === true) {
+                    var tmp = d.children;
+                    d._children = tmp;
+                    d.children = null;
+                }
+            }, false);
+
             getDepths(trees[index].root);
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index].root, settings.autoCollapse);
@@ -2803,9 +2827,11 @@ TreeCompare = (function() {
                 }
                 setTimeout(function() {
                     if (d.children) {
+                        d.collapsed = false;
                         d._children = d.children;
                         d.children = null;
                     } else {
+                        d.collapsed = true;
                         d.children = d._children;
                         d._children = null;
                         if (isCompared) {
@@ -2832,6 +2858,7 @@ TreeCompare = (function() {
                     if (d._children) {// used when collapsed for uncollapsing
                         postorderTraverse(d, function(e) {
                             if (e._children) {
+                                e.collapsed = false;
                                 e.children = e._children;
                                 e._children = null;
                             }
@@ -2842,6 +2869,7 @@ TreeCompare = (function() {
                     } else if (d.children) { //used when uncollapsed for collapsing
                         postorderTraverse(d, function(e) {
                             if (e.children) {
+                                e.collapsed = true;
                                 e._children = e.children;
                                 e.children = null;
                             }
@@ -3017,6 +3045,7 @@ TreeCompare = (function() {
                         postorderTraverse(d, function(e) {
                             e.mouseoverHighlight = false;
                         });
+                        console.log(renderedTrees);
                         collapseAll(d);
                         removeTooltips(svg);
                     });
