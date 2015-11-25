@@ -600,23 +600,12 @@ TreeCompare = (function() {
         });
         console.log(collapsedInfoTree);
 
-        postorderTraverse(collapsedInfoTree, function(d) {
-            if (d.name==="collapsed") {
-                d._children = d.children;
-                d.collapsed = true;
-                d.children = null;
-                d.name=""
-            }
-        });
-
         var fullTree = {
             root: collapsedInfoTree,
             name: parsedNwk[0],
             nwk: parsedNwk[1],
             data: {}
         };
-
-
 
         console.log(fullTree);
         trees.push(fullTree);
@@ -2376,6 +2365,17 @@ TreeCompare = (function() {
             uncollapseAll(trees[index].root);
             stripPreprocessing(trees[index].root);
             getDepths(trees[index].root);
+
+            postorderTraverse(trees[index].root, function(d) {
+                if (d.name==="collapsed") {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    d.name=""
+                }
+            });
+
+
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index].root, settings.autoCollapse);
             }
