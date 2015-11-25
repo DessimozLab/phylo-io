@@ -465,7 +465,7 @@
     });
 
     if (gistID.length > 1){
-        var tree1 = treecomp.addTreeGistURL("tree1",gistID[1]);
+        var tree1 = treecomp.addTreeGistURL(gistID[1]);
         $("#page-content-wrapper").empty();
         $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
         treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
