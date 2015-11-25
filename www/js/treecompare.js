@@ -3,6 +3,7 @@ TreeCompare = (function() {
     var trees = [];
     var backupRoot = [];
     var renderedTrees = [];
+    var gistID="";
 
     //global variable set if manual reroot used!!!
     var manualReroot = false;
@@ -466,15 +467,14 @@ TreeCompare = (function() {
 
             var parser = require("biojs-io-newick");
             var currentTrees = getTrees();
-            console.log(sourceData);
 
+            // get original newick since parser can not handle _children
             postorderTraverse(sourceData, function(d) {
                 if (d._children) {
                     d.children = d._children;
                     d._children = null;
                 }
             });
-            console.log(sourceData);
 
             var nwk_original = parser.parse_json(sourceData);
 
@@ -484,26 +484,17 @@ TreeCompare = (function() {
                 if (e.collapsed === true && e.name==="") {
                     //console.log(e.children);
                     e.name = "collapsed";
-                    console.log(e.name);
                 }
             });
+
             var nwk_collapsed = parser.parse_json(sourceData);
 
-            //parser.parse_json(sourceData);
-            console.log(nwk_original);
-            //console.log(nwk_collapsed);
-
-
-
-            //console.log(sourceData);
-            //console.log(JSON.stringify(JSON.decycle(sourceData)));
             var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
 
             //var dataOut = JSON.stringify(JSON.decycle(sourceData));
 
-            console.log(dataOut);
             var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
-            $.ajax({
+            return $.ajax({
                 async: false,
                 url: 'https://api.github.com/gists',
                 type: 'POST',
@@ -512,23 +503,22 @@ TreeCompare = (function() {
                 },
                 dataType: 'json',
                 data: JSON.stringify(tmp),
-                success: function (data) {
-                    return callback(data);
-                }
+                success: callback
             });
         }
 
-        var gistID;
 
-        writeJSONtoGist(renderedTrees[0].data.root, function(returnedData){ //anonymous callback function
-            gistID = returnedData.id;
-            return gistID;
+        //var gistID;
+        writeJSONtoGist(renderedTrees[0].data.root, function(data){
+            gistID = data.id;
         });
 
-        var tmpURL = window.location.href.split("#");
 
+        var tmpURL = window.location.href.split("#");
         var outURL = tmpURL[0] + "#" + gistID;
+
         return outURL;
+
     }
 
 
@@ -598,7 +588,6 @@ TreeCompare = (function() {
             d.correspondingHighlight = false;
             d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
-        console.log(collapsedInfoTree);
 
         var fullTree = {
             root: collapsedInfoTree,
@@ -607,11 +596,9 @@ TreeCompare = (function() {
             data: {}
         };
 
-        console.log(fullTree);
         trees.push(fullTree);
         return fullTree;
-        //var parser = require("biojs-io-newick"); //important to reparse json to nwk
-        //console.log(parsedNwk);
+
     }
 
     /*
