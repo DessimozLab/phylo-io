@@ -1701,7 +1701,6 @@ TreeCompare = (function() {
             });
 
             //main event handler, performs search every time a char is typed so can get realtime results
-            //TODO: make it possible to search substrings anywhere in the word
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
                 var text = $(this).val();
