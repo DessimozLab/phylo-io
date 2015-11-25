@@ -234,7 +234,11 @@ TreeCompare = (function() {
             data: {}
         };
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
+
+
         trees.push(fullTree);
+
+
         return fullTree;
     }
 
@@ -460,21 +464,44 @@ TreeCompare = (function() {
         */
         function writeJSONtoGist(sourceData, callback){
 
-            postorderTraverse(sourceData, function(e) {
-                if (e.collapsed === true) {
-                    //console.log(e.children);
-                    //delete e("_children");
-                    e.children = e._children;
-                    e._children = null;
+            var parser = require("biojs-io-newick");
+            var currentTrees = getTrees();
+            console.log(sourceData);
+
+            postorderTraverse(sourceData, function(d) {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
                 }
             });
+            console.log(sourceData);
+
+            var nwk_original = parser.parse_json(sourceData);
+
+
+            // mark all internal nodes that are collapsed
+            postorderTraverse(sourceData, function(e) {
+                if (e.collapsed === true && e.name==="") {
+                    //console.log(e.children);
+                    e.name = "collapsed";
+                    console.log(e.name);
+                }
+            });
+            var nwk_collapsed = parser.parse_json(sourceData);
+
+            //parser.parse_json(sourceData);
+            console.log(nwk_original);
+            //console.log(nwk_collapsed);
+
+
 
             //console.log(sourceData);
             //console.log(JSON.stringify(JSON.decycle(sourceData)));
-            var dataOut = CircularJSON.stringify(sourceData);
+            var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
+
             //var dataOut = JSON.stringify(JSON.decycle(sourceData));
 
-            //console.log(dataOut);
+            console.log(dataOut);
             var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
             $.ajax({
                 async: false,
@@ -510,14 +537,9 @@ TreeCompare = (function() {
      /    EXTERNAL: Function to obtain visualization using tree obtained from gist
      /
      ---------------*/
-    function addTreeGistURL(name,gistID){
+    function addTreeGistURL(gistID){
 
         settings.autoCollapse = null;
-
-        if (name === undefined) {
-            var num = trees.length;
-            name = "Tree " + num;
-        }
 
         /*
          Function to obtain json tree structure from gist
@@ -537,7 +559,8 @@ TreeCompare = (function() {
                 // This can be less complicated if you know the gist file name
                 for (file in gistdata.files) {
                     if (gistdata.files.hasOwnProperty(file)) {
-                        var o = CircularJSON.parse(gistdata.files[file].content);
+                        //var o = CircularJSON.parse(gistdata.files[file].content);
+                        var o = gistdata.files[file].content;
                         if (o) {
                             objects.push(o);
                         }
@@ -557,24 +580,49 @@ TreeCompare = (function() {
             return newTree;
         });
 
-        var parser = require("biojs-io-newick"); //important to reparse json to nwk
+        var parsedNwk = newTree.split("$$");
+        console.log(parsedNwk);
+
+        try {
+            var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
+            //console.log(tree)
+        } catch (err) {
+            throw "Invalid Newick";
+        }
+        postorderTraverse(collapsedInfoTree, function(d) {
+            d.ID = makeId("node_");
+            d.leaves = getChildLeaves(d);
+            d.clickedParentHighlight = false;
+            d.mouseoverHighlight = false; //when mouse is over node
+            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+            d.correspondingHighlight = false;
+            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+        });
+        console.log(collapsedInfoTree);
+
+        postorderTraverse(collapsedInfoTree, function(d) {
+            if (d.name==="collapsed") {
+                d._children = d.children;
+                d.collapsed = true;
+                d.children = null;
+                d.name=""
+            }
+        });
 
         var fullTree = {
-            root: newTree,
-            name: name,
-            data: {},
-            nwk: parser.parse_json(newTree)
+            root: collapsedInfoTree,
+            name: parsedNwk[0],
+            nwk: parsedNwk[1],
+            data: {}
         };
 
-        $.each(fullTree.root, function(key,val){
-            // do something with key and val
-        });
+
+
         console.log(fullTree);
-
-        //fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(newTree);
-
         trees.push(fullTree);
         return fullTree;
+        //var parser = require("biojs-io-newick"); //important to reparse json to nwk
+        //console.log(parsedNwk);
     }
 
     /*
@@ -1230,7 +1278,7 @@ TreeCompare = (function() {
             }, duration);
         }
 
-        //calculate the new scale text 
+        //calculate the new scale text
         applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
 
 
@@ -1312,7 +1360,7 @@ TreeCompare = (function() {
     }
 
     /*
-        Hook up the zoom slider on the vis to zoomEvent 
+        Hook up the zoom slider on the vis to zoomEvent
     */
     function applyEventListeners(treeData) {
         $("#zoomSlider" + treeData.id).on("input change", function() {
@@ -2210,7 +2258,7 @@ TreeCompare = (function() {
     }
 
     /*
-        get a spanning tree containing leaves given 
+        get a spanning tree containing leaves given
     */
     function getSpanningTree(node, leaves) {
         var nodes = [];
@@ -2327,16 +2375,6 @@ TreeCompare = (function() {
         setTimeout(function() {
             uncollapseAll(trees[index].root);
             stripPreprocessing(trees[index].root);
-
-            // this part is important to obtain the correct collapsing when important from gist
-            postorderTraverse(trees[index].root, function(d) {
-                if (d.collapsed === true) {
-                    var tmp = d.children;
-                    d._children = tmp;
-                    d.children = null;
-                }
-            }, false);
-
             getDepths(trees[index].root);
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index].root, settings.autoCollapse);
@@ -2357,6 +2395,7 @@ TreeCompare = (function() {
             if (d.children) {
                 d._children = d.children;
                 d.children = null;
+                d.collapsed = true;
             }
         } else {
             if (d._children) {
