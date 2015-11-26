@@ -190,7 +190,6 @@ TreeCompare = (function() {
                     var x = tokens[i - 1];
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
-                        console.log(tree_meta);
                         if (tree_meta.length<2){
                             tree.name = tree_meta[0];
                         } else {
@@ -489,16 +488,12 @@ TreeCompare = (function() {
 
             // mark all internal nodes that are collapsed
             postorderTraverse(sourceData, function(e) {
-                if (e.collapsed === true && e.name==="") {
-                    //console.log(e.children);
-                    e.name = "collapsed";
-                } else if (e.collapsed === true && e.name!==""){
+                if (e.collapsed === true){
                     e.name += "@@collapsed";
                 }
             });
 
             var nwk_collapsed = parser.parse_json(sourceData);
-            console.log(nwk_collapsed);
 
             var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
 
@@ -582,14 +577,13 @@ TreeCompare = (function() {
         });
 
         var parsedNwk = newTree.split("$$");
-        console.log(parsedNwk);
 
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
-            console.log(collapsedInfoTree);
         } catch (err) {
             throw "Invalid Newick";
         }
+
         postorderTraverse(collapsedInfoTree, function(d) {
             d.ID = makeId("node_");
             d.leaves = getChildLeaves(d);
@@ -608,7 +602,6 @@ TreeCompare = (function() {
         };
 
         trees.push(fullTree);
-        console.log(fullTree);
         return fullTree;
 
     }
@@ -2867,11 +2860,11 @@ TreeCompare = (function() {
                 }
                 setTimeout(function() {
                     if (d.children) {
-                        d.collapsed = false;
+                        d.collapsed = true;
                         d._children = d.children;
                         d.children = null;
                     } else {
-                        d.collapsed = true;
+                        d.collapsed = false;
                         d.children = d._children;
                         d._children = null;
                         if (isCompared) {

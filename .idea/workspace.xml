@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a474329-c1bc-424d-91a5-f418efb5f2fe" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.html" afterPath="$PROJECT_DIR$/www/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/treecompare.js" afterPath="$PROJECT_DIR$/www/js/treecompare.js" />
     </list>
@@ -28,8 +27,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="15.529411">
-              <caret line="581" column="5283" selection-start-line="581" selection-start-column="5283" selection-end-line="581" selection-end-column="5283" />
+            <state vertical-scroll-proportion="-0.9411765">
+              <caret line="581" column="901" selection-start-line="581" selection-start-column="34" selection-end-line="581" selection-end-column="901" />
               <folding />
             </state>
           </provider>
@@ -48,8 +47,8 @@
       <file leaf-file-name="treecompare.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/js/treecompare.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.1256656">
-              <caret line="468" column="13" selection-start-line="468" selection-start-column="13" selection-end-line="468" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.50905216">
+              <caret line="496" column="0" selection-start-line="496" selection-start-column="0" selection-end-line="496" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -629,16 +628,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="15.529411">
-          <caret line="581" column="5283" selection-start-line="581" selection-start-column="5283" selection-end-line="581" selection-end-column="5283" />
+        <state vertical-scroll-proportion="-0.9411765">
+          <caret line="581" column="901" selection-start-line="581" selection-start-column="34" selection-end-line="581" selection-end-column="901" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/js/treecompare.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1256656">
-          <caret line="468" column="13" selection-start-line="468" selection-start-column="13" selection-end-line="468" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.50905216">
+          <caret line="496" column="0" selection-start-line="496" selection-start-column="0" selection-end-line="496" selection-end-column="0" />
           <folding />
         </state>
       </provider>
