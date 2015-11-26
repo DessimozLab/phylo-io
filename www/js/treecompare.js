@@ -3073,7 +3073,6 @@ TreeCompare = (function() {
                         postorderTraverse(d, function(e) {
                             e.mouseoverHighlight = false;
                         });
-                        console.log(renderedTrees);
                         collapseAll(d);
                         removeTooltips(svg);
                     });
