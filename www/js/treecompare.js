@@ -465,7 +465,7 @@ TreeCompare = (function() {
     /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
     /
     ---------------*/
-    function exportTree(){
+    function exportTree(isCompared){
 
         /*
             Function to write JSON structure to gist
@@ -473,29 +473,30 @@ TreeCompare = (function() {
         function writeJSONtoGist(sourceData, callback){
 
             var parser = require("biojs-io-newick");
-            var currentTrees = getTrees();
+            var currentTrees = sourceData;
+            console.log(currentTrees);
 
             // get original newick since parser can not handle _children
-            postorderTraverse(sourceData, function(d) {
+            postorderTraverse(sourceData.root, function(d) {
                 if (d._children) {
                     d.children = d._children;
                     d._children = null;
                 }
             });
 
-            var nwk_original = parser.parse_json(sourceData);
+            var nwk_original = parser.parse_json(sourceData.root);
 
 
             // mark all internal nodes that are collapsed
-            postorderTraverse(sourceData, function(e) {
+            postorderTraverse(sourceData.root, function(e) {
                 if (e.collapsed === true){
                     e.name += "@@collapsed";
                 }
             });
 
-            var nwk_collapsed = parser.parse_json(sourceData);
+            var nwk_collapsed = parser.parse_json(sourceData.root);
 
-            var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
+            var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
 
             //var dataOut = JSON.stringify(JSON.decycle(sourceData));
 
@@ -515,13 +516,41 @@ TreeCompare = (function() {
 
 
         //var gistID;
-        writeJSONtoGist(renderedTrees[0].data.root, function(data){
-            gistID = data.id;
-        });
-
-
+        console.log(isCompared);
         var tmpURL = window.location.href.split("#");
-        var outURL = tmpURL[0] + "#" + gistID;
+        var outURL = tmpURL[0] + "#";
+        //console.log(trees[0]);
+
+        if (isCompared){
+            var tree1 = trees[trees.length-2];
+            var tree2 = trees[trees.length-1];
+
+            var gistID1;
+            var gistID2;
+            writeJSONtoGist(tree1, function(data){
+                gistID1 = data.id;
+            });
+
+            writeJSONtoGist(tree2, function(data){
+                gistID2 = data.id;
+            });
+
+            outURL += gistID1 + "#" + gistID2;
+
+        }else {
+
+            var tree1 = trees[trees.length-1];
+
+            writeJSONtoGist(tree1, function(data){
+                gistID = data.id;
+            });
+
+            outURL += gistID;
+        }
+
+
+
+
 
         return outURL;
 
@@ -600,6 +629,7 @@ TreeCompare = (function() {
             nwk: parsedNwk[1],
             data: {}
         };
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
 
         trees.push(fullTree);
         return fullTree;
@@ -2329,6 +2359,26 @@ TreeCompare = (function() {
             stripPreprocessing(trees[index2].root);
             getDepths(trees[index1].root);
             getDepths(trees[index2].root);
+
+            postorderTraverse(trees[index1].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+            postorderTraverse(trees[index2].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index1].root, settings.autoCollapse);
                 limitDepth(trees[index2].root, settings.autoCollapse);
