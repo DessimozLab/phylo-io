@@ -189,7 +189,15 @@ TreeCompare = (function() {
                 default:
                     var x = tokens[i - 1];
                     if (x == ')' || x == '(' || x == ',') {
-                        tree.name = token;
+                        var tree_meta = token.split("@@"); // separation of metadata for export
+                        console.log(tree_meta);
+                        if (tree_meta.length<2){
+                            tree.name = tree_meta[0];
+                        } else {
+                            tree.name = tree_meta[0];
+                            tree.collapsed = true;
+                        }
+
                     } else if (x == ':') {
                         tree.length = parseFloat(token);
                     }
@@ -484,10 +492,13 @@ TreeCompare = (function() {
                 if (e.collapsed === true && e.name==="") {
                     //console.log(e.children);
                     e.name = "collapsed";
+                } else if (e.collapsed === true && e.name!==""){
+                    e.name += "@@collapsed";
                 }
             });
 
             var nwk_collapsed = parser.parse_json(sourceData);
+            console.log(nwk_collapsed);
 
             var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
 
@@ -575,7 +586,7 @@ TreeCompare = (function() {
 
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
-            //console.log(tree)
+            console.log(collapsedInfoTree);
         } catch (err) {
             throw "Invalid Newick";
         }
@@ -586,7 +597,7 @@ TreeCompare = (function() {
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
             d.correspondingHighlight = false;
-            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+            //d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
 
         var fullTree = {
@@ -597,6 +608,7 @@ TreeCompare = (function() {
         };
 
         trees.push(fullTree);
+        console.log(fullTree);
         return fullTree;
 
     }
@@ -2353,11 +2365,11 @@ TreeCompare = (function() {
             getDepths(trees[index].root);
 
             postorderTraverse(trees[index].root, function(d) {
-                if (d.name==="collapsed") {
+                if (d.name==="collapsed" || d.collapsed) {
                     d._children = d.children;
                     d.collapsed = true;
                     d.children = null;
-                    d.name=""
+                    //d.name=""
                 }
             });
 
