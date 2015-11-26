@@ -147,6 +147,58 @@ TreeCompare = (function() {
         }
     }
 
+    function jsonToNwk(json,addLabels) {
+
+        function nested(nest){
+            var subtree = "";
+
+            if(nest.hasOwnProperty('children')){
+                var children = [];
+                nest.children.forEach(function (child) {
+                    var subsubtree = nested(child);
+                    children.push(subsubtree);
+                });
+                var substring = children.join();
+                if(nest.hasOwnProperty('name')){
+                    subtree = "("+substring+")" + nest.name;
+                    if(addLabels){
+                        if(nest.collapsed){
+                            subtree += "@@collapsed";
+                        }
+                        if(nest.clickedParentHighlight){
+                            subtree += "@@clickedParentHighlight";
+                        }
+                        if(nest.correspondingHighlight){
+                            subtree += "@@correspondingHighlight";
+                        }
+                    }
+                }
+                if(nest.hasOwnProperty('length')){
+                    subtree = subtree + ":"+nest.length;
+                }
+            }else {
+                var leaf = "";
+                if(nest.hasOwnProperty('name')){
+                    leaf = nest.name;
+                    if(addLabels){
+                        if(nest.clickedParentHighlight){
+                            leaf += "@@clickedParentHighlight";
+                        }
+                        if(nest.correspondingHighlight){
+                            leaf += "@@correspondingHighlight";
+                        }
+                    }
+                }
+                if(nest.hasOwnProperty('length')){
+                    leaf = leaf + ":"+nest.length;
+                }
+                subtree = subtree + leaf;
+            }
+            return subtree;
+        }
+        return nested(json) +";";
+    }
+
     /*
         Newick to JSON converter, just copied code from newick.js
     */
@@ -190,18 +242,32 @@ TreeCompare = (function() {
                     var x = tokens[i - 1];
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
-                        if (tree_meta.length<2){
-                            tree.name = tree_meta[0];
-                        } else {
-                            tree.name = tree_meta[0];
+                        console.log(tree_meta);
+                        tree.name = tree_meta[0];
+                        if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
+                        }else{
+                            tree.collapsed = false;
                         }
+                        if(tree_meta.indexOf("clickedParentHighlight")!==-1){
+                            console.log("here");
+                            tree.clickedParentHighlight = true;
+                        }else{
+                            tree.clickedParentHighlight = false;
+                        }
+                        if(tree_meta.indexOf("correspondingHighlight")!==-1) {
+                            tree.correspondingHighlight = true;
+                        }else{
+                            tree.correspondingHighlight = false;
+                        }
+
 
                     } else if (x == ':') {
                         tree.length = parseFloat(token);
                     }
             }
         }
+        console.log(tree);
         return tree
     }
 
@@ -460,6 +526,7 @@ TreeCompare = (function() {
         }
     }
 
+
     /*---------------
     /
     /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
@@ -472,33 +539,33 @@ TreeCompare = (function() {
         */
         function writeJSONtoGist(sourceData, callback){
 
-            var parser = require("biojs-io-newick");
+            //var parser = require("biojs-io-newick");
             var currentTrees = sourceData;
+            //var currentTrees = sourceData;
             console.log(currentTrees);
 
             // get original newick since parser can not handle _children
-            postorderTraverse(sourceData.root, function(d) {
+            postorderTraverse(currentTrees.root, function(d) {
                 if (d._children) {
                     d.children = d._children;
                     d._children = null;
                 }
             });
 
-            var nwk_original = parser.parse_json(sourceData.root);
+            var nwk_original = jsonToNwk(currentTrees.root,false);
+            var nwk_collapsed = jsonToNwk(currentTrees.root,true);
 
-
-            // mark all internal nodes that are collapsed
-            postorderTraverse(sourceData.root, function(e) {
-                if (e.collapsed === true){
-                    e.name += "@@collapsed";
-                }
-            });
-
-            var nwk_collapsed = parser.parse_json(sourceData.root);
 
             var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
 
-            //var dataOut = JSON.stringify(JSON.decycle(sourceData));
+            postorderTraverse(currentTrees.root, function(d) {
+                if (d.collapsed) {
+                    d._children = d.children;
+                    d.children = null;
+                }
+            });
+
+            //var dataOut = JSON.stringify(JSON.decycle(currentTrees));
 
             var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
             return $.ajax({
@@ -536,6 +603,7 @@ TreeCompare = (function() {
             });
 
             outURL += gistID1 + "#" + gistID2;
+            console.log(tree1);
 
         }else {
 
@@ -547,9 +615,6 @@ TreeCompare = (function() {
 
             outURL += gistID;
         }
-
-
-
 
 
         return outURL;
@@ -616,10 +681,10 @@ TreeCompare = (function() {
         postorderTraverse(collapsedInfoTree, function(d) {
             d.ID = makeId("node_");
             d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
+            //d.clickedParentHighlight = false;
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-            d.correspondingHighlight = false;
+            //d.correspondingHighlight = false;
             //d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
 
@@ -630,7 +695,6 @@ TreeCompare = (function() {
             data: {}
         };
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
-
         trees.push(fullTree);
         return fullTree;
 
@@ -2367,6 +2431,13 @@ TreeCompare = (function() {
                     d.children = null;
                     //d.name=""
                 }
+                if (d.correspondingHighlight) {
+                    d.correspondingHighlight = true;
+                }
+                if (d.clickedParentHighlight) {
+                    d.clickedParentHighlight = true;
+                }
+
             });
 
             postorderTraverse(trees[index2].root, function(d) {
@@ -2375,6 +2446,12 @@ TreeCompare = (function() {
                     d.collapsed = true;
                     d.children = null;
                     //d.name=""
+                }
+                if (d.correspondingHighlight) {
+                    d.correspondingHighlight = true;
+                }
+                if (d.clickedParentHighlight) {
+                    d.clickedParentHighlight = true;
                 }
             });
 

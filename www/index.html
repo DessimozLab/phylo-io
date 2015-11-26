@@ -4,7 +4,6 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="./js/newick.js"></script>
     <script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="./js/treecompare.js"></script>
     <script type="text/javascript" src="./js/underscore.min.js"></script>
@@ -12,7 +11,6 @@
     <script type="text/javascript" src="./js/d3.min.js"></script>
     <script type="text/javascript" src="./js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/circular-json.js"></script>
-    <script type="text/javascript" src="./js/biojs-io-newick.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/simple-sidebar.css">
     <style>
@@ -463,8 +461,6 @@
         enableFisheyeZoom: $("#zoomOnMouseOver").is(":checked"),
         autoCollapse: $("#collapseAmount").html()
     });
-
-    console.log(gistID);
 
     if (gistID.length === 2){ //view mode
 
