@@ -162,6 +162,12 @@ TreeCompare = (function() {
                 if(nest.hasOwnProperty('name')){
                     subtree = "("+substring+")" + nest.name;
                     if(addLabels){
+                        if(nest.clickedHighlight){
+                            subtree += "@@clickedHighlight"
+                        }
+                        if(nest.bcnhighlight){
+                            subtree += "@@bcnhighlight";
+                        }
                         if(nest.collapsed){
                             subtree += "@@collapsed";
                         }
@@ -240,9 +246,10 @@ TreeCompare = (function() {
                     break;
                 default:
                     var x = tokens[i - 1];
+                    //console.log(x);
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
-                        console.log(tree_meta);
+                        console.log(token);
                         tree.name = tree_meta[0];
                         if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
@@ -250,18 +257,18 @@ TreeCompare = (function() {
                             tree.collapsed = false;
                         }
                         if(tree_meta.indexOf("clickedParentHighlight")!==-1){
-                            console.log("here");
                             tree.clickedParentHighlight = true;
-                        }else{
-                            tree.clickedParentHighlight = false;
+                            console.log(tree);
                         }
                         if(tree_meta.indexOf("correspondingHighlight")!==-1) {
                             tree.correspondingHighlight = true;
-                        }else{
-                            tree.correspondingHighlight = false;
                         }
-
-
+                        if(tree_meta.indexOf("bcnhighlight")!==-1) {
+                            tree.bcnhighlight = true;
+                        }
+                        if(tree_meta.indexOf("clickedHighlight")!==-1){
+                            tree.clickedHighlight = true;
+                        }
                     } else if (x == ':') {
                         tree.length = parseFloat(token);
                     }
@@ -554,6 +561,7 @@ TreeCompare = (function() {
 
             var nwk_original = jsonToNwk(currentTrees.root,false);
             var nwk_collapsed = jsonToNwk(currentTrees.root,true);
+            console.log(nwk_collapsed);
 
 
             var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
@@ -681,11 +689,8 @@ TreeCompare = (function() {
         postorderTraverse(collapsedInfoTree, function(d) {
             d.ID = makeId("node_");
             d.leaves = getChildLeaves(d);
-            //d.clickedParentHighlight = false;
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-            //d.correspondingHighlight = false;
-            //d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
 
         var fullTree = {
@@ -1911,8 +1916,8 @@ TreeCompare = (function() {
         });
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
-            d.correspondingHighlight = false;
+            //d.clickedParentHighlight = false;
+            //d.correspondingHighlight = false;
             d.mouseoverHighlight = false;
         });
 
@@ -2431,13 +2436,6 @@ TreeCompare = (function() {
                     d.children = null;
                     //d.name=""
                 }
-                if (d.correspondingHighlight) {
-                    d.correspondingHighlight = true;
-                }
-                if (d.clickedParentHighlight) {
-                    d.clickedParentHighlight = true;
-                }
-
             });
 
             postorderTraverse(trees[index2].root, function(d) {
@@ -2446,12 +2444,6 @@ TreeCompare = (function() {
                     d.collapsed = true;
                     d.children = null;
                     //d.name=""
-                }
-                if (d.correspondingHighlight) {
-                    d.correspondingHighlight = true;
-                }
-                if (d.clickedParentHighlight) {
-                    d.clickedParentHighlight = true;
                 }
             });
 
@@ -2546,7 +2538,7 @@ TreeCompare = (function() {
     */
     function stripPreprocessing(root) {
         postorderTraverse(root, function(d) {
-            d.bcnhighlight = null;
+            //d.bcnhighlight = null;
             d.elementBCN = null;
             d.elementS = null;
             d.x = null;
