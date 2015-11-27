@@ -240,7 +240,6 @@ TreeCompare = (function() {
                     break;
                 case ')': // optional name next
                     tree = ancestors.pop();
-                    //console.log(tree)
                     break;
                 case ':': // optional length next
                     break;
@@ -249,7 +248,6 @@ TreeCompare = (function() {
                     //console.log(x);
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
-                        console.log(token);
                         tree.name = tree_meta[0];
                         if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
@@ -258,7 +256,6 @@ TreeCompare = (function() {
                         }
                         if(tree_meta.indexOf("clickedParentHighlight")!==-1){
                             tree.clickedParentHighlight = true;
-                            console.log(tree);
                         }
                         if(tree_meta.indexOf("correspondingHighlight")!==-1) {
                             tree.correspondingHighlight = true;
@@ -274,8 +271,7 @@ TreeCompare = (function() {
                     }
             }
         }
-        console.log(tree);
-        return tree
+        return tree;
     }
 
     /*
