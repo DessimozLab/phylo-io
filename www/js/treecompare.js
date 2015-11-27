@@ -557,7 +557,6 @@ TreeCompare = (function() {
 
             var nwk_original = jsonToNwk(currentTrees.root,false);
             var nwk_collapsed = jsonToNwk(currentTrees.root,true);
-            console.log(nwk_collapsed);
 
 
             var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
@@ -587,7 +586,6 @@ TreeCompare = (function() {
 
 
         //var gistID;
-        console.log(isCompared);
         var tmpURL = window.location.href.split("#");
         var outURL = tmpURL[0] + "#";
         //console.log(trees[0]);
