@@ -147,6 +147,64 @@ TreeCompare = (function() {
         }
     }
 
+    function jsonToNwk(json,addLabels) {
+
+        function nested(nest){
+            var subtree = "";
+
+            if(nest.hasOwnProperty('children')){
+                var children = [];
+                nest.children.forEach(function (child) {
+                    var subsubtree = nested(child);
+                    children.push(subsubtree);
+                });
+                var substring = children.join();
+                if(nest.hasOwnProperty('name')){
+                    subtree = "("+substring+")" + nest.name;
+                    if(addLabels){
+                        if(nest.clickedHighlight){
+                            subtree += "@@clickedHighlight"
+                        }
+                        if(nest.bcnhighlight){
+                            subtree += "@@bcnhighlight";
+                        }
+                        if(nest.collapsed){
+                            subtree += "@@collapsed";
+                        }
+                        if(nest.clickedParentHighlight){
+                            subtree += "@@clickedParentHighlight";
+                        }
+                        if(nest.correspondingHighlight){
+                            subtree += "@@correspondingHighlight";
+                        }
+                    }
+                }
+                if(nest.hasOwnProperty('length')){
+                    subtree = subtree + ":"+nest.length;
+                }
+            }else {
+                var leaf = "";
+                if(nest.hasOwnProperty('name')){
+                    leaf = nest.name;
+                    if(addLabels){
+                        if(nest.clickedParentHighlight){
+                            leaf += "@@clickedParentHighlight";
+                        }
+                        if(nest.correspondingHighlight){
+                            leaf += "@@correspondingHighlight";
+                        }
+                    }
+                }
+                if(nest.hasOwnProperty('length')){
+                    leaf = leaf + ":"+nest.length;
+                }
+                subtree = subtree + leaf;
+            }
+            return subtree;
+        }
+        return nested(json) +";";
+    }
+
     /*
         Newick to JSON converter, just copied code from newick.js
     */
@@ -182,20 +240,38 @@ TreeCompare = (function() {
                     break;
                 case ')': // optional name next
                     tree = ancestors.pop();
-                    //console.log(tree)
                     break;
                 case ':': // optional length next
                     break;
                 default:
                     var x = tokens[i - 1];
+                    //console.log(x);
                     if (x == ')' || x == '(' || x == ',') {
-                        tree.name = token;
+                        var tree_meta = token.split("@@"); // separation of metadata for export
+                        tree.name = tree_meta[0];
+                        if(tree_meta.indexOf("collapsed")!==-1){
+                            tree.collapsed = true;
+                        }else{
+                            tree.collapsed = false;
+                        }
+                        if(tree_meta.indexOf("clickedParentHighlight")!==-1){
+                            tree.clickedParentHighlight = true;
+                        }
+                        if(tree_meta.indexOf("correspondingHighlight")!==-1) {
+                            tree.correspondingHighlight = true;
+                        }
+                        if(tree_meta.indexOf("bcnhighlight")!==-1) {
+                            tree.bcnhighlight = true;
+                        }
+                        if(tree_meta.indexOf("clickedHighlight")!==-1){
+                            tree.clickedHighlight = true;
+                        }
                     } else if (x == ':') {
                         tree.length = parseFloat(token);
                     }
             }
         }
-        return tree
+        return tree;
     }
 
     /*
@@ -453,45 +529,47 @@ TreeCompare = (function() {
         }
     }
 
+
     /*---------------
     /
     /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
     /
     ---------------*/
-    function exportTree(){
+    function exportTree(isCompared){
 
         /*
             Function to write JSON structure to gist
         */
         function writeJSONtoGist(sourceData, callback){
 
-            var parser = require("biojs-io-newick");
-            var currentTrees = getTrees();
+            //var parser = require("biojs-io-newick");
+            var currentTrees = sourceData;
+            //var currentTrees = sourceData;
+            console.log(currentTrees);
 
             // get original newick since parser can not handle _children
-            postorderTraverse(sourceData, function(d) {
+            postorderTraverse(currentTrees.root, function(d) {
                 if (d._children) {
                     d.children = d._children;
                     d._children = null;
                 }
             });
 
-            var nwk_original = parser.parse_json(sourceData);
+            var nwk_original = jsonToNwk(currentTrees.root,false);
+            var nwk_collapsed = jsonToNwk(currentTrees.root,true);
+            console.log(nwk_collapsed);
 
 
-            // mark all internal nodes that are collapsed
-            postorderTraverse(sourceData, function(e) {
-                if (e.collapsed === true && e.name==="") {
-                    //console.log(e.children);
-                    e.name = "collapsed";
+            var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
+
+            postorderTraverse(currentTrees.root, function(d) {
+                if (d.collapsed) {
+                    d._children = d.children;
+                    d.children = null;
                 }
             });
 
-            var nwk_collapsed = parser.parse_json(sourceData);
-
-            var dataOut = currentTrees[currentTrees.length-1].name+"$$"+nwk_original+"$$"+nwk_collapsed;
-
-            //var dataOut = JSON.stringify(JSON.decycle(sourceData));
+            //var dataOut = JSON.stringify(JSON.decycle(currentTrees));
 
             var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
             return $.ajax({
@@ -509,13 +587,39 @@ TreeCompare = (function() {
 
 
         //var gistID;
-        writeJSONtoGist(renderedTrees[0].data.root, function(data){
-            gistID = data.id;
-        });
-
-
+        console.log(isCompared);
         var tmpURL = window.location.href.split("#");
-        var outURL = tmpURL[0] + "#" + gistID;
+        var outURL = tmpURL[0] + "#";
+        //console.log(trees[0]);
+
+        if (isCompared){
+            var tree1 = trees[trees.length-2];
+            var tree2 = trees[trees.length-1];
+
+            var gistID1;
+            var gistID2;
+            writeJSONtoGist(tree1, function(data){
+                gistID1 = data.id;
+            });
+
+            writeJSONtoGist(tree2, function(data){
+                gistID2 = data.id;
+            });
+
+            outURL += gistID1 + "#" + gistID2;
+            console.log(tree1);
+
+        }else {
+
+            var tree1 = trees[trees.length-1];
+
+            writeJSONtoGist(tree1, function(data){
+                gistID = data.id;
+            });
+
+            outURL += gistID;
+        }
+
 
         return outURL;
 
@@ -571,22 +675,18 @@ TreeCompare = (function() {
         });
 
         var parsedNwk = newTree.split("$$");
-        console.log(parsedNwk);
 
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
-            //console.log(tree)
         } catch (err) {
             throw "Invalid Newick";
         }
+
         postorderTraverse(collapsedInfoTree, function(d) {
             d.ID = makeId("node_");
             d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-            d.correspondingHighlight = false;
-            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
 
         var fullTree = {
@@ -595,7 +695,7 @@ TreeCompare = (function() {
             nwk: parsedNwk[1],
             data: {}
         };
-
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
         trees.push(fullTree);
         return fullTree;
 
@@ -1812,8 +1912,8 @@ TreeCompare = (function() {
         });
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
-            d.correspondingHighlight = false;
+            //d.clickedParentHighlight = false;
+            //d.correspondingHighlight = false;
             d.mouseoverHighlight = false;
         });
 
@@ -2324,6 +2424,26 @@ TreeCompare = (function() {
             stripPreprocessing(trees[index2].root);
             getDepths(trees[index1].root);
             getDepths(trees[index2].root);
+
+            postorderTraverse(trees[index1].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+            postorderTraverse(trees[index2].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index1].root, settings.autoCollapse);
                 limitDepth(trees[index2].root, settings.autoCollapse);
@@ -2353,11 +2473,11 @@ TreeCompare = (function() {
             getDepths(trees[index].root);
 
             postorderTraverse(trees[index].root, function(d) {
-                if (d.name==="collapsed") {
+                if (d.name==="collapsed" || d.collapsed) {
                     d._children = d.children;
                     d.collapsed = true;
                     d.children = null;
-                    d.name=""
+                    //d.name=""
                 }
             });
 
@@ -2414,7 +2534,7 @@ TreeCompare = (function() {
     */
     function stripPreprocessing(root) {
         postorderTraverse(root, function(d) {
-            d.bcnhighlight = null;
+            //d.bcnhighlight = null;
             d.elementBCN = null;
             d.elementS = null;
             d.x = null;
@@ -2855,11 +2975,11 @@ TreeCompare = (function() {
                 }
                 setTimeout(function() {
                     if (d.children) {
-                        d.collapsed = false;
+                        d.collapsed = true;
                         d._children = d.children;
                         d.children = null;
                     } else {
-                        d.collapsed = true;
+                        d.collapsed = false;
                         d.children = d._children;
                         d._children = null;
                         if (isCompared) {

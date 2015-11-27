@@ -4,7 +4,6 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="./js/newick.js"></script>
     <script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="./js/treecompare.js"></script>
     <script type="text/javascript" src="./js/underscore.min.js"></script>
@@ -12,7 +11,6 @@
     <script type="text/javascript" src="./js/d3.min.js"></script>
     <script type="text/javascript" src="./js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/circular-json.js"></script>
-    <script type="text/javascript" src="./js/biojs-io-newick.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/simple-sidebar.css">
     <style>
@@ -464,13 +462,56 @@
         autoCollapse: $("#collapseAmount").html()
     });
 
-    if (gistID.length > 1){
+    if (gistID.length === 2){ //view mode
+
+        $("#compare-btn").removeClass("active");
+        $("#view-btn").addClass("active");
+        $(".compareIn").css({
+            "display": "none"
+        });
+        $("#newickInputs").css({
+            "padding-bottom": "0px"
+        });
+        $(".singleIn").css({
+            "display": "block"
+        });
         var tree1 = treecomp.addTreeGistURL(gistID[1]);
         $("#page-content-wrapper").empty();
         $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
         treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
         $("#colorScale").empty();
         $("#newickInSingle").val(tree1.nwk);
+
+    } else if (gistID.length ===3) { //compare mode
+
+        $("#view-btn").removeClass("active");
+        $("#compare-btn").addClass("active");
+        $(".singleIn").css({
+            "display": "none"
+        });
+        $("#newickInputs").css({
+            "padding-bottom": "25px"
+        });
+        $(".compareIn").css({
+            "display": "block"
+        });
+        var tree1 = treecomp.addTreeGistURL(gistID[1]);
+        var tree2 = treecomp.addTreeGistURL(gistID[2]);
+
+        treecomp.changeSettings({
+            autoCollapse: tree1.data.autoCollapseDepth
+        });
+        var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
+        $("#collapseAmount").html(collapseText);
+        $("#page-content-wrapper").empty();
+        $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+        treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
+        $("#colorScale").html("<b>Similarity to most common node:</b>");
+        treecomp.renderColorScale("colorScale");
+
+        $("#newickIn1").val(tree1.nwk);
+        $("#newickIn2").val(tree2.nwk);
+
     }
 
     $("#menu-toggle").click(function(e) {
@@ -619,7 +660,12 @@
             exportShown = true;
 
             try {
-                $("#exportURLInSingle").val(treecomp.exportTree());
+                var mode = $("#mode-buttons .active").attr('id');
+                if (mode === "compare-btn") {
+                    $("#exportURLInSingle").val(treecomp.exportTree(true));
+                } else if (mode === "view-btn"){
+                    $("#exportURLInSingle").val(treecomp.exportTree(false));
+                }
             } catch (e) {
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
             }
