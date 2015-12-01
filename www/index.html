@@ -547,6 +547,7 @@
     $("#view-btn").click(function(e) {
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickInSingle").val('');
+        $("#colorScale").empty();
         $("#compare-btn").removeClass("active");
         $("#view-btn").addClass("active");
         $(".compareIn").css({
@@ -564,6 +565,7 @@
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickIn1").val('');
         $("#newickIn2").val('');
+        $("#colorScale").empty();
         $("#view-btn").removeClass("active");
         $("#compare-btn").addClass("active");
         $(".singleIn").css({
