@@ -11,6 +11,7 @@
     <script type="text/javascript" src="./js/d3.min.js"></script>
     <script type="text/javascript" src="./js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/circular-json.js"></script>
+    <script src="https://rawgit.com/hippich/bower-semver/master/semver.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="./css/simple-sidebar.css">
@@ -76,6 +77,8 @@
         /* For Firefox 3.6 to 15 */
         background: linear-gradient(black, #555);
         /* Standard syntax */
+        position: absolute;
+        height: 100%;
     }
     
     #wrapper {
@@ -83,14 +86,14 @@
     }
     
     .vis-container {
-        height: calc(100% - 60px);
+        height: calc(100% - 100px);
         padding: 0px;
         position: absolute;
         width: 100%;
     }
     
     .vis-scale {
-        height: 60px;
+        height: 90px;
         width: 100%;
         background-color: gray;
         position: absolute;
@@ -98,7 +101,7 @@
     }
     
     .vis-scale-2 {
-        height: 60px;
+        height: 100px;
         width: 50%;
         background-color: gray;
         float: left;
@@ -137,6 +140,14 @@
     .sidebar-brand {
         font-weight: bold;
         font-size: 26px !important;
+    }
+
+    .sidebar-version {
+        font-size: 12px;
+        margin-top: -30px;
+        padding-top: 10px;
+        padding-bottom: 5px;
+        color: #999;
     }
     
     #mode-buttons {
@@ -281,6 +292,16 @@
         line-height: 14px;
         text-align: left;
     }
+    .footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 1rem;
+        background-color: #efefef;
+        text-align: center;
+    }
+
     </style>
 </head>
 
@@ -303,6 +324,9 @@
                     <a href="#">
                         Phylo.io
                     </a>
+                </li>
+                <li class="sidebar-version">
+                    <p>Version: <span id="git-tag"></span></p>
                 </li>
                 <div id="mode-buttons" class="btn-group btn-group-justified" role="group" aria-label="...">
                     <div class="btn-group" role="group">
@@ -374,25 +398,6 @@
                 </li>
                 <li>
                     <a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
-                <!--<a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
-                        <div id="myModal" class="modal fade">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                        <h4 class="modal-title">Link to share tree visualisation</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="exportPanel">
-                                            <textarea class="exportIn noExtraMargin" id="exportURLInSingle" rows="1" cols="50"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div id="exportPanel">
-                        <textarea class="exportIn noExtraMargin" id="exportURLInSingle" rows="1" cols="50"></textarea>
-                    </div>-->
                 </li>
                 <li>
                     <a href="manual.html"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
@@ -415,6 +420,10 @@
         <!-- /#page-content-wrapper -->
     </div>
     <!-- /#wrapper -->
+    <div class="footer">
+        <a href="http://lab.dessimoz.org"><span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Dessimoz Lab</a>
+    </div>
+
     <!-- Menu Toggle Script -->
     <script>
     var totalTrees = 0;
@@ -731,6 +740,21 @@
             internalLabels: $("input[name=internalLabels]:checked").val()
         });
     });
+
+
+
+    // code to sync version number with tag in git-repo
+    /*var gitHubPath = 'phylo-io';  // example repo
+    var url = 'https://gitolite@lab.dessimoz.org:2222/' + gitHubPath + '/tags';
+
+    $.get(url).done(function (data) {
+        var versions = data.sort(function (v1, v2) {
+            return semver.compare(v2.name, v1.name)
+        });
+        $('#git-tag').html(versions[0].name);
+        console.log($('#git-tag').html(versions[0].name));
+    });*/
+    $('#git-tag').html("1.0.0");
 
     /*var enableAutomation = true;
     if (enableAutomation) {
