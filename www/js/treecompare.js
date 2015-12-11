@@ -392,18 +392,24 @@ TreeCompare = (function() {
     */
     function applyScaleText(scaleText, zoomScale, root) {
         if (root.children || root._children) {
+            //console.log(root);
             var children = getChildren(root);
             var length = 0;
             var offset = 0;
+            //console.log(children.length);
             for (var i = 0; i < children.length; i++) {
                 length = getLength(children[i]);
-                offset = children[i].y;
-                if (length != 0 && offset != 0) {
+                offset = children[i].baseY;
+                var test_length = length.toFixed(3);
+                //console.log(offset);
+                if (test_length != 0 && offset != 0) { //take the first one unequal zero
                     break;
                 }
             }
+
             var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
             scaleText.text(text);
+
         }
     }
 
@@ -860,9 +866,10 @@ TreeCompare = (function() {
 
 
         var maxLength = getMaxLengthVisible(treeData.root);
-        //console.log("maxLenght: "+maxLength);
+        console.log("maxLenght: "+maxLength);
 
         var lengthMult = treeData.treeWidth;
+        console.log("lengthMult: "+lengthMult);
 
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
@@ -875,6 +882,7 @@ TreeCompare = (function() {
             }
             d.y = d.y + padding;
         });
+        console.log(treeData.root);
         setXPos(treeData.root, 0);
 
 
