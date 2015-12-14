@@ -443,13 +443,6 @@
 
         })();
 
-        function myFunction() {
-            document.getElementById("newickInSingle").defaultValue = "Paste your tree in Newick format here";
-        }
-
-        //$("#newickInSingle").val("Paste your tree in Newick format here");
-
-
         var totalTrees = 0;
         var addingTree = false;
 
@@ -592,6 +585,7 @@
             $(".singleIn").css({
                 "display": "block"
             });
+            $("#renderErrorMessage").empty();
         });
 
         $("#compare-btn").click(function(e) {
@@ -610,6 +604,7 @@
             $(".compareIn").css({
                 "display": "block"
             });
+            $("#renderErrorMessage").empty();
         });
 
         $("#collapseInc").click(function(e) {
@@ -663,7 +658,13 @@
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    if(e==="NHX"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">NHX not supported</div>')).hide().slideDown(300);
+                    }else if (e==="NoTree"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    }else if (e===""){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Scheisse</div>')).hide().slideDown(300);
+                    }
                 }
             } else if (mode === "view-btn") {
                 try {
@@ -678,7 +679,13 @@
                     treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
                     $("#colorScale").empty();
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    if(e==="NHX"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">NHX not supported</div>')).hide().slideDown(300);
+                    }else if (e==="NoTree"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    }else if (e===""){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Scheisse</div>')).hide().slideDown(300);
+                    }
                 }
             }
         });

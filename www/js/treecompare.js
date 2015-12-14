@@ -215,10 +215,19 @@ TreeCompare = (function() {
         //console.log(tokens);
         //console.log(tokens.indexOf("["));
         try { //catch error when newick is not in place
-            if (tokens=="" || tokens.indexOf("[")!=-1) throw "empty";// calls convert function from above
+            if (tokens=="") throw "empty";// calls convert function from above
         } catch (err) {
-            throw "Invalid Newick";
+            throw "NoTree";
         }
+
+        try {// catch error if input is in NHX format
+            if (tokens.indexOf("[")!=-1 || tokens.indexOf("]")!=-1) throw "empty";
+        } catch (err) {
+            throw "NHX";
+        }
+        //TODO: find a more sophisticated way to test for newick format
+
+
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];
             switch (token) {
@@ -283,13 +292,14 @@ TreeCompare = (function() {
             var num = trees.length;
             name = "Tree " + num;
         }
+        var tree = convertTree(newick);
 
-        try {
+        /*try {
             var tree = convertTree(newick); // calls convert function from above
             //console.log(tree)
         } catch (err) {
             throw "Invalid Newick";
-        }
+        }*/
         for (var i = 0; i < trees.length; i++) {
             if (name === trees[i].name) {
                 throw "Tree With Name Already Exists";
