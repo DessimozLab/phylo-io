@@ -342,12 +342,12 @@
                     </div>
                     <li>
                         <div id="newickInputs">
-                            <p class="singleIn"><b>Tree Newick:</b></p>
-                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50"></textarea>
-                            <p class="compareIn"><b>Tree 1 Newick:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50"></textarea>
-                            <p class="compareIn"><b>Tree 2 Newick:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50"></textarea>
+                            <p class="singleIn"><b>Tree:</b></p>
+                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <p class="compareIn"><b>Tree 1:</b></p>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <p class="compareIn"><b>Tree 2:</b></p>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
@@ -442,6 +442,12 @@
             div_footer.width(divdiv.width());
 
         })();
+
+        function myFunction() {
+            document.getElementById("newickInSingle").defaultValue = "Paste your tree in Newick format here";
+        }
+
+        //$("#newickInSingle").val("Paste your tree in Newick format here");
 
 
         var totalTrees = 0;

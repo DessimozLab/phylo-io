@@ -862,14 +862,10 @@ TreeCompare = (function() {
             //console.log(upperBound)
         }
 
-
-
-
+        // returns length from root to farthest leaf in branch lengths
         var maxLength = getMaxLengthVisible(treeData.root);
-        console.log("maxLenght: "+maxLength);
-
+        // returns length in absolute coordinates of the whole tree
         var lengthMult = treeData.treeWidth;
-        console.log("lengthMult: "+lengthMult);
 
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
@@ -882,7 +878,7 @@ TreeCompare = (function() {
             }
             d.y = d.y + padding;
         });
-        console.log(treeData.root);
+
         setXPos(treeData.root, 0);
 
 
