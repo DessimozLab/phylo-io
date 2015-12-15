@@ -330,7 +330,7 @@
                         </a>
                     </li>
                     <li class="sidebar-version">
-                        <p>Version: <span id="git-tag"></span></p>
+                    <p>Version: <span id="git-tag"></span> (<span id="last-modif"></span>)</p>
                     </li>
                     <div id="mode-buttons" class="btn-group btn-group-justified" role="group" aria-label="...">
                         <div class="btn-group" role="group">
@@ -786,6 +786,8 @@
          console.log($('#git-tag').html(versions[0].name));
          });*/
         $('#git-tag').html("1.0.0");
+        
+        $("#last-modif").html(document.lastModified);
 
         /*var enableAutomation = true;
          if (enableAutomation) {
