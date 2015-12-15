@@ -953,6 +953,7 @@ TreeCompare = (function() {
             });
 
         nodeEnter.append("rect")
+            .attr("class", "node")
             .attr("y", "-5px")
             .attr("x", "-5px")
             .attr("width", "0px")
@@ -1442,7 +1443,7 @@ TreeCompare = (function() {
                     n.target.mouseoverLinkHighlight = true;
                 }
             }
-            colorLinkMouseOver(d)
+            colorLinkMouseOver(d);
             //console.log(d);
             if (!settings.enableFisheyeZoom) {
                 update(d.source, treeData);
@@ -1469,11 +1470,12 @@ TreeCompare = (function() {
         // this part ensures that when clicking on a node or elsewhere in the screen the tooltip disappears
         $('html').click(function(d) {
             if(compareMode){
-                var tree1 = trees[trees.length-trees.length];
-                var tree2 = trees[trees.length-trees.length+1];
-                if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node"))
+                var tree1 = trees[trees.length-2];
+                var tree2 = trees[trees.length-1];
+                console.log(tree1);
+                console.log(tree2);
+                if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node" && d.target.getAttribute("class")!=="linkbg"))
                 {
-                    console.log(tree1.data);
                     removeTooltips(tree1.data.svg);
                     removeTooltips(tree2.data.svg);
                 }
@@ -2760,15 +2762,12 @@ TreeCompare = (function() {
             {
 
                 var load = false;
-                if (isCompared && node._children) {
+                if (isCompared) {
                     load = true;
+                    console.log("here")
                     settings.loadingCallback();
                 }
                 setTimeout(function() {
-                    if (load) {
-                        settings.loadedCallback();
-                    }
-
 
                     if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
                         backupRoot=root;
@@ -2837,55 +2836,61 @@ TreeCompare = (function() {
 
                     tree.root = new_root;
                     tree.data.root = tree.root; //create clickEvent that is given to update function
-                    settings.loadedCallback();
-                    postRerootClean(tree.root);
+                    if (isCompared){
+                        postRerootClean(tree.root);
+                        //var index1 = findTreeIndex(trees[trees.length-2].name);
+                        //var index2 = findTreeIndex(trees[trees.length-1].name);
+                        //preprocessTrees(index1, index2)
+                    }
+                    if (load) {
+                        console.log("here");
+                        settings.loadedCallback();
+                    }
                     update(tree.root, tree.data);
+
                 }, 2);
 
             }
 
 
             function postRerootClean(root) {
-                highlightedNodes = [];
+                //highlightedNodes = [];
 
                 //get the two trees that are compared
                 //console.log(trees.length);
-
-                if (isCompared){
-                    var tree1 = trees[trees.length-2];
-                    var tree2 = trees[trees.length-1];
-                    trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
-                    trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
-                    getVisibleBCNs(tree1.root, tree2.root); //update coloring when rerooted
-                    settings.loadedCallback();
-                    update(tree1.root, tree1.data);
-                    update(tree2.root, tree2.data);
-                }
-
-            }
-
-
-            function getSimilarity(tree1, tree2) {
-                for (var i = 0; i < tree1.leaves.length; i++) {
-                    for (var j = 0; j < tree2.leaves.length; j++) {
-                        if (tree1.leaves[i].name === tree2.leaves[j].name) {
-                            tree1.leaves[i].correspondingLeaf = tree2.leaves[j];
-                            tree2.leaves[j].correspondingLeaf = tree1.leaves[i];
+                function getSimilarity(tree1, tree2) {
+                    for (var i = 0; i < tree1.leaves.length; i++) {
+                        for (var j = 0; j < tree2.leaves.length; j++) {
+                            if (tree1.leaves[i].name === tree2.leaves[j].name) {
+                                tree1.leaves[i].correspondingLeaf = tree2.leaves[j];
+                                tree2.leaves[j].correspondingLeaf = tree1.leaves[i];
+                            }
                         }
                     }
+
+                    postorderTraverse(tree1, function(d) {
+                        d.deepLeafList = createDeepLeafList(d);
+                    });
+                    postorderTraverse(tree2, function(d) {
+                        d.deepLeafList = createDeepLeafList(d);
+                    });
+
+                    //update(d, tree.data);
+                    //update(otherTreeData.root, otherTreeData);
+                    return getElementS(tree1, tree2);
                 }
 
-                postorderTraverse(tree1, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                });
-                postorderTraverse(tree2, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                });
+                var tree1 = trees[trees.length-2];
+                var tree2 = trees[trees.length-1];
+                trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
+                trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
 
-                //update(d, tree.data);
-                //update(otherTreeData.root, otherTreeData);
-                return getElementS(tree1, tree2);
+                getVisibleBCNs(tree1.root, tree2.root); //update coloring when rerooted
+                update(tree1.root, tree1.data);
+                update(tree2.root, tree2.data);
+
             }
+
 
             if (!d.children && !d._children && d.searchHighlight === true) {
                 expandPathToLeaf(d, true);
