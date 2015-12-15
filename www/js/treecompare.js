@@ -591,7 +591,7 @@ TreeCompare = (function() {
                 async: false,
                 url: 'https://api.github.com/gists',
                 type: 'POST',
-                beforeSend: function (xhr) {
+                beforeSend: function (xhr) {//TODO:here i need to create a new token to store the gist
                     xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
                 },
                 dataType: 'json',
@@ -1950,6 +1950,7 @@ TreeCompare = (function() {
                     triangles += 1;
                 }
             }, false);
+            console.log(triangles);
             var newHeight = 1;
             if (leavesVisible > 0) {
                 newHeight = renderHeight / (leavesVisible + leavesHidden);
@@ -2817,11 +2818,16 @@ TreeCompare = (function() {
 
                 //get the two trees that are compared
                 //console.log(trees.length);
+
                 if (isCompared){
                     var tree1 = trees[trees.length-2];
                     var tree2 = trees[trees.length-1];
                     trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
                     trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
+                    getVisibleBCNs(tree1.root, tree2.root); //update coloring when rerooted
+                    settings.loadedCallback();
+                    update(tree1.root, tree1.data);
+                    update(tree2.root, tree2.data);
                 }
 
             }
@@ -2844,6 +2850,8 @@ TreeCompare = (function() {
                     d.deepLeafList = createDeepLeafList(d);
                 });
 
+                //update(d, tree.data);
+                //update(otherTreeData.root, otherTreeData);
                 return getElementS(tree1, tree2);
             }
 
