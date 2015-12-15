@@ -645,8 +645,8 @@
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
-                    var tree1 = treecomp.addTree($("#newickIn1").val());
-                    var tree2 = treecomp.addTree($("#newickIn2").val());
+                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined,true);
+                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined,true);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
@@ -668,7 +668,7 @@
                 }
             } else if (mode === "view-btn") {
                 try {
-                    var tree1 = treecomp.addTree($("#newickInSingle").val());
+                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined,false);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })

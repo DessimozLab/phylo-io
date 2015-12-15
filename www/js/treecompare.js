@@ -11,6 +11,8 @@ TreeCompare = (function() {
     var scaleLineWidth = 0;
     var scaleLinePadding = 10;
 
+    var compareMode = false;
+
     /*
         colors for the color scale for comparing nodes to best common node
     */
@@ -286,13 +288,19 @@ TreeCompare = (function() {
     /*
         Called externally to convert a tree and add to internal tree structure
     */
-    function addTree(newick, name) {
+    function addTree(newick, name, compared) {
 
         if (name === undefined) {
             var num = trees.length;
             name = "Tree " + num;
         }
         var tree = convertTree(newick);
+
+        if (compared){ //set mode of current trees
+            compareMode = true;
+        }else{
+            compareMode = false;
+        }
 
         /*try {
             var tree = convertTree(newick); // calls convert function from above
@@ -318,6 +326,7 @@ TreeCompare = (function() {
         var fullTree = {
             root: tree,
             name: name,
+            compared: compared,
             data: {}
         };
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
@@ -1457,13 +1466,24 @@ TreeCompare = (function() {
             }
         }
 
-
+        // this part ensures that when clicking on a node or elsewhere in the screen the tooltip disappears
         $('html').click(function(d) {
-            console.log(d.tooltipActive);
-            if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node"))
-            {
-                removeTooltips(treeData.svg);
+            if(compareMode){
+                var tree1 = trees[trees.length-trees.length];
+                var tree2 = trees[trees.length-trees.length+1];
+                if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node"))
+                {
+                    console.log(tree1.data);
+                    removeTooltips(tree1.data.svg);
+                    removeTooltips(tree2.data.svg);
+                }
+            }else{
+                if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node"))
+                {
+                    removeTooltips(treeData.svg);
+                }
             }
+
 
         });
 
@@ -2724,18 +2744,6 @@ TreeCompare = (function() {
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
-            if (d.tooltipActive) {
-                d.tooltipActive = false;
-                //removeTooltips(svg);
-                postorderTraverse(d, function(e) {
-                    e.mouseoverHighlight = false;
-                    e.mouseoverLinkHighlight = false;
-                });
-                update(d, tree.data);
-                //removeTooltips(svg);
-                return;
-            }
-            d.tooltipActive = true;
 
 
             function kn_new_node(d) { // private method
@@ -2987,17 +2995,6 @@ TreeCompare = (function() {
 
         function nodeClick(d) {
             var svg = tree.data.svg;
-            if (d.tooltipActive) {
-                d.tooltipActive = false;
-                postorderTraverse(d, function(e) {
-                    e.mouseoverHighlight = false;
-                });
-                update(d, tree.data);
-                //removeTooltips(svg);
-                return;
-            }
-            d.tooltipActive = true;
-            //console.log(d);
 
             // function that allows to swap two branches when clicking on note d
             function rotate(d) {
