@@ -803,23 +803,27 @@ TreeCompare = (function() {
                     collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
                     //collapsedHeightInner += leafHeight * d.leaves.length;
                     leavesHiddenInner += d.leaves.length;
-                    if (d.leaves.length>20){
-
-                    } /*else {
-                        collapsedHeightInner += ((leafHeight  * d.leaves.length) + (trianglePadding * 15));
-                        //collapsedHeightInner += leafHeight * d.leaves.length;
-                        leavesHiddenInner += d.leaves.length;
-                    }*/
 
                 } else if (d.children) {
                     for (var i = 0; i < d.children.length; i++) {
+                        //console.log(d.children[i].name);
                         getCollapsedHeight(d.children[i]);
                     }
                 }
             }
+
             getCollapsedHeight(e);
+            var logCollapsedHeightInner = leafHeight*(10 * Math.log(leavesHiddenInner) / Math.log(2));
+            if (logCollapsedHeightInner === -Infinity) {
+                logCollapsedHeightInner = 0;
+            }
+
+            //console.log(collapsedHeightInner);
+            console.log(leafHeight);
+            console.log("log: ",Math.round(logCollapsedHeightInner));
             return {
-                collapsedHeight: collapsedHeightInner,
+                collapsedHeight: Math.round(logCollapsedHeightInner),
+                //collapsedHeight: 2*Math.log(leavesHiddenInner)/Math.log(2),
                 leavesHidden: leavesHiddenInner
             }
         }
@@ -828,7 +832,7 @@ TreeCompare = (function() {
         var params = getCollapsedParams(treeData.root); //helper function getCollapsedParams(e) above is called and saved in params
         var collapsedHeight = params.collapsedHeight; // height of tree with collapsed branches
         var leavesHidden = params.leavesHidden; // number of hidden leaves
-
+        console.log(params);
         // Set parameters for setXPos function....
         var divisor = ((treeData.root.leaves.length - leavesHidden) > 0) ? (treeData.root.leaves.length - leavesHidden) : 1; //number of leaves when collapsed
         var amendedLeafHeight = ((treeData.root.leaves.length * leafHeight) - collapsedHeight) / (divisor);
@@ -1133,8 +1137,9 @@ TreeCompare = (function() {
                     total = total + (getLength(e) * (lengthMult / maxLength));
                 });
                 var avg = total / d.leaves.length;
-                var offset = leafHeight / triangleHeightDivisor * d.leaves.length / 2;
-
+                //var offset = leafHeight / triangleHeightDivisor * d.leaves.length / 2;
+                console.log(d.leaves.length);
+                var offset = 2*(Math.log(d.leaves.length)/Math.log(2));
                 var xlength = (avg - (getLength(d) * (lengthMult / maxLength)));
                 var ylength = offset;
 
