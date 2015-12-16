@@ -288,19 +288,13 @@ TreeCompare = (function() {
     /*
         Called externally to convert a tree and add to internal tree structure
     */
-    function addTree(newick, name, compared) {
+    function addTree(newick, name) {
 
         if (name === undefined) {
             var num = trees.length;
             name = "Tree " + num;
         }
         var tree = convertTree(newick);
-
-        if (compared){ //set mode of current trees
-            compareMode = true;
-        }else{
-            compareMode = false;
-        }
 
         /*try {
             var tree = convertTree(newick); // calls convert function from above
@@ -326,7 +320,6 @@ TreeCompare = (function() {
         var fullTree = {
             root: tree,
             name: name,
-            compared: compared,
             data: {}
         };
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
@@ -570,7 +563,7 @@ TreeCompare = (function() {
             //var parser = require("biojs-io-newick");
             var currentTrees = sourceData;
             //var currentTrees = sourceData;
-            console.log(currentTrees);
+            //console.log(currentTrees);
 
             // get original newick since parser can not handle _children
             postorderTraverse(currentTrees.root, function(d) {
@@ -601,7 +594,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists',
                 type: 'POST',
                 beforeSend: function (xhr) {//TODO:here i need to create a new token to store the gist
-                    xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+                    xhr.setRequestHeader("Authorization", "token f18c30556faadcb8161faa64cc7ec5466d783cdb");
                 },
                 dataType: 'json',
                 data: JSON.stringify(tmp),
@@ -630,7 +623,7 @@ TreeCompare = (function() {
             });
 
             outURL += gistID1 + "#" + gistID2;
-            console.log(tree1);
+            //console.log(tree1);
 
         }else {
 
@@ -654,9 +647,13 @@ TreeCompare = (function() {
      /    EXTERNAL: Function to obtain visualization using tree obtained from gist
      /
      ---------------*/
-    function addTreeGistURL(gistID){
+    function addTreeGistURL(gistID, name){
 
         settings.autoCollapse = null;
+        if (name === undefined) {
+            var num = trees.length;
+            name = "Tree " + num;
+        }
 
         /*
          Function to obtain json tree structure from gist
@@ -669,7 +666,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists/'+id,
                 type: 'GET',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "token 71301e677769d41e55f1ac7e26e6adb49f3a10c8");
+                    xhr.setRequestHeader("Authorization", "token f18c30556faadcb8161faa64cc7ec5466d783cdb");
                 },
                 dataType: 'json'
             }).success( function(gistdata) {
@@ -698,7 +695,7 @@ TreeCompare = (function() {
         });
 
         var parsedNwk = newTree.split("$$");
-
+        console.log(parsedNwk);
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
         } catch (err) {
@@ -714,11 +711,13 @@ TreeCompare = (function() {
 
         var fullTree = {
             root: collapsedInfoTree,
-            name: parsedNwk[0],
+            name: name,
             nwk: parsedNwk[1],
+            compare:false,
             data: {}
         };
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
+
         trees.push(fullTree);
         return fullTree;
 
@@ -1472,8 +1471,6 @@ TreeCompare = (function() {
             if(compareMode){
                 var tree1 = trees[trees.length-2];
                 var tree2 = trees[trees.length-1];
-                console.log(tree1);
-                console.log(tree2);
                 if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node" && d.target.getAttribute("class")!=="linkbg"))
                 {
                     removeTooltips(tree1.data.svg);
@@ -1605,6 +1602,7 @@ TreeCompare = (function() {
         var baseTree = trees[findTreeIndex(name)];
         if (otherTreeName !== undefined) {
             var otherTree = trees[findTreeIndex(name)];
+            compareMode = false;
         }
         renderedTrees.push(baseTree);
 
@@ -2513,8 +2511,9 @@ TreeCompare = (function() {
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2],true);
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
+            compareMode = true;
             settings.loadedCallback();
-        }, 2);
+        }, 5);
 
     }
 
@@ -2837,7 +2836,7 @@ TreeCompare = (function() {
                     tree.root = new_root;
                     tree.data.root = tree.root; //create clickEvent that is given to update function
                     if (isCompared){
-                        postRerootClean(tree.root);
+                        postRerootClean(tree.root, tree.name);
                         //var index1 = findTreeIndex(trees[trees.length-2].name);
                         //var index2 = findTreeIndex(trees[trees.length-1].name);
                         //preprocessTrees(index1, index2)
@@ -2846,14 +2845,15 @@ TreeCompare = (function() {
                         console.log("here");
                         settings.loadedCallback();
                     }
+                    //console.log(tree);
                     update(tree.root, tree.data);
 
-                }, 2);
+                }, 10);
 
             }
 
 
-            function postRerootClean(root) {
+            function postRerootClean(root,name) {
                 //highlightedNodes = [];
 
                 //get the two trees that are compared
@@ -2885,9 +2885,17 @@ TreeCompare = (function() {
                 trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
                 trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
 
-                getVisibleBCNs(tree1.root, tree2.root); //update coloring when rerooted
-                update(tree1.root, tree1.data);
-                update(tree2.root, tree2.data);
+                //update coloring when rerooted
+                console.log(name);
+                getVisibleBCNs(tree1.root, tree2.root);
+                if(tree1.name = name){
+                    update(tree2.root, tree2.data);
+                }
+                if(tree2.name = name){
+                    update(tree1.root, tree1.data);
+                }
+
+
 
             }
 
