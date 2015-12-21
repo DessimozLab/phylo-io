@@ -792,6 +792,7 @@
         var trianglePadding = leafHeight;
 
         //helper function to calculate all the leaf nodes visible, including the nodes with the collapsing
+        //important to scale even big renderings onto the screen
         var visNodes = 0;
         function getLeavesShown(e){
             function getLeavesShownInner(d){
@@ -814,7 +815,6 @@
 
 
         var allVisLeaves = getLeavesShown(treeData.root); // number of hidden leaves
-        console.log(allVisLeaves);
         var divisor = ((treeData.root.leaves.length - allVisLeaves) > 0) ? allVisLeaves : treeData.root.leaves.length; //number of leaves when collapsed
 
         //helper function to get info about number of collapsed nodes in a subtree
@@ -849,14 +849,8 @@
 
         var params = getCollapsedParams(treeData.root); //helper function getCollapsedParams(e) above is called and saved in params
         var collapsedHeight = params.collapsedHeight; // height of tree with collapsed branches
-        console.log(params);
-        // Set parameters for setXPos function....
-
-        //var center = (leaves / 2) * leafHeight;
-        //var distanceBetweenLeaves =
-        //console.log(getMaxLengthVisible(treeData.root));
         var amendedLeafHeight = ((treeData.root.leaves.length * leafHeight) - collapsedHeight) / (divisor);
-        console.log(amendedLeafHeight,treeData.root.leaves.length,leafHeight,collapsedHeight,divisor);
+
         //calculate the vertical position for a node in the visualisation
         //yes x is vertical position, blame d3's tree vis structure not me...
         function setXPos(d, upperBound) {
@@ -1052,7 +1046,11 @@
                 } else if (d.searchHighlight) {
                     return "red";
                 } else if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
-                    return colorScale(d[currentS])
+                    if (d._children){
+                        return "orange";
+                    }else {
+                        return colorScale(d[currentS])
+                    }
                 } else {
                     return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black";
                 }
