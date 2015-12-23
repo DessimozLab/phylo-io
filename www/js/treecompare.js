@@ -1,4 +1,4 @@
-TreeCompare = (function() {
+    TreeCompare = (function() {
 
     var trees = [];
     var backupRoot = [];
@@ -763,6 +763,7 @@ TreeCompare = (function() {
                 triangles += 1;
             }
         }, false);
+        // console.log(leavesVisible);
 
 
         //calculate treeHeight if we are squashing tree into visible space
@@ -786,12 +787,35 @@ TreeCompare = (function() {
         }
 
         var leafHeight = treeData.treeHeight;
-        //console.log(leafHeight);
-        //console.log(leaves);
 
-
-        var height = leaves * leafHeight;
+        var height = leaves * leafHeight/2;
         var trianglePadding = leafHeight;
+
+        //helper function to calculate all the leaf nodes visible, including the nodes with the collapsing
+        //important to scale even big renderings onto the screen
+        var visNodes = 0;
+        function getLeavesShown(e){
+            function getLeavesShownInner(d){
+                if(d._children){
+                    visNodes += 1;
+                }else if(d.children){
+                    for (var i = 0; i < d.children.length; i++) {
+                        getLeavesShownInner(d.children[i]);
+
+                    }
+                }else{
+                    visNodes +=1;
+                }
+            }
+            getLeavesShownInner(e);
+            console.log(visNodes);
+            return visNodes;
+
+        }
+
+
+        var allVisLeaves = getLeavesShown(treeData.root); // number of hidden leaves
+        var divisor = ((treeData.root.leaves.length - allVisLeaves) > 0) ? allVisLeaves : treeData.root.leaves.length; //number of leaves when collapsed
 
         //helper function to get info about number of collapsed nodes in a subtree
         function getCollapsedParams(e) {
@@ -800,17 +824,13 @@ TreeCompare = (function() {
 
             function getCollapsedHeight(d) {
                 if (d._children) {
-                    collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
-                    //collapsedHeightInner += leafHeight * d.leaves.length;
+                    var offset = leafHeight / triangleHeightDivisor * d.leaves.length;
+                    if (offset < amendedLeafHeight){ //condition ensures the right spacing if the triangle is smaller than the distance between two leaves
+                        collapsedHeightInner += amendedLeafHeight;
+                    }else {
+                        collapsedHeightInner += ((leafHeight / triangleHeightDivisor * d.leaves.length) + (trianglePadding * 2));
+                    }
                     leavesHiddenInner += d.leaves.length;
-                    if (d.leaves.length>20){
-
-                    } /*else {
-                        collapsedHeightInner += ((leafHeight  * d.leaves.length) + (trianglePadding * 15));
-                        //collapsedHeightInner += leafHeight * d.leaves.length;
-                        leavesHiddenInner += d.leaves.length;
-                    }*/
-
                 } else if (d.children) {
                     for (var i = 0; i < d.children.length; i++) {
                         getCollapsedHeight(d.children[i]);
@@ -818,8 +838,10 @@ TreeCompare = (function() {
                 }
             }
             getCollapsedHeight(e);
+            //console.log(collapsedHeightInner);
             return {
                 collapsedHeight: collapsedHeightInner,
+                //collapsedHeight: 2*Math.log(leavesHiddenInner)/Math.log(2),
                 leavesHidden: leavesHiddenInner
             }
         }
@@ -827,41 +849,36 @@ TreeCompare = (function() {
 
         var params = getCollapsedParams(treeData.root); //helper function getCollapsedParams(e) above is called and saved in params
         var collapsedHeight = params.collapsedHeight; // height of tree with collapsed branches
-        var leavesHidden = params.leavesHidden; // number of hidden leaves
-
-        // Set parameters for setXPos function....
-        var divisor = ((treeData.root.leaves.length - leavesHidden) > 0) ? (treeData.root.leaves.length - leavesHidden) : 1; //number of leaves when collapsed
         var amendedLeafHeight = ((treeData.root.leaves.length * leafHeight) - collapsedHeight) / (divisor);
-        var center = (leaves / 2) * leafHeight;
 
         //calculate the vertical position for a node in the visualisation
         //yes x is vertical position, blame d3's tree vis structure not me...
         function setXPos(d, upperBound) {
             if (d.children) { // defines the vertical position of the inner nodes
-                var originalUpperBound = upperBound;
-
                 for (var i = 0; i < d.children.length; i++) {
                     setXPos(d.children[i], upperBound);
-                    //var collapsedHeight = 0;
-                    //var leavesHidden = 0;
+
                     var params = getCollapsedParams(d.children[i]);
                     var collapsedHeight = params.collapsedHeight;
                     var leavesHidden = params.leavesHidden;
 
                     upperBound += (((d.children[i].leaves.length - leavesHidden) * amendedLeafHeight) + collapsedHeight);
+
                 }
+                d.x = d.children[0].x+((d.children[d.children.length-1].x- d.children[0].x)/2);
 
-                //d.x = originalUpperBound + ((upperBound - originalUpperBound) / 2);
-                d.x = d.children[0].x+((d.children[d.children.length-1].x- d.children[0].x)/2)
 
-              } else if (d._children) {
+            } else if (d._children) { //gets the position of the nodes that lead to the triangles!!!!!
+                //console.log("B",prevd);
                 var params = getCollapsedParams(d);
                 var collapsedHeight = params.collapsedHeight;
 
-                d.x = upperBound + (collapsedHeight / 2);
-            } else { // defines the vertical position of the leaves
+                d.x = upperBound + (collapsedHeight/2);
 
-                d.x = upperBound + (amendedLeafHeight /2);
+
+            } else { // defines the vertical position of the leaves only
+                d.x = upperBound + (amendedLeafHeight/2);
+
             }
             d.x = d.x;
         }
@@ -1029,7 +1046,11 @@ TreeCompare = (function() {
                 } else if (d.searchHighlight) {
                     return "red";
                 } else if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
-                    return colorScale(d[currentS])
+                    if (d._children){
+                        return "orange";
+                    }else {
+                        return colorScale(d[currentS])
+                    }
                 } else {
                     return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black";
                 }
@@ -1134,9 +1155,10 @@ TreeCompare = (function() {
                 });
                 var avg = total / d.leaves.length;
                 var offset = leafHeight / triangleHeightDivisor * d.leaves.length / 2;
-
-                var xlength = (avg - (getLength(d) * (lengthMult / maxLength)));
-                var ylength = offset;
+                //console.log(d.name, leafHeight* d.leaves.length);
+                //var offset = Math.round(leafHeight*(2 * Math.log(d.leaves.length) / Math.log(2)));
+                var xlength = (avg - (getLength(d) * (lengthMult / maxLength))); //length of triangle
+                var ylength = offset; //height of half of the triangle
 
                 d3.select(this).select("path").transition().duration(duration)
                     .attr("d", function(d) {
@@ -1733,7 +1755,7 @@ TreeCompare = (function() {
 
         var width = $("#" + canvasId).width();
         var height = $("#" + canvasId).height();
-
+        console.log(width,height);
 
         var tree = d3.layout.tree()
             .size([height, width]);
