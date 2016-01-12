@@ -808,7 +808,7 @@
                 }
             }
             getLeavesShownInner(e);
-            console.log(visNodes);
+            //console.log(visNodes);
             return visNodes;
 
         }
@@ -2864,7 +2864,7 @@
                         //preprocessTrees(index1, index2)
                     }
                     if (load) {
-                        console.log("here");
+                        //console.log("here");
                         settings.loadedCallback();
                     }
                     //console.log(tree);
@@ -2901,7 +2901,7 @@
                     //update(otherTreeData.root, otherTreeData);
                     return getElementS(tree1, tree2);
                 }
-
+                //TODO: this needs to be changed
                 var tree1 = trees[trees.length-2];
                 var tree2 = trees[trees.length-1];
                 trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
