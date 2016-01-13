@@ -1755,7 +1755,6 @@
 
         var width = $("#" + canvasId).width();
         var height = $("#" + canvasId).height();
-        console.log(width,height);
 
         var tree = d3.layout.tree()
             .size([height, width]);
@@ -2529,8 +2528,8 @@
             preprocessTrees(index1, index2);
             trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
             trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
-            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1],true);//Click event listener for links
-            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2],true);
+            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
+            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
             compareMode = true;
@@ -2565,7 +2564,7 @@
                 limitDepth(trees[index].root, settings.autoCollapse);
             }
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
-            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false);
+            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(name, canvasId, scaleId);
             settings.loadedCallback();
         }, 2);
@@ -2762,11 +2761,13 @@
     /*
      get relevant event listener for clicking on a link depending on what mode is selected
      */
-    function getClickEventListenerLink(tree, isCompared) {
+    function getClickEventListenerLink(tree, isCompared, comparedTree) {
 
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
+            //console.log(tree.name);
+            //console.log(comparedTree.name);
 
 
             function kn_new_node(d) { // private method
@@ -2779,23 +2780,24 @@
              newRoot = d
              */
             /* Reroot: put the root in the middle of node and its parent */
-            function kn_reroot(root, node)
+            function kn_reroot(tree, node)
             {
-
                 var load = false;
                 if (isCompared) {
                     load = true;
-                    console.log("here")
                     settings.loadingCallback();
                 }
                 setTimeout(function() {
-
+                    var root = tree.root;
+                    //console.log(tree);
                     if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
                         backupRoot=root;
                         manualReroot=true;
                     } else {
                         root = backupRoot;
                     }
+
+
 
                     var i, d, tmp;
                     var p, q, r, s, new_root;
@@ -2811,7 +2813,8 @@
                      * d: previous distance p->d
                      */
                     q = new_root = kn_new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-                    q.children[0] = node;
+                    //console.log(q);
+                    q.children[0] = node; //new root
                     q.children[0].length = dist;
                     p = node.parent;
                     q.children[0].parent = q;
@@ -2823,6 +2826,7 @@
                     r = p.parent;
                     p.parent = q;
 
+
                     while (r != null) {
                         s = r.parent; /* store r's parent */
                         p.children[i] = r; /* change r to p's children */
@@ -2831,6 +2835,9 @@
                         r.parent = p; /* update r's parent */
                         tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
                         q = p; p = r; r = s; /* update p, q and r */
+                        if(isCompared) { //ensures that only partially the BCNs are recomputed
+                            q.elementBCN = null;
+                        }
                     }
 
                     /* now p is the root node */
@@ -2857,17 +2864,16 @@
 
                     tree.root = new_root;
                     tree.data.root = tree.root; //create clickEvent that is given to update function
+
                     if (isCompared){
                         postRerootClean(tree.root, tree.name);
-                        //var index1 = findTreeIndex(trees[trees.length-2].name);
-                        //var index2 = findTreeIndex(trees[trees.length-1].name);
-                        //preprocessTrees(index1, index2)
                     }
+
                     if (load) {
                         //console.log("here");
                         settings.loadedCallback();
                     }
-                    //console.log(tree);
+                    
                     update(tree.root, tree.data);
 
                 }, 10);
@@ -2901,19 +2907,48 @@
                     //update(otherTreeData.root, otherTreeData);
                     return getElementS(tree1, tree2);
                 }
-                //TODO: this needs to be changed
-                var tree1 = trees[trees.length-2];
-                var tree2 = trees[trees.length-1];
+
+                var tree1 = tree;
+                var tree2 = comparedTree;
                 trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
                 trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
 
+
                 //update coloring when rerooted
-                console.log(name);
-                getVisibleBCNs(tree1.root, tree2.root);
-                if(tree1.name = name){
+
+                function updateVisibleBCNs(tree1, tree2, recalculate){
+
+                    if (recalculate === undefined) {
+                        recalculate = true;
+                    }
+
+                    function getAllBCNs(d, t) {
+                        var children = d.children ? d.children : [];
+                        //var children = getChildren(d);
+                        if (children.length > 0) {
+                            for (var a = 0; a < children.length; a++) {
+                                getAllBCNs(children[a], t);
+                            }
+                            if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                                BCN(d, t);
+                            }
+                            return;
+                        } else {
+                            if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                                BCN(d, t);
+                            }
+                            return;
+                        }
+                    }
+                    getAllBCNs(tree1, tree2);
+                }
+
+                updateVisibleBCNs(tree1.root, tree2.root, false);
+                updateVisibleBCNs(tree2.root, tree1.root, true);
+                if(tree1.name == name){
                     update(tree2.root, tree2.data);
                 }
-                if(tree2.name = name){
+                if(tree2.name == name){
                     update(tree1.root, tree1.data);
                 }
 
@@ -2990,12 +3025,12 @@
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
-
-                    kn_reroot(tree.root, d);
+                    kn_reroot(tree, d);
                     removeTooltips(svg);
                     //if (!manualReroot){
                     //    manualReroot = true;
                     //}
+
                 });
 
             $(document).click(function(event) {
@@ -3359,6 +3394,7 @@
         var maxElementS = 0;
         var leaves = v.leaves;
         var spanningTree = getSpanningTree(tree, leaves);
+        //console.log(spanningTree);
         for (var i = 0; i < spanningTree.length; i++) {
             //get elementBCN for node v
             x = getElementS(v, spanningTree[i]);
@@ -3369,8 +3405,7 @@
         }
         v.elementBCN = elementBCNNode;
         v.elementS = maxElementS;
-
-
+        //console.log(v.elementBCN, v.elementS);
 
     }
 
