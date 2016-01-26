@@ -401,9 +401,6 @@
                         </div>
                     </li>
                     <li>
-                        <a href="#" id="best_corresponding_tree"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> BCT</a>
-                    </li>
-                    <li>
                         <a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
                     </li>
                     <li>
@@ -507,6 +504,7 @@
             loadedCallback: function() {
                 spinner.stop();
             },
+            enableRerootFixedButtons: $("#rerootFixedButtons").val(),
             lineThickness: $("#lineThickness").val(),
             nodeSize: $("#nodeSize").val(),
             fontSize: $("#fontSize").val(),
@@ -599,6 +597,9 @@
                 "display": "block"
             });
             $("#renderErrorMessage").empty();
+            treecomp.changeSettings({
+                enableRerootFixedButtons: false
+            })
         });
 
         /*
@@ -624,6 +625,9 @@
             });
             $("#best_corresponding_tree").show();
             $("#renderErrorMessage").empty();
+            treecomp.changeSettings({
+                enableRerootFixedButtons: true
+            })
         });
 
         /*------------
@@ -746,7 +750,7 @@
          /
          /    FIND THE BEST CORRESPONDING TREE
          /
-         -----------*/
+
         $("#best_corresponding_tree").click(function(e) {
             $("#renderErrorMessage").empty();
             var mode = $("#mode-buttons .active").attr('id');
@@ -762,7 +766,7 @@
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
                 }
             }
-        });
+        });-----------*/
 
         /*------
          /

@@ -63,6 +63,7 @@ TreeCompare = (function() {
         loadedCallback: function() {},
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
+        enableRerootFixedButtons: false,
         enableFisheyeZoom: false,
         zoomMode: "traditional", //semantic, traditional
         fitTree: "scale", //none, scale
@@ -119,6 +120,7 @@ TreeCompare = (function() {
         settings.loadedCallback = (!(settingsIn.loadedCallback === undefined)) ? settingsIn.loadedCallback : settings.loadedCallback;
         settings.internalLabels = (!(settingsIn.internalLabels === undefined)) ? settingsIn.internalLabels : settings.internalLabels;
         settings.enableDownloadButtons = (!(settingsIn.enableDownloadButtons === undefined)) ? settingsIn.enableDownloadButtons : settings.enableDownloadButtons;
+        settings.enableRerootFixedButtons = (!(settingsIn.enableRerootFixedButtons === undefined)) ? settingsIn.enableRerootFixedButtons : settings.enableRerootFixedButtons;
         settings.enableFisheyeZoom = (!(settingsIn.enableFisheyeZoom === undefined)) ? settingsIn.enableFisheyeZoom : settings.enableFisheyeZoom;
         settings.zoomMode = (!(settingsIn.zoomMode === undefined)) ? settingsIn.zoomMode : settings.zoomMode;
         settings.fitTree = (!(settingsIn.fitTree === undefined)) ? settingsIn.fitTree : settings.fitTree;
@@ -450,6 +452,7 @@ TreeCompare = (function() {
         if (d.children || d._children) {
             var leaves = [];
             var children = getChildren(d);
+            //console.log(children);
             for (var i = 0; i < children.length; i++) {
                 leaves = leaves.concat(getChildLeaves(children[i]));
             }
@@ -554,11 +557,17 @@ TreeCompare = (function() {
      /    EXTERNAL: Function to compute the best corresponding tree
      /
      ---------------*/
-    function computeBestCorrespondingTree(){
-
-        var tree = trees[trees.length-2];
-        var comparedTree = trees[trees.length-1];
+    function computeBestCorrespondingTree(canvasId){
         var isCompared = true;
+
+        if (canvasId.search("2")!==-1){
+            var tree = trees[trees.length-2];
+            var comparedTree = trees[trees.length-1];
+        }else{
+            var tree = trees[trees.length-1];
+            var comparedTree = trees[trees.length-2];
+        }
+
 
 
         function new_node(d) { // private method
@@ -640,7 +649,7 @@ TreeCompare = (function() {
                 }
                 --p.children.length;
             }
-            console.log(itree);
+            console.log(new_root);
             try{
                 postorderTraverse(new_root, function(d) {
                     //d.bcnhighlight = null;
@@ -793,13 +802,14 @@ TreeCompare = (function() {
         //console.log(compareScore);
 
         var i = compareScore.indexOf(Math.max.apply(Math, compareScore));
-        //console.log(compareNode[i]);
+        console.log(compareNode[i]);
 
         postorderTraverse(tree.root, function(d) {
             try {
                 if (d.ID == compareNode[i]){
-                    console.log("The RIGHT TREE", trees.length);
+                    console.log("The RIGHT TREE", d.ID);
                     reroot(tree, d, true);
+                    tree.sort();
                     console.log("success");
                 }
             } catch (e){
@@ -1670,7 +1680,7 @@ TreeCompare = (function() {
         //wait for transition before generating download
         if (settings.enableDownloadButtons) {
             setTimeout(function() {
-                updateDownloadLinkContent(treeData.canvasId)
+                updateDownloadLinkContent(treeData.canvasId);
             }, duration);
         }
 
@@ -1822,9 +1832,34 @@ TreeCompare = (function() {
             .attr("title", "file.svg")
             .attr("href-lang", "image/svg+xml")
             .attr("href", "data:image/svg+xml;base64,\n" + btoa(html))
-            .text("Download As SVG")
+            .text("SVG")
+            .attr("class", "glyphicon glyphicon-download-alt")
             .attr("download", "PhyloIO_Tree");
         $("#downloadButtons" + canvasId + " a").css({
+            "color": "#999"
+        });
+    }
+
+    /*
+     Update the content of the SVG download link
+     */
+    function rerootFixedTree(iTreeData) {
+        var canvasId = iTreeData.canvasId;
+        $("#rerootFixedButtons" + canvasId).empty();
+        d3.select("#rerootFixedButtons" + canvasId).append("button")
+            .attr("class","btn btn-primary")
+            .attr("title", "reroot keeping left tree fixed")
+            .text("Reroot ")
+            .attr("download", "PhyloIO_Tree")
+            .style("position","relative")
+            //.on("click",computeBestCorrespondingTree(canvasId))
+            .style("left",100)
+            .append("span").attr("class", function(canvasId){
+            if (canvasId.search("2")!==-1){
+                return "glyphicon glyphicon-circle-arrow-left"
+            }
+        });
+        $("#rerootFixedButtons" + canvasId + " a").css({
             "color": "#999"
         });
     }
@@ -2034,15 +2069,72 @@ TreeCompare = (function() {
             .attr("height", height)
             .append("g");
 
+        // draws link to download svg
         if (settings.enableDownloadButtons) {
             $("#" + canvasId).append('<div id="downloadButtons' + canvasId + '"></div>');
-            $("#downloadButtons" + canvasId).css({
-                "margin-left": "2px",
-                "bottom": "5px",
-                "position": "absolute"
 
-            });
+            if (canvasId.search("1")!=-1){
+                $("#downloadButtons" + canvasId).css({
+                    "left": "2px",
+                    "bottom": "5px",
+                    "position": "absolute"
+
+                });
+            } else if(canvasId.search("2")!=-1){
+                $("#downloadButtons" + canvasId).css({
+                    "right": "2px",
+                    "bottom": "5px",
+                    "position": "absolute"
+
+                });
+
+            }
+
         }
+
+        // draws buttons to reroot one tree and not the other
+        if (settings.enableRerootFixedButtons) {
+            $("#" + canvasId).append('<div id="rerootFixedButtons' + canvasId + '"></div>');
+            var rerootButton = d3.select("#rerootFixedButtons" + canvasId).append("button")
+                .attr("class","btn btn-primary")
+                .attr("title", "reroot keeping opposite tree fixed");
+
+
+            if (canvasId.search("1")!=-1){
+                $("#rerootFixedButtons" + canvasId).css({
+                    "right": "2px",
+                    "bottom": "5px",
+                    "position": "absolute"
+
+                });
+                rerootButton.text("Reroot ")
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right");
+            } else if(canvasId.search("2")!=-1){
+                $("#rerootFixedButtons" + canvasId).css({
+                    "left": "2px",
+                    "bottom": "5px",
+                    "position": "absolute"
+
+                });
+                rerootButton.append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-left");
+                $(".glyphicon-circle-arrow-left").after(" Reroot");
+
+                //rerootButton.after("glyphicon glyphicon-circle-arrow-left").text("reroot");
+            }
+
+            //rerootButton.onclick(computeBestCorrespondingTree(canvasId))
+        }
+
+        var timeoutIdReroot = 0;
+        $("#" + "rerootFixedButtons" + canvasId).mousedown(function() {
+            console.log(canvasId);
+            //computeBestCorrespondingTree(canvasId);
+            //timeoutIdUp = setInterval(actionUp, 50);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdReroot);
+        });
 
         //set up search box and attach event handlers
         if (settings.enableSearch) {
@@ -3687,7 +3779,6 @@ TreeCompare = (function() {
         addTreeGistURL: addTreeGistURL,
         exportTree: exportTree,
         removeTree: removeTree,
-        computeBestCorrespondingTree: computeBestCorrespondingTree,
         getTrees: getTrees,
         compareTrees: compareTrees,
         changeSettings: changeSettings,
