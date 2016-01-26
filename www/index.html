@@ -401,6 +401,9 @@
                         </div>
                     </li>
                     <li>
+                        <a href="#" id="best_corresponding_tree"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> BCT</a>
+                    </li>
+                    <li>
                         <a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
                     </li>
                     <li>
@@ -438,13 +441,15 @@
             var div_footer = $("#footer_div");
             var divdiv = $("#sidebar-wrapper-wrapper");
             var divwindow = $(window);
-            divdiv.height(divwindow.height()-div_footer.height()+50);
+            divdiv.height(divwindow.height()-div_footer.height()+100);
             div_footer.width(divdiv.width());
 
         })();
 
         var totalTrees = 0;
         var addingTree = false;
+
+
 
 
         var spinnerOpts = {
@@ -513,6 +518,12 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
+
+        /*
+        /
+        /    LOAD PAGE FROM GIST
+        /
+        */
         if (gistID.length === 2){ //view mode
 
             $("#compare-btn").removeClass("active");
@@ -558,13 +569,19 @@
             $("#newickIn1").val(tree1.nwk);
             $("#newickIn2").val(tree2.nwk);
 
-        }
+        } //end of gist id part
 
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
 
+        /*
+         /
+         /    VIEW MODE: active windows in sidebar
+         /
+         */
+        $("#best_corresponding_tree").hide();
         $("#view-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickInSingle").val('');
@@ -574,6 +591,7 @@
             $(".compareIn").css({
                 "display": "none"
             });
+            $("#best_corresponding_tree").hide();
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
@@ -583,6 +601,11 @@
             $("#renderErrorMessage").empty();
         });
 
+        /*
+         /
+         /    COMPARE MODE: active windows in sidebar
+         /
+         */
         $("#compare-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickIn1").val('');
@@ -599,9 +622,15 @@
             $(".compareIn").css({
                 "display": "block"
             });
+            $("#best_corresponding_tree").show();
             $("#renderErrorMessage").empty();
         });
 
+        /*------------
+        /
+        /    COLLAPSING BY LEVEL BUTTON
+        /
+        ------------*/
         $("#collapseInc").click(function(e) {
             var amountText = $("#collapseAmount").html();
             var amount = 0;
@@ -635,6 +664,11 @@
             treecomp.changeAutoCollapseDepth(amount);
         });
 
+        /*------
+        /
+        /    RENDER BUTTON
+        /
+        ------*/
         $("#renderButton").click(function(e) {
             $("#renderErrorMessage").empty();
             var mode = $("#mode-buttons .active").attr('id');
@@ -687,6 +721,11 @@
         });
 
 
+        /*------
+         /
+         /    SETTINGS
+         /
+         ------*/
         var settingsShown = false;
 
         $("#settings").click(function(e) {
@@ -703,8 +742,33 @@
             }
         });
 
-        //var exportShown = false;
+        /*-----------
+         /
+         /    FIND THE BEST CORRESPONDING TREE
+         /
+         -----------*/
+        $("#best_corresponding_tree").click(function(e) {
+            $("#renderErrorMessage").empty();
+            var mode = $("#mode-buttons .active").attr('id');
+            if (mode === "compare-btn") {
+                try {
+                    var mode = $("#mode-buttons .active").attr('id');
+                    treecomp.computeBestCorrespondingTree();
+                    //console.log(bestTree);
+                    //$("#exportURLInSingle").attr('href', exportURLGist);
+                    //$("#exportURLInSingle").html(exportURLGist);
+                    //$('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                }
+            }
+        });
 
+        /*------
+         /
+         /    SHARE BUTTON
+         /
+         ------*/
         $("#export").click(function(e) {
             console.log("where");
             var mode = $("#mode-buttons .active").attr('id');

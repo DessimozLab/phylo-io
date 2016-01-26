@@ -1,4 +1,4 @@
-    TreeCompare = (function() {
+TreeCompare = (function() {
 
     var trees = [];
     var backupRoot = [];
@@ -223,12 +223,11 @@
         }
 
         try {// catch error if input is in NHX format
-            if (tokens.indexOf("[")!=-1 || tokens.indexOf("]")!=-1) throw "empty";
+            if (s.indexOf("&&NHX")!=-1) throw "empty"; // TODO:change this to &&NHX and not []
         } catch (err) {
             throw "NHX";
         }
         //TODO: find a more sophisticated way to test for newick format
-
 
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];
@@ -248,6 +247,8 @@
                 case '['://TODO: input NHX format
                     break;
                 case ']':
+                    var x = tokens[i - 1];
+                    tree.name = x;
                     break;
                 case ')': // optional name next
                     tree = ancestors.pop();
@@ -260,6 +261,7 @@
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
                         tree.name = tree_meta[0];
+                        tree.length = 0.1; // this is used in the case the tree does not have any branch values
                         if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
                         }else{
@@ -547,6 +549,268 @@
         }
     }
 
+    /*---------------
+     /
+     /    EXTERNAL: Function to compute the best corresponding tree
+     /
+     ---------------*/
+    function computeBestCorrespondingTree(){
+
+        var tree = trees[trees.length-2];
+        var comparedTree = trees[trees.length-1];
+        var isCompared = true;
+
+
+        function new_node(d) { // private method
+            return {parent:null, children:[], name:"", ID:makeId("node_"), length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+        }
+
+        function reroot(itree, node, iFinalView)
+        {
+
+            var load = false;
+
+            if (isCompared) {
+                load = true;
+            }
+            var root = itree.root;
+
+            if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
+                backupRoot=root;
+                manualReroot=true;
+            } else {
+                root = backupRoot;
+            }
+
+
+
+            var i, d, tmp;
+            var p, q, r, s, new_root;
+            if (node == root) return root;
+            var dist = node.length/2;
+            tmp = node.length;
+
+
+            /* p: the central multi-parent node
+             * q: the new parent, previous a child of p
+             * r: old parent
+             * i: previous position of q in p
+             * d: previous distance p->d
+             */
+            q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+            //console.log(q);
+            q.children[0] = node; //new root
+            q.children[0].length = dist;
+            p = node.parent;
+            q.children[0].parent = q;
+            for (i = 0; i < p.children.length; ++i)
+                if (p.children[i] == node) break;
+            q.children[1] = p;
+            d = p.length;
+            p.length = tmp - dist;
+            r = p.parent;
+            p.parent = q;
+
+
+            while (r != null) {
+                s = r.parent; /* store r's parent */
+                p.children[i] = r; /* change r to p's children */
+                for (i = 0; i < r.children.length; ++i) /* update i */
+                    if (r.children[i] == p) break;
+                r.parent = p; /* update r's parent */
+                tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                q = p; p = r; r = s; /* update p, q and r */
+                if(isCompared) { //ensures that only partially the BCNs are recomputed
+                    q.elementBCN = null;
+                }
+            }
+
+            /* now p is the root node */
+            if (p.children.length == 2) { /* remove p and link the other child of p to q */
+                r = p.children[1 - i]; /* get the other child */
+                for (i = 0; i < q.children.length; ++i) /* the position of p in q */
+                    if (q.children[i] == p) break;
+                r.length += p.length;
+                r.parent = q;
+                q.children[i] = r; /* link r to q */
+            } else { /* remove one child in p */
+                for (j = k = 0; j < p.children.length; ++j) {
+                    p.children[k] = p.children[j];
+                    if (j != i) ++k;
+                }
+                --p.children.length;
+            }
+            console.log(itree);
+            try{
+                postorderTraverse(new_root, function(d) {
+                    //d.bcnhighlight = null;
+                    //d.highlight = 0;
+                    //d.clickedHighlight = null;
+                    d.leaves = getChildLeaves(d);
+                    //console.log(d.leaves);
+                },false);
+            } catch (e) {
+                console.log("Didn't work");
+            }
+
+
+
+            itree.root = new_root;
+            itree.data.root = itree.root; //create clickEvent that is given to update function
+
+            if (isCompared){
+                postRerootClean(itree.root, iFinalView);
+            }
+
+
+            //console.log(itree.root);
+
+            //return itree.root;
+
+        }
+
+        function postRerootClean(root,iFinalView) {
+            //highlightedNodes = [];
+
+            //get the two trees that are compared
+            //console.log("DA SIND WIR JETXT");
+
+            function getSimilarity(itree1, itree2) {
+
+                for (var i = 0; i < itree1.leaves.length; i++) {
+                    for (var j = 0; j < itree2.leaves.length; j++) {
+                        if (itree1.leaves[i].name === itree2.leaves[j].name) {
+                            itree1.leaves[i].correspondingLeaf = itree2.leaves[j];
+                            itree2.leaves[j].correspondingLeaf = itree1.leaves[i];
+                        }
+                    }
+                }
+
+                postorderTraverse(itree1, function(d) {
+                    d.deepLeafList = createDeepLeafList(d);
+                },false);
+                postorderTraverse(itree2, function(d) {
+                    d.deepLeafList = createDeepLeafList(d);
+                },false);
+
+                //update(d, tree.data);
+                //update(otherTreeData.root, otherTreeData);
+
+                return getElementS(itree1, itree2);
+            }
+
+            var tree1 = tree;
+            var tree2 = comparedTree;
+
+
+            var t0 = performance.now();
+            trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
+            trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
+            var t1 = performance.now();
+            //console.log("Call getSimilarity took " + (t1 - t0) + " milliseconds.");
+
+
+            //update coloring when rerooted
+
+            function updateVisibleBCNs(itree1, itree2, recalculate){
+
+                if (recalculate === undefined) {
+                    recalculate = true;
+                }
+
+                function getAllBCNs(d, t) {
+                    var children = d.children ? d.children : [];
+                    //var children = getChildren(d);
+                    if (children.length > 0) {
+                        for (var a = 0; a < children.length; a++) {
+                            getAllBCNs(children[a], t);
+                        }
+                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                            BCN(d, t);
+                        }
+                        return;
+                    } else {
+                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                            BCN(d, t);
+                        }
+                        return;
+                    }
+                }
+                getAllBCNs(itree1, itree2);
+            }
+
+            var t0 = performance.now();
+            updateVisibleBCNs(tree1.root, tree2.root, false);
+            //console.log(tree2.name);
+            if(iFinalView){
+
+                updateVisibleBCNs(tree2.root, tree1.root, true);
+                update(tree2.root, tree2.data);
+                update(tree1.root, tree1.data);
+            }
+            //
+            var t1 = performance.now();
+            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.")
+            //if(tree1.name == name){
+            //    update(tree2.root, tree2.data);
+            //}
+            //if(tree2.name == name){
+            //    update(tree1.root, tree1.data);
+            //}
+
+
+
+        }
+
+        function getTreeCompareMetric(itree){
+            BCN_score = 0;
+            NUM_nodes = 0;
+            postorderTraverse(itree.root, function(d) {
+                //BCN_score = BCN_score + getElementS(d,otherTree.root);
+                BCN_score = BCN_score + d.elementS;
+                NUM_nodes++;
+            },false);
+            //console.log(NUM_nodes);
+            //console.log(BCN_score/NUM_nodes);
+            return (BCN_score/NUM_nodes);
+        }
+        //getTreeCompareMetric(tree);
+        var compareScore  = [];
+        var compareNode = [];
+
+        // post order traverse through each node and reroot and compute elementS for the new node
+        postorderTraverse(tree.root, function(d) {
+            try {
+                //console.log(d);
+                reroot(tree, d, false);
+                compareScore.push(getTreeCompareMetric(tree));
+                compareNode.push(d.ID);
+                //console.log(getTreeCompareMetric(tree));
+            } catch (e){
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Zeit Error</div>')).hide().slideDown(300);
+            }
+        },false);
+        //console.log(compareScore);
+
+        var i = compareScore.indexOf(Math.max.apply(Math, compareScore));
+        //console.log(compareNode[i]);
+
+        postorderTraverse(tree.root, function(d) {
+            try {
+                if (d.ID == compareNode[i]){
+                    console.log("The RIGHT TREE", trees.length);
+                    reroot(tree, d, true);
+                    console.log("success");
+                }
+            } catch (e){
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
+            }
+        },false);
+
+
+
+
+    }
 
     /*---------------
     /
@@ -962,6 +1226,7 @@
                 if (d.bcnhighlight) {
                     return d.bcnhighlight;
                 } else if (d[currentS] && d.highlight < 1) {
+                    console.log(d[currentS]);
                     return colorScale(d[currentS])
                 } else {
                     return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black";
@@ -1299,7 +1564,7 @@
                     if (type === "bg") {
                         return (parseInt(settings.lineThickness) + 2);
                     } else if (type === "front") {
-                        return settings.lineThickness
+                        return settings.lineThickness;
                     }
                 })
                 .style("stroke", function(d) {
@@ -1366,7 +1631,7 @@
                     if (type === "bg") {
                         return (parseInt(settings.lineThickness) + 2);
                     } else if (type === "front") {
-                        return settings.lineThickness
+                        return settings.lineThickness;
                     }
                 })
                 .attr("d", function(d) {
@@ -2860,7 +3125,7 @@
                         //d.highlight = 0;
                         //d.clickedHighlight = null;
                         d.leaves = getChildLeaves(d);
-                    });
+                    },false);
 
                     tree.root = new_root;
                     tree.data.root = tree.root; //create clickEvent that is given to update function
@@ -2873,10 +3138,10 @@
                         //console.log("here");
                         settings.loadedCallback();
                     }
-                    
+
                     update(tree.root, tree.data);
 
-                }, 10);
+                }, 2);
 
             }
 
@@ -2898,10 +3163,10 @@
 
                     postorderTraverse(tree1, function(d) {
                         d.deepLeafList = createDeepLeafList(d);
-                    });
+                    },false);
                     postorderTraverse(tree2, function(d) {
                         d.deepLeafList = createDeepLeafList(d);
-                    });
+                    },false);
 
                     //update(d, tree.data);
                     //update(otherTreeData.root, otherTreeData);
@@ -2921,6 +3186,7 @@
                     if (recalculate === undefined) {
                         recalculate = true;
                     }
+                    var i = 0;
 
                     function getAllBCNs(d, t) {
                         var children = d.children ? d.children : [];
@@ -2940,10 +3206,13 @@
                             return;
                         }
                     }
+                    console.log(i);
                     getAllBCNs(tree1, tree2);
                 }
 
+                //console.log(tree1.name);
                 updateVisibleBCNs(tree1.root, tree2.root, false);
+                //console.log(tree2.name);
                 updateVisibleBCNs(tree2.root, tree1.root, true);
                 if(tree1.name == name){
                     update(tree2.root, tree2.data);
@@ -3418,6 +3687,7 @@
         addTreeGistURL: addTreeGistURL,
         exportTree: exportTree,
         removeTree: removeTree,
+        computeBestCorrespondingTree: computeBestCorrespondingTree,
         getTrees: getTrees,
         compareTrees: compareTrees,
         changeSettings: changeSettings,
