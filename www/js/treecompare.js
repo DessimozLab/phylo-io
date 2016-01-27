@@ -452,7 +452,6 @@ TreeCompare = (function() {
         if (d.children || d._children) {
             var leaves = [];
             var children = getChildren(d);
-            //console.log(children);
             for (var i = 0; i < children.length; i++) {
                 leaves = leaves.concat(getChildLeaves(children[i]));
             }
@@ -538,6 +537,7 @@ TreeCompare = (function() {
                 children = d.children;
             }
         }
+        //console.log(children);
 
         if (children.length > 0) {
             for (var i = 0; i < children.length; i++) {
@@ -560,10 +560,13 @@ TreeCompare = (function() {
     function computeBestCorrespondingTree(canvasId){
         var isCompared = true;
 
-        if (canvasId.search("2")!==-1){
+
+        if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
+            console.log(canvasId);
             var tree = trees[trees.length-2];
             var comparedTree = trees[trees.length-1];
         }else{
+            console.log(canvasId);
             var tree = trees[trees.length-1];
             var comparedTree = trees[trees.length-2];
         }
@@ -571,7 +574,7 @@ TreeCompare = (function() {
 
 
         function new_node(d) { // private method
-            return {parent:null, children:[], name:"", ID:makeId("node_"), length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+            return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
         }
 
         function reroot(itree, node, iFinalView)
@@ -608,6 +611,7 @@ TreeCompare = (function() {
              */
             q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
             //console.log(q);
+            q.ID = itree.root.ID;
             q.children[0] = node; //new root
             q.children[0].length = dist;
             p = node.parent;
@@ -649,29 +653,29 @@ TreeCompare = (function() {
                 }
                 --p.children.length;
             }
-            console.log(new_root);
+
+
             try{
                 postorderTraverse(new_root, function(d) {
                     //d.bcnhighlight = null;
                     //d.highlight = 0;
                     //d.clickedHighlight = null;
+
                     d.leaves = getChildLeaves(d);
                     //console.log(d.leaves);
-                },false);
+                },true);
             } catch (e) {
-                console.log("Didn't work");
+                console.log("Didn't work", e);
             }
-
-
 
             itree.root = new_root;
             itree.data.root = itree.root; //create clickEvent that is given to update function
-
+            //console.log(itree);
             if (isCompared){
                 postRerootClean(itree.root, iFinalView);
             }
 
-
+            //update(itree.root, itree.data);
             //console.log(itree.root);
 
             //return itree.root;
@@ -713,8 +717,8 @@ TreeCompare = (function() {
 
 
             var t0 = performance.now();
-            trees[trees.length-2].similarities = getSimilarity(tree1.root, root);
-            trees[trees.length-1].similarities = getSimilarity(tree2.root, root);
+            tree1.similarities = getSimilarity(tree1.root, root);
+            tree2.similarities = getSimilarity(tree2.root, root);
             var t1 = performance.now();
             //console.log("Call getSimilarity took " + (t1 - t0) + " milliseconds.");
 
@@ -752,7 +756,7 @@ TreeCompare = (function() {
             updateVisibleBCNs(tree1.root, tree2.root, false);
             //console.log(tree2.name);
             if(iFinalView){
-
+                console.log(tree1);
                 updateVisibleBCNs(tree2.root, tree1.root, true);
                 update(tree2.root, tree2.data);
                 update(tree1.root, tree1.data);
@@ -788,35 +792,48 @@ TreeCompare = (function() {
         var compareNode = [];
 
         // post order traverse through each node and reroot and compute elementS for the new node
-        postorderTraverse(tree.root, function(d) {
+
+        var copiedTree = jQuery.extend({},tree);
+        postorderTraverse(copiedTree.root, function(d) {
             try {
-                //console.log(d);
-                reroot(tree, d, false);
-                compareScore.push(getTreeCompareMetric(tree));
-                compareNode.push(d.ID);
+                console.log(copiedTree.root.ID);
+                console.log(d.ID);
+                if(copiedTree.root.ID !== d.ID){
+                    console.log(d);
+                    reroot(copiedTree, d, false);
+                    compareScore.push(getTreeCompareMetric(copiedTree));
+                    compareNode.push(d.ID);
+                    console.log(compareScore);
+                }
+
                 //console.log(getTreeCompareMetric(tree));
             } catch (e){
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Zeit Error</div>')).hide().slideDown(300);
             }
         },false);
-        //console.log(compareScore);
+
 
         var i = compareScore.indexOf(Math.max.apply(Math, compareScore));
+        console.log(i);
         console.log(compareNode[i]);
 
         postorderTraverse(tree.root, function(d) {
             try {
                 if (d.ID == compareNode[i]){
-                    console.log("The RIGHT TREE", d.ID);
+                    //console.log("The RIGHT TREE", d.ID);
+                    compareScore.length  = 0;
+                    compareNode.length = 0;
                     reroot(tree, d, true);
-                    tree.sort();
+                    //tree.sort();
                     console.log("success");
+
                 }
             } catch (e){
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
             }
         },false);
 
+        console.log(compareNode);
 
 
 
@@ -1828,7 +1845,7 @@ TreeCompare = (function() {
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .node().outerHTML;
-        d3.select("#downloadButtons" + canvasId).append("a")
+        var downloadButton = d3.select("#downloadButtons" + canvasId).append("a")
             .attr("title", "file.svg")
             .attr("href-lang", "image/svg+xml")
             .attr("href", "data:image/svg+xml;base64,\n" + btoa(html))
@@ -1840,29 +1857,6 @@ TreeCompare = (function() {
         });
     }
 
-    /*
-     Update the content of the SVG download link
-     */
-    function rerootFixedTree(iTreeData) {
-        var canvasId = iTreeData.canvasId;
-        $("#rerootFixedButtons" + canvasId).empty();
-        d3.select("#rerootFixedButtons" + canvasId).append("button")
-            .attr("class","btn btn-primary")
-            .attr("title", "reroot keeping left tree fixed")
-            .text("Reroot ")
-            .attr("download", "PhyloIO_Tree")
-            .style("position","relative")
-            //.on("click",computeBestCorrespondingTree(canvasId))
-            .style("left",100)
-            .append("span").attr("class", function(canvasId){
-            if (canvasId.search("2")!==-1){
-                return "glyphicon glyphicon-circle-arrow-left"
-            }
-        });
-        $("#rerootFixedButtons" + canvasId + " a").css({
-            "color": "#999"
-        });
-    }
 
     /*
         Helper function to see if a string starts with another string (used in the real time search)
@@ -2075,14 +2069,14 @@ TreeCompare = (function() {
 
             if (canvasId.search("1")!=-1){
                 $("#downloadButtons" + canvasId).css({
-                    "left": "2px",
+                    "left": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
                 });
             } else if(canvasId.search("2")!=-1){
                 $("#downloadButtons" + canvasId).css({
-                    "right": "2px",
+                    "right": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
@@ -2102,7 +2096,7 @@ TreeCompare = (function() {
 
             if (canvasId.search("1")!=-1){
                 $("#rerootFixedButtons" + canvasId).css({
-                    "right": "2px",
+                    "right": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
@@ -2112,7 +2106,7 @@ TreeCompare = (function() {
                     .attr("class","glyphicon glyphicon-circle-arrow-right");
             } else if(canvasId.search("2")!=-1){
                 $("#rerootFixedButtons" + canvasId).css({
-                    "left": "2px",
+                    "left": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
@@ -2130,7 +2124,7 @@ TreeCompare = (function() {
         var timeoutIdReroot = 0;
         $("#" + "rerootFixedButtons" + canvasId).mousedown(function() {
             console.log(canvasId);
-            //computeBestCorrespondingTree(canvasId);
+            computeBestCorrespondingTree(canvasId);
             //timeoutIdUp = setInterval(actionUp, 50);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
@@ -3218,7 +3212,7 @@ TreeCompare = (function() {
                         //d.clickedHighlight = null;
                         d.leaves = getChildLeaves(d);
                     },false);
-
+                    //new_root.leaves = getChildLeaves(new_root);
                     tree.root = new_root;
                     tree.data.root = tree.root; //create clickEvent that is given to update function
 
@@ -3298,7 +3292,6 @@ TreeCompare = (function() {
                             return;
                         }
                     }
-                    console.log(i);
                     getAllBCNs(tree1, tree2);
                 }
 
