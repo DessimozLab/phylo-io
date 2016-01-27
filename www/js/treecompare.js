@@ -678,7 +678,7 @@ TreeCompare = (function() {
             //update(itree.root, itree.data);
             //console.log(itree.root);
 
-            //return itree.root;
+            //return itree;
 
         }
 
@@ -789,19 +789,21 @@ TreeCompare = (function() {
         }
         //getTreeCompareMetric(tree);
         var compareScore  = [];
-        var compareNode = [];
+        compareScore.push(getTreeCompareMetric(tree));
+        var compareNode =[];
+        compareNode.push(tree.root.ID);
 
         // post order traverse through each node and reroot and compute elementS for the new node
 
-        var copiedTree = jQuery.extend({},tree);
-        postorderTraverse(copiedTree.root, function(d) {
+        //var copiedTree = jQuery.extend({},tree);
+        postorderTraverse(tree.root, function(d) {
             try {
-                console.log(copiedTree.root.ID);
-                console.log(d.ID);
-                if(copiedTree.root.ID !== d.ID){
-                    console.log(d);
-                    reroot(copiedTree, d, false);
-                    compareScore.push(getTreeCompareMetric(copiedTree));
+                //console.log(copiedTree.root.ID);
+                //console.log(d.ID);
+                if(tree.root.ID !== d.ID){
+                    //console.log(d);
+                    reroot(tree, d, false);
+                    compareScore.push(getTreeCompareMetric(tree));
                     compareNode.push(d.ID);
                     console.log(compareScore);
                 }
@@ -814,12 +816,12 @@ TreeCompare = (function() {
 
 
         var i = compareScore.indexOf(Math.max.apply(Math, compareScore));
-        console.log(i);
+        console.log(getTreeCompareMetric(tree));
         console.log(compareNode[i]);
 
         postorderTraverse(tree.root, function(d) {
             try {
-                if (d.ID == compareNode[i]){
+                if (d.ID == compareNode[i] && d.ID !== tree.root.ID){
                     //console.log("The RIGHT TREE", d.ID);
                     compareScore.length  = 0;
                     compareNode.length = 0;
@@ -832,8 +834,9 @@ TreeCompare = (function() {
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
             }
         },false);
+        console.log(getTreeCompareMetric(tree));
 
-        console.log(compareNode);
+        //console.log(compareNode);
 
 
 
