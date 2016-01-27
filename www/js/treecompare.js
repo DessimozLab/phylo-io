@@ -562,15 +562,14 @@ TreeCompare = (function() {
 
 
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
-            console.log(canvasId);
             var tree = trees[trees.length-2];
             var comparedTree = trees[trees.length-1];
+
         }else{
-            console.log(canvasId);
             var tree = trees[trees.length-1];
             var comparedTree = trees[trees.length-2];
-        }
 
+        }
 
 
         function new_node(d) { // private method
@@ -716,10 +715,10 @@ TreeCompare = (function() {
             var tree2 = comparedTree;
 
 
-            var t0 = performance.now();
+            //var t0 = performance.now();
             tree1.similarities = getSimilarity(tree1.root, root);
             tree2.similarities = getSimilarity(tree2.root, root);
-            var t1 = performance.now();
+            //var t1 = performance.now();
             //console.log("Call getSimilarity took " + (t1 - t0) + " milliseconds.");
 
 
@@ -762,7 +761,7 @@ TreeCompare = (function() {
                 update(tree1.root, tree1.data);
             }
             //
-            var t1 = performance.now();
+            //var t1 = performance.now();
             //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.")
             //if(tree1.name == name){
             //    update(tree2.root, tree2.data);
@@ -794,47 +793,65 @@ TreeCompare = (function() {
         compareNode.push(tree.root.ID);
 
         // post order traverse through each node and reroot and compute elementS for the new node
-
-        //var copiedTree = jQuery.extend({},tree);
-        postorderTraverse(tree.root, function(d) {
-            try {
-                //console.log(copiedTree.root.ID);
-                //console.log(d.ID);
+        if (compareScore < 1) { // if tree is perfect between the two than don't do it
+            postorderTraverse(tree.root, function(d) {
                 if(tree.root.ID !== d.ID){
-                    //console.log(d);
+                    //console.log(d.name);
                     reroot(tree, d, false);
                     compareScore.push(getTreeCompareMetric(tree));
                     compareNode.push(d.ID);
-                    console.log(compareScore);
+                    if(compareScore[compareScore.length-1]==1){
+                        console.log(compareNode);
+                    }
                 }
+                //idx.push(d.name);
+            },false);
 
-                //console.log(getTreeCompareMetric(tree));
-            } catch (e){
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Zeit Error</div>')).hide().slideDown(300);
+            var iMaxScore = compareScore.indexOf(Math.max.apply(Math, compareScore));
+            //console.log(compareScore);
+            //console.log(iMaxScore);
+            //console.log(compareScore[iMaxScore]);
+            //console.log(compareNode[iMaxScore]);
+
+            if (iMaxScore !== 0){
+                postorderTraverse(tree.root, function(d) {
+                    try {
+                        if (d.children){
+                            if (d.ID == compareNode[iMaxScore-1]){
+                                //console.log(compareNode[i]);
+                                //console.log(compareScore[i]);
+                                //console.log("The RIGHT TREE", d.ID);
+                                compareScore.length  = 0;
+                                compareNode.length = 0;
+                                reroot(tree, d, true);
+                                //tree.sort();
+                                //console.log("success");
+
+                            }
+                        } else {
+                            if (d.ID == compareNode[iMaxScore]) {
+                                //console.log(compareNode[i]);
+                                //console.log(compareScore[i]);
+                                //console.log("The RIGHT TREE", d.ID);
+                                compareScore.length = 0;
+                                compareNode.length = 0;
+                                reroot(tree, d, true);
+                                //tree.sort();
+                                //console.log("success");
+                            }
+                        }
+
+                    } catch (e){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
+                    }
+                },false);
+            }else{
+                update(tree, tree.data);
             }
-        },false);
 
+            //console.log(getTreeCompareMetric(tree));
+        }
 
-        var i = compareScore.indexOf(Math.max.apply(Math, compareScore));
-        console.log(getTreeCompareMetric(tree));
-        console.log(compareNode[i]);
-
-        postorderTraverse(tree.root, function(d) {
-            try {
-                if (d.ID == compareNode[i] && d.ID !== tree.root.ID){
-                    //console.log("The RIGHT TREE", d.ID);
-                    compareScore.length  = 0;
-                    compareNode.length = 0;
-                    reroot(tree, d, true);
-                    //tree.sort();
-                    console.log("success");
-
-                }
-            } catch (e){
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
-            }
-        },false);
-        console.log(getTreeCompareMetric(tree));
 
         //console.log(compareNode);
 
@@ -2126,8 +2143,15 @@ TreeCompare = (function() {
 
         var timeoutIdReroot = 0;
         $("#" + "rerootFixedButtons" + canvasId).mousedown(function() {
-            console.log(canvasId);
-            computeBestCorrespondingTree(canvasId);
+            var load = true;
+            settings.loadingCallback();
+            setTimeout(function() {
+                computeBestCorrespondingTree(canvasId);
+                if (load) {
+                    //console.log("here");
+                    settings.loadedCallback();
+                }
+            },2);
             //timeoutIdUp = setInterval(actionUp, 50);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
