@@ -552,6 +552,297 @@ TreeCompare = (function() {
         }
     }
 
+    function findBestCorrespondingTree(canvasId){
+        var isCompared = true;
+
+
+        if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
+            var tree = trees[trees.length-2];
+            var fixedTree = trees[trees.length-1];
+
+        }else{
+            var tree = trees[trees.length-1];
+            var fixedTree = trees[trees.length-2];
+
+        }
+
+        function new_node(d) { // private method
+            return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+        }
+
+        function reroot(itree, node, iFinalView)
+        {
+
+            var load = false;
+
+            if (isCompared) {
+                load = true;
+            }
+            var root = itree.root;
+
+            if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
+                backupRoot=root;
+                manualReroot=true;
+            } else {
+                root = backupRoot;
+            }
+
+
+
+            var i, d, tmp;
+            var p, q, r, s, new_root;
+            if (node == root) return root;
+            var dist = node.length/2;
+            tmp = node.length;
+
+
+            /* p: the central multi-parent node
+             * q: the new parent, previous a child of p
+             * r: old parent
+             * i: previous position of q in p
+             * d: previous distance p->d
+             */
+            q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+            //console.log(q);
+            q.ID = itree.root.ID;
+            q.children[0] = node; //new root
+            q.children[0].length = dist;
+            p = node.parent;
+            q.children[0].parent = q;
+            for (i = 0; i < p.children.length; ++i)
+                if (p.children[i] == node) break;
+            q.children[1] = p;
+            d = p.length;
+            p.length = tmp - dist;
+            r = p.parent;
+            p.parent = q;
+
+
+            while (r != null) {
+                s = r.parent; /* store r's parent */
+                p.children[i] = r; /* change r to p's children */
+                for (i = 0; i < r.children.length; ++i) /* update i */
+                    if (r.children[i] == p) break;
+                r.parent = p; /* update r's parent */
+                tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                q = p; p = r; r = s; /* update p, q and r */
+                if(isCompared) { //ensures that only partially the BCNs are recomputed
+                    q.elementBCN = null;
+                }
+            }
+
+            /* now p is the root node */
+            if (p.children.length == 2) { /* remove p and link the other child of p to q */
+                r = p.children[1 - i]; /* get the other child */
+                for (i = 0; i < q.children.length; ++i) /* the position of p in q */
+                    if (q.children[i] == p) break;
+                r.length += p.length;
+                r.parent = q;
+                q.children[i] = r; /* link r to q */
+            } else { /* remove one child in p */
+                for (j = k = 0; j < p.children.length; ++j) {
+                    p.children[k] = p.children[j];
+                    if (j != i) ++k;
+                }
+                --p.children.length;
+            }
+
+
+            try{
+                postorderTraverse(new_root, function(d) {
+                    //d.bcnhighlight = null;
+                    //d.highlight = 0;
+                    //d.clickedHighlight = null;
+
+                    d.leaves = getChildLeaves(d);
+                    //console.log(d.leaves);
+                },true);
+            } catch (e) {
+                console.log("Didn't work", e);
+            }
+
+            itree.root = new_root;
+            itree.data.root = itree.root; //create clickEvent that is given to update function
+            //console.log(itree);
+            if (isCompared){
+                postRerootClean(itree.root, iFinalView);
+            }
+
+            //update(itree.root, itree.data);
+            //console.log(itree.root);
+
+            //return itree;
+
+        }
+
+        function postRerootClean(root,iFinalView) {
+            //highlightedNodes = [];
+
+            //get the two trees that are compared
+            //console.log("DA SIND WIR JETXT");
+
+            function getSimilarity(itree1, itree2) {
+
+                for (var i = 0; i < itree1.leaves.length; i++) {
+                    for (var j = 0; j < itree2.leaves.length; j++) {
+                        if (itree1.leaves[i].name === itree2.leaves[j].name) {
+                            itree1.leaves[i].correspondingLeaf = itree2.leaves[j];
+                            itree2.leaves[j].correspondingLeaf = itree1.leaves[i];
+                        }
+                    }
+                }
+
+                postorderTraverse(itree1, function(d) {
+                    d.deepLeafList = createDeepLeafList(d);
+                },false);
+                postorderTraverse(itree2, function(d) {
+                    d.deepLeafList = createDeepLeafList(d);
+                },false);
+
+                return getElementS(itree1, itree2);
+            }
+
+            var tree1 = tree;
+            var tree2 = fixedTree;
+
+
+            //var t0 = performance.now();
+            tree1.similarities = getSimilarity(tree1.root, root);
+            tree2.similarities = getSimilarity(tree2.root, root);
+            //var t1 = performance.now();
+            //console.log("Call getSimilarity took " + (t1 - t0) + " milliseconds.");
+
+
+            //update coloring when rerooted
+
+            function updateVisibleBCNs(itree1, itree2, recalculate){
+
+                if (recalculate === undefined) {
+                    recalculate = true;
+                }
+
+                function getAllBCNs(d, t) {
+                    var children = d.children ? d.children : [];
+                    //var children = getChildren(d);
+                    if (children.length > 0) {
+                        for (var a = 0; a < children.length; a++) {
+                            getAllBCNs(children[a], t);
+                        }
+                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                            BCN(d, t);
+                        }
+                        return;
+                    } else {
+                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
+                            BCN(d, t);
+                        }
+                        return;
+                    }
+                }
+                getAllBCNs(itree1, itree2);
+            }
+
+            var t0 = performance.now();
+            updateVisibleBCNs(tree1.root, tree2.root, false);
+            if(iFinalView){
+                updateVisibleBCNs(tree2.root, tree1.root, true);
+                update(tree2.root, tree2.data);
+                update(tree1.root, tree1.data);
+            }
+            //
+            //var t1 = performance.now();
+            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.")
+            //if(tree1.name == name){
+            //    update(tree2.root, tree2.data);
+            //}
+            //if(tree2.name == name){
+            //    update(tree1.root, tree1.data);
+            //}
+
+
+
+        }
+
+        function getBestCorrespondingNodeID(tree,fixedTree){
+            var bestNODE = [];
+            function getLeavesIDs(treeLeaves,corresponding) {
+                var correspondingID = [];
+                if (corresponding){
+                    for (var j = 0; j < treeLeaves.length; j++){
+                        correspondingID.push(treeLeaves[j].correspondingLeaf.ID);
+                    }
+                } else {
+                    //console.log(treeLeaves);
+                    for (var j = 0; j < treeLeaves.length; j++){
+                        correspondingID.push(treeLeaves[j].ID);
+                    }
+                }
+
+
+                return correspondingID;
+            }
+
+            //var corresLeaves = []
+            for (var i = 0; i < fixedTree.root.children.length; i++){ // loop through the x possible rootings of fixed tree
+                var fixedTreeLeaves = fixedTree.root.children[i].leaves;
+                //console.log(fixedTreeLeaves);
+                var correspondingID = getLeavesIDs(fixedTreeLeaves,true).sort();
+                //console.log(correspondingID);
+                postorderTraverse(tree.root, function(d){
+                    //console.log(d);
+                    if(d.leaves.length == correspondingID.length){
+                        //console.log(d.leaves);
+                        var nodeLeafIDs = getLeavesIDs(d.leaves,false).sort();
+                        //console.log(nodeLeafIDs);
+                        //console.log(correspondingID);
+                        if (nodeLeafIDs[0]==correspondingID[0]){
+                            //console.log(d);
+                            bestNODE.push(d.ID);
+                        }
+
+                    }
+                });
+                //corresLeaves
+            }
+
+            return bestNODE;
+        }
+
+        function getTreeCompareMetric(itree){
+            BCN_score = 0;
+            NUM_nodes = 0;
+            postorderTraverse(itree.root, function(d) {
+                BCN_score = BCN_score + d.elementS;
+                NUM_nodes++;
+            },true);
+            //console.log(NUM_nodes);
+            //console.log(BCN_score/NUM_nodes);
+            return (BCN_score/NUM_nodes);
+        }
+
+
+        console.log(getTreeCompareMetric(tree));
+        var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
+        //console.log(BCN_rerooting);
+        postorderTraverse(tree.root, function(d) {
+            if (d.ID == BCN_rerooting[BCN_rerooting.length-1]) {
+                expandPathToNode(d);
+                reroot(tree, d, true);
+            }
+
+        },true);
+
+        console.log(getTreeCompareMetric(tree));
+
+
+
+        // function that finds for leaves the last common answer that they share
+        /*function shareLCA(){
+
+        }*/
+
+    }
+
     /*---------------
      /
      /    EXTERNAL: Function to compute the best corresponding tree
@@ -705,9 +996,6 @@ TreeCompare = (function() {
                     d.deepLeafList = createDeepLeafList(d);
                 },false);
 
-                //update(d, tree.data);
-                //update(otherTreeData.root, otherTreeData);
-
                 return getElementS(itree1, itree2);
             }
 
@@ -753,9 +1041,7 @@ TreeCompare = (function() {
 
             var t0 = performance.now();
             updateVisibleBCNs(tree1.root, tree2.root, false);
-            //console.log(tree2.name);
             if(iFinalView){
-                console.log(tree1);
                 updateVisibleBCNs(tree2.root, tree1.root, true);
                 update(tree2.root, tree2.data);
                 update(tree1.root, tree1.data);
@@ -778,7 +1064,6 @@ TreeCompare = (function() {
             BCN_score = 0;
             NUM_nodes = 0;
             postorderTraverse(itree.root, function(d) {
-                //BCN_score = BCN_score + getElementS(d,otherTree.root);
                 BCN_score = BCN_score + d.elementS;
                 NUM_nodes++;
             },false);
@@ -800,9 +1085,8 @@ TreeCompare = (function() {
                     reroot(tree, d, false);
                     compareScore.push(getTreeCompareMetric(tree));
                     compareNode.push(d.ID);
-                    if(compareScore[compareScore.length-1]==1){
-                        console.log(compareNode);
-                    }
+                    console.log(d.ID,compareNode[compareNode.length-1],compareScore[compareScore.length-1]);
+
                 }
                 //idx.push(d.name);
             },false);
@@ -810,14 +1094,14 @@ TreeCompare = (function() {
             var iMaxScore = compareScore.indexOf(Math.max.apply(Math, compareScore));
             //console.log(compareScore);
             //console.log(iMaxScore);
-            //console.log(compareScore[iMaxScore]);
-            //console.log(compareNode[iMaxScore]);
+            console.log(compareNode[iMaxScore],compareScore[iMaxScore]);
+            //console.log();
 
             if (iMaxScore !== 0){
                 postorderTraverse(tree.root, function(d) {
                     try {
                         if (d.children){
-                            if (d.ID == compareNode[iMaxScore-1]){
+                            if (d.ID == compareNode[iMaxScore]){
                                 //console.log(compareNode[i]);
                                 //console.log(compareScore[i]);
                                 //console.log("The RIGHT TREE", d.ID);
@@ -2146,7 +2430,8 @@ TreeCompare = (function() {
             var load = true;
             settings.loadingCallback();
             setTimeout(function() {
-                computeBestCorrespondingTree(canvasId);
+                //computeBestCorrespondingTree(canvasId);
+                findBestCorrespondingTree(canvasId);
                 if (load) {
                     //console.log("here");
                     settings.loadedCallback();
@@ -3563,6 +3848,7 @@ TreeCompare = (function() {
                             var otherTreeLeaves = otherTreeData.leaves;
                             for (var i = 0; i < leaves.length; i++) {
                                 leaves[i].correspondingLeaf.correspondingHighlight = true;
+                                //console.log(leaves[i]);
                             }
                             expandPathToNode(d[currentBCN]);
                             settings.loadingCallback();
@@ -3589,18 +3875,22 @@ TreeCompare = (function() {
                     } else {
                         d.clickedHighlight = false;
                         var index = highlightedNodes.indexOf(d);
+
                         if (index > -1) {
                             highlightedNodes.splice(index, 1);
                         }
+                        //console.log(currentBCN);
                         d[currentBCN].bcnhighlight = false;
                         var bcnid = d[currentBCN] ? d[currentBCN].id : -1;
                         var leaves = d.leaves;
                         var otherTree = comparedTree.root;
                         var otherTreeData = comparedTree.data;
                         var otherTreeLeaves = otherTreeData.leaves;
+
                         for (var i = 0; i < leaves.length; i++) {
                             leaves[i].correspondingLeaf.correspondingHighlight = false;
                         }
+
                         colorLinkNodeOver(d, false);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
