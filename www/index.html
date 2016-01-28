@@ -505,6 +505,7 @@
                 spinner.stop();
             },
             enableRerootFixedButtons: $("#rerootFixedButtons").val(),
+            enableSwapFixedButtons: $("#swapFixedButtons").val(),
             lineThickness: $("#lineThickness").val(),
             nodeSize: $("#nodeSize").val(),
             fontSize: $("#fontSize").val(),
@@ -597,8 +598,9 @@
                 "display": "block"
             });
             $("#renderErrorMessage").empty();
+
             treecomp.changeSettings({
-                enableRerootFixedButtons: false
+                enableFixedButtons: false
             })
         });
 
@@ -625,8 +627,9 @@
             });
             $("#best_corresponding_tree").show();
             $("#renderErrorMessage").empty();
+
             treecomp.changeSettings({
-                enableRerootFixedButtons: true
+                enableFixedButtons: true
             })
         });
 

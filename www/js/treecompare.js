@@ -120,7 +120,7 @@ TreeCompare = (function() {
         settings.loadedCallback = (!(settingsIn.loadedCallback === undefined)) ? settingsIn.loadedCallback : settings.loadedCallback;
         settings.internalLabels = (!(settingsIn.internalLabels === undefined)) ? settingsIn.internalLabels : settings.internalLabels;
         settings.enableDownloadButtons = (!(settingsIn.enableDownloadButtons === undefined)) ? settingsIn.enableDownloadButtons : settings.enableDownloadButtons;
-        settings.enableRerootFixedButtons = (!(settingsIn.enableRerootFixedButtons === undefined)) ? settingsIn.enableRerootFixedButtons : settings.enableRerootFixedButtons;
+        settings.enableFixedButtons = (!(settingsIn.enableFixedButtons === undefined)) ? settingsIn.enableFixedButtons : settings.enableFixedButtons;
         settings.enableFisheyeZoom = (!(settingsIn.enableFisheyeZoom === undefined)) ? settingsIn.enableFisheyeZoom : settings.enableFisheyeZoom;
         settings.zoomMode = (!(settingsIn.zoomMode === undefined)) ? settingsIn.zoomMode : settings.zoomMode;
         settings.fitTree = (!(settingsIn.fitTree === undefined)) ? settingsIn.fitTree : settings.fitTree;
@@ -845,303 +845,70 @@ TreeCompare = (function() {
 
     /*---------------
      /
-     /    EXTERNAL: Function to compute the best corresponding tree
+     /  Function to swap on nodes to optimize the visualisation between two trees
      /
      ---------------*/
-    function computeBestCorrespondingTree(canvasId){
+    function findBestCorrespondingLeafOrder(canvasId){
+
         var isCompared = true;
 
 
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
             var tree = trees[trees.length-2];
-            var comparedTree = trees[trees.length-1];
+            var fixedTree = trees[trees.length-1];
 
         }else{
             var tree = trees[trees.length-1];
-            var comparedTree = trees[trees.length-2];
+            var fixedTree = trees[trees.length-2];
 
         }
 
+        function rotate(d) {
+            if (d.children){
+                var first = d.children[0];
+                var second = d.children[1];
+                d.children[0] = second;
+                d.children[1] = first;
+            }
 
-        function new_node(d) { // private method
-            return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+            //return d;
         }
-
-        function reroot(itree, node, iFinalView)
-        {
-
-            var load = false;
-
-            if (isCompared) {
-                load = true;
-            }
-            var root = itree.root;
-
-            if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
-                backupRoot=root;
-                manualReroot=true;
-            } else {
-                root = backupRoot;
-            }
-
-
-
-            var i, d, tmp;
-            var p, q, r, s, new_root;
-            if (node == root) return root;
-            var dist = node.length/2;
-            tmp = node.length;
-
-
-            /* p: the central multi-parent node
-             * q: the new parent, previous a child of p
-             * r: old parent
-             * i: previous position of q in p
-             * d: previous distance p->d
-             */
-            q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-            //console.log(q);
-            q.ID = itree.root.ID;
-            q.children[0] = node; //new root
-            q.children[0].length = dist;
-            p = node.parent;
-            q.children[0].parent = q;
-            for (i = 0; i < p.children.length; ++i)
-                if (p.children[i] == node) break;
-            q.children[1] = p;
-            d = p.length;
-            p.length = tmp - dist;
-            r = p.parent;
-            p.parent = q;
-
-
-            while (r != null) {
-                s = r.parent; /* store r's parent */
-                p.children[i] = r; /* change r to p's children */
-                for (i = 0; i < r.children.length; ++i) /* update i */
-                    if (r.children[i] == p) break;
-                r.parent = p; /* update r's parent */
-                tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
-                q = p; p = r; r = s; /* update p, q and r */
-                if(isCompared) { //ensures that only partially the BCNs are recomputed
-                    q.elementBCN = null;
+        var leafNames = [];
+        postorderTraverse(tree.root, function(d) {
+            if (d.children){
+                var subChildren = [];
+                for (var i = 0; i < d.children.length; i++){
+                    subChildren.push(d.children[i].name);
                 }
-            }
-
-            /* now p is the root node */
-            if (p.children.length == 2) { /* remove p and link the other child of p to q */
-                r = p.children[1 - i]; /* get the other child */
-                for (i = 0; i < q.children.length; ++i) /* the position of p in q */
-                    if (q.children[i] == p) break;
-                r.length += p.length;
-                r.parent = q;
-                q.children[i] = r; /* link r to q */
-            } else { /* remove one child in p */
-                for (j = k = 0; j < p.children.length; ++j) {
-                    p.children[k] = p.children[j];
-                    if (j != i) ++k;
-                }
-                --p.children.length;
-            }
-
-
-            try{
-                postorderTraverse(new_root, function(d) {
-                    //d.bcnhighlight = null;
-                    //d.highlight = 0;
-                    //d.clickedHighlight = null;
-
-                    d.leaves = getChildLeaves(d);
-                    //console.log(d.leaves);
-                },true);
-            } catch (e) {
-                console.log("Didn't work", e);
-            }
-
-            itree.root = new_root;
-            itree.data.root = itree.root; //create clickEvent that is given to update function
-            //console.log(itree);
-            if (isCompared){
-                postRerootClean(itree.root, iFinalView);
-            }
-
-            //update(itree.root, itree.data);
-            //console.log(itree.root);
-
-            //return itree;
-
-        }
-
-        function postRerootClean(root,iFinalView) {
-            //highlightedNodes = [];
-
-            //get the two trees that are compared
-            //console.log("DA SIND WIR JETXT");
-
-            function getSimilarity(itree1, itree2) {
-
-                for (var i = 0; i < itree1.leaves.length; i++) {
-                    for (var j = 0; j < itree2.leaves.length; j++) {
-                        if (itree1.leaves[i].name === itree2.leaves[j].name) {
-                            itree1.leaves[i].correspondingLeaf = itree2.leaves[j];
-                            itree2.leaves[j].correspondingLeaf = itree1.leaves[i];
-                        }
-                    }
+                if (subChildren[0]>subChildren[1]){
+                    console.log(subChildren[0],subChildren[1]);
+                    rotate(d);
                 }
 
-                postorderTraverse(itree1, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                },false);
-                postorderTraverse(itree2, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                },false);
-
-                return getElementS(itree1, itree2);
             }
+            leafNames.push(d.name);
+            //rotate(d);
+        });
+        update(tree.root, tree.data);
+        var fixedLeafNames = [];
+        postorderTraverse(fixedTree.root, function(d) {
+            fixedLeafNames.push(d.name);
+        });
 
-            var tree1 = tree;
-            var tree2 = comparedTree;
-
-
-            //var t0 = performance.now();
-            tree1.similarities = getSimilarity(tree1.root, root);
-            tree2.similarities = getSimilarity(tree2.root, root);
-            //var t1 = performance.now();
-            //console.log("Call getSimilarity took " + (t1 - t0) + " milliseconds.");
-
-
-            //update coloring when rerooted
-
-            function updateVisibleBCNs(itree1, itree2, recalculate){
-
-                if (recalculate === undefined) {
-                    recalculate = true;
-                }
-
-                function getAllBCNs(d, t) {
-                    var children = d.children ? d.children : [];
-                    //var children = getChildren(d);
-                    if (children.length > 0) {
-                        for (var a = 0; a < children.length; a++) {
-                            getAllBCNs(children[a], t);
-                        }
-                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
-                            BCN(d, t);
-                        }
-                        return;
-                    } else {
-                        if (recalculate || !d.elementBCN || d.elementBCN == null) {
-                            BCN(d, t);
-                        }
-                        return;
-                    }
-                }
-                getAllBCNs(itree1, itree2);
+        var i = 0;
+        postorderTraverse(tree.root, function(d) {
+            if(leafNames[i] != fixedLeafNames[i]){
+                //console.log(leafNames[i]);
+                rotate(d);
             }
+            i = i + 1;
 
-            var t0 = performance.now();
-            updateVisibleBCNs(tree1.root, tree2.root, false);
-            if(iFinalView){
-                updateVisibleBCNs(tree2.root, tree1.root, true);
-                update(tree2.root, tree2.data);
-                update(tree1.root, tree1.data);
-            }
-            //
-            //var t1 = performance.now();
-            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.")
-            //if(tree1.name == name){
-            //    update(tree2.root, tree2.data);
-            //}
-            //if(tree2.name == name){
-            //    update(tree1.root, tree1.data);
-            //}
+        });
 
-
-
-        }
-
-        function getTreeCompareMetric(itree){
-            BCN_score = 0;
-            NUM_nodes = 0;
-            postorderTraverse(itree.root, function(d) {
-                BCN_score = BCN_score + d.elementS;
-                NUM_nodes++;
-            },false);
-            //console.log(NUM_nodes);
-            //console.log(BCN_score/NUM_nodes);
-            return (BCN_score/NUM_nodes);
-        }
-        //getTreeCompareMetric(tree);
-        var compareScore  = [];
-        compareScore.push(getTreeCompareMetric(tree));
-        var compareNode =[];
-        compareNode.push(tree.root.ID);
-
-        // post order traverse through each node and reroot and compute elementS for the new node
-        if (compareScore < 1) { // if tree is perfect between the two than don't do it
-            postorderTraverse(tree.root, function(d) {
-                if(tree.root.ID !== d.ID){
-                    //console.log(d.name);
-                    reroot(tree, d, false);
-                    compareScore.push(getTreeCompareMetric(tree));
-                    compareNode.push(d.ID);
-                    console.log(d.ID,compareNode[compareNode.length-1],compareScore[compareScore.length-1]);
-
-                }
-                //idx.push(d.name);
-            },false);
-
-            var iMaxScore = compareScore.indexOf(Math.max.apply(Math, compareScore));
-            //console.log(compareScore);
-            //console.log(iMaxScore);
-            console.log(compareNode[iMaxScore],compareScore[iMaxScore]);
-            //console.log();
-
-            if (iMaxScore !== 0){
-                postorderTraverse(tree.root, function(d) {
-                    try {
-                        if (d.children){
-                            if (d.ID == compareNode[iMaxScore]){
-                                //console.log(compareNode[i]);
-                                //console.log(compareScore[i]);
-                                //console.log("The RIGHT TREE", d.ID);
-                                compareScore.length  = 0;
-                                compareNode.length = 0;
-                                reroot(tree, d, true);
-                                //tree.sort();
-                                //console.log("success");
-
-                            }
-                        } else {
-                            if (d.ID == compareNode[iMaxScore]) {
-                                //console.log(compareNode[i]);
-                                //console.log(compareScore[i]);
-                                //console.log("The RIGHT TREE", d.ID);
-                                compareScore.length = 0;
-                                compareNode.length = 0;
-                                reroot(tree, d, true);
-                                //tree.sort();
-                                //console.log("success");
-                            }
-                        }
-
-                    } catch (e){
-                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Bla Error</div>')).hide().slideDown(300);
-                    }
-                },false);
-            }else{
-                update(tree, tree.data);
-            }
-
-            //console.log(getTreeCompareMetric(tree));
-        }
-
-
-        //console.log(compareNode);
-
-
+        //console.log(leafNames,fixedLeafNames);
 
     }
+
 
     /*---------------
     /
@@ -2389,35 +2156,51 @@ TreeCompare = (function() {
             }
 
         }
-
-        // draws buttons to reroot one tree and not the other
-        if (settings.enableRerootFixedButtons) {
-            $("#" + canvasId).append('<div id="rerootFixedButtons' + canvasId + '"></div>');
-            var rerootButton = d3.select("#rerootFixedButtons" + canvasId).append("button")
-                .attr("class","btn btn-primary")
-                .attr("title", "reroot keeping opposite tree fixed");
+        // draws buttons to swap one tree and not the other
+        if (settings.enableFixedButtons) {
+            $("#" + canvasId).append('<div class="btn-group-vertical" id="fixedButtons' + canvasId + '"></div>');
+            var rerootButton = d3.select("#fixedButtons" + canvasId).append("button")
+                .attr("class","btn btn-default btn-sm");
+            var swapButton = d3.select("#fixedButtons" + canvasId).append("button")
+                .attr("class","btn btn-default btn-sm");
 
 
             if (canvasId.search("1")!=-1){
-                $("#rerootFixedButtons" + canvasId).css({
+                $("#fixedButtons" + canvasId).css({
                     "right": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
                 });
                 rerootButton.text("Reroot ")
+                    .attr("title","reroot keeping opposite tree fixed")
+                    .attr("id","rerootButton"+canvasId)
                     .append("span")
                     .attr("class","glyphicon glyphicon-circle-arrow-right");
+                swapButton.text("Swap ")
+                    .attr("title","swap keeping opposite tree fixed")
+                    .attr("id","swapButton"+canvasId)
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right");
+
             } else if(canvasId.search("2")!=-1){
-                $("#rerootFixedButtons" + canvasId).css({
+                $("#fixedButtons" + canvasId).css({
                     "left": "5px",
                     "bottom": "5px",
                     "position": "absolute"
 
                 });
-                rerootButton.append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-left");
-                $(".glyphicon-circle-arrow-left").after(" Reroot");
+                rerootButton.attr("id","rerootButton"+canvasId)
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-left")
+                    .attr("id","left_glyphicon_reroot");
+                $("#left_glyphicon_reroot").after(" Reroot");
+
+                swapButton.attr("id","swapButton"+canvasId)
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-left")
+                    .attr("id","left_glyphicon_swap");
+                $("#left_glyphicon_swap").after(" Swap");
 
                 //rerootButton.after("glyphicon glyphicon-circle-arrow-left").text("reroot");
             }
@@ -2426,11 +2209,11 @@ TreeCompare = (function() {
         }
 
         var timeoutIdReroot = 0;
-        $("#" + "rerootFixedButtons" + canvasId).mousedown(function() {
+        // action when clicking on reroot button in the center of the compare mode
+        $("#" + "rerootButton" + canvasId).mousedown(function() {
             var load = true;
             settings.loadingCallback();
             setTimeout(function() {
-                //computeBestCorrespondingTree(canvasId);
                 findBestCorrespondingTree(canvasId);
                 if (load) {
                     //console.log("here");
@@ -2441,6 +2224,24 @@ TreeCompare = (function() {
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
         });
+
+        // action when clicking on swap button in the center of the compare mode
+        $("#" + "swapButton" + canvasId).mousedown(function() {
+            var load = true;
+            settings.loadingCallback();
+            setTimeout(function() {
+                findBestCorrespondingLeafOrder(canvasId);
+                if (load) {
+                    //console.log("here");
+                    settings.loadedCallback();
+                }
+            },2);
+            //timeoutIdUp = setInterval(actionUp, 50);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdReroot);
+        });
+
+
 
         //set up search box and attach event handlers
         if (settings.enableSearch) {
