@@ -866,6 +866,11 @@ TreeCompare = (function() {
                 var second = d.children[1];
                 d.children[0] = second;
                 d.children[1] = first;
+            }else if(d._children){
+                var first = d._children[0];
+                var second = d._children[1];
+                d._children[0] = second;
+                d._children[1] = first;
             }
 
         }
@@ -882,7 +887,7 @@ TreeCompare = (function() {
         function getCorrespondingNode(treeLeaves, ifixedTree){
             var nodeID = "";
             postorderTraverse(ifixedTree.root,function(d){
-                if (d.children){
+                if (d.children || d._children){
                     var fixedTreeLeaves = getChildLeafNames(d);
                     var count = 0;
                     for (var i = 0; i < fixedTreeLeaves.length; i++){
@@ -934,7 +939,7 @@ TreeCompare = (function() {
 
         if (numOnesTrees/lengthTrees<0.8){ //if leaf representation not optimal do something
             postorderTraverse(tree.root,function(d){
-                if (d.children){
+                if (d.children || d._children){
                     var leaves = getChildLeafNames(d);
                     //console.log(leaves);
                     var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
