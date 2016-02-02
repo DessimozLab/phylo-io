@@ -870,54 +870,43 @@ TreeCompare = (function() {
 
         }
 
-
-        function getLeafID(itree){
+        function getChildLeafNames(d){
             var leafNames = [];
-            postorderTraverse(itree.root, function(d) {
-                if (d.leaves.length > 1){
-                    var tmpCorresLeaves = [];
-                    for (var i = 0; i < d.leaves.length; i++){
-                        tmpCorresLeaves.push(d.leaves[i].name)
-                    }
-                    leafNames.push(tmpCorresLeaves);
-                }
-            });
-            return leafNames;
-        }
-
-        function getLeafIDList(itree){
-            var leafNames = [];
-            postorderTraverse(itree.root, function(d) {
-                if (d.leaves.length > 1){
-                    for (var i = 0; i < d.leaves.length; i++){
-                        leafNames.push(d.leaves[i].name)
-                    }
-                }
-            });
-            return leafNames;
-        }
-
-
-        function getIndexOfNameCorresponding(name, leafObject){
-            var pos = [];
-            for (var i = 0; i<leafNames.length; i++){
-
-                if (leafObject[i].indexOf(name) != -1){
-                    pos.push(leafObject[i]);
-                }
+            var leaves = getChildLeaves(d);
+            for (var i = 0; i < leaves.length; i++){
+                leafNames.push(leaves[i].name);
             }
-            return pos;
+            return leafNames;
         }
-        //console.log(leafNames[getIndexOfNameCorresponding("Afi-Gsc",leafNames)[0]]);
 
-        var leafNames = getLeafID(fixedTree);
-        //console.log(leafNames);
-        //console.log(getLeafID(tree));
+        function getCorrespondingNode(treeLeaves, ifixedTree){
+            var nodeID = "";
+            postorderTraverse(ifixedTree.root,function(d){
+                if (d.children){
+                    var fixedTreeLeaves = getChildLeafNames(d);
+                    var count = 0;
+                    for (var i = 0; i < fixedTreeLeaves.length; i++){
+                        //console.log("tree", treeLeaves);
+                        //console.log("fixedTree", fixedTreeLeaves);
+                        //console.log(treeLeaves.indexOf(fixedTreeLeaves[i]));
+                        if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
+                            count += 1;
+                        }
+                    }
+                    if (count == fixedTreeLeaves.length){
+                        nodeID = fixedTreeLeaves;
+                        //console.log(nodeID);
+                        //rotate(d);
+                    }
 
-        // function
+                }
+            },true);
+            return nodeID;
+        }
+
         function getComparitiveMatrix(treeLeaves,fixedTreeLeaves){
             var compareOutVector = new Array(treeLeaves.length);
-            console.log(treeLeaves.length);
+            //console.log(treeLeaves.length);
             for (var i = 0; i < treeLeaves.length; i++){
                 if (treeLeaves[i] == fixedTreeLeaves[i]){
                     compareOutVector[i]=1;
@@ -928,198 +917,37 @@ TreeCompare = (function() {
             }
             return compareOutVector;
         }
-        console.log(getLeafIDList(fixedTree));
-        console.log(getLeafIDList(tree));
-        console.log(getComparitiveMatrix(getLeafIDList(fixedTree),getLeafIDList(tree)));
 
-        postorderTraverse(tree.root, function(d) {
-            var leaves = getChildLeaves(d);
-            //console.log(d);
-            if (leaves.length > 1){
-                //console.log(leaves);
-                var correspondingNameArray = getIndexOfNameCorresponding(leaves[0].name,leafNames);
-
-                var rightIndex = 0;
-                for (var i = 0; i < correspondingNameArray.length; i++){
-                    if(correspondingNameArray[i].length == leaves.length){
-                        rightIndex = i;
-                    }
+        function countOnes (vector) {
+            var count = 0;
+            for (var i = 0; i < vector.length; i++){
+                if (vector[i]==1){
+                    count += 1;
                 }
-                //console.log(leaves);
+            }
+            return count;
+        }
 
-                if (correspondingNameArray[rightIndex] != undefined){
-                    if(correspondingNameArray[rightIndex][correspondingNameArray[rightIndex].length-1] != leaves[leaves.length-1].name){
-                        //console.log(d.parent);
+        //console.log(countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root))),getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length);
+        var numOnesTrees = countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)));
+        var lengthTrees = getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length;
+
+        if (numOnesTrees/lengthTrees<0.8){ //if leaf representation not optimal do something
+            postorderTraverse(tree.root,function(d){
+                if (d.children){
+                    var leaves = getChildLeafNames(d);
+                    //console.log(leaves);
+                    var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
+                    //console.log(fixedLeaves);
+                    var rotateMe = getComparitiveMatrix(leaves,fixedLeaves);
+                    if (rotateMe.indexOf(0)!=-1){
                         rotate(d);
-
-                    }
-
-                    //console.log(correspondingNameArray[rightIndex][0]);
-                    //console.log(leaves[0].name);
-                }
-
-            }
-
-        });
-
-        update(tree.root, tree.data);
-
-        if (canvasId=="vis-container1"){ //ensures that the right tree is fixed based on canvasID
-            var tree = trees[trees.length-2];
-            var fixedTree = trees[trees.length-1];
-
-        }else{
-            var tree = trees[trees.length-1];
-            var fixedTree = trees[trees.length-2];
-
-        }
-
-        function rotate(d) { // basic rotating function
-            if (d.children){
-                var first = d.children[0];
-                var second = d.children[1];
-                d.children[0] = second;
-                d.children[1] = first;
-            }
-
-        }
-
-
-        function getLeafID(itree){
-            var leafNames = [];
-            postorderTraverse(itree.root, function(d) {
-                if (d.leaves.length > 1){
-                    var tmpCorresLeaves = [];
-                    for (var i = 0; i < d.leaves.length; i++){
-                        tmpCorresLeaves.push(d.leaves[i].name)
-                    }
-                    leafNames.push(tmpCorresLeaves);
-                }
-            });
-            return leafNames;
-        }
-
-        // function that returns a list of all the names within a tree, important for structural comparison
-        function getLeafIDList(itree){
-            var leafNames = [];
-            postorderTraverse(itree.root, function(d) {
-                if (d.leaves.length > 1){
-                    for (var i = 0; i < d.leaves.length; i++){
-                        leafNames.push(d.leaves[i].name)
                     }
                 }
-            });
-            return leafNames;
+            },true);
+            update(tree.root, tree.data);
         }
 
-
-        function getCorrespondingObject(name, leafObject){
-            var pos = [];
-            for (var i = 0; i<leafNames.length; i++){
-
-                if (leafObject[i].indexOf(name) != -1){
-                    pos.push(leafObject[i]);
-                }
-            }
-            return pos;
-        }
-        //console.log(leafNames[getIndexOfNameCorresponding("Afi-Gsc",leafNames)[0]]);
-
-        var leafNames = getLeafID(fixedTree);
-        //console.log(leafNames);
-        //console.log(getLeafID(tree));
-
-        // function
-        function getComparitiveMatrix(treeLeaves,fixedTreeLeaves){
-            var compareOutVector = new Array(treeLeaves.length);
-            console.log(treeLeaves.length);
-            for (var i = 0; i < treeLeaves.length; i++){
-                if (treeLeaves[i] == fixedTreeLeaves[i]){
-                    compareOutVector[i]=1;
-                }else{
-                    compareOutVector[i]=0;
-                }
-
-            }
-            return compareOutVector;
-        }
-        console.log(getLeafIDList(fixedTree));
-        console.log(getLeafIDList(tree));
-
-        function getBestLeafRepresentation(d, do_children){
-
-            if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
-                do_children = true;
-            }
-            var children = [];
-
-            if (do_children) {
-                var children = getChildren(d);
-            } else {
-                if (d.children) {
-                    children = d.children;
-                }
-            }
-            //console.log(children);
-
-            if (children.length > 0) {
-                for (var i = 0; i < children.length; i++) {
-                    getBestLeafRepresentation(children[i], f, do_children);
-                }
-                
-                f(d);
-                return;
-
-            } else {
-                f(d);
-                return;
-            }
-        }
-
-
-
-        postorderTraverse(tree.root, function(d) {
-            var leaves = getChildLeaves(d);
-            //console.log(d);
-            if (leaves.length > 1){
-                console.log(d);
-                var correspondingNameArray = getCorrespondingObject(leaves[0].name,leafNames);
-
-                var treeLeavesList = [];
-                var fixedTreeLeavesList  = [];
-                for (var i = 0; i < leaves.length; i++){
-                    console.log(leaves[i].name);
-                    console.log(correspondingNameArray);
-                    treeLeavesList.push(leaves[i].name);
-                    fixedTreeLeavesList.push(correspondingNameArray[0][i])
-                }
-
-                console.log(treeLeavesList);
-                //console.log(fixedTreeLeavesList);
-                var rightIndex = 0;
-                for (var i = 0; i < correspondingNameArray.length; i++){
-                    if(correspondingNameArray[i].length == leaves.length){
-                        rightIndex = i;
-                    }
-                }
-                //console.log(leaves);
-
-                if (correspondingNameArray[rightIndex] != undefined){
-                    if(correspondingNameArray[rightIndex][correspondingNameArray[rightIndex].length-1] != leaves[leaves.length-1].name){
-                        //console.log(d.parent);
-                        rotate(d);
-
-                    }
-
-                    //console.log(correspondingNameArray[rightIndex][0]);
-                    //console.log(leaves[0].name);
-                }
-
-            }
-
-        });
-
-        update(tree.root, tree.data);
 
     }
 
