@@ -850,9 +850,6 @@ TreeCompare = (function() {
      ---------------*/
     function findBestCorrespondingLeafOrder(canvasId){
 
-        var isCompared = true;
-
-
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed based on canvasID
             var tree = trees[trees.length-2];
             var fixedTree = trees[trees.length-1];
@@ -871,35 +868,12 @@ TreeCompare = (function() {
                 d.children[1] = first;
             }
 
-
-            //return d;
         }
 
 
-        var fixedLeafNames = [];
-        postorderTraverse(fixedTree.root, function(d) {
-            //console.log(d.leaves);
-            if (!d.children){
-                //console.log();
-                fixedLeafNames.push(getChildLeaves(d));
-
-            }else{//TODO: function that gets the best corresponding internal node
-                fixedLeafNames.push(getChildLeaves(d));
-            }
-
-        },false);
-
-        //console.log(fixedLeafNames);
-
-        function getCorrespondingNode(d,otherTree){
-            var leaves = getChildLeaves(d);
-
-
-        }
-
-        function getLeafID(tree){
+        function getLeafID(itree){
             var leafNames = [];
-            postorderTraverse(tree.root, function(d) {
+            postorderTraverse(itree.root, function(d) {
                 if (d.leaves.length > 1){
                     var tmpCorresLeaves = [];
                     for (var i = 0; i < d.leaves.length; i++){
@@ -910,11 +884,9 @@ TreeCompare = (function() {
             });
             return leafNames;
         }
-        //console.log(getLeafID(fixedTree));
-        //console.log(getLeafID(tree));
-        //console.log(fixedLeafNames);
 
-        var leafNames = getLeafID(fixedTree);
+
+
         function getIndexOfNameCorresponding(name, leafObject){
             var pos = [];
             for (var i = 0; i<leafNames.length; i++){
@@ -925,8 +897,9 @@ TreeCompare = (function() {
             }
             return pos;
         }
-        console.log(leafNames[getIndexOfNameCorresponding("Afi-Gsc",leafNames)[0]]);
+        //console.log(leafNames[getIndexOfNameCorresponding("Afi-Gsc",leafNames)[0]]);
 
+        var leafNames = getLeafID(fixedTree);
 
         postorderTraverse(tree.root, function(d) {
             var leaves = getChildLeaves(d);
@@ -946,7 +919,6 @@ TreeCompare = (function() {
                     if(correspondingNameArray[rightIndex][correspondingNameArray[rightIndex].length-1] != leaves[leaves.length-1].name){
                         //console.log(d.parent);
                         rotate(d);
-                        update(tree.root, tree.data);
                     }
 
                     console.log(correspondingNameArray[rightIndex][0]);
@@ -955,16 +927,9 @@ TreeCompare = (function() {
 
             }
 
-            /*if (leafNames.indexOf(d.ID)>-1){
-                if(leafNames.indexOf(d.ID) != fixedLeafNames.indexOf(d.ID)){
-                    rotate(d.parent);
-                }
-            }*/
         });
 
-
-
-        //console.log(leafNames,fixedLeafNames);
+        update(tree.root, tree.data);
 
     }
 
