@@ -552,10 +552,16 @@ TreeCompare = (function() {
         }
     }
 
+
+    /*---------------
+     /
+     /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
+     /      works only in "compare mode" and needs the canvasId to know which tree will
+     /      be manipulated
+     /
+     ---------------*/
     function findBestCorrespondingTree(canvasId){
         var isCompared = true;
-
-
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
             var tree = trees[trees.length-2];
             var fixedTree = trees[trees.length-1];
@@ -566,10 +572,20 @@ TreeCompare = (function() {
 
         }
 
+        //------
+        // Make a new_node as root point
+        // input: node d with its children
+        //------
         function new_node(d) { // private method
             return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
         }
 
+        //------
+        // REROOT function to change root point based on determined node
+        // input: itree - to rerooted tree
+        //        node - the target node of the branch where rerooting should happen
+        //        iFinalView - condition
+        //------
         function reroot(itree, node, iFinalView)
         {
 
@@ -675,6 +691,12 @@ TreeCompare = (function() {
 
         }
 
+
+        //------
+        // function important to fix all parameters after rerooting
+        // input: root - the root of a tree
+        //        iFinalView - condition
+        //------
         function postRerootClean(root,iFinalView) {
             //highlightedNodes = [];
 
@@ -749,20 +771,14 @@ TreeCompare = (function() {
                 update(tree2.root, tree2.data);
                 update(tree1.root, tree1.data);
             }
-            //
-            //var t1 = performance.now();
-            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.")
-            //if(tree1.name == name){
-            //    update(tree2.root, tree2.data);
-            //}
-            //if(tree2.name == name){
-            //    update(tree1.root, tree1.data);
-            //}
-
-
 
         }
 
+        //------
+        // GET best corresponding node in tree in order to call the reroot function
+        // input: tree - the tree to be manipulated
+        //        fixedTree - reference tree
+        //------
         function getBestCorrespondingNodeID(tree,fixedTree){
             var bestNODE = [];
             function getLeavesIDs(treeLeaves,corresponding) {
@@ -808,22 +824,12 @@ TreeCompare = (function() {
             return bestNODE;
         }
 
-        function getTreeCompareMetric(itree){
-            BCN_score = 0;
-            NUM_nodes = 0;
-            postorderTraverse(itree.root, function(d) {
-                BCN_score = BCN_score + d.elementS;
-                NUM_nodes++;
-            },true);
-            //console.log(NUM_nodes);
-            //console.log(BCN_score/NUM_nodes);
-            return (BCN_score/NUM_nodes);
-        }
-
-
-        console.log(getTreeCompareMetric(tree));
+        //------
+        //
+        // Main part: traverse through all nodes and reroot at the node that is most similar to fixed tree root
+        //
+        //------
         var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
-        //console.log(BCN_rerooting);
         postorderTraverse(tree.root, function(d) {
             if (d.ID == BCN_rerooting[BCN_rerooting.length-1]) {
                 expandPathToNode(d);
@@ -833,20 +839,15 @@ TreeCompare = (function() {
         },true);
         manualReroot = false;
 
-        console.log(getTreeCompareMetric(tree));
 
-
-
-        // function that finds for leaves the last common answer that they share
-        /*function shareLCA(){
-
-        }*/
 
     }
 
     /*---------------
      /
      /  Function to swap on nodes to optimize the visualisation between two trees
+     /      works only in "compare mode" and needs the canvasId to know which tree will
+     /      be manipulated
      /
      ---------------*/
     function findBestCorrespondingLeafOrder(canvasId){
@@ -861,7 +862,11 @@ TreeCompare = (function() {
 
         }
 
-        function rotate(d) { // basic rotating function
+        //------
+        // SWAP branches at a specific node
+        // input: node d with its children
+        //------
+        function rotate(d) {
             if (d.children){
                 var first = d.children[0];
                 var second = d.children[1];
@@ -876,6 +881,10 @@ TreeCompare = (function() {
 
         }
 
+        //------
+        // GET the leafnames part of a specific node d
+        // input: node d with its children
+        //------
         function getChildLeafNames(d){
             var leafNames = [];
             var leaves = getChildLeaves(d);
@@ -886,124 +895,44 @@ TreeCompare = (function() {
             return leafNames;
         }
 
-        function getChildLeafGroups(d){
-            var leafGroups = [];
-            //console.log("d",d);
-            postorderTraverse(d, function (e){
-                //var leafNames = [];
-                //var children = getChildren(e);
-                //console.log(e);
-                leafGroups.push(e.name);
-
-            },true);
-
-            return leafGroups;
-        }
-
-
+        //------
+        // GET the corresponding node based on best overlap of leaves between two trees
+        // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
+        //------
         function getCorrespondingNode(treeLeaves, ifixedTree){
-            var nodeID = "";
+            var bestCorrespondingFixTreeLeaves = "";
             var bestCount = 0;
             postorderTraverse(ifixedTree.root, function(d){
                 if (d.children || d._children){
                     var fixedTreeLeaves = getChildLeafNames(d);
                     var count = 0;
                     for (var i = 0; i < fixedTreeLeaves.length; i++){
-                        //console.log("tree", treeLeaves);
-                        //console.log("fixedTree", fixedTreeLeaves);
-                        //console.log(treeLeaves.indexOf(fixedTreeLeaves[i]));
-                        /*if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
-                            count += 1;
-                        }*/
+
                         if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
                             count += 1;
                         }
                     }
-                    //console.log("count",count);
-                    /*if (count == fixedTreeLeaves.length){ //TODO:this gives me the wrong node.....
-                        nodeID = fixedTreeLeaves;
-                        console.log("OUTPUT",nodeID);
-                        //rotate(d);
-                    }*/
+
                     if (count > bestCount){
-                        nodeID = fixedTreeLeaves;
+                        bestCorrespondingFixTreeLeaves = fixedTreeLeaves;
                         bestCount = count;
                     }
                 }
             },true);
-            //console.log("OUTPUT",nodeID)
-            return nodeID;
+
+            return bestCorrespondingFixTreeLeaves;
         }
 
-        /* finds the intersection of
-         * two arrays in a simple fashion.
-         *
-         * PARAMS
-         *  a - first array, must already be sorted
-         *  b - second array, must already be sorted
-         *
-         * NOTES
-         *
-         *  Should have O(n) operations, where n is
-         *    n = MIN(a.length(), b.length())
-         */
-        function intersect_safe(a, b)
-        {
-            var ai=0, bi=0;
-            var result = new Array();
 
-            while( ai < a.length && bi < b.length )
-            {
-                if      (a[ai] < b[bi] ){ ai++; }
-                else if (a[ai] > b[bi] ){ bi++; }
-                else /* they're equal */
-                {
-                    result.push(a[ai]);
-                    ai++;
-                    bi++;
-                }
-            }
-
-            return result;
-        }
-
-        function getComparitiveMatrix(treeLeaves,fixedTreeLeaves){
-            var compareOutVector = new Array(treeLeaves.length);
-            //console.log(treeLeaves.length);
-            for (var i = 0; i < treeLeaves.length; i++){
-                if (treeLeaves[i] == fixedTreeLeaves[i]){
-                    compareOutVector[i]=1;
-                }else{
-                    compareOutVector[i]=0;
-                }
-
-            }
-            return compareOutVector;
-        }
-
-        function countOnes (vector) {
-            var count = 0;
-            for (var i = 0; i < vector.length; i++){
-                if (vector[i]==1){
-                    count += 1;
-                }
-            }
-            return count;
-        }
-
-        //console.log(countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root))),getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length);
-        var numOnesTrees = countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)));
-        var lengthTrees = getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length;
-        var numRotate = 0;
+        //------
+        //
+        // Main part: traverses all nodes of tree and if different leaf order in fixedTree calls the rotate function
+        //
+        //------
         postorderTraverse(tree.root,function(d){
             if (d.children || d._children){
                 var leaves = getChildLeafNames(d);
                 var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
-                //console.log("fixedLeaves",fixedLeaves);
-
-                var rotateMe = getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root));
-                console.log("rotateMe",rotateMe);
-
                 if (leaves[0]!==fixedLeaves[0] && leaves[leaves.length-1]!==fixedLeaves[fixedLeaves.length-1]){
                     //console.log("leaves",leaves);
                     //console.log("fixedLeaves",fixedLeaves);
@@ -1011,17 +940,10 @@ TreeCompare = (function() {
 
 
                 }
-                /*if (rotateMe.indexOf(0)!=-1){
-                 rotate(d);
-                 numRotate += 1;
-                 }*/
+
             }
         },true);
         update(tree.root, tree.data);
-        /*if (numOnesTrees/lengthTrees<0.8){ //if leaf representation not optimal do something
-
-        }*/
-        console.log("--------------------------------------------");
 
 
     }
