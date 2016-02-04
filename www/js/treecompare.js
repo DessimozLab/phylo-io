@@ -831,6 +831,7 @@ TreeCompare = (function() {
             }
 
         },true);
+        manualReroot = false;
 
         console.log(getTreeCompareMetric(tree));
 
@@ -878,15 +879,32 @@ TreeCompare = (function() {
         function getChildLeafNames(d){
             var leafNames = [];
             var leaves = getChildLeaves(d);
+            //console.log(getChildren(d));
             for (var i = 0; i < leaves.length; i++){
                 leafNames.push(leaves[i].name);
             }
             return leafNames;
         }
 
+        function getChildLeafGroups(d){
+            var leafGroups = [];
+            //console.log("d",d);
+            postorderTraverse(d, function (e){
+                //var leafNames = [];
+                //var children = getChildren(e);
+                //console.log(e);
+                leafGroups.push(e.name);
+
+            },true);
+
+            return leafGroups;
+        }
+
+
         function getCorrespondingNode(treeLeaves, ifixedTree){
             var nodeID = "";
-            postorderTraverse(ifixedTree.root,function(d){
+            var bestCount = 0;
+            postorderTraverse(ifixedTree.root, function(d){
                 if (d.children || d._children){
                     var fixedTreeLeaves = getChildLeafNames(d);
                     var count = 0;
@@ -894,19 +912,59 @@ TreeCompare = (function() {
                         //console.log("tree", treeLeaves);
                         //console.log("fixedTree", fixedTreeLeaves);
                         //console.log(treeLeaves.indexOf(fixedTreeLeaves[i]));
+                        /*if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
+                            count += 1;
+                        }*/
                         if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
                             count += 1;
                         }
                     }
-                    if (count == fixedTreeLeaves.length){
+                    //console.log("count",count);
+                    /*if (count == fixedTreeLeaves.length){ //TODO:this gives me the wrong node.....
                         nodeID = fixedTreeLeaves;
-                        //console.log(nodeID);
+                        console.log("OUTPUT",nodeID);
                         //rotate(d);
+                    }*/
+                    if (count > bestCount){
+                        nodeID = fixedTreeLeaves;
+                        bestCount = count;
                     }
-
                 }
             },true);
+            //console.log("OUTPUT",nodeID)
             return nodeID;
+        }
+
+        /* finds the intersection of
+         * two arrays in a simple fashion.
+         *
+         * PARAMS
+         *  a - first array, must already be sorted
+         *  b - second array, must already be sorted
+         *
+         * NOTES
+         *
+         *  Should have O(n) operations, where n is
+         *    n = MIN(a.length(), b.length())
+         */
+        function intersect_safe(a, b)
+        {
+            var ai=0, bi=0;
+            var result = new Array();
+
+            while( ai < a.length && bi < b.length )
+            {
+                if      (a[ai] < b[bi] ){ ai++; }
+                else if (a[ai] > b[bi] ){ bi++; }
+                else /* they're equal */
+                {
+                    result.push(a[ai]);
+                    ai++;
+                    bi++;
+                }
+            }
+
+            return result;
         }
 
         function getComparitiveMatrix(treeLeaves,fixedTreeLeaves){
@@ -936,22 +994,34 @@ TreeCompare = (function() {
         //console.log(countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root))),getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length);
         var numOnesTrees = countOnes(getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)));
         var lengthTrees = getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root)).length;
+        var numRotate = 0;
+        postorderTraverse(tree.root,function(d){
+            if (d.children || d._children){
+                var leaves = getChildLeafNames(d);
+                var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
+                //console.log("fixedLeaves",fixedLeaves);
 
-        if (numOnesTrees/lengthTrees<0.8){ //if leaf representation not optimal do something
-            postorderTraverse(tree.root,function(d){
-                if (d.children || d._children){
-                    var leaves = getChildLeafNames(d);
-                    //console.log(leaves);
-                    var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
-                    //console.log(fixedLeaves);
-                    var rotateMe = getComparitiveMatrix(leaves,fixedLeaves);
-                    if (rotateMe.indexOf(0)!=-1){
-                        rotate(d);
-                    }
+                var rotateMe = getComparitiveMatrix(getChildLeafNames(tree.root),getChildLeafNames(fixedTree.root));
+                console.log("rotateMe",rotateMe);
+
+                if (leaves[0]!==fixedLeaves[0] && leaves[leaves.length-1]!==fixedLeaves[fixedLeaves.length-1]){
+                    //console.log("leaves",leaves);
+                    //console.log("fixedLeaves",fixedLeaves);
+                    rotate(d);
+
+
                 }
-            },true);
-            update(tree.root, tree.data);
-        }
+                /*if (rotateMe.indexOf(0)!=-1){
+                 rotate(d);
+                 numRotate += 1;
+                 }*/
+            }
+        },true);
+        update(tree.root, tree.data);
+        /*if (numOnesTrees/lengthTrees<0.8){ //if leaf representation not optimal do something
+
+        }*/
+        console.log("--------------------------------------------");
 
 
     }
@@ -3541,6 +3611,7 @@ TreeCompare = (function() {
                     });
                     kn_reroot(tree, d);
                     removeTooltips(svg);
+                    manualReroot = true;
                     //if (!manualReroot){
                     //    manualReroot = true;
                     //}
