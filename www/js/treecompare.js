@@ -588,6 +588,11 @@ TreeCompare = (function() {
         //------
         function reroot(itree, node, iFinalView)
         {
+            console.log(node);
+            console.log(itree.root);
+            if(itree.root.ID == node.ID){
+                console.log(node);
+            }
 
             var load = false;
 
@@ -832,6 +837,7 @@ TreeCompare = (function() {
         var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
         postorderTraverse(tree.root, function(d) {
             if (d.ID == BCN_rerooting[BCN_rerooting.length-1]) {
+                console.log(d.ID);
                 expandPathToNode(d);
                 reroot(tree, d, true);
             }
@@ -2195,6 +2201,7 @@ TreeCompare = (function() {
             }
 
         }
+
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
             $("#" + canvasId).append('<div class="btn-group-vertical" id="fixedButtons' + canvasId + '"></div>');
