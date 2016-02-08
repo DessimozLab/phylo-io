@@ -2205,16 +2205,82 @@ TreeCompare = (function() {
         }
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
+            var canvasLeft = "vis-container1";
+            var canvasRight = "vis-container2";
 
-            $("#" + canvasId).append('<div class="btn-group-vertical" id="fixedButtons' + canvasId + '"></div>');
-            var rerootButton = d3.select("#fixedButtons" + canvasId).append("button")
-                .attr("class","btn btn-default btn-sm");
-            var swapButton = d3.select("#fixedButtons" + canvasId).append("button")
-                .attr("class","btn btn-default btn-sm");
-            $("#" + canvasId).append('<div class="container" id="fixedButtonsText"></div>');
+            if(canvasId === canvasLeft){
+                $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>')
+                    .attr("align","center");
+                $("#fixedButtonsText"+canvasId).css({
+                    "right": "45px",
+                    "background-color": "white",
+                    //"border": "1px solid green",
+                    "bottom": "0px",
+                    "font-size": "14px",
+                    "position": "absolute"
+
+                });
+                var row1 = d3.select("#fixedButtonsText"+canvasId).append("tr");
+
+                row1.append("td")
+                    .attr("align","center")
+                    .attr("width","15px")
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-left")
+                    .attr("id","rerootButton"+canvasId);
+
+                var row2 = d3.select("#fixedButtonsText"+canvasId).append("tr");
+
+                row2.append("td")
+                    .attr("align","center")
+                    .attr("width","15px")
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-left")
+                    .attr("id","swapButton"+canvasId);
 
 
-            if (canvasId.search("1")!=-1){
+
+
+            } else {
+                $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>')
+                    .attr("align","center");
+                var row1 = d3.select("#fixedButtonsText"+canvasId).append("tr");
+                $("#fixedButtonsText"+canvasId).css({
+                    "left": "-45px",
+                    "background-color": "white",
+                    //"border": "1px solid green",
+                    "bottom": "0px",
+                    "font-size": "14px",
+                    "position": "absolute"
+
+                });
+
+                row1.append("td")
+                    .attr("align","center")
+                    .attr("width","90px")
+                    .text("reroot");
+                row1.append("td")
+                    .attr("align","center")
+                    .attr("width","15px")
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right")
+                    .attr("id","rerootButton"+canvasId);
+
+                var row2 = d3.select("#fixedButtonsText"+canvasId).append("tr");
+                row2.append("td")
+                    .attr("align","center")
+                    .attr("width","90px")
+                    .text("swap");
+                row2.append("td")
+                    .attr("align","center")
+                    .attr("width","15px")
+                    .append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right")
+                    .attr("id","swapButton"+canvasId);
+            }
+
+
+            /*if (canvasId.search("1")!=-1){
                 $("#fixedButtons" + canvasId).css({
                     "right": "55px",
                     "bottom": "5px",
@@ -2243,7 +2309,15 @@ TreeCompare = (function() {
                 });
 
                 $("#fixedButtonsText").append('<div class="row" id="row1"></div>');
-                $("#row1").text("reroot according to opposite tree");
+                $("#row1").append('<div class="col-md-1" id="col1"></div>');
+                $("#col1").append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right");
+                $("#row1").append('<div class="col-md-2" id="col2"></div>');
+                $("#col2").text("reroot according to opposite tree");
+                $("#row1").append('<div class="col-md-3" id="col3"></div>');
+                $("#col3").append("span")
+                    .attr("class","glyphicon glyphicon-circle-arrow-right");
+
 
             } else if(canvasId.search("2")!=-1){
                 $("#fixedButtons" + canvasId).css({
@@ -2268,7 +2342,7 @@ TreeCompare = (function() {
                 $("#row2").text("swap according to opposite tree");
 
                 //rerootButton.after("glyphicon glyphicon-circle-arrow-left").text("reroot");
-            }
+            }*/
 
 
 
