@@ -2205,34 +2205,49 @@ TreeCompare = (function() {
         }
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
+
             $("#" + canvasId).append('<div class="btn-group-vertical" id="fixedButtons' + canvasId + '"></div>');
             var rerootButton = d3.select("#fixedButtons" + canvasId).append("button")
                 .attr("class","btn btn-default btn-sm");
             var swapButton = d3.select("#fixedButtons" + canvasId).append("button")
                 .attr("class","btn btn-default btn-sm");
+            $("#" + canvasId).append('<div class="container" id="fixedButtonsText"></div>');
 
 
             if (canvasId.search("1")!=-1){
                 $("#fixedButtons" + canvasId).css({
-                    "right": "5px",
+                    "right": "55px",
                     "bottom": "5px",
                     "position": "absolute"
 
                 });
-                rerootButton.text("Reroot ")
-                    .attr("title","reroot keeping opposite tree fixed")
+                rerootButton.attr("title","reroot keeping opposite tree fixed")
                     .attr("id","rerootButton"+canvasId)
                     .append("span")
                     .attr("class","glyphicon glyphicon-circle-arrow-right");
-                swapButton.text("Swap ")
-                    .attr("title","swap keeping opposite tree fixed")
+                swapButton.attr("title","swap keeping opposite tree fixed")
                     .attr("id","swapButton"+canvasId)
                     .append("span")
                     .attr("class","glyphicon glyphicon-circle-arrow-right");
 
+                $("#fixedButtonsText").css({
+                    "right": "-55px",
+                    "background-color": "white",
+                    "text-align": "center",
+                    "width": "110px",
+                    //"border": "1px solid green",
+                    "bottom": "0px",
+                    "font-size": "12px",
+                    "position": "absolute"
+
+                });
+
+                $("#fixedButtonsText").append('<div class="row" id="row1"></div>');
+                $("#row1").text("reroot according to opposite tree");
+
             } else if(canvasId.search("2")!=-1){
                 $("#fixedButtons" + canvasId).css({
-                    "left": "5px",
+                    "left": "55px",
                     "bottom": "5px",
                     "position": "absolute"
 
@@ -2241,16 +2256,23 @@ TreeCompare = (function() {
                     .append("span")
                     .attr("class","glyphicon glyphicon-circle-arrow-left")
                     .attr("id","left_glyphicon_reroot");
-                $("#left_glyphicon_reroot").after(" Reroot");
+                $("#left_glyphicon_reroot");
 
                 swapButton.attr("id","swapButton"+canvasId)
                     .append("span")
                     .attr("class","glyphicon glyphicon-circle-arrow-left")
                     .attr("id","left_glyphicon_swap");
-                $("#left_glyphicon_swap").after(" Swap");
+                $("#left_glyphicon_swap");
+
+                $("#fixedButtonsText").append('<div class="row" id="row2"></div>');
+                $("#row2").text("swap according to opposite tree");
 
                 //rerootButton.after("glyphicon glyphicon-circle-arrow-left").text("reroot");
             }
+
+
+
+
 
             //rerootButton.onclick(computeBestCorrespondingTree(canvasId))
         }
@@ -2470,7 +2492,7 @@ TreeCompare = (function() {
                     scaleLineWidth = width * 0.75;
                     return "M" + scaleLinePadding + ",20L" + (scaleLineWidth + scaleLinePadding) + ",20"
                 })
-                .attr("stroke-width", 1)
+                .attr("stroke-width", 2)
                 .attr("stroke", settings.scaleColor);
             var scaleText = d3.select(scaleId + " svg").append("text")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
@@ -3041,8 +3063,11 @@ TreeCompare = (function() {
             trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+
+
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
+
             compareMode = true;
             settings.loadedCallback();
         }, 5);
@@ -3377,7 +3402,7 @@ TreeCompare = (function() {
                     tree.data.root = tree.root; //create clickEvent that is given to update function
 
                     if (isCompared){
-                        postRerootClean(tree.root, tree.name);
+                        _.defer(postRerootClean(tree.root, tree.name));
                     }
 
                     if (load) {
