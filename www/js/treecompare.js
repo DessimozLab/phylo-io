@@ -588,106 +588,115 @@ TreeCompare = (function() {
         //------
         function reroot(itree, node, iFinalView)
         {
-
-            var load = false;
-
-            if (isCompared) {
-                load = true;
-            }
-            var root = itree.root;
-
-            if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
-                backupRoot=root;
-                manualReroot=true;
-            } else {
-                root = backupRoot;
-            }
-
-
-
-            var i, d, tmp;
-            var p, q, r, s, new_root;
-            if (node == root) return root;
-            var dist = node.length/2;
-            tmp = node.length;
-
-
-            /* p: the central multi-parent node
-             * q: the new parent, previous a child of p
-             * r: old parent
-             * i: previous position of q in p
-             * d: previous distance p->d
-             */
-            q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-            //console.log(q);
-            q.ID = itree.root.ID;
-            q.children[0] = node; //new root
-            q.children[0].length = dist;
-            p = node.parent;
-            q.children[0].parent = q;
-            for (i = 0; i < p.children.length; ++i)
-                if (p.children[i] == node) break;
-            q.children[1] = p;
-            d = p.length;
-            p.length = tmp - dist;
-            r = p.parent;
-            p.parent = q;
-
-
-            while (r != null) {
-                s = r.parent; /* store r's parent */
-                p.children[i] = r; /* change r to p's children */
-                for (i = 0; i < r.children.length; ++i) /* update i */
-                    if (r.children[i] == p) break;
-                r.parent = p; /* update r's parent */
-                tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
-                q = p; p = r; r = s; /* update p, q and r */
-                if(isCompared) { //ensures that only partially the BCNs are recomputed
-                    q.elementBCN = null;
+            var rerooting = true;
+            for (var i = 0; i < itree.root.children.length; i++){
+                if (node.ID == itree.root.children[i].ID){
+                    rerooting = false;
                 }
             }
+            if(rerooting){
+                var load = false;
 
-            /* now p is the root node */
-            if (p.children.length == 2) { /* remove p and link the other child of p to q */
-                r = p.children[1 - i]; /* get the other child */
-                for (i = 0; i < q.children.length; ++i) /* the position of p in q */
-                    if (q.children[i] == p) break;
-                r.length += p.length;
-                r.parent = q;
-                q.children[i] = r; /* link r to q */
-            } else { /* remove one child in p */
-                for (j = k = 0; j < p.children.length; ++j) {
-                    p.children[k] = p.children[j];
-                    if (j != i) ++k;
+                if (isCompared) {
+                    load = true;
                 }
-                --p.children.length;
+                var root = itree.root;
+
+                if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
+                    backupRoot = root;
+                    manualReroot = true;
+                } else {
+                    root = backupRoot;
+                }
+
+
+
+                var i, d, tmp;
+                var p, q, r, s, new_root;
+                if (node == root) return root;
+                var dist = node.length/2;
+                tmp = node.length;
+
+
+                /* p: the central multi-parent node
+                 * q: the new parent, previous a child of p
+                 * r: old parent
+                 * i: previous position of q in p
+                 * d: previous distance p->d
+                 */
+                q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+                //console.log(q);
+                q.ID = node.ID;
+                q.children[0] = node; //new root
+                q.children[0].length = dist;
+                p = node.parent;
+                q.children[0].parent = q;
+                for (i = 0; i < p.children.length; ++i)
+                    if (p.children[i] == node) break;
+                q.children[1] = p;
+                d = p.length;
+                p.length = tmp - dist;
+                r = p.parent;
+                p.parent = q;
+
+
+                while (r != null) {
+                    s = r.parent; /* store r's parent */
+                    p.children[i] = r; /* change r to p's children */
+                    for (i = 0; i < r.children.length; ++i) /* update i */
+                        if (r.children[i] == p) break;
+                    r.parent = p; /* update r's parent */
+                    tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                    q = p; p = r; r = s; /* update p, q and r */
+                    if(isCompared) { //ensures that only partially the BCNs are recomputed
+                        q.elementBCN = null;
+                    }
+                }
+
+                /* now p is the root node */
+                if (p.children.length == 2) { /* remove p and link the other child of p to q */
+                    r = p.children[1 - i]; /* get the other child */
+                    for (i = 0; i < q.children.length; ++i) /* the position of p in q */
+                        if (q.children[i] == p) break;
+                    r.length += p.length;
+                    r.parent = q;
+                    q.children[i] = r; /* link r to q */
+                } else { /* remove one child in p */
+                    for (j = k = 0; j < p.children.length; ++j) {
+                        p.children[k] = p.children[j];
+                        if (j != i) ++k;
+                    }
+                    --p.children.length;
+                }
+
+
+                try{
+                    postorderTraverse(new_root, function(d) {
+                        //d.bcnhighlight = null;
+                        //d.highlight = 0;
+                        //d.clickedHighlight = null;
+
+                        d.leaves = getChildLeaves(d);
+                        //console.log(d.leaves);
+                    },true);
+                } catch (e) {
+                    console.log("Didn't work", e);
+                }
+
+                itree.root = new_root;
+                itree.data.root = itree.root; //create clickEvent that is given to update function
+                //console.log(itree);
+                if (isCompared){
+                    postRerootClean(itree.root, iFinalView);
+                }
+
+                //update(itree.root, itree.data);
+                //console.log(itree.root);
+
+                //return itree;
             }
 
 
-            try{
-                postorderTraverse(new_root, function(d) {
-                    //d.bcnhighlight = null;
-                    //d.highlight = 0;
-                    //d.clickedHighlight = null;
-
-                    d.leaves = getChildLeaves(d);
-                    //console.log(d.leaves);
-                },true);
-            } catch (e) {
-                console.log("Didn't work", e);
-            }
-
-            itree.root = new_root;
-            itree.data.root = itree.root; //create clickEvent that is given to update function
-            //console.log(itree);
-            if (isCompared){
-                postRerootClean(itree.root, iFinalView);
-            }
-
-            //update(itree.root, itree.data);
-            //console.log(itree.root);
-
-            //return itree;
 
         }
 
@@ -822,7 +831,9 @@ TreeCompare = (function() {
         //------
         var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
         postorderTraverse(tree.root, function(d) {
-            if (d.ID == BCN_rerooting[BCN_rerooting.length-1]) {
+            if (d.ID == BCN_rerooting[BCN_rerooting.length-1] && d.ID !== tree.root.ID) {
+                console.log("d.id",d.ID);
+                console.log("tree.root.ID", tree.root.ID);
                 expandPathToNode(d);
                 reroot(tree, d, true);
             }
@@ -3317,7 +3328,7 @@ TreeCompare = (function() {
 
 
             function kn_new_node(d) { // private method
-                return {parent:null, children:[], name:"", ID:makeId("node_"),length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+                return {parent:null, children:[], name:"", ID:"",length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
             }
             /*
              Function to dynamically reroot a tree at a specific node
@@ -3360,6 +3371,7 @@ TreeCompare = (function() {
                      */
                     q = new_root = kn_new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
                     //console.log(q);
+                    q.ID = node.ID;
                     q.children[0] = node; //new root
                     q.children[0].length = dist;
                     p = node.parent;
