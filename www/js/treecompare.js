@@ -588,11 +588,6 @@ TreeCompare = (function() {
         //------
         function reroot(itree, node, iFinalView)
         {
-            console.log(node);
-            console.log(itree.root);
-            if(itree.root.ID == node.ID){
-                console.log(node);
-            }
 
             var load = false;
 
@@ -793,7 +788,6 @@ TreeCompare = (function() {
                         correspondingID.push(treeLeaves[j].correspondingLeaf.ID);
                     }
                 } else {
-                    //console.log(treeLeaves);
                     for (var j = 0; j < treeLeaves.length; j++){
                         correspondingID.push(treeLeaves[j].ID);
                     }
@@ -806,24 +800,16 @@ TreeCompare = (function() {
             //var corresLeaves = []
             for (var i = 0; i < fixedTree.root.children.length; i++){ // loop through the x possible rootings of fixed tree
                 var fixedTreeLeaves = fixedTree.root.children[i].leaves;
-                //console.log(fixedTreeLeaves);
                 var correspondingID = getLeavesIDs(fixedTreeLeaves,true).sort();
-                //console.log(correspondingID);
                 postorderTraverse(tree.root, function(d){
-                    //console.log(d);
                     if(d.leaves.length == correspondingID.length){ //TODO: needs to be optimized this condidition
-                        //console.log(d.leaves);
                         var nodeLeafIDs = getLeavesIDs(d.leaves,false).sort();
-                        //console.log(nodeLeafIDs);
-                        //console.log(correspondingID);
                         if (nodeLeafIDs[0]==correspondingID[0]){
-                            //console.log(d);
                             bestNODE.push(d.ID);
                         }
 
                     }
                 });
-                //corresLeaves
             }
 
             return bestNODE;
@@ -837,7 +823,6 @@ TreeCompare = (function() {
         var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
         postorderTraverse(tree.root, function(d) {
             if (d.ID == BCN_rerooting[BCN_rerooting.length-1]) {
-                console.log(d.ID);
                 expandPathToNode(d);
                 reroot(tree, d, true);
             }
@@ -2209,7 +2194,7 @@ TreeCompare = (function() {
             if(canvasId === canvasLeft){
                 $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>');
                 $("#fixedButtonsText"+canvasId).css({
-                    "right": "25px",
+                    "right": "30px",
                     "background-color": "white",
                     "bottom": "0px",
                     "font-size": "14px",
@@ -2244,7 +2229,7 @@ TreeCompare = (function() {
                 $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>');
 
                 $("#fixedButtonsText"+canvasId).css({
-                    "left": "-25px",
+                    "left": "-30px",
                     "background-color": "white",
                     "bottom": "0px",
                     "font-size": "14px",
@@ -2256,8 +2241,10 @@ TreeCompare = (function() {
                 var row1 = d3.select("#fixedButtonsText"+canvasId).append("tr");
                 row1.append("td")
                     .attr("align","center")
-                    .attr("width","50px")
-                    .text("reroot");
+                    .attr("width","60px")
+                    .text("reroot")
+                    .attr("title","find best rooting point according to opposite tree and reroot")
+                    .attr("id","reroot-text");
                 row1.append("td")
                     .attr("align","center")
                     .attr("width","15px")
@@ -2269,8 +2256,10 @@ TreeCompare = (function() {
                 var row2 = d3.select("#fixedButtonsText"+canvasId).append("tr");
                 row2.append("td")
                     .attr("align","center")
-                    .attr("width","50px")
-                    .text("swap");
+                    .attr("width","60px")
+                    .text("reorder")
+                    .attr("title","reorder leaves according to opposite tree")
+                    .attr("id","reorder-text");
                 row2.append("td")
                     .attr("align","center")
                     .attr("width","15px")
@@ -2415,6 +2404,8 @@ TreeCompare = (function() {
                 hideSearchBar();
             });
 
+
+            var t0 = performance.now();
             //main event handler, performs search every time a char is typed so can get realtime results
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
@@ -2459,6 +2450,8 @@ TreeCompare = (function() {
                         });
                     });
                 }
+                var t1 = performance.now();
+                console.log("main event handler " + (t1 - t0) + " milliseconds.");
 
             });
         }
@@ -3035,12 +3028,24 @@ TreeCompare = (function() {
         var index2 = findTreeIndex(name2);
         settings.loadingCallback();
         setTimeout(function() {
+            //var t0 = performance.now();
             uncollapseAll(trees[index1].root);
             uncollapseAll(trees[index2].root);
+            //var t1 = performance.now();
+            //console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
+
+            //var t0 = performance.now();
             stripPreprocessing(trees[index1].root);
             stripPreprocessing(trees[index2].root);
+            //var t1 = performance.now();
+            //console.log("stripPreprocessing " + (t1 - t0) + " milliseconds.");
+
+            //var t0 = performance.now();
             getDepths(trees[index1].root);
             getDepths(trees[index2].root);
+            //var t1 = performance.now();
+            //console.log("getDepths " + (t1 - t0) + " milliseconds.");
+
 
             postorderTraverse(trees[index1].root, function(d) {
                 if (d.name==="collapsed" || d.collapsed) {
@@ -3072,6 +3077,7 @@ TreeCompare = (function() {
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
+
             compareMode = true;
             settings.loadedCallback();
         }, 5);
@@ -3661,14 +3667,18 @@ TreeCompare = (function() {
 
             }
 
-            function collapseAll(d) {
+            function collapseAll(d,forceUncollapse) {
                 var load = false;
                 if (isCompared && d._children) {
                     load = true;
                     settings.loadingCallback();
                 }
+
+                if (forceUncollapse == undefined){
+                    forceUncollapse = false
+                }
                 setTimeout(function() {
-                    if (d._children) {// used when collapsed for uncollapsing
+                    if (d._children || forceUncollapse) {// used when collapsed for uncollapsing
                         postorderTraverse(d, function(e) {
                             if (e._children) {
                                 e.collapsed = false;
@@ -3698,6 +3708,8 @@ TreeCompare = (function() {
             }
 
 
+
+
             function highlight(d) {
                 var bcnColors = d3.scale.category20();
                 if (isCompared) {
@@ -3714,8 +3726,42 @@ TreeCompare = (function() {
                         }
                     }
 
+                    function clearHighlight(itree) {
+                        var new_d = itree;
+                        postorderTraverse(itree,function(e){
+                            if (e.clickedHighlight){
+                                new_d = e;
+                            }
+                        },false);
+
+                        new_d.clickedHighlight = false;
+                        var index = highlightedNodes.indexOf(new_d);
+
+                        if (index > -1) {
+                            highlightedNodes.splice(index, 1);
+                        }
+                        //console.log(currentBCN);
+                        new_d[currentBCN].bcnhighlight = false;
+                        var bcnid = new_d[currentBCN] ? new_d[currentBCN].id : -1;
+                        var leaves = new_d.leaves;
+                        var otherTree = comparedTree.root;
+                        var otherTreeData = comparedTree.data;
+                        var otherTreeLeaves = otherTreeData.leaves;
+
+                        for (var i = 0; i < leaves.length; i++) {
+                            leaves[i].correspondingLeaf.correspondingHighlight = false;
+                        }
+
+                        colorLinkNodeOver(new_d, false);
+                        update(new_d, tree.data);
+                        update(otherTreeData.root, otherTreeData);
+                    }
+
+
                     if (!_.contains(highlightedNodes, d)) {
+                        clearHighlight(tree.root);
                         if (highlightedNodes.length < maxHighlightedNodes) {
+                            //console.log(highlightedNodes);
                             d.clickedHighlight = bcnColors(highlightedNodes.length);
                             //d.clickedHighlight = "red";
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
@@ -3724,6 +3770,10 @@ TreeCompare = (function() {
                             var otherTree = comparedTree.root;
                             var otherTreeData = comparedTree.data;
                             var otherTreeLeaves = otherTreeData.leaves;
+                            //clearHighlight(tree.root);
+                            //clearHighlight(otherTree);
+
+
                             for (var i = 0; i < leaves.length; i++) {
                                 leaves[i].correspondingLeaf.correspondingHighlight = true;
                                 //console.log(leaves[i]);
@@ -3757,7 +3807,6 @@ TreeCompare = (function() {
                         if (index > -1) {
                             highlightedNodes.splice(index, 1);
                         }
-                        //console.log(currentBCN);
                         d[currentBCN].bcnhighlight = false;
                         var bcnid = d[currentBCN] ? d[currentBCN].id : -1;
                         var leaves = d.leaves;
@@ -3772,6 +3821,7 @@ TreeCompare = (function() {
                         colorLinkNodeOver(d, false);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
+
                     }
 
                 }
@@ -3789,7 +3839,7 @@ TreeCompare = (function() {
             var triWidth = 10;
             var triHeight = 15;
             var rectWidth = 150;
-            var rectHeight = 90;
+            var rectHeight = 110;
 
             removeTooltips(svg);
 
@@ -3853,7 +3903,7 @@ TreeCompare = (function() {
                     .style("fill", "white")
                     .style("font-weight", "bold")
                     .text(function(d) {
-                        if (d._children) {
+                        if (d._children) { //TODO: this has to be changed that also the subtree can be all expanded
                             textDone += textInc;
                             return "expand all >";
                         } else if (d.children) {
@@ -3869,6 +3919,35 @@ TreeCompare = (function() {
                         removeTooltips(svg);
                     });
 
+                d3.select(this).append("text")
+                    .attr("class", "tooltipElem tooltipElemText")
+                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
+                    .attr("x", ((-rectWidth / 2) + rpad))
+                    .style("fill", "white")
+                    .style("font-weight", "bold")
+                    .text(function(d) {
+                        var collapsedOffspring = false;
+                        var new_d = tree.root;
+                        var found = true;
+                        postorderTraverse(d,function(e){
+                            if(e._children && found) {
+                                collapsedOffspring = true;
+                                new_d = e;
+                            }
+                        });
+                        if (collapsedOffspring && !d._children) { //TODO: this has to be changed that also the subtree can be all expanded
+                            textDone += textInc;
+                            return "expand all >";
+                        }
+                    })
+                    .on("click", function(new_d) {
+                        postorderTraverse(new_d, function(e) {
+                            e.mouseoverHighlight = false;
+                        });
+                        collapseAll(new_d, true);
+                        removeTooltips(svg);
+                    });
+
                 // This is to rotate two branches at a node
                 d3.select(this).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
@@ -3879,7 +3958,7 @@ TreeCompare = (function() {
                     .text(function(d) {
                         if (d.children) {
                             textDone += textInc;
-                            return "rotate";
+                            return "swap subtrees >";
                         }
                     })
                     .on("click", function(d) {
@@ -3898,9 +3977,9 @@ TreeCompare = (function() {
                     .style("fill", "white")
                     .style("font-weight", "bold")
                     .text(function(d) {
-                        if (d.elementBCN) {
+                        if (d.parent && d.elementBCN) {
                             textDone += textInc;
-                            if (d.clickedParentHighlight) {
+                            if (d.clickedHighlight) {
                                 return "unhighlight >";
                             } else {
                                 return "highlight >";
