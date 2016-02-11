@@ -577,7 +577,7 @@ TreeCompare = (function() {
         // input: node d with its children
         //------
         function new_node(d) { // private method
-            return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
+            return {parent:null, children:[], name:"", ID: "", length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS: d.elementS};
         }
 
         //------
@@ -773,55 +773,24 @@ TreeCompare = (function() {
                 getAllBCNs(itree1, itree2);
             }
 
-            var t0 = performance.now();
-            updateVisibleBCNs(tree1.root, tree2.root, false);
+            //var t0 = performance.now();
+            updateVisibleBCNs(tree1.root.children[1], tree2.root.children[1], false);
+            BCN(tree1.root, tree2.root);
+            //var t1 = performance.now();
+            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
             if(iFinalView){
-                updateVisibleBCNs(tree2.root, tree1.root, true);
+                //var t0 = performance.now();
+                updateVisibleBCNs(tree2.root.children[1], tree1.root.children[1], true);
+                BCN(tree2.root,tree1.root);
+                //var t1 = performance.now();
+                //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
+                //var t0 = performance.now();
                 update(tree2.root, tree2.data);
                 update(tree1.root, tree1.data);
+                //var t1 = performance.now();
+                //console.log("Call update took " + (t1 - t0) + " milliseconds.");
             }
 
-        }
-
-        //------
-        // GET best corresponding node in tree in order to call the reroot function
-        // input: tree - the tree to be manipulated
-        //        fixedTree - reference tree
-        //------
-        function getBestCorrespondingNodeID(tree,fixedTree){
-            var bestNODE = [];
-            function getLeavesIDs(treeLeaves,corresponding) {
-                var correspondingID = [];
-                if (corresponding){
-                    for (var j = 0; j < treeLeaves.length; j++){
-                        correspondingID.push(treeLeaves[j].correspondingLeaf.ID);
-                    }
-                } else {
-                    for (var j = 0; j < treeLeaves.length; j++){
-                        correspondingID.push(treeLeaves[j].ID);
-                    }
-                }
-
-
-                return correspondingID;
-            }
-
-            //var corresLeaves = []
-            for (var i = 0; i < fixedTree.root.children.length; i++){ // loop through the x possible rootings of fixed tree
-                var fixedTreeLeaves = fixedTree.root.children[i].leaves;
-                var correspondingID = getLeavesIDs(fixedTreeLeaves,true).sort();
-                postorderTraverse(tree.root, function(d){
-                    if(d.leaves.length == correspondingID.length){ //TODO: needs to be optimized this condidition
-                        var nodeLeafIDs = getLeavesIDs(d.leaves,false).sort();
-                        if (nodeLeafIDs[0]==correspondingID[0]){
-                            bestNODE.push(d.ID);
-                        }
-
-                    }
-                });
-            }
-
-            return bestNODE;
         }
 
         //------
@@ -829,17 +798,12 @@ TreeCompare = (function() {
         // Main part: traverse through all nodes and reroot at the node that is most similar to fixed tree root
         //
         //------
-        var BCN_rerooting = getBestCorrespondingNodeID(tree,fixedTree);
-        postorderTraverse(tree.root, function(d) {
-            if (d.ID == BCN_rerooting[BCN_rerooting.length-1] && d.ID !== tree.root.ID) {
-                console.log("d.id",d.ID);
-                console.log("tree.root.ID", tree.root.ID);
-                expandPathToNode(d);
-                reroot(tree, d, true);
-            }
+        //console.log(fixedTree.root.children[0].elementBCN);
+        if (fixedTree.root.children[0].parent){
+            expandPathToNode(fixedTree.root.children[0].elementBCN);
+            reroot(tree, fixedTree.root.children[0].elementBCN, true);
+        }
 
-        },true);
-        manualReroot = false;
 
     }
 
@@ -2932,6 +2896,8 @@ TreeCompare = (function() {
     function preprocessTrees(index1, index2) {
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
+        //console.log(tree1);
+        //console.log(tree2);
 
 
         for (var i = 0; i < tree1.leaves.length; i++) {
@@ -2939,6 +2905,7 @@ TreeCompare = (function() {
                 if (tree1.leaves[i].name === tree2.leaves[j].name) {
                     tree1.leaves[i].correspondingLeaf = tree2.leaves[j];
                     tree2.leaves[j].correspondingLeaf = tree1.leaves[i];
+                    //console.log(tree1.leaves[i].correspondingLeaf, tree2.leaves[j].correspondingLeaf);
                 }
             }
         }
@@ -3740,33 +3707,37 @@ TreeCompare = (function() {
 
                     function clearHighlight(itree) {
                         var new_d = itree;
+                        var doClear = false;
                         postorderTraverse(itree,function(e){
                             if (e.clickedHighlight){
                                 new_d = e;
+                                doClear = true;
                             }
                         },false);
+                        //console.log(doClear);
+                        if (doClear){
+                            new_d.clickedHighlight = false;
+                            var index = highlightedNodes.indexOf(new_d);
 
-                        new_d.clickedHighlight = false;
-                        var index = highlightedNodes.indexOf(new_d);
+                            if (index > -1) {
+                                highlightedNodes.splice(index, 1);
+                            }
+                            //console.log(currentBCN);
+                            new_d[currentBCN].bcnhighlight = false;
+                            var leaves = new_d.leaves;
+                            var otherTreeData = comparedTree.data;
+                            for (var i = 0; i < leaves.length; i++) {
+                                if(leaves[i].correspondingLeaf !== undefined){
+                                    leaves[i].correspondingLeaf.correspondingHighlight = false;
+                                }
+                            }
 
-                        if (index > -1) {
-                            highlightedNodes.splice(index, 1);
+                            colorLinkNodeOver(new_d, false);
+                            update(new_d, tree.data);
+                            update(otherTreeData.root, otherTreeData);
                         }
-                        //console.log(currentBCN);
-                        new_d[currentBCN].bcnhighlight = false;
-                        var bcnid = new_d[currentBCN] ? new_d[currentBCN].id : -1;
-                        var leaves = new_d.leaves;
-                        var otherTree = comparedTree.root;
-                        var otherTreeData = comparedTree.data;
-                        var otherTreeLeaves = otherTreeData.leaves;
 
-                        for (var i = 0; i < leaves.length; i++) {
-                            leaves[i].correspondingLeaf.correspondingHighlight = false;
-                        }
 
-                        colorLinkNodeOver(new_d, false);
-                        update(new_d, tree.data);
-                        update(otherTreeData.root, otherTreeData);
                     }
 
 
@@ -3787,8 +3758,11 @@ TreeCompare = (function() {
 
 
                             for (var i = 0; i < leaves.length; i++) {
-                                leaves[i].correspondingLeaf.correspondingHighlight = true;
-                                //console.log(leaves[i]);
+                                if(leaves[i].correspondingLeaf !== undefined) {
+                                    leaves[i].correspondingLeaf.correspondingHighlight = true;
+                                    //console.log(leaves[i].correspondingLeaf);
+                                }
+
                             }
                             expandPathToNode(d[currentBCN]);
                             settings.loadingCallback();
@@ -4046,7 +4020,6 @@ TreeCompare = (function() {
         }
         v.elementBCN = elementBCNNode;
         v.elementS = maxElementS;
-        //console.log(v.elementBCN, v.elementS);
 
     }
 

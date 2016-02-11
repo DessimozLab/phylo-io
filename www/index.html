@@ -786,7 +786,7 @@
                     $("#exportURLInSingle").html(exportURLGist);
                     $('#myModal').modal('show');
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
                 }
             } else if (mode === "view-btn"){
                 try{
@@ -795,7 +795,7 @@
                     $("#exportURLInSingle").html(exportURLGist);
                     $('#myModal').modal('show');
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
                 }
 
             }
