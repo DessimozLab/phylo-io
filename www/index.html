@@ -330,7 +330,7 @@
                         </a>
                     </li>
                     <li class="sidebar-version">
-                        <p>Version: <span id="git-tag"></span></p>
+                    <p>Version: <span id="git-tag"></span> (<span id="last-modif"></span>)</p>
                     </li>
                     <div id="mode-buttons" class="btn-group btn-group-justified" role="group" aria-label="...">
                         <div class="btn-group" role="group">
@@ -342,12 +342,12 @@
                     </div>
                     <li>
                         <div id="newickInputs">
-                            <p class="singleIn"><b>Tree Newick:</b></p>
-                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50"></textarea>
-                            <p class="compareIn"><b>Tree 1 Newick:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50"></textarea>
-                            <p class="compareIn"><b>Tree 2 Newick:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50"></textarea>
+                            <p class="singleIn"><b>Tree:</b></p>
+                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <p class="compareIn"><b>Tree 1:</b></p>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <p class="compareIn"><b>Tree 2:</b></p>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
@@ -438,14 +438,15 @@
             var div_footer = $("#footer_div");
             var divdiv = $("#sidebar-wrapper-wrapper");
             var divwindow = $(window);
-            divdiv.height(divwindow.height()-div_footer.height()+50);
+            divdiv.height(divwindow.height()-div_footer.height()+100);
             div_footer.width(divdiv.width());
 
         })();
 
-
         var totalTrees = 0;
         var addingTree = false;
+
+
 
 
         var spinnerOpts = {
@@ -503,6 +504,8 @@
             loadedCallback: function() {
                 spinner.stop();
             },
+            enableRerootFixedButtons: $("#rerootFixedButtons").val(),
+            enableSwapFixedButtons: $("#swapFixedButtons").val(),
             lineThickness: $("#lineThickness").val(),
             nodeSize: $("#nodeSize").val(),
             fontSize: $("#fontSize").val(),
@@ -514,6 +517,12 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
+
+        /*
+        /
+        /    LOAD PAGE FROM GIST
+        /
+        */
         if (gistID.length === 2){ //view mode
 
             $("#compare-btn").removeClass("active");
@@ -550,11 +559,6 @@
             var tree1 = treecomp.addTreeGistURL(gistID[1]);
             var tree2 = treecomp.addTreeGistURL(gistID[2]);
 
-            treecomp.changeSettings({
-                autoCollapse: tree1.data.autoCollapseDepth
-            });
-            var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
-            $("#collapseAmount").html(collapseText);
             $("#page-content-wrapper").empty();
             $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
             treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
@@ -564,13 +568,19 @@
             $("#newickIn1").val(tree1.nwk);
             $("#newickIn2").val(tree2.nwk);
 
-        }
+        } //end of gist id part
 
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
 
+        /*
+         /
+         /    VIEW MODE: active windows in sidebar
+         /
+         */
+        $("#best_corresponding_tree").hide();
         $("#view-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickInSingle").val('');
@@ -580,14 +590,25 @@
             $(".compareIn").css({
                 "display": "none"
             });
+            $("#best_corresponding_tree").hide();
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
             $(".singleIn").css({
                 "display": "block"
             });
+            $("#renderErrorMessage").empty();
+
+            treecomp.changeSettings({
+                enableFixedButtons: false
+            })
         });
 
+        /*
+         /
+         /    COMPARE MODE: active windows in sidebar
+         /
+         */
         $("#compare-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickIn1").val('');
@@ -604,8 +625,19 @@
             $(".compareIn").css({
                 "display": "block"
             });
+            $("#best_corresponding_tree").show();
+            $("#renderErrorMessage").empty();
+
+            treecomp.changeSettings({
+                enableFixedButtons: true
+            })
         });
 
+        /*------------
+        /
+        /    COLLAPSING BY LEVEL BUTTON
+        /
+        ------------*/
         $("#collapseInc").click(function(e) {
             var amountText = $("#collapseAmount").html();
             var amount = 0;
@@ -639,45 +671,68 @@
             treecomp.changeAutoCollapseDepth(amount);
         });
 
+        /*------
+        /
+        /    RENDER BUTTON
+        /
+        ------*/
         $("#renderButton").click(function(e) {
             $("#renderErrorMessage").empty();
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
-                    var tree1 = treecomp.addTree($("#newickIn1").val());
-                    var tree2 = treecomp.addTree($("#newickIn2").val());
+                    //$("#page-content-wrapper").empty();
+                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined);
+                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
-                    $("#page-content-wrapper").empty();
-                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+
                     treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    if(e==="NHX"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">NHX not supported</div>')).hide().slideDown(300);
+                    }else if (e==="NoTree"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    }else if (e===""){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Scheisse</div>')).hide().slideDown(300);
+                    }
                 }
             } else if (mode === "view-btn") {
                 try {
-                    var tree1 = treecomp.addTree($("#newickInSingle").val());
+                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
-                    $("#page-content-wrapper").empty();
+                    //$("#page-content-wrapper").empty();
                     $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
                     treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
                     $("#colorScale").empty();
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    if(e==="NHX"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">NHX not supported</div>')).hide().slideDown(300);
+                    }else if (e==="NoTree"){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    }else if (e===""){
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Scheisse</div>')).hide().slideDown(300);
+                    }
                 }
             }
         });
 
 
+        /*------
+         /
+         /    SETTINGS
+         /
+         ------*/
         var settingsShown = false;
 
         $("#settings").click(function(e) {
@@ -694,26 +749,53 @@
             }
         });
 
-        //var exportShown = false;
+        /*-----------
+         /
+         /    FIND THE BEST CORRESPONDING TREE
+         /
 
-        $("#export").click(function(e) {
-            console.log("where");
+        $("#best_corresponding_tree").click(function(e) {
+            $("#renderErrorMessage").empty();
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
-                    $("#exportURLInSingle").attr('href', treecomp.exportTree(true));
-                    $("#exportURLInSingle").html(treecomp.exportTree(true));
-                    $('#myModal').modal('show');
+                    var mode = $("#mode-buttons .active").attr('id');
+                    treecomp.computeBestCorrespondingTree();
+                    //console.log(bestTree);
+                    //$("#exportURLInSingle").attr('href', exportURLGist);
+                    //$("#exportURLInSingle").html(exportURLGist);
+                    //$('#myModal').modal('show');
                 } catch (e) {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
                 }
-            } else if (mode === "view-btn"){
-                try{
-                    $("#exportURLInSingle").attr('href', treecomp.exportTree(false));
-                    $("#exportURLInSingle").html(treecomp.exportTree(false));
+            }
+        });-----------*/
+
+        /*------
+         /
+         /    SHARE BUTTON
+         /
+         ------*/
+        $("#export").click(function(e) {
+            //console.log("where");
+            var mode = $("#mode-buttons .active").attr('id');
+            if (mode === "compare-btn") {
+                try {
+                    var exportURLGist = treecomp.exportTree(true);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
                     $('#myModal').modal('show');
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                }
+            } else if (mode === "view-btn"){
+                try{
+                    var exportURLGist = treecomp.exportTree(false);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
+                    $('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
                 }
 
             }
@@ -773,6 +855,8 @@
          console.log($('#git-tag').html(versions[0].name));
          });*/
         $('#git-tag').html("1.0.0");
+        
+        $("#last-modif").html(document.lastModified);
 
         /*var enableAutomation = true;
          if (enableAutomation) {
@@ -794,8 +878,14 @@
         });
 
         $("#simpleDouble").click(function() {
+            //$("#newickIn1").val("(AFIL.CDS.id62578.tr68301:0.525368,Afi-Ppxl:0.483887,(Spu-Phb1:1.23315,Sko-Phb1:1.3481,(Smi-gi|313475154|dbj|BAJ41032.1:0.472375,((((Lva-pmar1I:0.001563,Lva-pmar1H:0.001597,Lva-pmar1G:0.008937)1:0.011037,Lva-pmar1F:0.002403)0.65:0.008459,(Lva-pmar1E:0.003557,((Lva-pmar1D:0.005373,Lva-pmar1C:0.006285)0.99:0.015518,Lva-pmar1B:0.009016)0.54:0.003857)0.89:0.008241,Lva-pmar1A:0.018191)0.96:0.172247,((Pli-pmar1F:0.053952,(Pli-pmar1C:0.05325,(Pli-pmar1E:0.02152,(Pli-pmar1D:0.025287,Pli-pmar1A:0.019942)1:0.013265)0.98:0.00928)0.51:0.005035)0.99:0.081252,((Spu-Pmar1d:0.037692,Spu-Pmar1c:0.017113)0.9:0.024698,(Spu-Pmar1a:0.071715,Hpu-micro1-gi:0.038382)0.96:0.018524)0.87:0.04667)0.81:0.04896)0.59:0.100861)1:1.43733,(Pmi-Phb1:0.873401,Afi-Phb1:0.44691)0.79:0.22189,(((Pmi-Otx:0.264476,(Spu-Otx:0.01093,Lva-Otx:0.062025)0.99:0.281342)0.7:0.093593,Cin-gi|74136734|ref|NM_001032490.2:0.477395,Afi-Otx:0.268409)1:1.21583,(Pmi-Gsc:0.38765,(Spu-GsC:0.015565,Lva-Gsc:0.208362)0.97:0.29216,Bfl-gi|260831451|ref|XM_002610627.1:0.818611,Afi-Gsc:0.496737)1:0.824482,(Cin-gi|198429586|ref|XM_002119104.1:1.73942,Bfl-gi|260831719|ref|XM_002610760.1:0.976953,(Bfl-gi|260801388|ref|XM_002595532.1:0.526166,Bfl-gi|260801382|ref|XM_002595529.1:0.946938)0.98:0.316371,(Bfl-gi|260791955|ref|XM_002590947.1:0.050132,Bfl-gi|260791951|ref|XM_002590945.1:0.288184)0.98:0.431474,Bfl-gi|260790761|ref|XM_002590364.1:1.12817,(Bfl-gi|260802229|ref|XM_002595949.1:0.524083,Ame-Phb1:0.86344)0.85:0.438539,((Spu-alx-unknown:0.406992,Cin-gi|118343664|ref|NM_001078186.1:1.00838)0.51:0.174577,Bfl-gi|260796220|ref|XM_002593057.1:0.264691,(Spu-Chx10:0.343706,Afi-Chx10:0.166438)0.99:1.1707)0.69:0.313216,(Spu-Arxl:0.523774,Pmi-Arxl:1.12284,Afi-Arxl:0.369079)0.87:0.400322)0.61:0.315159)0.99:0.7752)0.93:0.319184);");
+           //$("#newickIn2").val("((Pli-pmar1C:0.04982971476216899176,((Pli-pmar1A:0.01853490272383020998,Pli-pmar1D:0.02271900137434858594)92:0.01115161265327409452,Pli-pmar1E:0.01901859200836115635)80:0.00746600508734124660)78:0.00432473905358994951,(((((((AFIL.CDS.id62578.tr68301:0.40380291681391977665,Afi-Ppxl:0.41444967698110529719)91:0.30219956781642881571,(Pmi-Phb1:0.79440690097898281063,Afi-Phb1:0.37365336412740352001)61:0.13333362861261538468)30:0.10460860532948103307,(((Bfl-gi|260831451|ref|XM_002610627.1:0.64866922307940477754,((Pmi-Gsc:0.36937144741360378175,Afi-Gsc:0.42935749187216976086)58:0.08633761177527859987,(Lva-Gsc:0.17953091125256040450,Spu-GsC:0.03107504551201345500)96:0.27592232106501696220)46:0.04252309223538374566)98:0.38683078306470125574,(((Pmi-Otx:0.23517153357868259000,(Lva-Otx:0.05330603384273001344,Spu-Otx:0.01712736457236331208)100:0.26570980742971184174)66:0.00000141211799157180,(Afi-Otx:0.29013852965796421701,Cin-gi|74136734|ref|NM_001032490.2:0.41883746565520973970)59:0.12151122598965137522)100:0.78549225904186681380,((Ame-Phb1:0.64271362422831646022,Bfl-gi|260802229|ref|XM_002595949.1:0.49846147581683269978)76:0.35918126374909170595,((Bfl-gi|260831719|ref|XM_002610760.1:0.88228939367580017095,(Pmi-Arxl:1.08556158371680866459,(Afi-Arxl:0.41504207554468192098,Spu-Arxl:0.49283900206322062143)67:0.04919942871689284014)58:0.21399781399059111808)14:0.06903856430662934363,((Bfl-gi|260801388|ref|XM_002595532.1:0.51405593866218979304,Bfl-gi|260801382|ref|XM_002595529.1:0.76984758160539545901)87:0.29649541025870662647,(((Cin-gi|198429586|ref|XM_002119104.1:1.43610537881052957587,(Spu-Chx10:0.24420417056054768978,Afi-Chx10:0.26225439305605835472)99:0.64093362693240918393)15:0.23912230371659187744,(Bfl-gi|260790761|ref|XM_002590364.1:0.95608583358528032026,(Bfl-gi|260791951|ref|XM_002590945.1:0.25792428231570035946,Bfl-gi|260791955|ref|XM_002590947.1:0.05799404890873638418)96:0.31798011001876452797)24:0.08940147506755243001)5:0.16190722027514037329,(Bfl-gi|260796220|ref|XM_002593057.1:0.30272766867709932637,(Spu-alx-unknown:0.37130565399142828609,Cin-gi|118343664|ref|NM_001078186.1:0.89719169779980556534)74:0.22061118421743999840)52:0.23995848824645796271)2:0.06459336747582460070)4:0.10101472788404428083)6:0.07762265306208614157)27:0.15411980739446087818)36:0.09037448430284705791)83:0.40528173888583468587,Sko-Phb1:1.05782545759954982323)19:0.02028210416908014097)38:0.31235639607643039817,Spu-Phb1:0.84061576812303639983)100:0.82771628908512673295,Smi-gi|313475154|dbj|BAJ41032.1:0.35703831029590410440)65:0.09799446838093080203,((Lva-pmar1F:0.00000141211799157180,(Lva-pmar1G:0.00735701973928339081,(Lva-pmar1H:0.00000141211799157180,Lva-pmar1I:0.00000141211799157180)82:0.00000141211799157180)88:0.01102050389863199961)45:0.00737236097464944937,((((Lva-pmar1D:0.00371996294401328838,Lva-pmar1C:0.00461751230557235545)99:0.01410591393923983639,Lva-pmar1B:0.00739046843003031678)39:0.00000141211799157180,Lva-pmar1E:0.00368582124942792204)54:0.00740036229075003750,Lva-pmar1A:0.01487109144681754251)13:0.00000141211799157180)99:0.15085147990969502430)65:0.06455208511189490517,((Spu-Pmar1d:0.03446135590923457559,Spu-Pmar1c:0.01730548753707577408)57:0.02399889489544585267,(Spu-Pmar1a:0.06914585039397486144,Hpu-micro1-gi:0.03842890940433322383)65:0.01341633040145582753)73:0.04976798798075844632)93:0.06987675919317459794,Pli-pmar1F:0.04929361396699290243);");
+            //$("#newickIn1").val("((((A,B),C),D),(E,F));");
+            //$("#newickIn2").val("(((F,E),(D,(B,A))),C);");
+            //$("#newickIn2").val("((sba:0.04645932805874481569,(smi:0.03315550229946162553,(spa:0.01466907419174275952,sce:0.02383733069302066895):0.01620853054082276729):0
             $("#newickIn1").val("((sba:0.03984952076326608861,(sca:0.24212307199678842484,(cgl:0.29957965624763355228,(((kla:0.32829009627835226137,ago:0.35217085340006204497):0.05741546733669361524,(skl:0.15813405639248145906,kwa:0.25658337062111585825):0.04348414441988464330):0.03689776646512240438,(yli:1.00856143917930674014,(((lel:0.28806785996189482324,(cal:0.11643570498932501178,ctr:0.12746420698315982789):0.08774131940069260227):0.12449843844102517765,pst:0.20187483296288805112):0.04951181210826986756,(pgu:0.32083506939774530942,dha:0.19121342958249643029):0.04448806563879210280):0.37619889625745939199):0.45090563411571948915):0.08921537612721808230):0.03625000527459597971):0.17548658899657892940):0.01414267170946369515,((sce:0.02228625922028022385,spa:0.01687593406907536564):0.01282179619059338992,smi:0.03661027033511007195):0.01331228080676675335,sku:0.04268512407808848497):0.0;");
             $("#newickIn2").val("((sba:0.04645932805874481569,(smi:0.03315550229946162553,(spa:0.01466907419174275952,sce:0.02383733069302066895):0.01620853054082276729):0.01834962617511207497):0.06496501071301066799,(sca:0.21928497146352055047,((((ago:0.34529718349701971070,kla:0.26611733077459831520):0.04460721000595434249,(kwa:0.23458417353426505580,skl:0.38245746198409408256):0.02217438839159899949):0.02847427462232336726,(((pst:0.21220493191897629726,((cal:0.09792303271040220247,ctr:0.11778282966461572911):0.07993742108354510989,lel:0.23757786374413303321):0.09896075353236584438):0.04667831716440219020,(pgu:0.28475663985974825065,dha:0.17797706546403241346):0.04249479494672471491):0.29326816910580705278,yli:0.72911704942210797675):0.31199925135971823265):0.06946141605430436461,cgl:0.27125751484306920291):0.03678319509837457008):0.09011350505801994648,sku:3.28511106679567399524):0.0;");
+            //$("#newickIn2").val("((sba:0.04645932805874481569,(smi:0.03315550229946162553,(spa:0.01466907419174275952,sce:0.02383733069302066895):0.01620853054082276729):0.01834962617511207497):0.06496501071301066799,(sca:0.21928497146352055047,((((ago:0.34529718349701971070,kla:0.26611733077459831520):0.04460721000595434249,(kwa:0.23458417353426505580,skl:0.38245746198409408256):0.02217438839159899949):0.02847427462232336726,(((pst:0.21220493191897629726,((cal:0.09792303271040220247,ctr:0.11778282966461572911):0.07993742108354510989,lel:0.23757786374413303321):0.09896075353236584438):0.04667831716440219020,(pgu:0.28475663985974825065,dha:0.17797706546403241346):0.04249479494672471491):0.29326816910580705278,yli:0.72911704942210797675):0.31199925135971823265):0.06946141605430436461,cgl:0.27125751484306920291):0.03678319509837457008):0.09011350505801994648):0.0;");
         });
 
         $("#bigDouble").click(function() {
