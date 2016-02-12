@@ -774,14 +774,12 @@ TreeCompare = (function() {
             }
 
             //var t0 = performance.now();
-            updateVisibleBCNs(tree1.root.children[1], tree2.root.children[1], false);
-            BCN(tree1.root, tree2.root);
+            updateVisibleBCNs(tree1.root, tree2.root, false);
             //var t1 = performance.now();
             //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
             if(iFinalView){
                 //var t0 = performance.now();
-                updateVisibleBCNs(tree2.root.children[1], tree1.root.children[1], true);
-                BCN(tree2.root,tree1.root);
+                updateVisibleBCNs(tree2.root, tree1.root, true);
                 //var t1 = performance.now();
                 //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
                 //var t0 = performance.now();
@@ -799,7 +797,7 @@ TreeCompare = (function() {
         //
         //------
         //console.log(fixedTree.root.children[0].elementBCN);
-        if (fixedTree.root.children[0].parent){
+        if (fixedTree.root.children[0].elementBCN.parent){
             expandPathToNode(fixedTree.root.children[0].elementBCN);
             reroot(tree, fixedTree.root.children[0].elementBCN, true);
         }
