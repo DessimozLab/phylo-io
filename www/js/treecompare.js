@@ -957,7 +957,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists',
                 type: 'POST',
                 beforeSend: function (xhr) {//TODO:here i need to create a new token to store the gist
-                    xhr.setRequestHeader("Authorization", "token b2cd10ab2c86bf067f8ed970d75078c610a14f55");
+                    xhr.setRequestHeader("Authorization", "token b7123145610949ef84d5a254f79e43fdaba812a7");
                 },
                 dataType: 'json',
                 data: JSON.stringify(tmp),
@@ -1029,7 +1029,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists/'+id,
                 type: 'GET',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "token b2cd10ab2c86bf067f8ed970d75078c610a14f55");
+                    xhr.setRequestHeader("Authorization", "token b7123145610949ef84d5a254f79e43fdaba812a7");
                 },
                 dataType: 'json'
             }).success( function(gistdata) {
