@@ -45,7 +45,7 @@ html {
     float: right;
     width: 200px;
     height: 200px;
-    background-image: url("./img/arrow.png");
+    background-image: url("../img/arrow.png");
     background-repeat: no-repeat;
     background-size: contain;
 }
