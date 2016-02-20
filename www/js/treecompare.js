@@ -250,10 +250,14 @@ TreeCompare = (function() {
                     break;
                 case ']':
                     var x = tokens[i - 1];
-                    tree.name = x;
+                    tree.branchSupport = x;
                     break;
-                case ')': // optional name next
+                case ')': // optional
                     tree = ancestors.pop();
+                    var x = tokens[i + 1];
+                    if (!(x===";" || x==="")){
+                        tree.branchSupport = x;
+                    }
                     break;
                 case ':': // optional length next
                     break;
@@ -263,6 +267,7 @@ TreeCompare = (function() {
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
                         tree.name = tree_meta[0];
+                        //console.log(tree_meta[0]);
                         tree.length = 0.1; // this is used in the case the tree does not have any branch values
                         if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
@@ -321,6 +326,13 @@ TreeCompare = (function() {
             d.correspondingHighlight = false;
             d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
         });
+
+        var root_ID = makeId("node_");
+        for (var i = 0; i < tree.children.length; i++){
+            tree.children[i].ID = root_ID;
+        }
+
+
         var fullTree = {
             root: tree,
             name: name,
@@ -612,12 +624,13 @@ TreeCompare = (function() {
 
 
                 var i, d, tmp;
+                var btmp, bd;
                 var p, q, r, s, new_root;
                 if (node == root) return root;
                 var dist = node.length/2;
                 tmp = node.length;
-
-
+                btmp = node.branchSupport;
+                //console.log(node);
                 /* p: the central multi-parent node
                  * q: the new parent, previous a child of p
                  * r: old parent
@@ -629,13 +642,16 @@ TreeCompare = (function() {
                 q.ID = node.ID;
                 q.children[0] = node; //new root
                 q.children[0].length = dist;
+                q.children[0].branchSupport = btmp;
                 p = node.parent;
                 q.children[0].parent = q;
                 for (i = 0; i < p.children.length; ++i)
                     if (p.children[i] == node) break;
                 q.children[1] = p;
                 d = p.length;
+                bd = p.branchSupport;
                 p.length = tmp - dist;
+                p.branchSupport = btmp;
                 r = p.parent;
                 p.parent = q;
 
@@ -647,6 +663,7 @@ TreeCompare = (function() {
                         if (r.children[i] == p) break;
                     r.parent = p; /* update r's parent */
                     tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                    btmp = r.branchSupport; r.branchSupport = bd; bd = btmp;
                     q = p; p = r; r = s; /* update p, q and r */
                     if(isCompared) { //ensures that only partially the BCNs are recomputed
                         q.elementBCN = null;
@@ -1464,7 +1481,7 @@ TreeCompare = (function() {
                     if (settings.internalLabels === "none") {
                         return "";
                     } else if (settings.internalLabels === "name") { //print bootstrap values
-                        return d.name
+                        return d.branchSupport
                     } else if (settings.internalLabels === "length") {
                         if (d.length) {
                             return d.length.toFixed(3);
@@ -3292,7 +3309,7 @@ TreeCompare = (function() {
             //console.log(comparedTree.name);
 
 
-            function kn_new_node(d) { // private method
+            function new_node(d) { // private method
                 return {parent:null, children:[], name:"", ID:"",length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
             }
             /*
@@ -3302,104 +3319,125 @@ TreeCompare = (function() {
              newRoot = d
              */
             /* Reroot: put the root in the middle of node and its parent */
-            function kn_reroot(tree, node)
+            function reroot(tree, node)
             {
-                var load = false;
-                if (isCompared) {
-                    load = true;
-                    settings.loadingCallback();
+                var rerooting = true;
+                for (var i = 0; i < tree.root.children.length; i++){
+                    if (node.ID == tree.root.children[i].ID){
+                        rerooting = false;
+                    }
                 }
-                setTimeout(function() {
-                    var root = tree.root;
-                    //console.log(tree);
-                    if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
-                        backupRoot=root;
-                        manualReroot=true;
-                    } else {
-                        root = backupRoot;
+                if(rerooting){
+                    var load = false;
+                    if (isCompared) {
+                        load = true;
+                        settings.loadingCallback();
                     }
-
-
-
-                    var i, d, tmp;
-                    var p, q, r, s, new_root;
-                    if (node == root) return root;
-                    var dist = node.length/2;
-                    tmp = node.length;
-
-
-                    /* p: the central multi-parent node
-                     * q: the new parent, previous a child of p
-                     * r: old parent
-                     * i: previous position of q in p
-                     * d: previous distance p->d
-                     */
-                    q = new_root = kn_new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-                    //console.log(q);
-                    q.ID = node.ID;
-                    q.children[0] = node; //new root
-                    q.children[0].length = dist;
-                    p = node.parent;
-                    q.children[0].parent = q;
-                    for (i = 0; i < p.children.length; ++i)
-                        if (p.children[i] == node) break;
-                    q.children[1] = p;
-                    d = p.length;
-                    p.length = tmp - dist;
-                    r = p.parent;
-                    p.parent = q;
-
-
-                    while (r != null) {
-                        s = r.parent; /* store r's parent */
-                        p.children[i] = r; /* change r to p's children */
-                        for (i = 0; i < r.children.length; ++i) /* update i */
-                            if (r.children[i] == p) break;
-                        r.parent = p; /* update r's parent */
-                        tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
-                        q = p; p = r; r = s; /* update p, q and r */
-                        if(isCompared) { //ensures that only partially the BCNs are recomputed
-                            q.elementBCN = null;
+                    setTimeout(function() {
+                        var root = tree.root;
+                        //console.log(tree);
+                        if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
+                            backupRoot=root;
+                            manualReroot=true;
+                        } else {
+                            root = backupRoot;
                         }
-                    }
 
-                    /* now p is the root node */
-                    if (p.children.length == 2) { /* remove p and link the other child of p to q */
-                        r = p.children[1 - i]; /* get the other child */
-                        for (i = 0; i < q.children.length; ++i) /* the position of p in q */
-                            if (q.children[i] == p) break;
-                        r.length += p.length;
-                        r.parent = q;
-                        q.children[i] = r; /* link r to q */
-                    } else { /* remove one child in p */
-                        for (j = k = 0; j < p.children.length; ++j) {
-                            p.children[k] = p.children[j];
-                            if (j != i) ++k;
+
+
+                        var i, d, tmp;
+                        var btmp, bd;
+                        var p, q, r, s, new_root;
+                        if (node == root) return root;
+                        var dist = node.length/2;
+                        tmp = node.length;
+                        btmp = node.branchSupport;
+                        //console.log(node);
+                        /* p: the central multi-parent node
+                         * q: the new parent, previous a child of p
+                         * r: old parent
+                         * i: previous position of q in p
+                         * d: previous distance p->d
+                         */
+                        q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+                        //console.log(q);
+                        q.ID = node.ID;
+                        q.children[0] = node; //new root
+                        q.children[0].length = dist;
+                        q.children[0].branchSupport = btmp;
+                        p = node.parent;
+                        q.children[0].parent = q;
+                        for (i = 0; i < p.children.length; ++i)
+                            if (p.children[i] == node) break;
+                        q.children[1] = p;
+                        d = p.length;
+                        bd = p.branchSupport;
+                        p.length = tmp - dist;
+                        p.branchSupport = btmp;
+                        r = p.parent;
+                        p.parent = q;
+
+
+                        while (r != null) {
+                            s = r.parent; /* store r's parent */
+                            p.children[i] = r; /* change r to p's children */
+                            for (i = 0; i < r.children.length; ++i) /* update i */
+                                if (r.children[i] == p) break;
+                            r.parent = p; /* update r's parent */
+                            tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                            btmp = r.branchSupport; r.branchSupport = bd; bd = btmp;
+                            q = p; p = r; r = s; /* update p, q and r */
+                            if(isCompared) { //ensures that only partially the BCNs are recomputed
+                                q.elementBCN = null;
+                            }
                         }
-                        --p.children.length;
-                    }
-                    postorderTraverse(new_root, function(d) {
-                        //d.bcnhighlight = null;
-                        //d.highlight = 0;
-                        //d.clickedHighlight = null;
-                        d.leaves = getChildLeaves(d);
-                    },false);
-                    //new_root.leaves = getChildLeaves(new_root);
-                    tree.root = new_root;
-                    tree.data.root = tree.root; //create clickEvent that is given to update function
 
-                    if (isCompared){
-                        postRerootClean(tree.root, tree.name);
-                    }
 
-                    if (load) {
-                        //console.log("here");
-                        settings.loadedCallback();
-                    }
+                        /* now p is the root node */
+                        if (p.children.length == 2) { /* remove p and link the other child of p to q */
+                            r = p.children[1 - i]; /* get the other child */
+                            for (i = 0; i < q.children.length; ++i) /* the position of p in q */
+                                if (q.children[i] == p) break;
+                            r.length += p.length;
+                            r.parent = q;
+                            q.children[i] = r; /* link r to q */
+                        } else { /* remove one child in p */
+                            for (j = k = 0; j < p.children.length; ++j) {
+                                p.children[k] = p.children[j];
+                                if (j != i) ++k;
+                            }
+                            --p.children.length;
+                        }
 
-                    update(tree.root, tree.data);
 
-                }, 2);
+
+
+
+
+                        postorderTraverse(new_root, function(d) {
+                            //d.bcnhighlight = null;
+                            //d.highlight = 0;
+                            //d.clickedHighlight = null;
+                            d.leaves = getChildLeaves(d);
+                        },false);
+                        //new_root.leaves = getChildLeaves(new_root);
+                        tree.root = new_root;
+                        tree.data.root = tree.root; //create clickEvent that is given to update function
+
+                        if (isCompared){
+                            postRerootClean(tree.root, tree.name);
+                        }
+
+                        if (load) {
+                            //console.log("here");
+                            settings.loadedCallback();
+                        }
+
+                        update(tree.root, tree.data);
+
+                    }, 2);
+                }
+
 
             }
 
@@ -3444,7 +3482,6 @@ TreeCompare = (function() {
                     if (recalculate === undefined) {
                         recalculate = true;
                     }
-                    var i = 0;
 
                     function getAllBCNs(d, t) {
                         var children = d.children ? d.children : [];
@@ -3551,7 +3588,7 @@ TreeCompare = (function() {
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
-                    kn_reroot(tree, d);
+                    reroot(tree, d);
                     removeTooltips(svg);
                     manualReroot = true;
                     //if (!manualReroot){
