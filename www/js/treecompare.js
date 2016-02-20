@@ -2102,7 +2102,7 @@ TreeCompare = (function() {
             var timeoutIdUp = 0;
             $("#" + canvasId + " #upButton").mousedown(function() {
                 actionUp();
-                timeoutIdUp = setInterval(actionUp, 50);
+                timeoutIdUp = setInterval(actionUp, 150);
             }).bind('mouseup mouseleave', function() {
                 clearTimeout(timeoutIdUp);
             });
@@ -2110,7 +2110,7 @@ TreeCompare = (function() {
             var timeoutIddown = 0;
             $("#" + canvasId + " #downButton").mousedown(function() {
                 actionDown();
-                timeoutIddown = setInterval(actionDown, 50);
+                timeoutIddown = setInterval(actionDown, 150);
             }).bind('mouseup mouseleave', function() {
                 clearTimeout(timeoutIddown);
             });
@@ -3321,20 +3321,15 @@ TreeCompare = (function() {
             /* Reroot: put the root in the middle of node and its parent */
             function reroot(tree, node)
             {
-                var rerooting = true;
-                for (var i = 0; i < tree.root.children.length; i++){
-                    if (node.ID == tree.root.children[i].ID){
-                        rerooting = false;
-                    }
-                }
-                if(rerooting){
+                var root = tree.root;
+                if(node.parent !== root){
                     var load = false;
                     if (isCompared) {
                         load = true;
                         settings.loadingCallback();
                     }
                     setTimeout(function() {
-                        var root = tree.root;
+
                         //console.log(tree);
                         if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
                             backupRoot=root;
@@ -3361,7 +3356,7 @@ TreeCompare = (function() {
                          */
                         q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
                         //console.log(q);
-                        q.ID = node.ID;
+                        q.ID = makeId("node_");
                         q.children[0] = node; //new root
                         q.children[0].length = dist;
                         q.children[0].branchSupport = btmp;
@@ -3370,6 +3365,7 @@ TreeCompare = (function() {
                         for (i = 0; i < p.children.length; ++i)
                             if (p.children[i] == node) break;
                         q.children[1] = p;
+                        q.children[1].ID =  makeId("node_");
                         d = p.length;
                         bd = p.branchSupport;
                         p.length = tmp - dist;
@@ -3418,6 +3414,7 @@ TreeCompare = (function() {
                             //d.bcnhighlight = null;
                             //d.highlight = 0;
                             //d.clickedHighlight = null;
+                            d.ID = makeId("node_");
                             d.leaves = getChildLeaves(d);
                         },false);
                         //new_root.leaves = getChildLeaves(new_root);
