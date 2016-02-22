@@ -216,23 +216,47 @@ TreeCompare = (function() {
         var ancestors = [];
         var tree = {};
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
-        //console.log(tokens);
-        //console.log(tokens.indexOf("["));
+
+        // the following part keeps the NHX datastructure
+        var square_bracket_start = tokens.indexOf("[");
+        var square_bracket_end = tokens.indexOf("]");
+        var dist_square_bracket = square_bracket_end - square_bracket_start;
+        //console.log(dist_square_bracket);
+        var new_tokens = [];
+        for (var i = 0; i < tokens.length; i++){
+            if (tokens[i] == "["){
+                new_tokens.push(tokens[i]);
+                new_tokens.push(tokens.slice(i+1,i+dist_square_bracket).join(""));
+                new_tokens.push(tokens[i+dist_square_bracket]);
+                i = i + dist_square_bracket;
+            }else{
+                new_tokens.push(tokens[i]);
+            }
+        }
+
         try { //catch error when newick is not in place
             if (tokens=="") throw "empty";// calls convert function from above
         } catch (err) {
             throw "NoTree";
         }
 
-        try {// catch error if input is in NHX format
+        /*try {// catch error if input is in NHX format
             if (s.indexOf("&&NHX")!=-1) throw "empty"; // TODO:change this to &&NHX and not []
         } catch (err) {
             throw "NHX";
+        }*/
+        function check_nhx_variable(nhx_array, string_to_check){
+            var found_pos = -1;
+            for (var i = 0; i < nhx_array.length; i++){
+                if (nhx_array[i].indexOf(string_to_check)!=-1){
+                    found_pos = i;
+                }
+            }
+            return found_pos;
         }
-        //TODO: find a more sophisticated way to test for newick format
 
-        for (var i = 0; i < tokens.length; i++) {
-            var token = tokens[i];
+        for (var i = 0; i < new_tokens.length; i++) {
+            var token = new_tokens[i];
             switch (token) {
                 case '(': // new children
                     var subtree = {};
@@ -247,14 +271,31 @@ TreeCompare = (function() {
                     //console.log(ancestors);
                     break;
                 case '['://TODO: input NHX format
+                    var x = new_tokens[i + 1];
+                    if (x.indexOf("&&NHX")!=-1){ //if NHX format
+                        var nhx_tokens = x.split(/:/);
+                        console.log(nhx_tokens);
+                        var tmp_idx = check_nhx_variable(nhx_tokens, "B=");
+                        console.log(tmp_idx);
+                        if (tmp_idx!=-1){
+                            var branchSupport = nhx_tokens[tmp_idx].split("=");
+                            tree.branchSupport = branchSupport[1];
+                            console.log(branchSupport);
+                        }
+
+                    }else{
+                        if (!(x===";" || x==="")){
+                            tree.branchSupport = x;
+                        }
+                    }
                     break;
                 case ']':
-                    var x = tokens[i - 1];
-                    tree.branchSupport = x;
+                    //var x = new_tokens[i - 1];
+                    //tree.branchSupport = x;
                     break;
                 case ')': // optional
                     tree = ancestors.pop();
-                    var x = tokens[i + 1];
+                    var x = new_tokens[i + 1];
                     if (!(x===";" || x==="")){
                         tree.branchSupport = x;
                     }
@@ -262,7 +303,7 @@ TreeCompare = (function() {
                 case ':': // optional length next
                     break;
                 default:
-                    var x = tokens[i - 1];
+                    var x = new_tokens[i - 1];
                     //console.log(x);
                     if (x == ')' || x == '(' || x == ',') {
                         var tree_meta = token.split("@@"); // separation of metadata for export
