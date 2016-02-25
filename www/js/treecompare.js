@@ -274,13 +274,13 @@ TreeCompare = (function() {
                     var x = new_tokens[i + 1];
                     if (x.indexOf("&&NHX")!=-1){ //if NHX format
                         var nhx_tokens = x.split(/:/);
-                        console.log(nhx_tokens);
+                        //console.log(nhx_tokens);
                         var tmp_idx = check_nhx_variable(nhx_tokens, "B=");
-                        console.log(tmp_idx);
+                        //console.log(tmp_idx);
                         if (tmp_idx!=-1){
                             var branchSupport = nhx_tokens[tmp_idx].split("=");
                             tree.branchSupport = branchSupport[1];
-                            console.log(branchSupport);
+                            //console.log(branchSupport);
                         }
 
                     }else{
@@ -1015,7 +1015,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists',
                 type: 'POST',
                 beforeSend: function (xhr) {//TODO:here i need to create a new token to store the gist
-                    xhr.setRequestHeader("Authorization", "token b7123145610949ef84d5a254f79e43fdaba812a7");
+                    xhr.setRequestHeader("Authorization", "token 6be0dc551d176b4e86631d03b71b644329c75c82");
                 },
                 dataType: 'json',
                 data: JSON.stringify(tmp),
@@ -1087,7 +1087,7 @@ TreeCompare = (function() {
                 url: 'https://api.github.com/gists/'+id,
                 type: 'GET',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "token b7123145610949ef84d5a254f79e43fdaba812a7");
+                    xhr.setRequestHeader("Authorization", "token 6be0dc551d176b4e86631d03b71b644329c75c82");
                 },
                 dataType: 'json'
             }).success( function(gistdata) {
