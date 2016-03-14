@@ -336,6 +336,65 @@ TreeCompare = (function() {
     }
 
     /*
+     Called externally and allows to drag and drop text files
+     */
+    function inputTreeFile(newickIn){
+        /*
+         /
+         /    Enable drag and drop
+         /
+         */
+        var MAX_BYTES = 102400; // 100 KB
+
+        function dragEnter(event) {
+            //console.log('dragEnter', event);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragExit(event) {
+            //console.log('dragExit', event);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragOver(event) {
+            //console.log('dragOver', event);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function drop(event) {
+
+            //console.log('drop', event);
+            event.stopPropagation();
+            event.preventDefault();
+
+            var data = event.dataTransfer;
+            var file = data.files;
+            var reader;
+            reader = new FileReader();
+            reader.onload = function(event) {
+                $("#" + newickIn).val(event.target.result);
+            };
+            reader.onloadend = onFileLoaded;
+            reader.readAsText(file[0]);
+
+        }
+
+        function onFileLoaded(event) {
+            event.currentTarget.result.substr(0, MAX_BYTES);
+        }
+
+        var dropArea = $("#" + newickIn).get(0);
+
+        dropArea.addEventListener("dragenter", dragEnter, false);
+        dropArea.addEventListener("dragexit", dragExit, false);
+        dropArea.addEventListener("dragover", dragOver, false);
+        dropArea.addEventListener("drop", drop, false);
+    }
+
+    /*
      Called externally to convert a tree and add to internal tree structure
      */
     function addTree(newick, name) {
@@ -4093,6 +4152,7 @@ TreeCompare = (function() {
     //return all the externalised functions
     return {
         init: init,
+        inputTreeFile: inputTreeFile,
         viewTree: viewTree,
         renderColorScale: renderColorScale,
         addTree: addTree,

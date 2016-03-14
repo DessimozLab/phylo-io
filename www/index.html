@@ -234,66 +234,8 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
-        /*
-         /
-         /    Enable drag and drop
-         /
-         */
-        var MAX_BYTES = 102400; // 100 KB
-
-        function dragEnter(event) {
-            console.log('dragEnter', event);
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function dragExit(event) {
-            console.log('dragExit', event);
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function dragOver(event) {
-            console.log('dragOver', event);
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function drop(event) {
-
-            console.log('drop', event);
-            event.stopPropagation();
-            event.preventDefault();
-
-            var data = event.dataTransfer;
-            var files = data.files;
-            var file;
-            var reader;
-
-            for(var i = 0; i < files.length; i++) {
-                file = files[i];
-                console.log(file, file.fileName);
-                //$('#filename').text('BINARY: ' + file.fileName);
-                reader = new FileReader();
-                reader.onloadend = onFileLoaded;
-                reader.readAsBinaryString(file);
-                //reader.readAsDataURL(file);
-            }
-        }
-
-        function onFileLoaded(event) {
-            console.log('onFileLoaded', event);
-            var initialData = event.currentTarget.result.substr(0, MAX_BYTES);
-            $('#newickInSingle').text(initialData);
-        }
-
-        var dropArea = $("#newickInSingle").get(0);
-
-        dropArea.addEventListener("dragenter", dragEnter, false);
-        dropArea.addEventListener("dragexit", dragExit, false);
-        dropArea.addEventListener("dragover", dragOver, false);
-        dropArea.addEventListener("drop", drop, false);
-
+        console.log(treecomp.inputTreeFile("newickInSingle"));
+        //$("#newickInSingle").val(treecomp.inputTreeFile("newickInSingle"));
 
 
         /*
@@ -483,6 +425,8 @@
                 }
             } else if (mode === "view-btn") {
                 try {
+                    //
+                    console.log($("#newickInSingle").val());
                     var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
