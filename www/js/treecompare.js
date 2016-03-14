@@ -389,8 +389,6 @@ TreeCompare = (function() {
                 };
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
-                console.log(file);
-                console.log(reader);
             } else {
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
