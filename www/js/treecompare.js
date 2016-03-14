@@ -289,8 +289,6 @@ TreeCompare = (function() {
             throw "TooLittle("
         }
 
-        console.log(new_tokens);
-
 
         function check_nhx_variable(nhx_array, string_to_check){
             var found_pos = -1;
