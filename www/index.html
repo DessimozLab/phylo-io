@@ -60,11 +60,11 @@
                     <li>
                         <div id="newickInputs">
                             <p class="singleIn"><b>Tree:</b></p>
-                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                             <p class="compareIn"><b>Tree 1:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                             <p class="compareIn"><b>Tree 2:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
@@ -234,7 +234,10 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
-
+        var mode = $("#mode-buttons .active").attr('id');
+        if (mode === "view-btn"){
+            treecomp.inputTreeFile("newickInSingle");
+        }
         /*
         /
         /    LOAD PAGE FROM GIST
@@ -301,6 +304,8 @@
         $("#view-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickInSingle").val('');
+            treecomp.inputTreeFile("newickInSingle");
+
             $("#colorScale").empty();
             $("#compare-btn").removeClass("active");
             $("#view-btn").addClass("active");
@@ -330,6 +335,9 @@
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickIn1").val('');
             $("#newickIn2").val('');
+            treecomp.inputTreeFile("newickIn1");
+            treecomp.inputTreeFile("newickIn2");
+
             $("#colorScale").empty();
             $("#view-btn").removeClass("active");
             $("#compare-btn").addClass("active");
@@ -349,6 +357,7 @@
                 enableFixedButtons: true
             })
         });
+
 
         /*------------
         /
@@ -422,6 +431,7 @@
                 }
             } else if (mode === "view-btn") {
                 try {
+                    //
                     var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
@@ -466,27 +476,6 @@
             }
         });
 
-        /*-----------
-         /
-         /    FIND THE BEST CORRESPONDING TREE
-         /
-
-        $("#best_corresponding_tree").click(function(e) {
-            $("#renderErrorMessage").empty();
-            var mode = $("#mode-buttons .active").attr('id');
-            if (mode === "compare-btn") {
-                try {
-                    var mode = $("#mode-buttons .active").attr('id');
-                    treecomp.computeBestCorrespondingTree();
-                    //console.log(bestTree);
-                    //$("#exportURLInSingle").attr('href', exportURLGist);
-                    //$("#exportURLInSingle").html(exportURLGist);
-                    //$('#myModal').modal('show');
-                } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Newick Error</div>')).hide().slideDown(300);
-                }
-            }
-        });-----------*/
 
         /*------
          /
