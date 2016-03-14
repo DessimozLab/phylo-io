@@ -209,26 +209,63 @@ TreeCompare = (function() {
         return nested(json) +";";
     }
 
+    function checkTreeInput(s){
+        var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/);
+        var outError = "";
+
+        function returnNumElementInArray(inArray,element){
+            var numOfTrue = 0;
+            for(var i=0;i<inArray.length;i++){
+                if(inArray[i] === element)
+                    numOfTrue++;
+            }
+            return numOfTrue;
+        }
+
+        if (returnNumElementInArray(tokens,"(") > returnNumElementInArray(tokens,")")){
+            outError = "TooLittle)";
+        } else if (returnNumElementInArray(tokens,"(") < returnNumElementInArray(tokens,")")){
+            outError = "TooLittle(";
+        }
+
+        return outError;
+    }
+
     /*
      Newick to JSON converter, just copied code from newick.js
      */
     function convertTree(s) { //s is newick file format
         var ancestors = [];
         var tree = {};
+
+        s = s.replace(/(\r\n|\n|\r)/gm,""); // remove all new line characters
+
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
 
+        function getIdxToken(tokenArray, queryToken){
+            var posTokens = [];
+            for (var i = 0; i < tokenArray.length; i++){
+                if (tokenArray[i] == queryToken){
+                    posTokens.push(i)
+                }
+
+            }
+            return posTokens;
+        }
+
         // the following part keeps the NHX datastructure
-        var square_bracket_start = tokens.indexOf("[");
-        var square_bracket_end = tokens.indexOf("]");
-        var dist_square_bracket = square_bracket_end - square_bracket_start;
-        //console.log(dist_square_bracket);
+        var square_bracket_start = getIdxToken(tokens,"[");
+        var square_bracket_end = getIdxToken(tokens,"]");
         var new_tokens = [];
+        var j = 0;
         for (var i = 0; i < tokens.length; i++){
             if (tokens[i] == "["){
+                var dist_square_bracket = square_bracket_end[j] - square_bracket_start[j];
                 new_tokens.push(tokens[i]);
                 new_tokens.push(tokens.slice(i+1,i+dist_square_bracket).join(""));
                 new_tokens.push(tokens[i+dist_square_bracket]);
                 i = i + dist_square_bracket;
+                j = j + 1;
             }else{
                 new_tokens.push(tokens[i]);
             }
@@ -240,11 +277,21 @@ TreeCompare = (function() {
             throw "NoTree";
         }
 
-        /*try {// catch error if input is in NHX format
-            if (s.indexOf("&&NHX")!=-1) throw "empty"; // TODO:change this to &&NHX and not []
+        try {
+            if (checkTreeInput(s)=="TooLittle)") throw "empty"; // TODO:change this to &&NHX and not []
         } catch (err) {
-            throw "NHX";
-        }*/
+                throw "TooLittle)"
+        }
+
+        try {
+            if (checkTreeInput(s)=="TooLittle(") throw "empty"; // TODO:change this to &&NHX and not []
+        } catch (err) {
+            throw "TooLittle("
+        }
+
+        console.log(new_tokens);
+
+
         function check_nhx_variable(nhx_array, string_to_check){
             var found_pos = -1;
             for (var i = 0; i < nhx_array.length; i++){
@@ -252,6 +299,7 @@ TreeCompare = (function() {
                     found_pos = i;
                 }
             }
+
             return found_pos;
         }
 
