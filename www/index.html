@@ -60,11 +60,11 @@
                     <li>
                         <div id="newickInputs">
                             <p class="singleIn"><b>Tree:</b></p>
-                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                             <p class="compareIn"><b>Tree 1:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                             <p class="compareIn"><b>Tree 2:</b></p>
-                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree in Newick format here"></textarea>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
@@ -234,7 +234,9 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
-        console.log(treecomp.inputTreeFile("newickInSingle"));
+        treecomp.inputTreeFile("newickInSingle");
+
+        //console.log(treecomp.inputTreeFile("newickInSingle"));
         //$("#newickInSingle").val(treecomp.inputTreeFile("newickInSingle"));
 
 
@@ -426,7 +428,6 @@
             } else if (mode === "view-btn") {
                 try {
                     //
-                    console.log($("#newickInSingle").val());
                     var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth

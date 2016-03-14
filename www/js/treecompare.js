@@ -369,16 +369,35 @@ TreeCompare = (function() {
             //console.log('drop', event);
             event.stopPropagation();
             event.preventDefault();
+            $("#renderErrorMessage").empty();
 
             var data = event.dataTransfer;
             var file = data.files;
-            var reader;
-            reader = new FileReader();
-            reader.onload = function(event) {
-                $("#" + newickIn).val(event.target.result);
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
             };
-            reader.onloadend = onFileLoaded;
-            reader.readAsText(file[0]);
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader;
+                reader = new FileReader();
+                reader.onload = function(event) {
+                    $("#" + newickIn).val(event.target.result);
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+                console.log(file);
+                console.log(reader);
+            } else {
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+            // object for allowed media types
 
         }
 
