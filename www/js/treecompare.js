@@ -2524,6 +2524,10 @@ TreeCompare = (function() {
             $('#searchButton' + canvasId).click(function() {
                 if (!visible) {
                     visible = true;
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
                     $("#searchInput" + canvasId).css({
                         "display": "inline"
                     });
