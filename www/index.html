@@ -73,7 +73,11 @@
                     <div class="exampleBtn compareIn extraMargin" id="bigDouble"><a href="#">Large Example Trees</a></div>
                     <li>
                         <div id="renderErrorMessage"></div>
-                        <button type="button" id="renderButton" class="btn btn-primary">Render <span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" id="renderButton" class="btn btn-primary">Render <span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+                            <button type="button" id="clearButton" class="btn btn-primary">Clear</button>
+                        </div>
+
                     </li>
                     <li>
                         <div id="colorScale"></div>
@@ -396,6 +400,24 @@
 
             treecomp.changeAutoCollapseDepth(amount);
         });
+
+        $("#clearButton").click(function(e) {
+            $("#renderErrorMessage").empty();
+            var mode = $("#mode-buttons .active").attr('id');
+            if (mode === "compare-btn") {
+                $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+                $("#newickIn1").val('');
+                $("#newickIn2").val('');
+                $("#colorScale").empty();
+            } else if (mode === "view-btn"){
+                $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+                $("#newickInSingle").val('');
+                treecomp.inputTreeFile("newickInSingle");
+
+            }
+
+        });
+
 
         /*------
         /
