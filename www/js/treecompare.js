@@ -2126,7 +2126,11 @@ TreeCompare = (function() {
      */
     function stringSearch(string, start){
         var does = true;
-        var n = string.search(start);
+        if(start !== ""){
+            var n = string.search(start);
+        }else{
+            var n = -1;
+        }
         //console.log(n);
         if (n==-1) {
             does = false;
@@ -2524,6 +2528,10 @@ TreeCompare = (function() {
             $('#searchButton' + canvasId).click(function() {
                 if (!visible) {
                     visible = true;
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
                     $("#searchInput" + canvasId).css({
                         "display": "inline"
                     });
@@ -2552,7 +2560,7 @@ TreeCompare = (function() {
             });
 
 
-            var t0 = performance.now();
+            //var t0 = performance.now();
             //main event handler, performs search every time a char is typed so can get realtime results
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
@@ -2561,9 +2569,26 @@ TreeCompare = (function() {
                     //return startsWith(leaf.name.toLowerCase(), text.toLowerCase());
                     return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
                 });
-                if (text !== "") {
+                var results_name = [];
+                for (var i = 0; i < results.length; i++){
+                    results_name.push(results[i].name)
+                }
+                //console.log(results_name);
+                postorderTraverse(baseTree.data.root,function(d){
+                    expandPathToLeaf(d,true,false);
+                });
+                update(baseTree.root,baseTree.data);
+
+                if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
                     $("#resultsBox" + canvasId).slideDown(200);
                     $("#resultsList" + canvasId).empty();
+
+                    postorderTraverse(baseTree.data.root,function(d){
+                        if(results_name.indexOf(d.name)>-1){
+                            expandPathToLeaf(d,false,false);
+                        }
+                    });
+                    update(baseTree.root,baseTree.data);
 
                     for (var i = 0; i < results.length; i++) {
                         $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
@@ -2573,9 +2598,18 @@ TreeCompare = (function() {
                             "cursor": "pointer",
                             "cursor": "hand"
                         });
+                        var indices = [];
                         $("#resultsList" + canvasId + " ." + i).on("click", function() {
                             var index = $(this).attr("class");
-                            expandPathToLeaf(results[index]);
+                            indices.push(parseInt(index));
+                            for (var i = 0; i<results.length; i++){
+                                if (indices.indexOf(i)<0){
+                                    expandPathToLeaf(results[i],true,false);
+                                }
+                            }
+                            for (var i = 0; i<indices.length; i++){
+                                expandPathToLeaf(results[indices[i]],false);
+                            }
                             if (otherTreeName !== undefined) {
                                 //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
                                 settings.loadingCallback();
@@ -2589,16 +2623,23 @@ TreeCompare = (function() {
                             }
                         });
                     }
-                } else {
+
+                }
+                else {
                     $("#resultsList" + canvasId).empty();
                     $("#resultsBox" + canvasId).slideUp(200, function() {
                         $("#resultsBox" + canvasId).css({
                             "display": "none"
                         });
                     });
+
+                    //postorderTraverse(baseTree.data.root,function(d){
+                    //    expandPathToLeaf(d,true);
+                    //});
+                    //update(baseTree.root,baseTree.data);
                 }
-                var t1 = performance.now();
-                console.log("main event handler " + (t1 - t0) + " milliseconds.");
+                //var t1 = performance.now();
+                //console.log("main event handler " + (t1 - t0) + " milliseconds.");
 
             });
         }
@@ -2999,23 +3040,32 @@ TreeCompare = (function() {
      Expand all collapsed nodes on the path to given leaf node
      Also add highlight to nodes if this is a search
      */
-    function expandPathToLeaf(leaf, unhighlight) {
+    function expandPathToLeaf(leaf, unhighlight, uncollapse) {
         if (unhighlight === undefined) {
             unhighlight = false;
         }
+        if (uncollapse === undefined) {
+            uncollapse = true;
+        }
+
         if (leaf.parent) {
-            if (!unhighlight) {
+            if (!unhighlight && uncollapse) {
                 if (leaf.parent._children) {
                     leaf.parent.children = leaf.parent._children;
                     leaf.parent._children = null;
                 }
                 leaf.searchHighlight = true;
-            } else {
+            }
+            else if (!unhighlight && !uncollapse) {
+                leaf.searchHighlight = true;
+            }
+            else {
                 leaf.searchHighlight = false;
             }
-            expandPathToLeaf(leaf.parent, unhighlight);
+        expandPathToLeaf(leaf.parent, unhighlight, uncollapse);
         }
     }
+
 
     /*
      Expand all collapsed nodes on path to internal node
