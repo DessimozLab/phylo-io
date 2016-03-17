@@ -152,7 +152,7 @@ TreeCompare = (function() {
     }
 
     function jsonToNwk(json,addLabels) {
-
+        //TODO: here add searchHighlihgt and make sure that branchlengths are preserved
         function nested(nest){
             var subtree = "";
 
@@ -209,6 +209,9 @@ TreeCompare = (function() {
         return nested(json) +";";
     }
 
+    /*
+     This function checks the consistency of the input string for the tree
+     */
     function checkTreeInput(s){
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/);
         var outError = "";
@@ -221,11 +224,15 @@ TreeCompare = (function() {
             }
             return numOfTrue;
         }
-
+        console.log(tokens.indexOf(":"));
         if (returnNumElementInArray(tokens,"(") > returnNumElementInArray(tokens,")")){
             outError = "TooLittle)";
         } else if (returnNumElementInArray(tokens,"(") < returnNumElementInArray(tokens,")")){
             outError = "TooLittle(";
+        } else if (tokens.indexOf(":") == -1 || tokens.indexOf("(") == -1 || tokens.indexOf(")") == -1){
+            outError = "NotNwk"
+        } else if (isNaN(tokens[tokens.indexOf(":")+1])){
+            outError = "NotNwk"
         }
 
         return outError;
@@ -431,7 +438,13 @@ TreeCompare = (function() {
                 var reader;
                 reader = new FileReader();
                 reader.onload = function(event) {
-                    $("#" + newickIn).val(event.target.result);
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        $("#" + newickIn).val(event.target.result);
+                    } else {
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
                 };
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
