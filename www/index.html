@@ -61,10 +61,13 @@
                         <div id="newickInputs">
                             <p class="singleIn"><b>Tree:</b></p>
                             <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
+                            <div><input class="singleIn extraMargin" id="newickInSingleFile"   type='file' title="Choose a file please" ></div>
                             <p class="compareIn"><b>Tree 1:</b></p>
                             <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
+                            <div><input class="compareIn" id="newickIn1File" type='file' title="Choose a file please" ></div>
                             <p class="compareIn"><b>Tree 2:</b></p>
                             <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
+                            <div><input class="compareIn" id="newickIn2File" type='file' title="Choose a file please" ></div>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
@@ -74,6 +77,7 @@
                     <li>
                         <div id="renderErrorMessage"></div>
                         <div class="btn-group" role="group" aria-label="Basic example">
+
                             <button type="button" id="renderButton" class="btn btn-primary">Render <span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
                             <button type="button" id="clearButton" class="btn btn-primary">Clear</button>
                         </div>
@@ -210,7 +214,7 @@
             hwaccel: true // Whether to use hardware acceleration
             ,
             position: 'absolute' // Element positioning
-        }
+        };
 
         var spinner = new Spinner(spinnerOpts);
         var spinnerTarget = document.getElementById("page-content-wrapper");
@@ -240,7 +244,17 @@
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "view-btn"){
+            $("#compareIn").removeClass("active");
             treecomp.inputTreeFile("newickInSingle");
+            $(".compareIn").css({
+                "display": "none"
+            });
+            $("#newickInputs").css({
+                "padding-bottom": "0px"
+            });
+            $(".singleIn").css({
+                "display": "block"
+            });
         }
         /*
         /
@@ -480,29 +494,6 @@
             }
         });
 
-
-        /*------
-         /
-         /    SETTINGS
-         /
-         ------*/
-        var settingsShown = false;
-
-        $("#settings").click(function(e) {
-            if (!settingsShown) {
-                $("#settingsPanel").slideDown(300);
-                settingsShown = true;
-            } else {
-                $("#settingsPanel").slideUp(300, function() {
-                    settingsShown = false;
-                    $(this).css({
-                        "display": "none"
-                    });
-                });
-            }
-        });
-
-
         /*------
          /
          /    SHARE BUTTON
@@ -530,6 +521,27 @@
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
                 }
 
+            }
+        });
+
+        /*------
+         /
+         /    SETTINGS
+         /
+         ------*/
+        var settingsShown = false;
+
+        $("#settings").click(function(e) {
+            if (!settingsShown) {
+                $("#settingsPanel").slideDown(300);
+                settingsShown = true;
+            } else {
+                $("#settingsPanel").slideUp(300, function() {
+                    settingsShown = false;
+                    $(this).css({
+                        "display": "none"
+                    });
+                });
             }
         });
 

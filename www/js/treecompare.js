@@ -398,6 +398,8 @@ TreeCompare = (function() {
          /
          */
         var MAX_BYTES = 102400; // 100 KB
+        console.log(newickIn);
+
 
         function dragEnter(event) {
             //console.log('dragEnter', event);
@@ -425,6 +427,7 @@ TreeCompare = (function() {
             $("#renderErrorMessage").empty();
 
             var data = event.dataTransfer;
+            console.log(data)
             var file = data.files;
 
             var accept = {
@@ -468,6 +471,52 @@ TreeCompare = (function() {
         dropArea.addEventListener("dragexit", dragExit, false);
         dropArea.addEventListener("dragover", dragOver, false);
         dropArea.addEventListener("drop", drop, false);
+
+        var control = document.getElementById(newickIn+"File");
+        control.addEventListener("change", function(event) {
+
+            // When the control has changed, there are new files
+
+            var i = 0,
+                file = control.files,
+                len = file.length;
+
+            for (; i < len; i++) {
+                console.log("Filename: " + file[i].name);
+                console.log("Type: " + file[i].type);
+                console.log("Size: " + file[i].size + " bytes");
+            }
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+            };
+            console.log(file[0]);
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        console.log(event.target.result);
+                        $("#" + newickIn).val(event.target.result);
+                    } else {
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+            } else {
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+
+        }, false);
     }
 
     /*

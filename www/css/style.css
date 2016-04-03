@@ -149,6 +149,12 @@ html {
     margin-left: 20px;
 }
 
+input[type=file]{
+    width:90px;
+    color:transparent;
+    margin-left: 20px;
+}
+
 #exportButton {
     margin-left: 20px;
 }
