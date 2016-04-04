@@ -13,6 +13,8 @@ TreeCompare = (function() {
 
     var compareMode = false;
 
+    var maxDepth = 0;
+
     /*
      colors for the color scale for comparing nodes to best common node
      */
@@ -579,6 +581,23 @@ TreeCompare = (function() {
             return (Math.floor(Math.log(leafCount)) + 1);
         }
 
+    }
+
+
+    function getMaxAutoCollapse() {
+        var maxDepth = [];
+
+        for (var i = 0; i < renderedTrees.length; i++) {
+            var maxDepthTmp = 0;
+            postorderTraverse(renderedTrees[i].root, function(e){
+                if (e.depth > maxDepthTmp){
+                    maxDepthTmp = e.depth;
+                }
+            },true);
+            maxDepth.push(maxDepthTmp);
+        }
+        //console.log(Math.max.apply(Math, maxDepth));
+        return Math.max.apply(Math, maxDepth)-1;
     }
 
     function getTrees() {
@@ -3084,7 +3103,10 @@ TreeCompare = (function() {
      */
     function changeAutoCollapseDepth(depth) {
         settings.autoCollapse = depth;
+
         for (var i = 0; i < renderedTrees.length; i++) {
+            maxDepth = getMaxAutoCollapse();
+            //console.log(maxDepth);
             if (depth === null) {
                 uncollapseAll(renderedTrees[i].root);
             } else {
@@ -4330,7 +4352,6 @@ TreeCompare = (function() {
         v.elementS = maxElementS;
 
     }
-
     //return all the externalised functions
     return {
         init: init,
@@ -4344,6 +4365,7 @@ TreeCompare = (function() {
         getTrees: getTrees,
         compareTrees: compareTrees,
         changeSettings: changeSettings,
+        getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth
     }
 })();

@@ -385,22 +385,34 @@
         $("#collapseInc").click(function(e) {
             var amountText = $("#collapseAmount").html();
             var amount = 0;
+            var maxAmount = treecomp.getMaxAutoCollapse();
             if (amountText !== "OFF") {
                 amount = parseInt(amountText);
                 amount += 1;
-                $("#collapseAmount").html(amount.toString());
+                if (amount == maxAmount){
+                    $("#collapseAmount").html("OFF");
+                }else {
+                    $("#collapseAmount").html(amount.toString());
+                }
             } else {
                 amount = 0;
                 $("#collapseAmount").html("0");
             }
             treecomp.changeAutoCollapseDepth(amount);
+
         });
 
         $("#collapseDec").click(function(e) {
             var amountText = $("#collapseAmount").html();
             var amount = 0;
-            if (amountText !== "OFF") {
-                amount = parseInt(amountText);
+            var maxAmount = treecomp.getMaxAutoCollapse();
+
+            if (amountText !== "0") {
+                if (amountText === "OFF"){
+                    amount = maxAmount;
+                } else {
+                    amount = parseInt(amountText);
+                }
                 amount -= 1;
                 if (amount < 0) {
                     amount = null;
@@ -410,6 +422,7 @@
                 }
             } else {
                 amount = null;
+                $("#collapseAmount").html("OFF");
             }
 
             treecomp.changeAutoCollapseDepth(amount);
