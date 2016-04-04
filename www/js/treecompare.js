@@ -49,6 +49,7 @@ TreeCompare = (function() {
 
     var settings = {
         useLengths: true,
+        selectMultipleSearch: false,
         fontSize: 14,
         lineThickness: 3,
         nodeSize: 3,
@@ -106,6 +107,7 @@ TreeCompare = (function() {
      */
     function changeSettings(settingsIn) {
         settings.useLengths = (!(settingsIn.useLengths === undefined)) ? settingsIn.useLengths : settings.useLengths;
+        settings.selectMultipleSearch = (!(settingsIn.selectMultipleSearch === undefined)) ? settingsIn.selectMultipleSearch : settings.selectMultipleSearch;
         settings.fontSize = (!(settingsIn.fontSize === undefined)) ? settingsIn.fontSize : settings.fontSize;
         settings.lineThickness = (!(settingsIn.lineThickness === undefined)) ? settingsIn.lineThickness : settings.lineThickness;
         settings.nodeSize = (!(settingsIn.nodeSize === undefined)) ? settingsIn.nodeSize : settings.nodeSize;
@@ -121,7 +123,6 @@ TreeCompare = (function() {
         settings.internalLabels = (!(settingsIn.internalLabels === undefined)) ? settingsIn.internalLabels : settings.internalLabels;
         settings.enableDownloadButtons = (!(settingsIn.enableDownloadButtons === undefined)) ? settingsIn.enableDownloadButtons : settings.enableDownloadButtons;
         settings.enableFixedButtons = (!(settingsIn.enableFixedButtons === undefined)) ? settingsIn.enableFixedButtons : settings.enableFixedButtons;
-        settings.enableFisheyeZoom = (!(settingsIn.enableFisheyeZoom === undefined)) ? settingsIn.enableFisheyeZoom : settings.enableFisheyeZoom;
         settings.zoomMode = (!(settingsIn.zoomMode === undefined)) ? settingsIn.zoomMode : settings.zoomMode;
         settings.fitTree = (!(settingsIn.fitTree === undefined)) ? settingsIn.fitTree : settings.fitTree;
         settings.enableSizeControls = (!(settingsIn.enableSizeControls === undefined)) ? settingsIn.enableSizeControls : settings.enableSizeControls;
@@ -224,7 +225,6 @@ TreeCompare = (function() {
             }
             return numOfTrue;
         }
-        console.log(tokens.indexOf(":"));
         if (returnNumElementInArray(tokens,"(") > returnNumElementInArray(tokens,")")){
             outError = "TooLittle)";
         } else if (returnNumElementInArray(tokens,"(") < returnNumElementInArray(tokens,")")){
@@ -398,8 +398,6 @@ TreeCompare = (function() {
          /
          */
         var MAX_BYTES = 102400; // 100 KB
-        console.log(newickIn);
-
 
         function dragEnter(event) {
             //console.log('dragEnter', event);
@@ -427,7 +425,6 @@ TreeCompare = (function() {
             $("#renderErrorMessage").empty();
 
             var data = event.dataTransfer;
-            console.log(data)
             var file = data.files;
 
             var accept = {
@@ -443,7 +440,9 @@ TreeCompare = (function() {
                 reader.onload = function(event) {
                     if(!(checkTreeInput(event.target.result)=="NotNwk")){
                         $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
                     } else {
+                        $("#renderErrorMessage").empty();
                         $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
                         $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
                     }
@@ -452,6 +451,7 @@ TreeCompare = (function() {
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
             } else {
+                $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
@@ -472,25 +472,22 @@ TreeCompare = (function() {
         dropArea.addEventListener("dragover", dragOver, false);
         dropArea.addEventListener("drop", drop, false);
 
+        /*
+         /
+         /    Enable file input using button
+         /
+         */
         var control = document.getElementById(newickIn+"File");
         control.addEventListener("change", function(event) {
 
             // When the control has changed, there are new files
 
-            var i = 0,
-                file = control.files,
-                len = file.length;
+            var file = control.files;
 
-            for (; i < len; i++) {
-                console.log("Filename: " + file[i].name);
-                console.log("Type: " + file[i].type);
-                console.log("Size: " + file[i].size + " bytes");
-            }
 
             var accept = {
                 text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
             };
-            console.log(file[0]);
 
             var file_name_tokens = file[0].name.split(".");
             var file_name_ending = file_name_tokens[file_name_tokens.length-1];
@@ -499,9 +496,10 @@ TreeCompare = (function() {
                 var reader = new FileReader();
                 reader.onload = function(event) {
                     if(!(checkTreeInput(event.target.result)=="NotNwk")){
-                        console.log(event.target.result);
                         $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
                     } else {
+                        $("#renderErrorMessage").empty();
                         $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
                         $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
                     }
@@ -510,6 +508,7 @@ TreeCompare = (function() {
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
             } else {
+                $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
@@ -2669,9 +2668,17 @@ TreeCompare = (function() {
                                     expandPathToLeaf(results[i],true,false);
                                 }
                             }
-                            for (var i = 0; i<indices.length; i++){
-                                expandPathToLeaf(results[indices[i]],false);
+                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                                for (var i = 0; i<indices.length; i++){
+                                    expandPathToLeaf(results[indices[i]],false);
+                                }
+                            } else {
+                                for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
+                                    expandPathToLeaf(results[indices[i]],true,false);
+                                }
+                                expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
+
                             if (otherTreeName !== undefined) {
                                 //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
                                 settings.loadingCallback();

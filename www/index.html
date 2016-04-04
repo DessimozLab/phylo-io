@@ -61,7 +61,7 @@
                         <div id="newickInputs">
                             <p class="singleIn"><b>Tree:</b></p>
                             <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
-                            <div><input class="singleIn extraMargin" id="newickInSingleFile"   type='file' title="Choose a file please" ></div>
+                            <div><input class="singleIn extraMargin" id="newickInSingleFile" value="blalalala" type='file' title="Choose a file please" ></div>
                             <p class="compareIn"><b>Tree 1:</b></p>
                             <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
                             <div><input class="compareIn" id="newickIn1File" type='file' title="Choose a file please" ></div>
@@ -99,7 +99,7 @@
                             <form class="internalLabels">
                                 <input type="radio" name="internalLabels" value="none" checked>None
                                 <br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="name">Newick Labels
+                                <input type="radio" class="extraMargin" name="internalLabels" value="name">Branch Labels/Support
                                 <br>
                                 <input type="radio" class="extraMargin" name="internalLabels" value="length">Length
                                 <br>
@@ -121,7 +121,7 @@
                                     <br>Move To Best Corresponding Node on Highlight Click</p>
                             </div>
                             </input>
-                            <input type="checkbox" id="zoomOnMouseOver">Zoom On Mouseover</input>
+                            <input type="checkbox" id="selectMultipleSearch">Select multiple search results</input>
                             <br>
                         </div>
                     </li>
@@ -235,10 +235,10 @@
             nodeSize: $("#nodeSize").val(),
             fontSize: $("#fontSize").val(),
             useLengths: $("#useLengths").is(":checked"),
+            selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
             comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
             moveOnClick: $("#moveOnMouseOver").is(":checked"),
             clickAction: $("input[name=clickAction]:checked").val(),
-            enableFisheyeZoom: $("#zoomOnMouseOver").is(":checked"),
             autoCollapse: $("#collapseAmount").html()
         });
 
@@ -363,7 +363,7 @@
                 "display": "none"
             });
             $("#newickInputs").css({
-                "padding-bottom": "25px"
+                "padding-bottom": "0px"
             });
             $(".compareIn").css({
                 "display": "block"
@@ -572,9 +572,9 @@
             })
         });
 
-        $("#zoomOnMouseOver").on("click", function() {
+        $("#selectMultipleSearch").on("click", function() {
             treecomp.changeSettings({
-                enableFisheyeZoom: $("#zoomOnMouseOver").is(":checked")
+                selectMultipleSearch: $("#selectMultipleSearch").is(":checked")
             })
         });
 
