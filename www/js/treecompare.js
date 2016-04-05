@@ -457,6 +457,7 @@ TreeCompare = (function() {
                 }
             } else {
                 $("#renderErrorMessage").empty();
+                $("#" + newickIn + "Label").text("No file");
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
@@ -525,6 +526,7 @@ TreeCompare = (function() {
                 $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
+                $("#" + newickIn + "Label").text("No file");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
             }
 
