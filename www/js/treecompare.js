@@ -402,26 +402,21 @@ TreeCompare = (function() {
         var MAX_BYTES = 102400; // 100 KB
 
         function dragEnter(event) {
-            //console.log('dragEnter', event);
             event.stopPropagation();
             event.preventDefault();
         }
 
         function dragExit(event) {
-            //console.log('dragExit', event);
             event.stopPropagation();
             event.preventDefault();
         }
 
         function dragOver(event) {
-            //console.log('dragOver', event);
             event.stopPropagation();
             event.preventDefault();
         }
 
         function drop(event) {
-
-            //console.log('drop', event);
             event.stopPropagation();
             event.preventDefault();
             $("#renderErrorMessage").empty();
@@ -452,6 +447,14 @@ TreeCompare = (function() {
                 };
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn + "Label").text("No file");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").text(file[0].name);
+                }
             } else {
                 $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
@@ -509,6 +512,15 @@ TreeCompare = (function() {
                 };
                 reader.onloadend = onFileLoaded;
                 reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn + "Label").text("No file");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").text(file[0].name);
+                }
+
             } else {
                 $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
@@ -518,6 +530,8 @@ TreeCompare = (function() {
 
 
         }, false);
+
+
     }
 
     /*

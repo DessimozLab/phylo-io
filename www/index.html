@@ -61,13 +61,22 @@
                         <div id="newickInputs">
                             <p class="singleIn"><b>Tree:</b></p>
                             <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
-                            <div><input class="singleIn extraMargin" id="newickInSingleFile" value="blalalala" type='file' title="Choose a file please" ></div>
+                            <div>
+                                <input class="singleIn extraMargin" id="newickInSingleFile"  type='file' title="Choose File" >
+                                <label class="singleIn" id="newickInSingleLabel">No file</label>
+                            </div>
                             <p class="compareIn"><b>Tree 1:</b></p>
                             <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
-                            <div><input class="compareIn" id="newickIn1File" type='file' title="Choose a file please" ></div>
+                            <div>
+                                <input class="compareIn" id="newickIn1File" type='file' title="Choose File" >
+                                <label class="compareIn" id="newickIn1Label">No file</label>
+                            </div>
                             <p class="compareIn"><b>Tree 2:</b></p>
                             <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
-                            <div><input class="compareIn" id="newickIn2File" type='file' title="Choose a file please" ></div>
+                            <div>
+                                <input class="compareIn" id="newickIn2File" type='file' title="Choose File" >
+                                <label class="compareIn" id="newickIn2Label">No file</label>
+                            </div>
                         </div>
                     </li>
                     <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
