@@ -13,6 +13,8 @@ TreeCompare = (function() {
 
     var compareMode = false;
 
+    var maxDepth = 0;
+
     /*
      colors for the color scale for comparing nodes to best common node
      */
@@ -49,6 +51,7 @@ TreeCompare = (function() {
 
     var settings = {
         useLengths: true,
+        selectMultipleSearch: false,
         fontSize: 14,
         lineThickness: 3,
         nodeSize: 3,
@@ -106,6 +109,7 @@ TreeCompare = (function() {
      */
     function changeSettings(settingsIn) {
         settings.useLengths = (!(settingsIn.useLengths === undefined)) ? settingsIn.useLengths : settings.useLengths;
+        settings.selectMultipleSearch = (!(settingsIn.selectMultipleSearch === undefined)) ? settingsIn.selectMultipleSearch : settings.selectMultipleSearch;
         settings.fontSize = (!(settingsIn.fontSize === undefined)) ? settingsIn.fontSize : settings.fontSize;
         settings.lineThickness = (!(settingsIn.lineThickness === undefined)) ? settingsIn.lineThickness : settings.lineThickness;
         settings.nodeSize = (!(settingsIn.nodeSize === undefined)) ? settingsIn.nodeSize : settings.nodeSize;
@@ -121,7 +125,6 @@ TreeCompare = (function() {
         settings.internalLabels = (!(settingsIn.internalLabels === undefined)) ? settingsIn.internalLabels : settings.internalLabels;
         settings.enableDownloadButtons = (!(settingsIn.enableDownloadButtons === undefined)) ? settingsIn.enableDownloadButtons : settings.enableDownloadButtons;
         settings.enableFixedButtons = (!(settingsIn.enableFixedButtons === undefined)) ? settingsIn.enableFixedButtons : settings.enableFixedButtons;
-        settings.enableFisheyeZoom = (!(settingsIn.enableFisheyeZoom === undefined)) ? settingsIn.enableFisheyeZoom : settings.enableFisheyeZoom;
         settings.zoomMode = (!(settingsIn.zoomMode === undefined)) ? settingsIn.zoomMode : settings.zoomMode;
         settings.fitTree = (!(settingsIn.fitTree === undefined)) ? settingsIn.fitTree : settings.fitTree;
         settings.enableSizeControls = (!(settingsIn.enableSizeControls === undefined)) ? settingsIn.enableSizeControls : settings.enableSizeControls;
@@ -152,7 +155,7 @@ TreeCompare = (function() {
     }
 
     function jsonToNwk(json,addLabels) {
-
+        //TODO: here add searchHighlihgt and make sure that branchlengths are preserved
         function nested(nest){
             var subtree = "";
 
@@ -210,25 +213,68 @@ TreeCompare = (function() {
     }
 
     /*
+     This function checks the consistency of the input string for the tree
+     */
+    function checkTreeInput(s){
+        var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/);
+        var outError = "";
+
+        function returnNumElementInArray(inArray,element){
+            var numOfTrue = 0;
+            for(var i=0;i<inArray.length;i++){
+                if(inArray[i] === element)
+                    numOfTrue++;
+            }
+            return numOfTrue;
+        }
+        if (returnNumElementInArray(tokens,"(") > returnNumElementInArray(tokens,")")){
+            outError = "TooLittle)";
+        } else if (returnNumElementInArray(tokens,"(") < returnNumElementInArray(tokens,")")){
+            outError = "TooLittle(";
+        } else if (tokens.indexOf(":") == -1 || tokens.indexOf("(") == -1 || tokens.indexOf(")") == -1){
+            outError = "NotNwk"
+        } else if (isNaN(tokens[tokens.indexOf(":")+1])){
+            outError = "NotNwk"
+        }
+
+        return outError;
+    }
+
+    /*
      Newick to JSON converter, just copied code from newick.js
      */
     function convertTree(s) { //s is newick file format
         var ancestors = [];
         var tree = {};
+
+        s = s.replace(/(\r\n|\n|\r)/gm,""); // remove all new line characters
+
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
 
+        function getIdxToken(tokenArray, queryToken){
+            var posTokens = [];
+            for (var i = 0; i < tokenArray.length; i++){
+                if (tokenArray[i] == queryToken){
+                    posTokens.push(i)
+                }
+
+            }
+            return posTokens;
+        }
+
         // the following part keeps the NHX datastructure
-        var square_bracket_start = tokens.indexOf("[");
-        var square_bracket_end = tokens.indexOf("]");
-        var dist_square_bracket = square_bracket_end - square_bracket_start;
-        //console.log(dist_square_bracket);
+        var square_bracket_start = getIdxToken(tokens,"[");
+        var square_bracket_end = getIdxToken(tokens,"]");
         var new_tokens = [];
+        var j = 0;
         for (var i = 0; i < tokens.length; i++){
             if (tokens[i] == "["){
+                var dist_square_bracket = square_bracket_end[j] - square_bracket_start[j];
                 new_tokens.push(tokens[i]);
                 new_tokens.push(tokens.slice(i+1,i+dist_square_bracket).join(""));
                 new_tokens.push(tokens[i+dist_square_bracket]);
                 i = i + dist_square_bracket;
+                j = j + 1;
             }else{
                 new_tokens.push(tokens[i]);
             }
@@ -240,11 +286,19 @@ TreeCompare = (function() {
             throw "NoTree";
         }
 
-        /*try {// catch error if input is in NHX format
-            if (s.indexOf("&&NHX")!=-1) throw "empty"; // TODO:change this to &&NHX and not []
+        try {
+            if (checkTreeInput(s)=="TooLittle)") throw "empty"; // TODO:change this to &&NHX and not []
         } catch (err) {
-            throw "NHX";
-        }*/
+                throw "TooLittle)"
+        }
+
+        try {
+            if (checkTreeInput(s)=="TooLittle(") throw "empty"; // TODO:change this to &&NHX and not []
+        } catch (err) {
+            throw "TooLittle("
+        }
+
+
         function check_nhx_variable(nhx_array, string_to_check){
             var found_pos = -1;
             for (var i = 0; i < nhx_array.length; i++){
@@ -252,6 +306,7 @@ TreeCompare = (function() {
                     found_pos = i;
                 }
             }
+
             return found_pos;
         }
 
@@ -336,6 +391,152 @@ TreeCompare = (function() {
     }
 
     /*
+     Called externally and allows to drag and drop text files
+     */
+    function inputTreeFile(newickIn){
+        /*
+         /
+         /    Enable drag and drop
+         /
+         */
+        var MAX_BYTES = 102400; // 100 KB
+
+        function dragEnter(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragExit(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            $("#renderErrorMessage").empty();
+
+            var data = event.dataTransfer;
+            var file = data.files;
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+            };
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader;
+                reader = new FileReader();
+                reader.onload = function(event) {
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
+                    } else {
+                        $("#renderErrorMessage").empty();
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn + "Label").text("No file");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").text(file[0].name);
+                }
+            } else {
+                $("#renderErrorMessage").empty();
+                $("#" + newickIn + "Label").text("No file");
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+            // object for allowed media types
+
+        }
+
+        function onFileLoaded(event) {
+            event.currentTarget.result.substr(0, MAX_BYTES);
+        }
+
+        var dropArea = $("#" + newickIn).get(0);
+
+        dropArea.addEventListener("dragenter", dragEnter, false);
+        dropArea.addEventListener("dragexit", dragExit, false);
+        dropArea.addEventListener("dragover", dragOver, false);
+        dropArea.addEventListener("drop", drop, false);
+
+        /*
+         /
+         /    Enable file input using button
+         /
+         */
+        var control = document.getElementById(newickIn+"File");
+        control.addEventListener("change", function(event) {
+
+            // When the control has changed, there are new files
+
+            var file = control.files;
+
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+            };
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
+                    } else {
+                        $("#renderErrorMessage").empty();
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn + "Label").text("No file");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").text(file[0].name);
+                }
+
+            } else {
+                $("#renderErrorMessage").empty();
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn + "Label").text("No file");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+
+        }, false);
+
+
+    }
+
+    /*
      Called externally to convert a tree and add to internal tree structure
      */
     function addTree(newick, name) {
@@ -396,6 +597,23 @@ TreeCompare = (function() {
             return (Math.floor(Math.log(leafCount)) + 1);
         }
 
+    }
+
+
+    function getMaxAutoCollapse() {
+        var maxDepth = [];
+
+        for (var i = 0; i < renderedTrees.length; i++) {
+            var maxDepthTmp = 0;
+            postorderTraverse(renderedTrees[i].root, function(e){
+                if (e.depth > maxDepthTmp){
+                    maxDepthTmp = e.depth;
+                }
+            },true);
+            maxDepth.push(maxDepthTmp);
+        }
+        //console.log(Math.max.apply(Math, maxDepth));
+        return Math.max.apply(Math, maxDepth)-1;
     }
 
     function getTrees() {
@@ -2004,7 +2222,11 @@ TreeCompare = (function() {
      */
     function stringSearch(string, start){
         var does = true;
-        var n = string.search(start);
+        if(start !== ""){
+            var n = string.search(start);
+        }else{
+            var n = -1;
+        }
         //console.log(n);
         if (n==-1) {
             does = false;
@@ -2402,6 +2624,10 @@ TreeCompare = (function() {
             $('#searchButton' + canvasId).click(function() {
                 if (!visible) {
                     visible = true;
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
                     $("#searchInput" + canvasId).css({
                         "display": "inline"
                     });
@@ -2430,7 +2656,7 @@ TreeCompare = (function() {
             });
 
 
-            var t0 = performance.now();
+            //var t0 = performance.now();
             //main event handler, performs search every time a char is typed so can get realtime results
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
@@ -2439,9 +2665,26 @@ TreeCompare = (function() {
                     //return startsWith(leaf.name.toLowerCase(), text.toLowerCase());
                     return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
                 });
-                if (text !== "") {
+                var results_name = [];
+                for (var i = 0; i < results.length; i++){
+                    results_name.push(results[i].name)
+                }
+                //console.log(results_name);
+                postorderTraverse(baseTree.data.root,function(d){
+                    expandPathToLeaf(d,true,false);
+                });
+                update(baseTree.root,baseTree.data);
+
+                if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
                     $("#resultsBox" + canvasId).slideDown(200);
                     $("#resultsList" + canvasId).empty();
+
+                    postorderTraverse(baseTree.data.root,function(d){
+                        if(results_name.indexOf(d.name)>-1){
+                            expandPathToLeaf(d,false,false);
+                        }
+                    });
+                    update(baseTree.root,baseTree.data);
 
                     for (var i = 0; i < results.length; i++) {
                         $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
@@ -2451,9 +2694,26 @@ TreeCompare = (function() {
                             "cursor": "pointer",
                             "cursor": "hand"
                         });
+                        var indices = [];
                         $("#resultsList" + canvasId + " ." + i).on("click", function() {
                             var index = $(this).attr("class");
-                            expandPathToLeaf(results[index]);
+                            indices.push(parseInt(index));
+                            for (var i = 0; i<results.length; i++){
+                                if (indices.indexOf(i)<0){
+                                    expandPathToLeaf(results[i],true,false);
+                                }
+                            }
+                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                                for (var i = 0; i<indices.length; i++){
+                                    expandPathToLeaf(results[indices[i]],false);
+                                }
+                            } else {
+                                for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
+                                    expandPathToLeaf(results[indices[i]],true,false);
+                                }
+                                expandPathToLeaf(results[indices[indices.length-1]],false);
+                            }
+
                             if (otherTreeName !== undefined) {
                                 //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
                                 settings.loadingCallback();
@@ -2467,16 +2727,23 @@ TreeCompare = (function() {
                             }
                         });
                     }
-                } else {
+
+                }
+                else {
                     $("#resultsList" + canvasId).empty();
                     $("#resultsBox" + canvasId).slideUp(200, function() {
                         $("#resultsBox" + canvasId).css({
                             "display": "none"
                         });
                     });
+
+                    //postorderTraverse(baseTree.data.root,function(d){
+                    //    expandPathToLeaf(d,true);
+                    //});
+                    //update(baseTree.root,baseTree.data);
                 }
-                var t1 = performance.now();
-                console.log("main event handler " + (t1 - t0) + " milliseconds.");
+                //var t1 = performance.now();
+                //console.log("main event handler " + (t1 - t0) + " milliseconds.");
 
             });
         }
@@ -2852,7 +3119,10 @@ TreeCompare = (function() {
      */
     function changeAutoCollapseDepth(depth) {
         settings.autoCollapse = depth;
+
         for (var i = 0; i < renderedTrees.length; i++) {
+            maxDepth = getMaxAutoCollapse();
+            //console.log(maxDepth);
             if (depth === null) {
                 uncollapseAll(renderedTrees[i].root);
             } else {
@@ -2877,23 +3147,32 @@ TreeCompare = (function() {
      Expand all collapsed nodes on the path to given leaf node
      Also add highlight to nodes if this is a search
      */
-    function expandPathToLeaf(leaf, unhighlight) {
+    function expandPathToLeaf(leaf, unhighlight, uncollapse) {
         if (unhighlight === undefined) {
             unhighlight = false;
         }
+        if (uncollapse === undefined) {
+            uncollapse = true;
+        }
+
         if (leaf.parent) {
-            if (!unhighlight) {
+            if (!unhighlight && uncollapse) {
                 if (leaf.parent._children) {
                     leaf.parent.children = leaf.parent._children;
                     leaf.parent._children = null;
                 }
                 leaf.searchHighlight = true;
-            } else {
+            }
+            else if (!unhighlight && !uncollapse) {
+                leaf.searchHighlight = true;
+            }
+            else {
                 leaf.searchHighlight = false;
             }
-            expandPathToLeaf(leaf.parent, unhighlight);
+        expandPathToLeaf(leaf.parent, unhighlight, uncollapse);
         }
     }
+
 
     /*
      Expand all collapsed nodes on path to internal node
@@ -4089,10 +4368,10 @@ TreeCompare = (function() {
         v.elementS = maxElementS;
 
     }
-
     //return all the externalised functions
     return {
         init: init,
+        inputTreeFile: inputTreeFile,
         viewTree: viewTree,
         renderColorScale: renderColorScale,
         addTree: addTree,
@@ -4102,6 +4381,7 @@ TreeCompare = (function() {
         getTrees: getTrees,
         compareTrees: compareTrees,
         changeSettings: changeSettings,
+        getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth
     }
 })();

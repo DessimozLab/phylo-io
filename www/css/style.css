@@ -149,12 +149,27 @@ html {
     margin-left: 20px;
 }
 
+input[type=file]{
+    width:80px;
+    height:30px;
+    margin-left: 20px;
+    color:transparent;
+}
+
+label {
+    padding-top: -40px;
+    color: #999;
+    font-size: 12px;
+    margin: 0px;
+}
+
 #exportButton {
     margin-left: 20px;
 }
 .alert {
     width: 200px;
     margin-left: 20px;
+    line-height: 1.2;
 }
 
 .btn:focus,
@@ -288,3 +303,25 @@ input[type="checkbox"] {
     bottom: 0;
 }
 
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    rgba(37, 36, 45, 0.57);
+    font-style: italic;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    rgba(37, 36, 45, 0.57);
+    opacity:  0.6;
+    font-style: italic;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    rgba(37, 36, 45, 0.57);
+    opacity:  0.6;
+    font-style: italic;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:    rgba(37, 36, 45, 0.57);
+    font-style: italic;
+}
+:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
+    color: rgba(37, 36, 45, 0.57);
+    font-style: italic;
+}
