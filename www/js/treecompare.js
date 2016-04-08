@@ -449,17 +449,18 @@ TreeCompare = (function() {
                 reader.readAsText(file[0]);
                 if(file[0].name == "")
                 {
-                    $("#" + newickIn + "Label").text("No file");
+                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
                 }
                 else
                 {
-                    $("#" + newickIn + "Label").text(file[0].name);
+                    $("#" + newickIn + "Label").val(file[0].name);
                 }
             } else {
                 $("#renderErrorMessage").empty();
                 $("#" + newickIn + "Label").text("No file");
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
+                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
             }
 
@@ -484,12 +485,14 @@ TreeCompare = (function() {
          /
          */
         var newickInButton = document.getElementById(newickIn+"Button");
+        var control = document.getElementById(newickIn+"File");
         newickInButton.addEventListener('click',function(event){
             event.preventDefault();
-            document.getElementById(newickIn+"File").click();
+            control.click();
+            //$(this).find('span').toggleClass('glyphicon-file').toggleClass('glyphicon-remove');
         },false);
 
-        var control = document.getElementById(newickIn+"File");
+
         control.addEventListener("change", function(event) {
 
             // When the control has changed, there are new files
@@ -2779,7 +2782,7 @@ TreeCompare = (function() {
 
         //render the scale if we have somewhere to put it
         if (scaleId) {
-            var scaleSvg = d3.select(scaleId).append("svg")
+            d3.select(scaleId).append("svg")
                 .attr("width", $(scaleId).width())
                 .attr("height", $(scaleId).height())
                 .append("g");
@@ -3103,7 +3106,7 @@ TreeCompare = (function() {
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             updateDownloadLinkContent(canvasId);
         }
-    };
+    }
 
     /*
      Returns number of visible leaves in the tree

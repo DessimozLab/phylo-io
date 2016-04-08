@@ -65,7 +65,7 @@ html {
 #sidebar-wrapper-wrapper {
     margin: 0 auto -60px;
     padding: 0 0 60px;
-    overflow: auto;
+    overflow: hidden;
     margin-bottom: 30px;
 
 }
@@ -155,9 +155,6 @@ html {
 }
 
 input[type=file]{
-    width:80px;
-    height:30px;
-    margin-left: 20px;
     color:transparent;
 }
 
@@ -165,7 +162,6 @@ label {
     padding-top: -40px;
     color: #999;
     font-size: 12px;
-    margin: 0px;
 }
 
 #exportButton {
@@ -205,9 +201,6 @@ label {
     width: 200px !important;
 }
 
-.fake-file-button-browse{
-    margin-right:20px;
-}
 
 #settingsPanel [type="checkbox"],
 b {
@@ -294,6 +287,8 @@ input[type="checkbox"] {
 }
 
 .compareIn {
+    width: 200px;
+    margin-top: 4px;
     display: none;
 }
 
@@ -340,12 +335,31 @@ input[type="checkbox"] {
     font-style: italic;
 }
 
-table.fixed {table-layout:fixed; text-indent: 0px;width:200px;word-break:break-all;border:0px; margin:0; padding:0; border-collapse:collapse;}/*Setting the table width is important!*/
-table.fixed tr.row1 td  {padding-top: 10px;padding-bottom: 0px; vertical-align: top;}
-table.fixed td {overflow:hidden;}/*Hide text outside the cell.*/
-table.fixed td:nth-of-type(1) {width:45px;}/*Setting the width of column 1.*/
-table.fixed td:nth-of-type(2) {width:125px;}/*Setting the width of column 2.*/
-table.fixed td:nth-of-type(3) {width:30px;}/*Setting the width of column 3.*/
+table.fixed {
+    width: 200px;
+    text-indent: 0px;
+    word-break:break-all;
+    margin-left: 20px;
+    margin-right: 30px;
+}
+/*Setting the table width is important!*/
+table.fixed tr.row1 td  {
+    padding-top: 10px;
+    padding-bottom: 0px;
+    vertical-align: top;}
+
+table.fixed td {
+    overflow:hidden;
+}/*Hide text outside the cell.*/
+table.fixed td:nth-of-type(1) {
+    width:45px;
+}/*Setting the width of column 1.*/
+table.fixed td:nth-of-type(2) {
+    width:125px;
+}/*Setting the width of column 2.*/
+table.fixed td:nth-of-type(3) {
+    width:30px;
+}/*Setting the width of column 3.*/
 
 textarea{
     resize: none;
