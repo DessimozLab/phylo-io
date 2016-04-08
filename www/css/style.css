@@ -70,6 +70,11 @@ html {
 
 }
 
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
 #wrapper {
     height: 100%;
 }
@@ -200,6 +205,10 @@ label {
     width: 200px !important;
 }
 
+.fake-file-button-browse{
+    margin-right:20px;
+}
+
 #settingsPanel [type="checkbox"],
 b {
     margin-left: 20px;
@@ -235,6 +244,10 @@ input[type="checkbox"] {
     text-align: center;
 }
 
+.singleIn {
+    margin-top: 4px;
+}
+
 .newickIn {
     width: 200px;
     margin-top: 4px;
@@ -244,6 +257,7 @@ input[type="checkbox"] {
 
 #newickInputs p {
     color: white;
+    margin-top: 10px;
     margin-bottom: -10px;
 }
 
@@ -324,4 +338,26 @@ input[type="checkbox"] {
 :placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
     color: rgba(37, 36, 45, 0.57);
     font-style: italic;
+}
+
+table.fixed {table-layout:fixed; text-indent: 0px;width:200px;word-break:break-all;border:0px; margin:0; padding:0; border-collapse:collapse;}/*Setting the table width is important!*/
+table.fixed tr.row1 td  {padding-top: 10px;padding-bottom: 0px; vertical-align: top;}
+table.fixed td {overflow:hidden;}/*Hide text outside the cell.*/
+table.fixed td:nth-of-type(1) {width:45px;}/*Setting the width of column 1.*/
+table.fixed td:nth-of-type(2) {width:125px;}/*Setting the width of column 2.*/
+table.fixed td:nth-of-type(3) {width:30px;}/*Setting the width of column 3.*/
+
+textarea{
+    resize: none;
+}
+
+textarea.treename {
+    background: transparent;
+    width: 125px;
+    border: none;
+}
+
+textarea.treename::-webkit-input-placeholder{
+    color: #999;
+    font-style: italic
 }
