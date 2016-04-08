@@ -483,6 +483,12 @@ TreeCompare = (function() {
          /    Enable file input using button
          /
          */
+        var newickInButton = document.getElementById(newickIn+"Button");
+        newickInButton.addEventListener('click',function(event){
+            event.preventDefault();
+            document.getElementById(newickIn+"File").click();
+        },false);
+
         var control = document.getElementById(newickIn+"File");
         control.addEventListener("change", function(event) {
 
@@ -507,6 +513,7 @@ TreeCompare = (function() {
                     } else {
                         $("#renderErrorMessage").empty();
                         $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
                         $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
                     }
 
@@ -515,24 +522,23 @@ TreeCompare = (function() {
                 reader.readAsText(file[0]);
                 if(file[0].name == "")
                 {
-                    $("#" + newickIn + "Label").text("No file");
+                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
                 }
                 else
                 {
-                    $("#" + newickIn + "Label").text(file[0].name);
+                    $("#" + newickIn + "Label").val(file[0].name);
                 }
 
             } else {
                 $("#renderErrorMessage").empty();
                 $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
                 //$("#" + newickIn).val("");
-                $("#" + newickIn + "Label").text("No file");
+                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
                 $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
             }
 
 
         }, false);
-
 
     }
 
