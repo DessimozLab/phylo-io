@@ -1141,7 +1141,7 @@ TreeCompare = (function() {
             }
             return leafNames;
         }
-
+            // TODO could we add the name edit code here????
         //------
         // GET the corresponding node based on best overlap of leaves between two trees
         // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
@@ -1402,7 +1402,7 @@ TreeCompare = (function() {
         postorderTraverse(treeData.root, function(d) {
             if (d._children) {
                 leavesHidden += d.leaves.length;
-                triangles += 1;
+                triangles += 1; // changed from 1
             }
         }, false);
         // console.log(leavesVisible);
@@ -1607,7 +1607,7 @@ TreeCompare = (function() {
                     console.log(d[currentS]);
                     return colorScale(d[currentS])
                 } else {
-                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black";
+                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black"; //last changed from black
                 }
             });
 
@@ -1669,7 +1669,7 @@ TreeCompare = (function() {
                 return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "bold" : "normal";
             })
             .style("fill", function(d) { // change the colour of the leaf text
-                return d.searchHighlight ? "red" : ((d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : "black");
+                return d.searchHighlight ? "orange" /* changed from red*/ : ((d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : "black");
             })
             .attr("font-size", function(d) {
                 return settings.fontSize + "px"
@@ -1684,13 +1684,13 @@ TreeCompare = (function() {
             })
             .style("fill", function(d) {
                 if (d.bcnhighlight) {
-                    d.bcnhighlight  ="green";
+                    d.bcnhighlight  ="green"; //changed from green
                     return d.bcnhighlight;
                 } else if (d.searchHighlight) {
-                    return "red";
+                    return "orange"; //changed from red
                 } else if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                     if (d._children){
-                        return "orange";
+                        return "blue"; //changed from orange
                     }else {
                         return colorScale(d[currentS])
                     }
@@ -1700,6 +1700,7 @@ TreeCompare = (function() {
             });
         //.style("stroke", "black")
         //.style("stroke-width", 1);
+
 
 
         node.select("rect")
@@ -1720,7 +1721,7 @@ TreeCompare = (function() {
             .style("fill", function(d) {
                 if (d.clickedHighlight || d.bcnhighlight) {
                     //return d.clickedHighlight;
-                    return "red";
+                    return "green"; //changed from red, so that boxes look different when highlighted to when searched
                 }
             })
             .attr("y", -settings.nodeSize + "px")
@@ -1737,7 +1738,7 @@ TreeCompare = (function() {
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
             .text(function(d) {
-                if (!d.children && !d._children) { //print leaf names
+                if (!d.children && !d._children) { //print leaf names TODO could this be wher we can add the name option?
                     return d.name
                 } else {
                     if (settings.internalLabels === "none") {
@@ -1803,15 +1804,23 @@ TreeCompare = (function() {
                 var xlength = (avg - (getLength(d) * (lengthMult / maxLength))); //length of triangle
                 var ylength = offset; //height of half of the triangle
 
-                d3.select(this).select("path").transition().duration(duration)
+                d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function(d) {
                         return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
                     })
                     .style("fill", function(d) {
                         if (d[currentS]) {
-                            return colorScale(d[currentS])
+                            if (!d.clickedParentHighlight && !d.searchHighlight) {
+                                return colorScale(d[currentS]); // changes colour of the collapsed triangle shape
+                            } else if (d.clickedParentHighlight) {
+                                // Click highlight
+                                return "green";
+                            } else {
+                                // Search highlight
+                                return "orange";
+                            }
                         } else {
-                            return "black";
+                            return "black"; //changed from black
                         }
 
                     });
@@ -1839,7 +1848,7 @@ TreeCompare = (function() {
                             return "green";
                         } else if (!allHighlighted && !allNotHighlighted) {
                             d3.select(this).style("font-weight", "bold")
-                            return "#99CC00";
+                            return "#99CC00"; // "#99CC00"
                         } else {
                             d3.select(this).style("font-weight", "normal")
                             return "black";
@@ -1880,7 +1889,7 @@ TreeCompare = (function() {
                     //if (type === "front") {
                     var e = d.target;
                     if (e.searchHighlight) {
-                        return "red";
+                        return "orange"; //changed from "red"
                     }
                     if (e.mouseoverLinkHighlight){//color branch for re-rooting
                         return "green"
@@ -1890,13 +1899,14 @@ TreeCompare = (function() {
                         //console.log(colorScale(d[currentS]));
                         return colorScale(d[currentS])
                     } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                            //console.log("bunt1");
-                            return "green";
-                        } else {
-                            //console.log("black1");
-                            return defaultLineColor;
-                        }
+                            if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                                //console.log("bunt1");
+                                return "green";
+                                // insert some code about checking whether parent is highlighted, then update all children as highlighted
+                            } else {
+                                //console.log("black1");
+                                return defaultLineColor; //changed from defaultLineColor;
+                            }
 
                     }
                     //} else if (type === "bg") {
@@ -1949,7 +1959,7 @@ TreeCompare = (function() {
                     //if (type === "front") {
                     var e = d.target;
                     if (e.searchHighlight) {
-                        return "red";
+                        return "orange"; //changed from red
                     }
                     if (e.mouseoverLinkHighlight){ //color branch between two nodes in green for re-rooting
                         //console.log("here");
@@ -1961,13 +1971,14 @@ TreeCompare = (function() {
                         //console.log(d[currentS]);
                         return colorScale(d[currentS])
                     } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight){ //here the color of the branches after the selected node is set to green
+                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight){ //here the color of the branches after the selected node is set to green
                             //console.log("bunt");
                             return "green";
                         } else {
                             return defaultLineColor;
                         }
                     }
+
 
                     //} else if (type === "bg") {
                     //    return "black"
@@ -2203,6 +2214,7 @@ TreeCompare = (function() {
             .text("SVG")
             .attr("class", "glyphicon glyphicon-download-alt")
             .attr("download", "PhyloIO_Tree");
+        console.log(canvasId);
         $("#downloadButtons" + canvasId + " a").css({
             "color": "#999"
         });
@@ -3174,13 +3186,16 @@ TreeCompare = (function() {
             }
             else if (!unhighlight && !uncollapse) {
                 leaf.searchHighlight = true;
-            }
-            else {
+            } else {
                 leaf.searchHighlight = false;
             }
+
         expandPathToLeaf(leaf.parent, unhighlight, uncollapse);
         }
     }
+
+    //TODO add highlight if collapsed
+
 
 
     /*
@@ -3444,10 +3459,7 @@ TreeCompare = (function() {
                 d.collapsed = true;
             }
         } else {
-            if (d._children) {
-                d.children = d._children;
-                d._children = null;
-            }
+            uncollapseNode(d);
         }
         var children = getChildren(d);
         for (var i = 0; i < children.length; i++) {
@@ -3459,13 +3471,20 @@ TreeCompare = (function() {
      uncollapse all collapsed nodes
      */
     function uncollapseAll(root) {
-        postorderTraverse(root, function(d) {
-            if (d._children) {
-                d.children = d._children;
-                d._children = null;
-            }
-        });
+        postorderTraverse(root, uncollapseNode);
+    }
 
+    /*
+     uncollapse single node.
+     */
+    function uncollapseNode(d) {
+        if (d._children) {
+            d.children = d._children;
+            d._children = null;
+
+            // if d is highlighted then go through d.children and their children.... to highlight
+            console.log('check highlighting in uncollapseNode');
+        }
     }
 
     /*
@@ -3973,6 +3992,7 @@ TreeCompare = (function() {
             }
 
             function collapse(d) {
+                /* Called on collapse AND uncollapse / expand. */
                 var load = false;
                 if (isCompared && d._children) {
                     load = true;
@@ -3988,9 +4008,15 @@ TreeCompare = (function() {
                         d.children = d._children;
                         d._children = null;
                         if (isCompared) {
+                            // fixed bug on collapsing then highlighting and uncollapsing
+                            if (d.clickedParentHighlight) {
+                                postorderTraverse(d, function(e) {
+                                   e.clickedParentHighlight = true;
+                                });
+                            }
                             postorderTraverse(d, function(e) {
-                                BCN(e, comparedTree.root);
-                            }, false);
+                                    BCN(e, comparedTree.root);
+                                }, false);
                         }
                     }
                     if (load) {
@@ -4004,7 +4030,7 @@ TreeCompare = (function() {
             function collapseAll(d,forceUncollapse) {
                 var load = false;
                 if (isCompared && d._children) {
-                    load = true;
+                    load ._children= true;
                     settings.loadingCallback();
                 }
 
@@ -4020,6 +4046,11 @@ TreeCompare = (function() {
                                 e._children = null;
                             }
                             if (isCompared) {
+                                if (d.clickedParentHighlight) {
+                                    postorderTraverse(d, function(e) {
+                                        e.clickedParentHighlight = true;
+                                    });
+                                }
                                 BCN(e, comparedTree.root);
                             }
                         });
@@ -4100,8 +4131,8 @@ TreeCompare = (function() {
                         clearHighlight(tree.root);
                         if (highlightedNodes.length < maxHighlightedNodes) {
                             //console.log(highlightedNodes);
-                            d.clickedHighlight = bcnColors(highlightedNodes.length);
-                            //d.clickedHighlight = "red";
+                            //d.clickedHighlight = bcnColors(highlightedNodes.length);
+                            d.clickedHighlight = "red";
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
                             highlightedNodes.push(d);
                             var leaves = d.leaves;
@@ -4254,7 +4285,8 @@ TreeCompare = (function() {
                     })
                     .on("click", function(d) {
                         postorderTraverse(d, function(e) {
-                            e.mouseoverHighlight = false;
+                            e.mouseover
+                                = false;
                         });
                         collapseAll(d);
                         removeTooltips(svg);
@@ -4310,6 +4342,9 @@ TreeCompare = (function() {
                         update(tree.root,tree.data);
                         removeTooltips(svg);
                     });
+
+
+                //TODO: could this be where we include the label-edit option on the pop-up??? -j
 
                 d3.select(this).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
