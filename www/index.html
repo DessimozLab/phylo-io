@@ -63,7 +63,7 @@
                                 <tr class="row1">
                                     <td><b>Tree:</b></td>
                                     <td class="sidebar-version" style="text-align:left;">
-                                    <input type="text" class="treename" for="newickInSingleFile" id="newickInSingleLabel" rows="1" placeholder="Untitled"></input>
+                                        <input type="text" class="treename" for="newickInSingleFile" id="newickInSingleLabel" rows="1" placeholder="Untitled"></input>
                                     </td>
                                     <td align="right">
                                         <input class="fileIn" id="newickInSingleFile" type="file" style="display:none">
@@ -281,6 +281,21 @@
             autoCollapse: $("#collapseAmount").html()
         });
 
+        /* Download name */
+        var update_download_fn = function(canvasId, labelId) {
+            download_fn = document.getElementById(labelId).value;
+            download_fn = (download_fn === '') ? "PhyloIO_Tree" : download_fn;
+            document.getElementById('downloadButtons' + canvasId).getElementsByTagName('a')[0].download = download_fn;
+        };
+        document.getElementById('newickInSingleLabel').addEventListener("change", function() {
+            update_download_fn('vis-container1', 'newickInSingleLabel')
+        });
+        document.getElementById('newickIn1Label').addEventListener("change", function() {
+            update_download_fn('vis-container1', 'newickIn1Label')
+        });
+        document.getElementById('newickIn2Label').addEventListener("change", function() {
+            update_download_fn('vis-container2', 'newickIn2Label')
+        });
         treecomp.inputTreeFile("newickInSingle");
         treecomp.inputTreeFile("newickIn1");
         treecomp.inputTreeFile("newickIn2");

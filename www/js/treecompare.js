@@ -1141,11 +1141,12 @@ TreeCompare = (function() {
             }
             return leafNames;
         }
-            // TODO could we add the name edit code here????
         //------
         // GET the corresponding node based on best overlap of leaves between two trees
         // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
         //------
+
+
         function getCorrespondingNode(treeLeaves, ifixedTree){
             var bestCorrespondingFixTreeLeaves = "";
             var bestCount = 0;
@@ -1226,7 +1227,6 @@ TreeCompare = (function() {
 
 
             var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
-
             postorderTraverse(currentTrees.root, function(d) {
                 if (d.collapsed) {
                     d._children = d.children;
@@ -2212,14 +2212,53 @@ TreeCompare = (function() {
             .attr("href-lang", "image/svg+xml")
             .attr("href", "data:image/svg+xml;base64,\n" + btoa(html))
             .text("SVG")
-            .attr("class", "glyphicon glyphicon-download-alt")
-            .attr("download", "PhyloIO_Tree");
-        console.log(canvasId);
+            .attr("class", "glyphicon glyphicon-download-alt");
+
         $("#downloadButtons" + canvasId + " a").css({
             "color": "#999"
         });
+        //console.log(canvasId[canvasId.length-1]); //canvasId[-1]
+        //document.getElementById('#' + canvasId);
+
+        /*
+        Renaming download file to treename input box
+         */
+        isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1))
+        if (isCompared) {
+            labelId = (canvasId[canvasId.length - 1] == 1) ? "newickIn1Label" : "newickIn2Label";
+        } else {
+            labelId = "newickInSingleLabel";
+        }
+        download_fn = document.getElementById(labelId).value;
+        download_fn = (download_fn === '') ? "PhyloIO_Tree" : download_fn;
+        downloadButton.attr("download", download_fn);
+
+        /*
+        console.log(document.getElementById("newickIn1Label").value);
+            downloadButton.attr("download", document.getElementById("newickIn1Label").value);
+        } else {
+            console.log(document.getElementById("newickIn2Label").value);
+            downloadButton.attr("download", document.getElementById("newickIn2Label").value);
+        };
+        */
+        // TODO so at the moment, it works if you hover over the tree to cause the update funciton to work otherwise it saves it as 'download';
+        // TODO it also does not work for the single view tree, as it uses the name from the last tree
     }
 
+
+    //console.log (document.querySelector('#newickInSingleLabel').value);
+
+
+    /*
+    Could add a function here that takes HTML input of name box, and renames var downloadButton .attr "PhyloIO_Tree to whatever is in the box?
+
+    function customDownloadName () {
+    if (value of input box)) {
+       make "download" attribute same value as that of input box
+     } else {
+       just leave it as PhyloIO_Tree};
+    };
+    */
 
     /*
      Helper function to see if a string starts with another string (used in the real time search)
@@ -3470,8 +3509,11 @@ TreeCompare = (function() {
     /*
      uncollapse all collapsed nodes
      */
-    function uncollapseAll(root) {
+    function uncollapseAll(root, tree) {
         postorderTraverse(root, uncollapseNode);
+        if (tree !== undefined) {
+            update(root, tree.data);
+        }
     }
 
     /*
@@ -3481,9 +3523,6 @@ TreeCompare = (function() {
         if (d._children) {
             d.children = d._children;
             d._children = null;
-
-            // if d is highlighted then go through d.children and their children.... to highlight
-            console.log('check highlighting in uncollapseNode');
         }
     }
 
@@ -4030,7 +4069,7 @@ TreeCompare = (function() {
             function collapseAll(d,forceUncollapse) {
                 var load = false;
                 if (isCompared && d._children) {
-                    load ._children= true;
+                    load /*._children*/= true;  // _children causes the spinny wheel to never go 'load' and go away
                     settings.loadingCallback();
                 }
 
@@ -4063,6 +4102,7 @@ TreeCompare = (function() {
                             }
                         });
                     }
+                    //console.log("Spinny wheel thing");
                     if (load) {
                         settings.loadedCallback();
                     }
@@ -4204,6 +4244,45 @@ TreeCompare = (function() {
                 update(tree.root, tree.data);
             }
 
+            function edit_label(d) {
+                // Read in input
+                new_label = prompt('Enter new label');
+                current_label = d.name;
+
+                if (new_label != current_label) {
+                    var found = false;
+
+                    function check_label(e) {
+                        //checking for the same label in another part of the tree.
+                        if (e.name == new_label) {
+                            found = true;
+                        } else if (!found && e.children) {
+                            e.children.forEach(check_label);
+                        }
+                    };
+
+                    check_label(tree.root);
+                    if (isCompared && !found) {
+                        check_label(comparedTree.root);
+                    }
+
+                    if (!found) {
+                        // Change on this d and any matched d.
+                        d.name = new_label;  // TODO: strip HTML tags....
+                        if (d.correspondingLeaf) {
+                            d.correspondingLeaf.name = new_label;
+                        }
+                        // Update both trees
+                        update(d, tree.data);
+                        if (isCompared) {
+                            update(comparedTree.root, comparedTree.data);
+                        }
+                    } else {
+                        // Found label already
+                        alert('New label found already in tree(s).');
+                    }
+                }
+            }
 
             //render the tooltip on click
             //user then chooses which function above to call
@@ -4217,174 +4296,177 @@ TreeCompare = (function() {
 
             //d3.selectAll(".tooltipElem").remove();// ensures that not multiple reactangles are open when clicking on another node
             //console.log(d3.select(this));
-            if(d.children || d._children || isCompared){ //ensures that final leaves are only showing a tooltip when in comparison mode
-                // this is defining the path of the tooltip
-                d3.select(this).append("path")
-                    .attr("class", "tooltipElem")
-                    .attr("d", function(d) {
-                        return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
-                    })
-                    .style("fill", "gray");
-                // this is defining the tooltip
-                d3.select(this).append("rect")
-                    .attr("class", "tooltipElem")
-                    .attr("x", function(d) {
-                        return -(rectWidth / 2);
-                    })
-                    .attr("y", function(d) {
-                        return -triHeight - rectHeight + 1;
-                    })
-                    .attr("width", rectWidth)
-                    .attr("height", rectHeight)
-                    .attr("rx", 10)
-                    .attr("ry", 10)
-                    .style("fill", "gray");
+            // this is defining the path of the tooltip
+            // start of menu box container
+            d3.select(this).append("path")
+                .attr("class", "tooltipElem")
+                .attr("d", function(d) {
+                    return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
+                })
+                .style("fill", "gray");
+            // this is defining the tooltip
+            d3.select(this).append("rect")
+                .attr("class", "tooltipElem")
+                .attr("x", function(d) {
+                    return -(rectWidth / 2);
+                })
+                .attr("y", function(d) {
+                    return -triHeight - rectHeight + 1;
+                })
+                .attr("width", rectWidth)
+                .attr("height", rectHeight)
+                .attr("rx", 10)
+                .attr("ry", 10)
+                .style("fill", "gray");
 
-                var rpad = 10;
-                var tpad = 20;
-                var textDone = 0;
-                var textInc = 20;
-                d3.select(this).append("text")
+            var rpad = 10;
+            var tpad = 20;
+            var textDone = 0;
+            var textInc = 20;
+            //end of menu box container
+            // start of menu buttons
+
+            function add_menu_item(selector, text_f, act_f) {
+                d3.select(selector).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
                     .attr("y", (-rectHeight - triHeight + tpad + textDone))
                     .attr("x", ((-rectWidth / 2) + rpad))
                     .style("fill", "white")
                     .style("font-weight", "bold")
                     .text(function(d) {
-                        if (d._children) { // children invisible
+                        text = text_f(d);
+                        if (text) {
                             textDone += textInc;
-                            return "expand >";
-                        } else if (d.children) { //children visible
-                            textDone += textInc;
-                            return "collapse >";
+                            return(text);
                         }
                     })
-                    .on("click", function(d) {
-                        postorderTraverse(d, function(e) {
+                    .on("click", act_f);
+            };
+
+            if (!d.children && !d._children) {
+                add_menu_item(this,
+                    function (d) { // text function
+                        return 'edit label >'
+                    },
+                    function (d) { // action function
+                        edit_label(d);
+                        d.mouseoverHighlight = false;
+                        removeTooltips(svg);
+                    });
+            }
+            if (d.parent && (d._children || d.children)) {
+                add_menu_item(this,
+                    function (d) { // text function
+                        if (d._children) { // children invisible
+                            return "expand >";
+                        } else if (d.children) { //children visible
+                            return "collapse >";
+                        }
+                    },
+                    function (d) { // action function
+                        postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
                         collapse(d);
                         removeTooltips(svg);
-
                     });
 
-                d3.select(this).append("text")
-                    .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
-                    .text(function(d) {
-                        if (d._children) { //TODO: this has to be changed that also the subtree can be all expanded
-                            textDone += textInc;
+                add_menu_item(this,
+                    function (d) {
+                        if (d._children) {
                             return "expand all >";
                         } else if (d.children) {
-                            textDone += textInc;
                             return "collapse all >";
                         }
-                    })
-                    .on("click", function(d) {
-                        postorderTraverse(d, function(e) {
-                            e.mouseover
-                                = false;
+                    },
+                    function (d) {
+                        postorderTraverse(d, function (e) {
+                            e.mouseoverHighlight = false;
                         });
                         collapseAll(d);
                         removeTooltips(svg);
                     });
+            };
 
-                d3.select(this).append("text")
-                    .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
-                    .text(function(d) {
-                        var collapsedOffspring = false;
-                        var new_d = tree.root;
-                        var found = true;
-                        postorderTraverse(d,function(e){
-                            if(e._children && found) {
-                                collapsedOffspring = true;
-                                new_d = e;
-                            }
-                        });
-                        if (collapsedOffspring && !d._children) { //TODO: this has to be changed that also the subtree can be all expanded
-                            textDone += textInc;
-                            return "expand all >";
-                        }
-                    })
-                    .on("click", function(new_d) {
-                        postorderTraverse(new_d, function(e) {
+            //TODO: this has to be changed that also the subtree can be all expanded
+            if (d.children || d._children) {
+                add_menu_item (this,
+                      function(d) {
+                          // If d has *any* descendant that is collapsed, show label.
+                          var found = false;
+
+                          function check_collapsed(e) {
+                              if (e._children && e !== d) {
+                                  found = true;
+                              } else if(!found && e.children) {
+                                  e.children.forEach(check_collapsed);
+                              }
+                          };
+                          check_collapsed(d);
+                          if (found) {
+                              return "expand all >";
+                          }
+                      },
+                    function (d) {
+                        postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        collapseAll(new_d, true);
+                        uncollapseAll(d, tree);
                         removeTooltips(svg);
                     });
+            }
 
-                // This is to rotate two branches at a node
-                d3.select(this).append("text")
-                    .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
-                    .text(function(d) {
-                        if (d.children) {
-                            textDone += textInc;
-                            return "swap subtrees >";
-                        }
-                    })
-                    .on("click", function(d) {
-                        postorderTraverse(d, function(e) {
+            // swap subtree menu option
+            if (d.children) {
+                add_menu_item (this,
+                    function(d) {
+                        return "swap subtrees >";
+                    },
+                    function (d) {
+                        postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
                         rotate(d);
-                        update(tree.root,tree.data);
+                        update(tree.root, tree.data);
                         removeTooltips(svg);
                     });
+            };
 
 
-                //TODO: could this be where we include the label-edit option on the pop-up??? -j
-
-                d3.select(this).append("text")
-                    .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
-                    .text(function(d) {
-                        if (d.parent && d.elementBCN) {
-                            textDone += textInc;
-                            if (d.clickedHighlight) {
-                                return "unhighlight >";
-                            } else {
-                                return "highlight >";
-                            }
+            if (d.parent && d.elementBCN) {
+                add_menu_item (this,
+                    function (d) {
+                        if (d.clickedHighlight) {
+                            return "unhighlight >";
+                        } else {
+                            return "highlight >";
                         }
-                    })
-                    .on("click", function(d) {
-                        postorderTraverse(d, function(e) {
+                    },
+                    function (d) {
+                        postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
                         highlight(d);
                         removeTooltips(svg);
                     });
-
-                d3.selection.prototype.moveToFront = function() {
-                    return this.each(function() {
-                        this.parentNode.appendChild(this);
-                    });
-                };
-                d3.select(this).moveToFront();
-                d3.select(this).selectAll(".tooltipElemText").each(function(d) {
-                    d3.select(this).on("mouseover", function(d) {
-                        d3.select(this).transition().duration(50).style("fill", "black");
-                    });
-                    d3.select(this).on("mouseout", function(d) {
-                        d3.select(this).transition().duration(50).style("fill", "white");
-                    });
-                });
             }
+
+            // end of menu buttons
+
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function() {
+                    this.parentNode.appendChild(this);
+                });
+            };
+            d3.select(this).moveToFront();
+            d3.select(this).selectAll(".tooltipElemText").each(function(d) {
+                d3.select(this).on("mouseover", function(d) {
+                    d3.select(this).transition().duration(50).style("fill", "black");
+                });
+                d3.select(this).on("mouseout", function(d) {
+                    d3.select(this).transition().duration(50).style("fill", "white");
+                });
+            });
 
         }
 
