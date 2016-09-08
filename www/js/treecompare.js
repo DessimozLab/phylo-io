@@ -2217,6 +2217,7 @@ TreeCompare = (function() {
         $("#downloadButtons" + canvasId + " a").css({
             "color": "#999"
         });
+
         //console.log(canvasId[canvasId.length-1]); //canvasId[-1]
         //document.getElementById('#' + canvasId);
 

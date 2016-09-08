@@ -34,8 +34,8 @@
             </div>
         </div>
         </div>
+        </div>
     </div>
-
     <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
@@ -166,6 +166,9 @@
                     </li>
                     <li>
                         <a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
+                    </li>
+                    <li class="compareIn">
+                        <a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a>
                     </li>
                     <li>
                         <a href="manual.html"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
@@ -596,6 +599,46 @@
                 }
 
             }
+        });
+
+        /*------
+         /
+         /    SVG export button
+         /
+         ------*/
+        $("#svgExport").click(function(e) {
+            //console.log("thats where");
+            // Copy left tree
+            var svg1 = document.getElementById('vis-container1').getElementsByTagName('svg')[0].cloneNode(true);
+            var svg2 = document.getElementById('vis-container2').getElementsByTagName('svg')[0].cloneNode(true);
+
+            // Double the width on svg1
+            var l_w = parseInt(svg1.getAttribute('width')),
+                    r_w = parseInt(svg2.getAttribute('width'));
+            svg1.setAttribute('width', (l_w + r_w));
+
+            // Add right tree into left tree's svg
+            var g = document.createElement('g');
+            g.setAttribute('transform', 'translate(' + l_w + ',0)');
+            g.appendChild(svg2.childNodes[0]);
+            svg1.appendChild(g);
+
+            // Create the download button
+            var download = document.createElement('a');
+            download.setAttribute('href-lang', 'image/svg+xml');
+            download.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
+            isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1))
+            if (isCompared) {
+                download_fn = document.getElementById("newickIn1Label").value +
+                        "-with-" +
+                        document.getElementById("newickIn2Label").value;
+
+            } else {
+                download_fn = document.getElementById("newickInSingleLabel").value;
+            }
+            download_fn = (download_fn === '' || download_fn === "-with-") ? "side-by-side" : download_fn;
+            download.setAttribute("download", download_fn);
+            download.click();
         });
 
         /*------
