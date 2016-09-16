@@ -1058,15 +1058,15 @@ TreeCompare = (function() {
                 getAllBCNs(itree1, itree2);
             }
 
-            //var t0 = performance.now();
+            var t0 = performance.now();
             updateVisibleBCNs(tree1.root, tree2.root, false);
-            //var t1 = performance.now();
-            //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
+            var t1 = performance.now();
+            console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
             if(iFinalView){
-                //var t0 = performance.now();
+                var t0 = performance.now();
                 updateVisibleBCNs(tree2.root, tree1.root, true);
-                //var t1 = performance.now();
-                //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
+                var t1 = performance.now();
+                console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
                 //var t0 = performance.now();
                 update(tree2.root, tree2.data);
                 update(tree1.root, tree1.data);
@@ -3268,9 +3268,12 @@ TreeCompare = (function() {
                 for (var a = 0; a < children.length; a++) {
                     getAllBCNs(children[a], t);
                 }
+                var t0 = performance.now();
                 if (recalculate || !d.elementBCN) {
                     BCN(d, t);
                 }
+                var t1 = performance.now();
+                console.log("Call getVisibleBCNs:BCN if children " + (t1 - t0) + " milliseconds.");
                 return;
             } else {
                 if (recalculate || !d.elementBCN) {
@@ -3279,8 +3282,12 @@ TreeCompare = (function() {
                 return;
             }
         }
+        var t0 = performance.now();
+        //TODO: why does it have to calculate this twice
         getAllBCNs(tree1, tree2);
         getAllBCNs(tree2, tree1);
+        var t1 = performance.now();
+        console.log("Call getVisibleBCNs:getAllBCNs took " + (t1 - t0) + " milliseconds.");
     }
 
     /*
@@ -3292,7 +3299,7 @@ TreeCompare = (function() {
         //console.log(tree1);
         //console.log(tree2);
 
-
+        var t0 = performance.now();
         for (var i = 0; i < tree1.leaves.length; i++) {
             for (var j = 0; j < tree2.leaves.length; j++) {
                 if (tree1.leaves[i].name === tree2.leaves[j].name) {
@@ -3302,6 +3309,8 @@ TreeCompare = (function() {
                 }
             }
         }
+        var t1 = performance.now();
+        console.log("Call preprocessTrees:double loop took " + (t1 - t0) + " milliseconds.");
 
         postorderTraverse(tree1, function(d) {
             d.deepLeafList = createDeepLeafList(d);
@@ -3309,12 +3318,17 @@ TreeCompare = (function() {
         postorderTraverse(tree2, function(d) {
             d.deepLeafList = createDeepLeafList(d);
         });
+        var t0 = performance.now();
         getVisibleBCNs(tree1, tree2);
+        var t1 = performance.now();
+        console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
         //}
     }
 
     /*
      get a spanning tree containing leaves given
+     -> node is set to opposite tree
+     -> leaves are searched in opposite tree in order to find the spanning tree
      */
     function getSpanningTree(node, leaves) {
         var nodes = [];
@@ -3331,6 +3345,7 @@ TreeCompare = (function() {
             }
         }
         return nodes;
+
     }
     function namesOnly(leaf) {
         return leaf.name;
@@ -3403,9 +3418,9 @@ TreeCompare = (function() {
             uncollapseAll(trees[index1].root);
             uncollapseAll(trees[index2].root);
             //var t1 = performance.now();
-            //console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
+           // console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
 
-            //var t0 = performance.now();
+           // var t0 = performance.now();
             stripPreprocessing(trees[index1].root);
             stripPreprocessing(trees[index2].root);
             //var t1 = performance.now();
@@ -3441,13 +3456,20 @@ TreeCompare = (function() {
                 limitDepth(trees[index1].root, settings.autoCollapse);
                 limitDepth(trees[index2].root, settings.autoCollapse);
             }
+            //var t0 = performance.now();
             preprocessTrees(index1, index2);
+            //var t1 = performance.now();
+            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
             trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
             trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+            //var t0 = performance.now();
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
+            //var t1 = performance.now();
+            //console.log("Call renderTree took " + (t1 - t0) + " milliseconds.");
+
 
             compareMode = true;
             settings.loadedCallback();
@@ -4475,14 +4497,17 @@ TreeCompare = (function() {
 
     }
 
-    //get the best corresponding node in tree for node v
+    //get the best corresponding node in opposite tree for node v
     function BCN(v, tree) {
 
         var elementBCNNode = null;
         var maxElementS = 0;
         var leaves = v.leaves;
+        var t0 = performance.now();
         var spanningTree = getSpanningTree(tree, leaves);
-        //console.log(spanningTree);
+        var t1 = performance.now();
+        console.log("Call BCN:getSpanningTree took " + (t1 - t0) + " milliseconds.");
+        console.log(spanningTree);
         for (var i = 0; i < spanningTree.length; i++) {
             //get elementBCN for node v
             x = getElementS(v, spanningTree[i]);
