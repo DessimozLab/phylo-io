@@ -3351,6 +3351,31 @@ TreeCompare = (function() {
         return leaf.name;
     }
 
+    //get the best corresponding node in opposite tree for node v
+    function BCN(v, tree) {
+
+        var elementBCNNode = null;
+        var maxElementS = 0;
+        var leaves = v.leaves;
+        var t0 = performance.now();
+        var spanningTree = getSpanningTree(tree, leaves);
+        var t1 = performance.now();
+        //console.log("Call BCN:getSpanningTree took " + (t1 - t0) + " milliseconds.");
+        //console.log(spanningTree);
+        for (var i = 0; i < spanningTree.length; i++) {
+            //get elementBCN for node v
+            x = getElementS(v, spanningTree[i]);
+            if (x > maxElementS) {
+                maxElementS = x;
+                elementBCNNode = spanningTree[i];
+            }
+        }
+        v.elementBCN = elementBCNNode;
+        v.elementS = maxElementS;
+        console.log(v.elementBCN);
+
+    }
+
     /*
      creates list of leaves of each node in subtree rooted at v
      */
@@ -4497,29 +4522,6 @@ TreeCompare = (function() {
 
     }
 
-    //get the best corresponding node in opposite tree for node v
-    function BCN(v, tree) {
-
-        var elementBCNNode = null;
-        var maxElementS = 0;
-        var leaves = v.leaves;
-        var t0 = performance.now();
-        var spanningTree = getSpanningTree(tree, leaves);
-        var t1 = performance.now();
-        console.log("Call BCN:getSpanningTree took " + (t1 - t0) + " milliseconds.");
-        console.log(spanningTree);
-        for (var i = 0; i < spanningTree.length; i++) {
-            //get elementBCN for node v
-            x = getElementS(v, spanningTree[i]);
-            if (x > maxElementS) {
-                maxElementS = x;
-                elementBCNNode = spanningTree[i];
-            }
-        }
-        v.elementBCN = elementBCNNode;
-        v.elementS = maxElementS;
-
-    }
     //return all the externalised functions
     return {
         init: init,
