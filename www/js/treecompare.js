@@ -528,6 +528,7 @@ TreeCompare = (function() {
     /*
      returns longest length between two nodes of all nodes in subtree from node passed to function
      */
+/*
     function getMaxLength(root) {
         var max = 0;
 
@@ -561,6 +562,49 @@ TreeCompare = (function() {
         }
         return getMax_internal(root, max);
     }
+*/
+
+    /*
+        returns longest length from root, modified by katoh
+        Seemingly the original version considers terminal branches only,
+        and returns zero when the tree is ((A:0,B:0):1,(C:0,D:0):1);
+    */
+    function getMaxLength(root) {
+        var max = 0;
+        function getMax_internal(d,distfromroot) {
+            distfromroot+=d.length;
+            if (d.children || d._children) {
+                var children = getChildren(d);
+                for (var i = 0, ilim=children.length; i < ilim; i++) {
+                    getMax_internal(children[i],distfromroot);
+                }
+            } else {
+                if (distfromroot>max) max = distfromroot;
+            }
+        }
+        getMax_internal(root,0);
+        return max;
+    }
+
+    function getMaxLengthVisible(root) {
+        var max = 0;
+        function getMax_internal(d,distfromroot) {
+            distfromroot+=d.length;
+            if (d.children) {
+                var children = getChildren(d);
+                for (var i = 0, ilim=children.length; i < ilim; i++) {
+                    getMax_internal(children[i],distfromroot);
+                }
+            } else {
+                if (distfromroot>max) max = distfromroot;
+            }
+        }
+        getMax_internal(root,0);
+        return max;
+    }
+
+
+
 
     /*
      get total length of a node from root
