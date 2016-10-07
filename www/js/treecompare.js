@@ -1311,7 +1311,7 @@ TreeCompare = (function() {
                 gistID2 = data.id;
             });
 
-            outURL += gistID1 + "#" + gistID2;
+            outURL += encodeURIComponent(gistID1 + "#" + gistID2);
             //console.log(tree1);
 
         }else {
@@ -1322,7 +1322,7 @@ TreeCompare = (function() {
                 gistID = data.id;
             });
 
-            outURL += gistID;
+            outURL += encodeURIComponent(gistID);
         }
 
 
