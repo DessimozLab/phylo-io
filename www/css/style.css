@@ -17,6 +17,7 @@ html {
     width: 100%;
     height: 100%;
     position: absolute;
+    input:focus::-webkit-input-placeholder { color:transparent; };
     background: -webkit-linear-gradient(#ddd, #aaa);
     /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(#ddd, #aaa);
@@ -364,14 +365,52 @@ table.fixed td:nth-of-type(3) {
 textarea{
     resize: none;
 }
+input {
+    resize: none;
+}
 
-textarea.treename {
+input.treename {
     background: transparent;
     width: 125px;
     border: none;
 }
 
-textarea.treename::-webkit-input-placeholder{
+input.treename::-webkit-input-placeholder{
     color: #999;
     font-style: italic
 }
+
+/*this following code makes the treename hide on focus*/
+/*
+.treename::-webkit-input-placeholder  {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.treename::-moz-placeholder   {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.treename:-moz-placeholder   {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+*/
+
+/*this following code makes the treename hide on focus*/
+.treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome, Opera, Safari */
+.treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19   + */
+.treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
+.treename:-ms-input-placeholder    {color:transparent;} /* IE 10+*/
+
