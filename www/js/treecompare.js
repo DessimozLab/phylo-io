@@ -3165,21 +3165,10 @@ TreeCompare = (function() {
                 }
             }
         }
-        //var t1 = performance.now();
-        //console.log("Call preprocessTrees:double loop took " + (t1 - t0) + " milliseconds.");
+        createDeepLeafList(tree1);
+        createDeepLeafList(tree2);
 
-        postorderTraverse(tree1, function(d) {
-            d.deepLeafList = createDeepLeafList(d);
-        });
-        postorderTraverse(tree2, function(d) {
-            d.deepLeafList = createDeepLeafList(d);
-        });
-
-        //var t0 = performance.now();
         getVisibleBCNs(tree1, tree2);
-        //var t1 = performance.now();
-        //console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
-        //}
     }
 
     /*
