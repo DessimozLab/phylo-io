@@ -3235,31 +3235,14 @@ TreeCompare = (function() {
     /*
      creates list of leaves of each node in subtree rooted at v
      */
-    function createDeepLeafList(v) {
-        var deepLeafList = [];
-        var counter = 0;
-
-        function buildDeepLeafList(d) {
-            var children = getChildren(d);
-            if (children.length > 0) {
-                if (counter > 0) {
-                    deepLeafList.push(_.sortBy(_.map(d.leaves, namesOnly), function(str) {
-                        return str
-                    }).toString());
-                }
-                counter += 1;
-                for (var i = 0; i < children.length; i++) {
-                    buildDeepLeafList(children[i]);
-                }
-                return;
-            } else {
-                deepLeafList.push(d.name);
-                return;
+    function createDeepLeafList(_tree) {
+        postorderTraverse(_tree, function(d){
+            var deepLeafList = [];
+            for (var i=0; i<d.leaves.length; i++){
+                deepLeafList.push(d.leaves[i].name)
             }
-        }
-        buildDeepLeafList(v);
-        return deepLeafList;
-
+            d.deepLeafList = deepLeafList;
+        })
     }
 
     /*
