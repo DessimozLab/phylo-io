@@ -74,6 +74,14 @@ TreeCompare = (function() {
         autoCollapse: null
     };
 
+    /*-----------------------------------------------
+    |
+    |
+    |   EXTERNALLY AVAILABLE FUNCTIONS
+    |
+    |
+    */
+
     /*
      called externally to get the TreeCompare object
      */
@@ -83,30 +91,7 @@ TreeCompare = (function() {
         return this;
     }
 
-    /*  
-     called on window resize to ensure the svg canvas fits the parent container
-     */
-    function resize() {
-        for (var i = 0; i < renderedTrees.length; i++) {
-            var data = renderedTrees[i].data;
-            $("#" + data.canvasId + " svg").width($("#" + data.canvasId).width());
-            $("#" + data.canvasId + " svg").height($("#" + data.canvasId).height());
-        }
-
-    }
-
-    window.onresize = resize;
-
     /*
-     create ID with random number generator
-     */
-    function makeId(prefix) {
-        prefix || (prefix = '');
-        var output = prefix + Math.floor(1000 + Math.random() * 9000);
-        return output;
-    }
-
-    /* 
      external function for changing settings, any rendered trees are updated
      */
     function changeSettings(settingsIn) {
@@ -149,6 +134,618 @@ TreeCompare = (function() {
         }
         updateAllRenderedTrees();
     }
+
+    /*
+     Called externally and allows to drag and drop text files for tree input
+     */
+    function inputTreeFile(newickIn){
+        /*
+         /
+         /    Enable drag and drop
+         /
+         */
+        var MAX_BYTES = 102400; // 100 KB
+
+        function dragEnter(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragExit(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function dragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            $("#renderErrorMessage").empty();
+
+            var data = event.dataTransfer;
+            var file = data.files;
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+            };
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader;
+                reader = new FileReader();
+                reader.onload = function(event) {
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
+                    } else {
+                        $("#renderErrorMessage").empty();
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").val(file[0].name);
+                }
+            } else {
+                $("#renderErrorMessage").empty();
+                $("#" + newickIn + "Label").text("No file");
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+            // object for allowed media types
+
+        }
+
+        function onFileLoaded(event) {
+            event.currentTarget.result.substr(0, MAX_BYTES);
+        }
+
+        var dropArea = $("#" + newickIn).get(0);
+
+        dropArea.addEventListener("dragenter", dragEnter, false);
+        dropArea.addEventListener("dragexit", dragExit, false);
+        dropArea.addEventListener("dragover", dragOver, false);
+        dropArea.addEventListener("drop", drop, false);
+
+        /*
+         /
+         /    Enable file input using button
+         /
+         */
+        var newickInButton = document.getElementById(newickIn+"Button");
+        var control = document.getElementById(newickIn+"File");
+        newickInButton.addEventListener('click',function(event){
+            event.preventDefault();
+            control.click();
+            //$(this).find('span').toggleClass('glyphicon-file').toggleClass('glyphicon-remove');
+        },false);
+
+
+        control.addEventListener("change", function(event) {
+
+            // When the control has changed, there are new files
+
+            var file = control.files;
+
+
+            var accept = {
+                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+            };
+
+            var file_name_tokens = file[0].name.split(".");
+            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
+
+            if (accept.text.indexOf(file_name_ending) > -1){
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
+                        $("#" + newickIn).val(event.target.result);
+                        $("#renderErrorMessage").empty();
+                    } else {
+                        $("#renderErrorMessage").empty();
+                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
+                        $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
+                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+                    }
+
+                };
+                reader.onloadend = onFileLoaded;
+                reader.readAsText(file[0]);
+                if(file[0].name == "")
+                {
+                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
+                }
+                else
+                {
+                    $("#" + newickIn + "Label").val(file[0].name);
+                }
+
+            } else {
+                $("#renderErrorMessage").empty();
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                //$("#" + newickIn).val("");
+                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
+                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
+            }
+
+
+        }, false);
+
+    }
+
+    /*
+     Called externally to convert a tree and add to internal tree structure
+     */
+    function addTree(newick, name) {
+
+        if (name === undefined) {
+            var num = trees.length;
+            name = "Tree " + num;
+        }
+        var tree = convertTree(newick);
+
+        /*try {
+         var tree = convertTree(newick); // calls convert function from above
+         //console.log(tree)
+         } catch (err) {
+         throw "Invalid Newick";
+         }*/
+        for (var i = 0; i < trees.length; i++) {
+            if (name === trees[i].name) {
+                throw "Tree With Name Already Exists";
+            }
+        }
+        //add required parameters to each node
+        postorderTraverse(tree, function(d) {
+            d.ID = makeId("node_");
+            d.leaves = getChildLeaves(d);
+            d.clickedParentHighlight = false;
+            d.mouseoverHighlight = false; //when mouse is over node
+            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+            d.correspondingHighlight = false;
+            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+        });
+
+        var root_ID = makeId("node_");
+        for (var i = 0; i < tree.children.length; i++){
+            tree.children[i].ID = root_ID;
+        }
+
+        var fullTree = {
+            root: tree,
+            name: name,
+            data: {}
+        };
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
+
+        trees.push(fullTree);
+
+        return fullTree;
+    }
+
+    /*
+     depending on number of splits function returns maximum number of collapsing depth
+     */
+    function getMaxAutoCollapse() {
+        var maxDepth = [];
+
+        for (var i = 0; i < renderedTrees.length; i++) {
+            var maxDepthTmp = 0;
+            postorderTraverse(renderedTrees[i].root, function(e){
+                if (e.depth > maxDepthTmp){
+                    maxDepthTmp = e.depth;
+                }
+            },true);
+            maxDepth.push(maxDepthTmp);
+        }
+        return Math.max.apply(Math, maxDepth)-1;
+    }
+
+    /*
+     return trees in tree array trees
+     */
+    function getTrees() {
+        return trees
+    }
+
+    /*
+     remove a tree from array of trees
+     */
+    function removeTree(name) {
+        trees.splice(findTreeIndex(name), 1);
+        for (var i = 0; i < renderedTrees.length; i++) {
+            if (renderedTrees[i].name === name) {
+                $("#" + renderedTrees[i].data.canvasId).empty();
+                if (renderedTrees[i].data.scaleId) {
+                    $(renderedTrees[i].data.scaleId).empty();
+                }
+            }
+        }
+    }
+
+    /*
+     Can be called externally to render the color scale for tree comparison in a div
+     */
+    function renderColorScale(scaleId) {
+        var colorScale = d3.scale.linear()
+            .domain(colorScaleDomain)
+            .range(colorScaleRange);
+        var width = 200;
+        var steps = 100;
+        var height = 30;
+        var svgHeight = height + 25;
+        var svg = d3.select("#" + scaleId).append("svg")
+            .attr("width", width + "px")
+            .attr("height", svgHeight + "px")
+            .append("g");
+        for (var i = 0; i < steps; i++) {
+            svg.append("rect")
+                .attr("width", (width / steps) + "px")
+                .attr("height", height + "px")
+                .attr("fill", colorScale(i / steps))
+                .attr("x", ((width / steps) * i) + "px")
+        }
+        svg.append("text")
+            .text("0")
+            .attr("x", 0)
+            .attr("y", height + 20)
+            .attr("fill", settings.scaleColor);
+        svg.append("text")
+            .text("1")
+            .attr("x", width - 10)
+            .attr("y", height + 20)
+            .attr("fill", settings.scaleColor)
+
+    }
+    /*---------------
+     /
+     /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
+     /
+     ---------------*/
+    function exportTree(isCompared){
+
+        /*
+         Function to write JSON structure to gist
+         */
+        function writeJSONtoGist(sourceData, callback){
+            var currentTrees = sourceData;
+
+            // get original newick since parser can not handle _children
+            postorderTraverse(currentTrees.root, function(d) {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
+                }
+            });
+
+            var nwk_original = jsonToNwk(currentTrees.root,false);
+            var nwk_collapsed = jsonToNwk(currentTrees.root,true);
+
+
+            var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
+            postorderTraverse(currentTrees.root, function(d) {
+                if (d.collapsed) {
+                    d._children = d.children;
+                    d.children = null;
+                }
+            });
+
+            var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
+            return $.ajax({
+                async: false,
+                url: 'https://api.github.com/gists',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(tmp),
+                success: callback
+            });
+        }
+
+        var tmpURL = window.location.href.split("#");
+        var outURL = tmpURL[0] + "#";
+
+        if (isCompared){
+            var tree1 = trees[trees.length-2];
+            var tree2 = trees[trees.length-1];
+
+            var gistID1;
+            var gistID2;
+            writeJSONtoGist(tree1, function(data){
+                gistID1 = data.id;
+            });
+
+            writeJSONtoGist(tree2, function(data){
+                gistID2 = data.id;
+            });
+
+            outURL += encodeURIComponent(gistID1 + "#" + gistID2);
+
+        }else {
+
+            var tree1 = trees[trees.length-1];
+
+            writeJSONtoGist(tree1, function(data){
+                gistID = data.id;
+            });
+
+            outURL += encodeURIComponent(gistID);
+        }
+
+
+        return outURL;
+
+    }
+
+
+    /*---------------
+     /
+     /    EXTERNAL: Function to retrieve visualization using tree obtained from gist
+     /
+     ---------------*/
+    function addTreeGistURL(gistID, name){
+
+        settings.autoCollapse = null;
+        if (name === undefined) {
+            var num = trees.length;
+            name = "Tree " + num;
+        }
+
+        /*
+         Function to obtain json tree structure from gist
+         */
+        function gistToJSON(id, callback) {
+
+            var objects = [];
+            $.ajax({
+                async: false,
+                url: 'https://api.github.com/gists/'+id,
+                type: 'GET',
+                dataType: 'json'
+            }).success( function(gistdata) {
+                // This can be less complicated if you know the gist file name
+                for (file in gistdata.files) {
+                    if (gistdata.files.hasOwnProperty(file)) {
+                        //var o = CircularJSON.parse(gistdata.files[file].content);
+                        var o = gistdata.files[file].content;
+                        if (o) {
+                            objects.push(o);
+                        }
+                    }
+                }
+                if (objects.length > 0) {
+                    return callback(objects[0]);
+                }
+            }).error( function(e) {
+                // ajax error
+            });
+        }
+
+        var newTree;
+        gistToJSON(gistID, function(data){
+            newTree = data;
+            return newTree;
+        });
+
+        var parsedNwk = newTree.split("$$");
+        //console.log(parsedNwk);
+        try {
+            var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
+        } catch (err) {
+            throw "Invalid Newick";
+        }
+
+        postorderTraverse(collapsedInfoTree, function(d) {
+            d.ID = makeId("node_");
+            d.leaves = getChildLeaves(d);
+            d.mouseoverHighlight = false; //when mouse is over node
+            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+        });
+
+        var fullTree = {
+            root: collapsedInfoTree,
+            name: name,
+            nwk: parsedNwk[1],
+            compare:false,
+            data: {}
+        };
+        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
+
+        trees.push(fullTree);
+        return fullTree;
+
+    }
+
+    /*---------------
+     /
+     /    EXTERNAL: update the collapsed nodes according to the new render depth
+     /
+     ---------------*/
+    function changeAutoCollapseDepth(depth) {
+        settings.autoCollapse = depth;
+
+        for (var i = 0; i < renderedTrees.length; i++) {
+            maxDepth = getMaxAutoCollapse();
+            //console.log(maxDepth);
+            if (depth === null) {
+                uncollapseAll(renderedTrees[i].root);
+            } else {
+                limitDepth(renderedTrees[i].root, depth);
+            }
+        }
+
+        if (renderedTrees.length === 2) {
+            settings.loadingCallback();
+            setTimeout(function() {
+                getVisibleBCNs(renderedTrees[0].root, renderedTrees[1].root, false);
+                update(renderedTrees[0].root, renderedTrees[0].data);
+                update(renderedTrees[1].root, renderedTrees[1].data);
+                settings.loadedCallback();
+            }, 2);
+        } else {
+            update(renderedTrees[0].root, renderedTrees[0].data);
+        }
+    }
+
+    /*---------------
+     /
+     /    EXTERNAL: external function for initialising a tree comparison visualisation
+     /
+     ---------------*/
+    function compareTrees(name1, canvas1, name2, canvas2, scale1, scale2) {
+        renderedTrees = [];
+        var index1 = findTreeIndex(name1);
+        var index2 = findTreeIndex(name2);
+        settings.loadingCallback();
+        setTimeout(function() {
+            //var t0 = performance.now();
+            uncollapseAll(trees[index1].root);
+            uncollapseAll(trees[index2].root);
+            //var t1 = performance.now();
+            // console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
+
+            // var t0 = performance.now();
+            stripPreprocessing(trees[index1].root);
+            stripPreprocessing(trees[index2].root);
+            //var t1 = performance.now();
+            //console.log("stripPreprocessing " + (t1 - t0) + " milliseconds.");
+
+            //var t0 = performance.now();
+            getDepths(trees[index1].root);
+            getDepths(trees[index2].root);
+            //var t1 = performance.now();
+            //console.log("getDepths " + (t1 - t0) + " milliseconds.");
+
+
+            postorderTraverse(trees[index1].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+            postorderTraverse(trees[index2].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+
+            if (settings.autoCollapse !== null) {
+                limitDepth(trees[index1].root, settings.autoCollapse);
+                limitDepth(trees[index2].root, settings.autoCollapse);
+            }
+            //var t0 = performance.now();
+            preprocessTrees(index1, index2);
+            //var t1 = performance.now();
+            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+
+            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
+            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+
+            //var t0 = performance.now();
+            renderTree(name1, canvas1, scale1, name2);
+            renderTree(name2, canvas2, scale2, name1);
+            //var t1 = performance.now();
+            //console.log("Call renderTree took " + (t1 - t0) + " milliseconds.");
+
+
+            compareMode = true;
+            settings.loadedCallback();
+        }, 5);
+
+    }
+
+    /*---------------
+     /
+     /    EXTERNAL: external function for initialising a single tree visualisation
+     /
+     ---------------*/
+    function viewTree(name, canvasId, scaleId) {
+        renderedTrees = [];
+        var index = findTreeIndex(name);
+        settings.loadingCallback();
+        setTimeout(function() {
+            uncollapseAll(trees[index].root);
+            stripPreprocessing(trees[index].root);
+            getDepths(trees[index].root);
+
+            postorderTraverse(trees[index].root, function(d) {
+                if (d.name==="collapsed" || d.collapsed) {
+                    d._children = d.children;
+                    d.collapsed = true;
+                    d.children = null;
+                    //d.name=""
+                }
+            });
+
+
+            if (settings.autoCollapse !== null) {
+                limitDepth(trees[index].root, settings.autoCollapse);
+            }
+            trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
+            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
+            renderTree(name, canvasId, scaleId);
+            settings.loadedCallback();
+        }, 2);
+
+    }
+
+    /*
+    |
+    | END OF EXTERNAL FUNCTIONS
+    |
+     -----------------------------------------------*/
+
+
+
+    /*  
+     called on window resize to ensure the svg canvas fits the parent container
+     */
+    function resize() {
+        for (var i = 0; i < renderedTrees.length; i++) {
+            var data = renderedTrees[i].data;
+            $("#" + data.canvasId + " svg").width($("#" + data.canvasId).width());
+            $("#" + data.canvasId + " svg").height($("#" + data.canvasId).height());
+        }
+
+    }
+
+    window.onresize = resize;
+
+    /*
+     create ID with random number generator
+     */
+    function makeId(prefix) {
+        prefix || (prefix = '');
+        var output = prefix + Math.floor(1000 + Math.random() * 9000);
+        return output;
+    }
+
+
 
     /*
     function to update currently rendered trees when settings are changed
@@ -392,210 +989,7 @@ TreeCompare = (function() {
         return tree;
     }
 
-    /*
-     Called externally and allows to drag and drop text files for tree input
-     */
-    function inputTreeFile(newickIn){
-        /*
-         /
-         /    Enable drag and drop
-         /
-         */
-        var MAX_BYTES = 102400; // 100 KB
 
-        function dragEnter(event) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function dragExit(event) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function dragOver(event) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-        function drop(event) {
-            event.stopPropagation();
-            event.preventDefault();
-            $("#renderErrorMessage").empty();
-
-            var data = event.dataTransfer;
-            var file = data.files;
-
-            var accept = {
-                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
-            };
-
-            var file_name_tokens = file[0].name.split(".");
-            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
-
-            if (accept.text.indexOf(file_name_ending) > -1){
-                var reader;
-                reader = new FileReader();
-                reader.onload = function(event) {
-                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
-                        $("#" + newickIn).val(event.target.result);
-                        $("#renderErrorMessage").empty();
-                    } else {
-                        $("#renderErrorMessage").empty();
-                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
-                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
-                    }
-
-                };
-                reader.onloadend = onFileLoaded;
-                reader.readAsText(file[0]);
-                if(file[0].name == "")
-                {
-                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
-                }
-                else
-                {
-                    $("#" + newickIn + "Label").val(file[0].name);
-                }
-            } else {
-                $("#renderErrorMessage").empty();
-                $("#" + newickIn + "Label").text("No file");
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
-                //$("#" + newickIn).val("");
-                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
-                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
-            }
-
-            // object for allowed media types
-
-        }
-
-        function onFileLoaded(event) {
-            event.currentTarget.result.substr(0, MAX_BYTES);
-        }
-
-        var dropArea = $("#" + newickIn).get(0);
-
-        dropArea.addEventListener("dragenter", dragEnter, false);
-        dropArea.addEventListener("dragexit", dragExit, false);
-        dropArea.addEventListener("dragover", dragOver, false);
-        dropArea.addEventListener("drop", drop, false);
-
-        /*
-         /
-         /    Enable file input using button
-         /
-         */
-        var newickInButton = document.getElementById(newickIn+"Button");
-        var control = document.getElementById(newickIn+"File");
-        newickInButton.addEventListener('click',function(event){
-            event.preventDefault();
-            control.click();
-            //$(this).find('span').toggleClass('glyphicon-file').toggleClass('glyphicon-remove');
-        },false);
-
-
-        control.addEventListener("change", function(event) {
-
-            // When the control has changed, there are new files
-
-            var file = control.files;
-
-
-            var accept = {
-                text   : ["txt", "nh", "nhx", "nwk", "tre", "tree"]
-            };
-
-            var file_name_tokens = file[0].name.split(".");
-            var file_name_ending = file_name_tokens[file_name_tokens.length-1];
-
-            if (accept.text.indexOf(file_name_ending) > -1){
-                var reader = new FileReader();
-                reader.onload = function(event) {
-                    if(!(checkTreeInput(event.target.result)=="NotNwk")){
-                        $("#" + newickIn).val(event.target.result);
-                        $("#renderErrorMessage").empty();
-                    } else {
-                        $("#renderErrorMessage").empty();
-                        $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">This is not a tree file!</div>')).hide().slideDown(300);
-                        $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
-                        $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
-                    }
-
-                };
-                reader.onloadend = onFileLoaded;
-                reader.readAsText(file[0]);
-                if(file[0].name == "")
-                {
-                    $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
-                }
-                else
-                {
-                    $("#" + newickIn + "Label").val(file[0].name);
-                }
-
-            } else {
-                $("#renderErrorMessage").empty();
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
-                //$("#" + newickIn).val("");
-                $("#" + newickIn+ "Label").attr("placeholder","Untitled").val("");
-                $("#" + newickIn).attr("placeholder","Paste your tree or drag and drop your tree file here").val("");
-            }
-
-
-        }, false);
-
-    }
-
-    /*
-     Called externally to convert a tree and add to internal tree structure
-     */
-    function addTree(newick, name) {
-
-        if (name === undefined) {
-            var num = trees.length;
-            name = "Tree " + num;
-        }
-        var tree = convertTree(newick);
-
-        /*try {
-         var tree = convertTree(newick); // calls convert function from above
-         //console.log(tree)
-         } catch (err) {
-         throw "Invalid Newick";
-         }*/
-        for (var i = 0; i < trees.length; i++) {
-            if (name === trees[i].name) {
-                throw "Tree With Name Already Exists";
-            }
-        }
-        //add required parameters to each node
-        postorderTraverse(tree, function(d) {
-            d.ID = makeId("node_");
-            d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
-            d.mouseoverHighlight = false; //when mouse is over node
-            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-            d.correspondingHighlight = false;
-            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
-        });
-
-        var root_ID = makeId("node_");
-        for (var i = 0; i < tree.children.length; i++){
-            tree.children[i].ID = root_ID;
-        }
-
-        var fullTree = {
-            root: tree,
-            name: name,
-            data: {}
-        };
-        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
-
-        trees.push(fullTree);
-
-        return fullTree;
-    }
 
     /*
     depending on number of leaves function returns optimal collapsing depth
@@ -610,80 +1004,7 @@ TreeCompare = (function() {
 
     }
 
-    /*
-    depending on number of splits function returns maximum number of collapsing depth
-     */
-    function getMaxAutoCollapse() {
-        var maxDepth = [];
 
-        for (var i = 0; i < renderedTrees.length; i++) {
-            var maxDepthTmp = 0;
-            postorderTraverse(renderedTrees[i].root, function(e){
-                if (e.depth > maxDepthTmp){
-                    maxDepthTmp = e.depth;
-                }
-            },true);
-            maxDepth.push(maxDepthTmp);
-        }
-        return Math.max.apply(Math, maxDepth)-1;
-    }
-
-    /*
-    return trees in tree array trees
-     */
-    function getTrees() {
-        return trees
-    }
-
-    /*
-    remove a tree from array of trees
-     */
-    function removeTree(name) {
-        trees.splice(findTreeIndex(name), 1);
-        for (var i = 0; i < renderedTrees.length; i++) {
-            if (renderedTrees[i].name === name) {
-                $("#" + renderedTrees[i].data.canvasId).empty();
-                if (renderedTrees[i].data.scaleId) {
-                    $(renderedTrees[i].data.scaleId).empty();
-                }
-            }
-        }
-    }
-
-    /*
-     Can be called externally to render the color scale for tree comparison in a div
-     */
-    function renderColorScale(scaleId) {
-        var colorScale = d3.scale.linear()
-            .domain(colorScaleDomain)
-            .range(colorScaleRange);
-        var width = 200;
-        var steps = 100;
-        var height = 30;
-        var svgHeight = height + 25;
-        var svg = d3.select("#" + scaleId).append("svg")
-            .attr("width", width + "px")
-            .attr("height", svgHeight + "px")
-            .append("g");
-        for (var i = 0; i < steps; i++) {
-            svg.append("rect")
-                .attr("width", (width / steps) + "px")
-                .attr("height", height + "px")
-                .attr("fill", colorScale(i / steps))
-                .attr("x", ((width / steps) * i) + "px")
-        }
-        svg.append("text")
-            .text("0")
-            .attr("x", 0)
-            .attr("y", height + 20)
-            .attr("fill", settings.scaleColor);
-        svg.append("text")
-            .text("1")
-            .attr("x", width - 10)
-            .attr("y", height + 20)
-            .attr("fill", settings.scaleColor)
-
-    }
 
     /*
     Function that returns unvisible children or visible children if one or the other are given as input
@@ -1174,163 +1495,7 @@ TreeCompare = (function() {
     }
 
 
-    /*---------------
-     /
-     /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
-     /
-     ---------------*/
-    function exportTree(isCompared){
 
-        /*
-         Function to write JSON structure to gist
-         */
-        function writeJSONtoGist(sourceData, callback){
-            var currentTrees = sourceData;
-
-            // get original newick since parser can not handle _children
-            postorderTraverse(currentTrees.root, function(d) {
-                if (d._children) {
-                    d.children = d._children;
-                    d._children = null;
-                }
-            });
-
-            var nwk_original = jsonToNwk(currentTrees.root,false);
-            var nwk_collapsed = jsonToNwk(currentTrees.root,true);
-
-
-            var dataOut = currentTrees.name+"$$"+nwk_original+"$$"+nwk_collapsed;
-            postorderTraverse(currentTrees.root, function(d) {
-                if (d.collapsed) {
-                    d._children = d.children;
-                    d.children = null;
-                }
-            });
-
-            var tmp = {"description": "a gist for a user with token api call via ajax","public": true,"files": {"file1.json": {"content": dataOut}}};
-            return $.ajax({
-                async: false,
-                url: 'https://api.github.com/gists',
-                type: 'POST',
-                dataType: 'json',
-                data: JSON.stringify(tmp),
-                success: callback
-            });
-        }
-
-        var tmpURL = window.location.href.split("#");
-        var outURL = tmpURL[0] + "#";
-
-        if (isCompared){
-            var tree1 = trees[trees.length-2];
-            var tree2 = trees[trees.length-1];
-
-            var gistID1;
-            var gistID2;
-            writeJSONtoGist(tree1, function(data){
-                gistID1 = data.id;
-            });
-
-            writeJSONtoGist(tree2, function(data){
-                gistID2 = data.id;
-            });
-
-            outURL += encodeURIComponent(gistID1 + "#" + gistID2);
-
-        }else {
-
-            var tree1 = trees[trees.length-1];
-
-            writeJSONtoGist(tree1, function(data){
-                gistID = data.id;
-            });
-
-            outURL += encodeURIComponent(gistID);
-        }
-
-
-        return outURL;
-
-    }
-
-
-    /*---------------
-     /
-     /    EXTERNAL: Function to retrieve visualization using tree obtained from gist
-     /
-     ---------------*/
-    function addTreeGistURL(gistID, name){
-
-        settings.autoCollapse = null;
-        if (name === undefined) {
-            var num = trees.length;
-            name = "Tree " + num;
-        }
-
-        /*
-         Function to obtain json tree structure from gist
-         */
-        function gistToJSON(id, callback) {
-
-            var objects = [];
-            $.ajax({
-                async: false,
-                url: 'https://api.github.com/gists/'+id,
-                type: 'GET',
-                dataType: 'json'
-            }).success( function(gistdata) {
-                // This can be less complicated if you know the gist file name
-                for (file in gistdata.files) {
-                    if (gistdata.files.hasOwnProperty(file)) {
-                        //var o = CircularJSON.parse(gistdata.files[file].content);
-                        var o = gistdata.files[file].content;
-                        if (o) {
-                            objects.push(o);
-                        }
-                    }
-                }
-                if (objects.length > 0) {
-                    return callback(objects[0]);
-                }
-            }).error( function(e) {
-                // ajax error
-            });
-        }
-
-        var newTree;
-        gistToJSON(gistID, function(data){
-            newTree = data;
-            return newTree;
-        });
-
-        var parsedNwk = newTree.split("$$");
-        //console.log(parsedNwk);
-        try {
-            var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
-        } catch (err) {
-            throw "Invalid Newick";
-        }
-
-        postorderTraverse(collapsedInfoTree, function(d) {
-            d.ID = makeId("node_");
-            d.leaves = getChildLeaves(d);
-            d.mouseoverHighlight = false; //when mouse is over node
-            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-        });
-
-        var fullTree = {
-            root: collapsedInfoTree,
-            name: name,
-            nwk: parsedNwk[1],
-            compare:false,
-            data: {}
-        };
-        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
-
-        trees.push(fullTree);
-        return fullTree;
-
-    }
 
     /*---------------
      /
@@ -3030,36 +3195,7 @@ TreeCompare = (function() {
         return visible;
     }
 
-    /*---------------
-     /
-     /    EXTERNAL: update the collapsed nodes according to the new render depth
-     /
-     ---------------*/
-    function changeAutoCollapseDepth(depth) {
-        settings.autoCollapse = depth;
 
-        for (var i = 0; i < renderedTrees.length; i++) {
-            maxDepth = getMaxAutoCollapse();
-            //console.log(maxDepth);
-            if (depth === null) {
-                uncollapseAll(renderedTrees[i].root);
-            } else {
-                limitDepth(renderedTrees[i].root, depth);
-            }
-        }
-
-        if (renderedTrees.length === 2) {
-            settings.loadingCallback();
-            setTimeout(function() {
-                getVisibleBCNs(renderedTrees[0].root, renderedTrees[1].root, false);
-                update(renderedTrees[0].root, renderedTrees[0].data);
-                update(renderedTrees[1].root, renderedTrees[1].data);
-                settings.loadedCallback();
-            }, 2);
-        } else {
-            update(renderedTrees[0].root, renderedTrees[0].data);
-        }
-    }
 
     /*---------------
      /
@@ -3252,116 +3388,7 @@ TreeCompare = (function() {
         }
     }
 
-    /*---------------
-     /
-     /    EXTERNAL: external function for initialising a tree comparison visualisation
-     /
-     ---------------*/
-    function compareTrees(name1, canvas1, name2, canvas2, scale1, scale2) {
-        renderedTrees = [];
-        var index1 = findTreeIndex(name1);
-        var index2 = findTreeIndex(name2);
-        settings.loadingCallback();
-        setTimeout(function() {
-            //var t0 = performance.now();
-            uncollapseAll(trees[index1].root);
-            uncollapseAll(trees[index2].root);
-            //var t1 = performance.now();
-           // console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
 
-           // var t0 = performance.now();
-            stripPreprocessing(trees[index1].root);
-            stripPreprocessing(trees[index2].root);
-            //var t1 = performance.now();
-            //console.log("stripPreprocessing " + (t1 - t0) + " milliseconds.");
-
-            //var t0 = performance.now();
-            getDepths(trees[index1].root);
-            getDepths(trees[index2].root);
-            //var t1 = performance.now();
-            //console.log("getDepths " + (t1 - t0) + " milliseconds.");
-
-
-            postorderTraverse(trees[index1].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
-
-            postorderTraverse(trees[index2].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
-
-
-            if (settings.autoCollapse !== null) {
-                limitDepth(trees[index1].root, settings.autoCollapse);
-                limitDepth(trees[index2].root, settings.autoCollapse);
-            }
-            //var t0 = performance.now();
-            preprocessTrees(index1, index2);
-            //var t1 = performance.now();
-            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
-
-            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
-            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
-            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
-            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-
-            //var t0 = performance.now();
-            renderTree(name1, canvas1, scale1, name2);
-            renderTree(name2, canvas2, scale2, name1);
-            //var t1 = performance.now();
-            //console.log("Call renderTree took " + (t1 - t0) + " milliseconds.");
-
-
-            compareMode = true;
-            settings.loadedCallback();
-        }, 5);
-
-    }
-
-    /*---------------
-     /
-     /    EXTERNAL: external function for initialising a single tree visualisation
-     /
-     ---------------*/
-    function viewTree(name, canvasId, scaleId) {
-        renderedTrees = [];
-        var index = findTreeIndex(name);
-        settings.loadingCallback();
-        setTimeout(function() {
-            uncollapseAll(trees[index].root);
-            stripPreprocessing(trees[index].root);
-            getDepths(trees[index].root);
-
-            postorderTraverse(trees[index].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
-
-
-            if (settings.autoCollapse !== null) {
-                limitDepth(trees[index].root, settings.autoCollapse);
-            }
-            trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
-            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-            renderTree(name, canvasId, scaleId);
-            settings.loadedCallback();
-        }, 2);
-
-    }
 
     /*
      collapse all nodes deeper in tree than depth
