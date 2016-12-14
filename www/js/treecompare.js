@@ -1000,12 +1000,8 @@ TreeCompare = (function() {
                     }
                 }
 
-                postorderTraverse(itree1, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                },false);
-                postorderTraverse(itree2, function(d) {
-                    d.deepLeafList = createDeepLeafList(d);
-                },false);
+                createDeepLeafList(itree1);
+                createDeepLeafList(itree2);
 
                 return getElementS(itree1, itree2);
             }
@@ -3698,12 +3694,9 @@ TreeCompare = (function() {
                         }
                     }
 
-                    postorderTraverse(tree1, function(d) {
-                        d.deepLeafList = createDeepLeafList(d);
-                    },false);
-                    postorderTraverse(tree2, function(d) {
-                        d.deepLeafList = createDeepLeafList(d);
-                    },false);
+                    createDeepLeafList(tree1);
+                    createDeepLeafList(tree2);
+
 
                     //update(d, tree.data);
                     //update(otherTreeData.root, otherTreeData);
