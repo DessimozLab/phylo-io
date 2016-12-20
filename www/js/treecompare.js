@@ -3156,15 +3156,10 @@ TreeCompare = (function() {
         }
     }
 
-
     /*
-     Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
-     if recalculate==false, doesn't calculate for a node if it already has a value
+     if recalculate==false, doesn't calculate for a node if it aleady has a value
      Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
-
-     First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
-     At the end of the function, each node from each tree will end up with a BCN and a similarity score
      */
     function getVisibleBCNs(tree1, tree2, recalculate) {
 
@@ -3202,6 +3197,43 @@ TreeCompare = (function() {
 
     /*
      Description:
+     Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
+     if recalculate==false, doesn't calculate for a node if it already has a value
+     Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
+
+     First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
+     At the end of the function, each node from each tree will end up with a BCN and a similarity score
+     */
+    function getVisibleBCNsUsingWorkers(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2, recalculate) {
+
+        var tree1 = trees[index1].root;
+        var tree2 = trees[index2].root;
+
+        if (recalculate === undefined) {
+            recalculate = true;
+        }
+
+        var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
+        var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
+
+        $.when(worker1, worker2).done(function(tree1, tree2){
+            trees[index1].root = tree1;
+            trees[index2].root = tree2;
+
+            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+            renderTree(name1, canvas1, scale1, name2);
+
+            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+            renderTree(name2, canvas2, scale2, name1);
+
+            compareMode = true;
+            settings.loadedCallback();
+        });
+    }
+
+    /*
+     Description:
      Calculates some stuff needed for calculating BCNs later on
      First associate via parameter correspondingLeaf all the leaves from tree1 with a common leaf (= same name)
      in tree 2 and vice versa.
@@ -3212,7 +3244,7 @@ TreeCompare = (function() {
      index1 index of the first tree in the trees table
      index2 index of the second tree in the trees table
      */
-    function preprocessTrees(index1, index2) {
+    function preprocessTrees(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2) {
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
@@ -3236,10 +3268,9 @@ TreeCompare = (function() {
         });
 
         //var t0 = performance.now();
-        getVisibleBCNs(tree1, tree2);
+        getVisibleBCNsUsingWorkers(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2);
         //var t1 = performance.now();
-        //console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
-        //}
+        ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
     }
 
     /*
@@ -3430,25 +3461,14 @@ TreeCompare = (function() {
             initialiseTree(trees[index1].root, settings.autoCollapse);
             initialiseTree(trees[index2].root, settings.autoCollapse);
 
-            //var t0 = performance.now();
-            preprocessTrees(index1, index2);
-            //var t1 = performance.now();
-            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
-
-            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
-            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
-            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links
-            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-
-            //var t0 = performance.now();
+            // render tress (workers) -> once done, run comprison (workers)
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
+
+            //var t0 = performance.now();
+            preprocessTrees(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2);
             //var t1 = performance.now();
-            //console.log("Call renderTree took " + (t1 - t0) + " milliseconds.");
-
-
-            compareMode = true;
-            settings.loadedCallback();
+            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
         }, 5);
 
     }
