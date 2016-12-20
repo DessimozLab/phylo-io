@@ -3260,12 +3260,15 @@ TreeCompare = (function() {
         //var t1 = performance.now();
         //console.log("Call preprocessTrees:double loop took " + (t1 - t0) + " milliseconds.");
 
-        postorderTraverse(tree1, function(d) {
+        /*postorderTraverse(tree1, function(d) {
             d.deepLeafList = createDeepLeafList(d);
         });
         postorderTraverse(tree2, function(d) {
             d.deepLeafList = createDeepLeafList(d);
-        });
+        });*/
+
+        createDeepLeafList(tree1);
+        createDeepLeafList(tree2);
 
         //var t0 = performance.now();
         getVisibleBCNsUsingWorkers(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2);
@@ -3294,23 +3297,24 @@ TreeCompare = (function() {
      - node is set to opposite tree
      - leaves are searched in opposite tree in order to find the spanning tree
      */
-    function getSpanningTree(node, leaves) {
+    function getSpanningTree(tree, node) {
         var nodes = [];
-        for (var i = 0; i < node.leaves.length; i++) {
-            for (var z = 0; z < leaves.length; z++) {
-                if (node.leaves[i].name === leaves[z].name) {
-                    nodes.push(node);
-                    var children = getChildren(node);
-                    for (var j = 0; j < children.length; j++) {
-                        nodes = nodes.concat(getSpanningTree(children[j], leaves));
-                    }
-                    return nodes;
+        //var bcns = [];
+        for (var i = 0; i < tree.leaves.length; i++) {
+            var test = $.inArray(tree.leaves[i].name, node.deepLeafList);
+            if (test > -1){
+                nodes.push(tree);
+                //bcns.push(getElementS(tree, node));
+                var children = getChildren(tree);
+                for (var j = 0; j < children.length; j++) {
+                    nodes = nodes.concat(getSpanningTree(children[j], node));
                 }
+                return nodes;
             }
         }
         return nodes;
-
     }
+
     function namesOnly(leaf) {
         return leaf.name;
     }
@@ -3331,9 +3335,9 @@ TreeCompare = (function() {
 
         var elementBCNNode = null;
         var maxElementS = 0;
-        var leaves = v.leaves;
+
         //var t0 = performance.now();
-        var spanningTree = getSpanningTree(tree, leaves);
+        var spanningTree = getSpanningTree(tree, v);
         //var t1 = performance.now();
         //console.log("Call BCN:getSpanningTree took " + (t1 - t0) + " milliseconds.");
 
@@ -3360,7 +3364,7 @@ TreeCompare = (function() {
      - Root has leaves: A, B, C and D (terminal leaves)
      - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
      */
-    function createDeepLeafList(v) {
+    /*function createDeepLeafList(v) {
         var deepLeafList = [];
         var counter = 0;
 
@@ -3385,7 +3389,18 @@ TreeCompare = (function() {
         buildDeepLeafList(v);
         return deepLeafList;
 
+    }*/
+    function createDeepLeafList(_tree) {
+
+        postorderTraverse(_tree, function(d){
+            var deepLeafList = [];
+            for (var i=0; i < d.leaves.length; i++){
+                deepLeafList.push(d.leaves[i].name)
+            }
+            d.deepLeafList = deepLeafList;
+        });
     }
+
 
     /*
      Description:
