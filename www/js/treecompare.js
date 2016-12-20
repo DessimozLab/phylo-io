@@ -3294,21 +3294,24 @@ TreeCompare = (function() {
      - node is set to opposite tree
      - leaves are searched in opposite tree in order to find the spanning tree
      */
-    function getSpanningTree(node, leaves) {
+
+    function getSpanningTree(tree, node) {
         var nodes = [];
-        for (var i = 0; i < node.leaves.length; i++) {
-            for (var z = 0; z < leaves.length; z++) {
-                if (node.leaves[i].name === leaves[z].name) {
-                    nodes.push(node);
-                    var children = getChildren(node);
-                    for (var j = 0; j < children.length; j++) {
-                        nodes = nodes.concat(getSpanningTree(children[j], leaves));
-                    }
-                    return nodes;
-                }
-            }
-        }
-        return nodes;
+         for (var i = 0; i < tree.leaves.length; i++) {
+             var test = $.inArray(tree.leaves[i].name, node.deepLeafList);
+             if (test > -1) {
+                 nodes.push(tree);
+                 //bcns.push(getElementS(tree, node));
+
+                 var children = getChildren(tree);
+                 for (var j = 0; j < children.length; j++) {
+                     nodes = nodes.concat(getSpanningTree(children[j], node));
+                 }
+                 return nodes;
+
+             }
+
+         }
 
     }
     function namesOnly(leaf) {
@@ -3331,19 +3334,19 @@ TreeCompare = (function() {
 
         var elementBCNNode = null;
         var maxElementS = 0;
-        var leaves = v.leaves;
-        //var t0 = performance.now();
-        var spanningTree = getSpanningTree(tree, leaves);
-        //var t1 = performance.now();
-        //console.log("Call BCN:getSpanningTree took " + (t1 - t0) + " milliseconds.");
+
+        var node = v;
+        var spanningTree = getSpanningTree(tree, node);
 
         for (var i = 0; i < spanningTree.length; i++) {
             //get elementBCN for node v
-            x = getElementS(v, spanningTree[i]);
+            var x = getElementS(v, spanningTree[i]);
+
             if (x > maxElementS) {
                 maxElementS = x;
                 elementBCNNode = spanningTree[i];
             }
+
         }
         v.elementBCN = elementBCNNode;
         v.elementS = maxElementS;
@@ -3823,7 +3826,6 @@ TreeCompare = (function() {
 
 
             }
-
 
             function postRerootClean(root,name) {
                 //highlightedNodes = [];
