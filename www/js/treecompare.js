@@ -853,7 +853,13 @@ TreeCompare = (function() {
     }
 
     /*
-     traverses and performs function f on treenodes in postorder
+     Description:
+     Traverses and performs function f on treenodes in postorder
+     Arguments:
+     d: the tree object
+     f: callback function
+     do_children (optional, default: true): consider invisible children?
+     Comments:
      if do_children === false, doesn't traverse _children, only children
      _children means the children are not visible in the visualisation, i.e they are collapsed
      */
@@ -3152,9 +3158,13 @@ TreeCompare = (function() {
 
 
     /*
+     Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
-     if recalculate==false, doesn't calculate for a node if it aleady has a value
+     if recalculate==false, doesn't calculate for a node if it already has a value
      Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
+
+     First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
+     At the end of the function, each node from each tree will end up with a BCN and a similarity score
      */
     function getVisibleBCNs(tree1, tree2, recalculate) {
 
@@ -3191,7 +3201,16 @@ TreeCompare = (function() {
     }
 
     /*
+     Description:
      Calculates some stuff needed for calculating BCNs later on
+     First associate via parameter correspondingLeaf all the leaves from tree1 with a common leaf (= same name)
+     in tree 2 and vice versa.
+     Then, for each node in each tree, get the list of leaves
+     Lastly, call getVisibleBCNs (description above)
+
+     Arguments:
+     index1 index of the first tree in the trees table
+     index2 index of the second tree in the trees table
      */
     function preprocessTrees(index1, index2) {
         var tree1 = trees[index1].root;
@@ -3224,9 +3243,25 @@ TreeCompare = (function() {
     }
 
     /*
-     get a spanning tree containing leaves given
-     -> node is set to opposite tree
-     -> leaves are searched in opposite tree in order to find the spanning tree
+     Spanning tree: if a node in the opposite tree is common with a given leaf (same name),
+     then all the nodes are associated to the leaf.
+
+     Example:
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     vs
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     In tree 1, node C,D (0.5) is associated with opposite spanning tree:
+     - Root (length: 0.1 and depth: 0)
+     - C,D  (length: 0.5 and depth: 1)
+     - C    (length: 0.3 and depth: 2)
+     - D    (length: 0.4 and depth: 2)
+
+     Description:
+     Get a spanning tree associated to leaves
+
+     Arguments:
+     - node is set to opposite tree
+     - leaves are searched in opposite tree in order to find the spanning tree
      */
     function getSpanningTree(node, leaves) {
         var nodes = [];
@@ -3249,7 +3284,18 @@ TreeCompare = (function() {
         return leaf.name;
     }
 
-    //get the best corresponding node in opposite tree for node v
+    /**
+     * Description:
+     *  Get the best corresponding node in opposite tree for node v
+     *  First gets the list of leaves of node v
+     *  Then finds the list of spanning trees (see definition above)
+     *  For each spanning tree, evaluates the similarity with node v
+     *  and assigns the best scoring node to node v as well as a
+     *  similarity score
+     *
+     * Arguments: v is a node
+     *            tree is a tree
+     */
     function BCN(v, tree) {
 
         var elementBCNNode = null;
@@ -3274,7 +3320,14 @@ TreeCompare = (function() {
     }
 
     /*
-     creates list of leaves of each node in subtree rooted at v
+     Description:
+     Creates list of leaves of each node in subtree rooted at v
+
+     Note:
+     Difference between deep leaf list and leaves in:
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     - Root has leaves: A, B, C and D (terminal leaves)
+     - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
      */
     function createDeepLeafList(v) {
         var deepLeafList = [];
@@ -3304,7 +3357,24 @@ TreeCompare = (function() {
     }
 
     /*
-     get the comparison score between two nodes
+     Description:
+     Get the comparison score between two nodes
+     First gets all the leaves from the 2 nodes/trees
+     Then get the number of common elements in both lists
+     Computes a score (the higher, the better the comparision)
+
+     Note:
+     Difference between deep leaf list and leaves in:
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     - Root has leaves: A, B, C and D (terminal leaves)
+     - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
+
+     Arguments:
+     v is a node
+     n is a tree or a sub-tree
+
+     Returns
+     the similarity score
      */
     function getElementS(v, n) {
         var lv = v.deepLeafList;
@@ -3326,6 +3396,25 @@ TreeCompare = (function() {
         }
     }
 
+    function initialiseTree(tree, autocollapse) {
+        uncollapseAll(tree); // use postorderTraverse, does not call update function
+        stripPreprocessing(tree); // use postorderTraverse, reset all existing settings
+        getDepths(tree); // get all the children and set their level in the hierarchy
+
+        // use postorderTraverse to set the collapsed the children to _children
+        postorderTraverse(tree, function(d) {
+            if (d.name==="collapsed" || d.collapsed) {
+                d._children = d.children;
+                d.collapsed = true;
+                d.children = null;
+            }
+        });
+
+        if (autocollapse !== null) {
+            limitDepth(tree, autocollapse);
+        }
+    }
+
     /*---------------
      /
      /    EXTERNAL: external function for initialising a tree comparison visualisation
@@ -3337,48 +3426,10 @@ TreeCompare = (function() {
         var index2 = findTreeIndex(name2);
         settings.loadingCallback();
         setTimeout(function() {
-            //var t0 = performance.now();
-            uncollapseAll(trees[index1].root);
-            uncollapseAll(trees[index2].root);
-            //var t1 = performance.now();
-           // console.log("uncollapseAll " + (t1 - t0) + " milliseconds.");
 
-           // var t0 = performance.now();
-            stripPreprocessing(trees[index1].root);
-            stripPreprocessing(trees[index2].root);
-            //var t1 = performance.now();
-            //console.log("stripPreprocessing " + (t1 - t0) + " milliseconds.");
+            initialiseTree(trees[index1].root, settings.autoCollapse);
+            initialiseTree(trees[index2].root, settings.autoCollapse);
 
-            //var t0 = performance.now();
-            getDepths(trees[index1].root);
-            getDepths(trees[index2].root);
-            //var t1 = performance.now();
-            //console.log("getDepths " + (t1 - t0) + " milliseconds.");
-
-
-            postorderTraverse(trees[index1].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
-
-            postorderTraverse(trees[index2].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
-
-
-            if (settings.autoCollapse !== null) {
-                limitDepth(trees[index1].root, settings.autoCollapse);
-                limitDepth(trees[index2].root, settings.autoCollapse);
-            }
             //var t0 = performance.now();
             preprocessTrees(index1, index2);
             //var t1 = performance.now();
