@@ -263,7 +263,7 @@
 
         var gistID = $(location).attr('hash').split("#"); //get gist id from url
 
-        var treecomp = TreeCompare.init({
+        var treecomp = TreeCompare().init({
             scaleColor: "white",
             loadingCallback: function() {
                 spinner.spin(spinnerTarget);
