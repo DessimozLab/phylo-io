@@ -1,4 +1,4 @@
-TreeCompare = (function() {
+var TreeCompare = function(){
 
     var trees = [];
     var backupRoot = [];
@@ -108,7 +108,7 @@ TreeCompare = (function() {
         return this;
     }
 
-    /*  
+    /*
      called on window resize to ensure the svg canvas fits the parent container
      */
     function resize() {
@@ -131,7 +131,7 @@ TreeCompare = (function() {
         return output;
     }
 
-    /* 
+    /*
      external function for changing settings, any rendered trees are updated
      */
     function changeSettings(settingsIn) {
@@ -4483,4 +4483,4 @@ TreeCompare = (function() {
         getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth
     }
-})();
+};
