@@ -755,7 +755,7 @@ TreeCompare = (function() {
     window.onresize = resize;
 
     /*
-     function important for rerooting to create new top leavel root node
+     function important for rerooting to create new top leave root node
      */
     function new_node(d) { // private method
         return {parent:null, children:[], name:"", ID:"",length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
@@ -1386,7 +1386,7 @@ TreeCompare = (function() {
             var bestCount = 0;
             postorderTraverse(ifixedTree.root, function(d){
                 if (d.children || d._children){
-                    var fixedTreeLeaves = getChildLeafNames(d);
+                    var fixedTreeLeaves = d.deepLeafList;
                     var count = 0;
                     for (var i = 0; i < fixedTreeLeaves.length; i++){
 
