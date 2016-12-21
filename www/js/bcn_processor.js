@@ -47,9 +47,8 @@ function BCN(v, tree) {
 
     var elementBCNNode = null;
     var maxElementS = 0;
-    var leaves = v.leaves;
 
-    var spanningTree = getSpanningTree(tree, leaves);
+    var spanningTree = getSpanningTree(tree, v);
 
     for (var i = 0; i < spanningTree.length; i++) {
         //get elementBCN for node v
@@ -84,26 +83,21 @@ function BCN(v, tree) {
  - node is set to opposite tree
  - leaves are searched in opposite tree in order to find the spanning tree
  */
-function getSpanningTree(node, leaves) {
+function getSpanningTree(tree, node) {
     var nodes = [];
-    // Foreach leaf of the opposite tree
-    for (var i = 0; i < node.leaves.length; i++) {
-        // for each leaf of the current node
-        for (var z = 0; z < leaves.length; z++) {
-            // if the current opposite tree's node name is equal to current leaf's name
-            if (node.leaves[i].name === leaves[z].name) {
-                // Store the opposite's tree node
-                nodes.push(node);
-                // Store the opposite's tree node's children (=next generation)
-                var children = getChildren(node);
-                for (var j = 0; j < children.length; j++) {
-                    nodes = nodes.concat(getSpanningTree(children[j], leaves));
-                }
-                return nodes;
+    //var bcns = [];
+    for (var i = 0; i < tree.leaves.length; i++) {
+        var test = _.indexOf(node.deepLeafList, tree.leaves[i].name);
+        if (test > -1){
+            nodes.push(tree);
+            //bcns.push(getElementS(tree, node));
+            var children = getChildren(tree);
+            for (var j = 0; j < children.length; j++) {
+                nodes = nodes.concat(getSpanningTree(children[j], node));
             }
+            return nodes;
         }
     }
-
     return nodes;
 }
 
