@@ -284,7 +284,7 @@ var TreeCompare = function(){
 
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
 
-        var nhx_tags = ['B=', 'S=', 'T=', 'E=', 'O=', 'SO=', 'L=' , 'Sw=', 'CO='];
+        var nhx_tags = [':B', ':S', ':D', ':T', ':E', ':O', ':SO', ':L' , ':Sw', ':CO'];
 
         function getIdxToken(tokenArray, queryToken){
             var posTokens = [];
@@ -327,22 +327,26 @@ var TreeCompare = function(){
                 throw "TooLittle)"
         }
 
-        try {
-            if (checkTreeInput(s)=="TooLittle(") throw "empty"; // TODO:change this to &&NHX and not []
-        } catch (err) {
-            throw "TooLittle("
-        }
-
-
         function check_nhx_variable(nhx_array, string_to_check){
             var found_pos = -1;
+            string_to_check = ':'+string_to_check;
             for (var i = 0; i < nhx_array.length; i++){
+                console.log("maybe "+nhx_array[i]+" =  "+string_to_check);
                 if (nhx_array[i].indexOf(string_to_check)!=-1){
+                    console.log("found "+i+" for "+string_to_check);
                     found_pos = i;
                 }
             }
 
             return found_pos;
+        }
+
+        function is_nhx_tag_found(nhx_tags, tag_to_check){
+
+            console.log("tag to check: :"+tag_to_check);
+            return jQuery.inArray(":"+tag_to_check, nhx_tags);
+
+
         }
 
         for (var i = 0; i < new_tokens.length; i++) {
@@ -370,13 +374,51 @@ var TreeCompare = function(){
                         // TODO, how to differentiate SO and O for example
                         jQuery.each( nhx_tokens, function( i, nhx_token) {
 
-                            console.log("checking: "+nhx_token);
+                            var token = nhx_token.split("=");
+                            console.log("checking: "+token[0]);
+                            tmp_idx = is_nhx_tag_found(nhx_tags, token[0])
+console.log("tmp_idx: "+tmp_idx);
+                            if (tmp_idx != -1){
 
-                            var tmp_idx = check_nhx_variable(nhx_tokens, nhx_token);
-                            if (tmp_idx!=-1){
-                                var branchSupport = nhx_tokens[tmp_idx].split("=");
-                                console.log("Found: "+branchSupport[1]);
-                                tree.branchSupport = branchSupport[1];
+                                var nhxtag = nhx_tags[tmp_idx];
+                                var nhxtag_value = token[1];
+
+                                console.log(nhxtag);
+                                console.log(nhxtag_value);
+
+                                switch (nhxtag) {
+
+                                    case ':B':
+
+                                        console.log("brachsupport to : "+nhxtag_value);
+                                        tree.branchSupport = nhxtag_value;
+                                        break;
+
+                                    case ':S':
+
+                                        console.log("species to: "+nhxtag_value);
+                                        tree.species = nhxtag_value;
+                                        break;
+
+                                    case ':D':
+
+                                        console.log("duplication to: "+nhxtag_value);
+                                        tree.duplication = nhxtag_value;
+                                        break;
+
+                                    case 'L':
+
+                                        console.log("likelihood to: "+nhxtag[1]);
+                                        tree.likelihood = nhxtag_value;
+                                        break;
+
+                                    case 'E':
+
+                                        console.log("EC number to: "+nhxtag[1]);
+                                        tree.ECNumber = nhxtag_value;
+                                        break;
+                                }
+
                             }
 
                         });
@@ -1732,6 +1774,8 @@ var TreeCompare = function(){
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
             .text(function(d) {
+                console.log("======== d =========");
+                console.log(d);
                 if (!d.children && !d._children) { //print leaf names
                     return d.name
                 } else {
@@ -1739,10 +1783,24 @@ var TreeCompare = function(){
                         return "";
                     } else if (settings.internalLabels === "name") { //print bootstrap values
                         return d.branchSupport
+                    } else if (settings.internalLabels === "species") { //print bootstrap values
+                        return d.species
+                    } else if (settings.internalLabels === "taxonomy") { //print bootstrap values
+                        return d.taxonomy
+                    } else if (settings.internalLabels === "ECNumber") { //print bootstrap values
+                        return d.ECNumber
                     } else if (settings.internalLabels === "length") {
                         if (d.length) {
                             return d.length.toFixed(3);
                         }
+
+                    } else if (settings.internalLabels === "duplication") {
+                        if (d.duplication == 'Y') {
+                            return 'duplication';
+                        } else {
+                            return 'speciation';
+                        }
+
                     } else if (settings.internalLabels === "similarity") {
                         if (d[currentS]) {
                             return d[currentS].toFixed(3);
