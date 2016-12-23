@@ -3772,7 +3772,9 @@ var TreeCompare = function(){
      clear tooltips from the visualisation
      */
     function removeTooltips(svg) {
-        svg.selectAll(".tooltipElem").remove();
+        if (svg) {
+            svg.selectAll(".tooltipElem").remove();
+        }
     }
 
     /*
