@@ -1730,12 +1730,12 @@ var TreeCompare = function(){
                     return "orange"; //changed from red
                 } else if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                     if (d._children){
-                        return "blue"; //changed from orange
+                        return "blue";
                     }else {
                         return colorScale(d[currentS])
                     }
                 } else {
-                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black";
+                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "blue" : "black";
                 }
             });
 
@@ -1842,6 +1842,8 @@ var TreeCompare = function(){
                 d3.select(this).text("")
             });
 
+        //console.log("=====================");
+
         //function important for collapsing
         node.each(function(d) {
             if (d._children) {
@@ -1857,6 +1859,9 @@ var TreeCompare = function(){
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function(d) {
+                        //console.log("TRANSITION WITH NODE");
+                        //console.dir(d);
+
                         return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
                     })
                     .style("fill", function(d) {
@@ -3267,6 +3272,9 @@ var TreeCompare = function(){
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
+        //console.log("Tree1 data at the beginning of the function");
+        //console.dir(trees[index1].data);
+
         if (recalculate === undefined) {
             recalculate = true;
         }
@@ -3277,6 +3285,9 @@ var TreeCompare = function(){
         $.when(worker1, worker2).done(function(tree1, tree2){
             trees[index1].root = tree1;
             trees[index2].root = tree2;
+
+            //console.log("Tree2 data when workers are done");
+            //console.dir(trees[index1].data);
 
             //console.log("WORKERS DONE!");
 
@@ -4132,7 +4143,7 @@ var TreeCompare = function(){
                         }
                     }
                     if (load) {
-                        settings.loadedCallback();
+                        settings.loadedCallback(); // stops the spinning wheels
                     }
                     update(d, tree.data);
                 }, 2);
