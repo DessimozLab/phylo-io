@@ -331,9 +331,9 @@ var TreeCompare = function(){
             var found_pos = -1;
             string_to_check = ':'+string_to_check;
             for (var i = 0; i < nhx_array.length; i++){
-                console.log("maybe "+nhx_array[i]+" =  "+string_to_check);
+                //console.log("maybe "+nhx_array[i]+" =  "+string_to_check);
                 if (nhx_array[i].indexOf(string_to_check)!=-1){
-                    console.log("found "+i+" for "+string_to_check);
+                    //console.log("found "+i+" for "+string_to_check);
                     found_pos = i;
                 }
             }
@@ -343,7 +343,7 @@ var TreeCompare = function(){
 
         function is_nhx_tag_found(nhx_tags, tag_to_check){
 
-            console.log("tag to check: :"+tag_to_check);
+            //console.log("tag to check: :"+tag_to_check);
             return jQuery.inArray(":"+tag_to_check, nhx_tags);
 
 
@@ -368,53 +368,53 @@ var TreeCompare = function(){
                     if (x.indexOf("&&NHX")!=-1){ //if NHX format
 
                         var nhx_tokens = x.split(/:/);
-                        console.log('=========nhx_tokens');
-                        console.log(nhx_tokens);
+                        //console.log('=========nhx_tokens');
+                        //console.log(nhx_tokens);
 
                         // TODO, how to differentiate SO and O for example
                         jQuery.each( nhx_tokens, function( i, nhx_token) {
 
                             var token = nhx_token.split("=");
-                            console.log("checking: "+token[0]);
+                            //console.log("checking: "+token[0]);
                             tmp_idx = is_nhx_tag_found(nhx_tags, token[0])
-console.log("tmp_idx: "+tmp_idx);
+//console.log("tmp_idx: "+tmp_idx);
                             if (tmp_idx != -1){
 
                                 var nhxtag = nhx_tags[tmp_idx];
                                 var nhxtag_value = token[1];
 
-                                console.log(nhxtag);
-                                console.log(nhxtag_value);
+                                //console.log(nhxtag);
+                                //console.log(nhxtag_value);
 
                                 switch (nhxtag) {
 
                                     case ':B':
 
-                                        console.log("brachsupport to : "+nhxtag_value);
+                                        //console.log("brachsupport to : "+nhxtag_value);
                                         tree.branchSupport = nhxtag_value;
                                         break;
 
                                     case ':S':
 
-                                        console.log("species to: "+nhxtag_value);
+                                        //console.log("species to: "+nhxtag_value);
                                         tree.species = nhxtag_value;
                                         break;
 
                                     case ':D':
 
-                                        console.log("duplication to: "+nhxtag_value);
+                                        //console.log("duplication to: "+nhxtag_value);
                                         tree.duplication = nhxtag_value;
                                         break;
 
                                     case 'L':
 
-                                        console.log("likelihood to: "+nhxtag[1]);
+                                        //console.log("likelihood to: "+nhxtag[1]);
                                         tree.likelihood = nhxtag_value;
                                         break;
 
                                     case 'E':
 
-                                        console.log("EC number to: "+nhxtag[1]);
+                                        //console.log("EC number to: "+nhxtag[1]);
                                         tree.ECNumber = nhxtag_value;
                                         break;
                                 }
@@ -1774,8 +1774,8 @@ console.log("tmp_idx: "+tmp_idx);
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
             .text(function(d) {
-                console.log("======== d =========");
-                console.log(d);
+                //console.log("======== d =========");
+                //console.log(d);
                 if (!d.children && !d._children) { //print leaf names
                     return d.name
                 } else {
@@ -3278,6 +3278,9 @@ console.log("tmp_idx: "+tmp_idx);
             trees[index1].root = tree1;
             trees[index2].root = tree2;
 
+            //console.log("WORKERS DONE!");
+
+            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
             renderTree(name1, canvas1, scale1, name2);
 
@@ -3483,8 +3486,10 @@ console.log("tmp_idx: "+tmp_idx);
     function getElementS(v, n) {
         var lv = v.deepLeafList;
         var ln = n.deepLeafList;
-        var lvlen = lv.length;
-        var lnlen = ln.length;
+
+        var lvlen = lv ? lv.length : 0;
+        var lnlen = ln ? ln.length : 0;
+
         var intersect = _.intersection(lv, ln).length;
         return intersect / (lvlen + lnlen - intersect);
     }
@@ -4068,6 +4073,8 @@ console.log("tmp_idx: "+tmp_idx);
      get relevant event listener for clicking on a node depending on what mode is selected
      */
     function getClickEventListenerNode(tree, isCompared, comparedTree) {
+
+        //console.log("Function getClickEventListenerNode");
 
         function nodeClick(d) {
             var svg = tree.data.svg;
