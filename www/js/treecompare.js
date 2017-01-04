@@ -640,7 +640,6 @@ var TreeCompare = function(){
             name = "Tree " + num;
         }
         var tree = convertTree(newick);
-
         /*try {
          var tree = convertTree(newick); // calls convert function from above
          //console.log(tree)
@@ -1445,6 +1444,7 @@ var TreeCompare = function(){
         // Compute the new tree layout.
         var nodes = treeData.tree.nodes(treeData.root).reverse();
         var links = treeData.tree.links(nodes);
+
         var leaves = treeData.root.leaves.length;
         var leavesVisible = getVisibleLeaves(treeData.root);
         var width = $("#" + treeData.canvasId).width();
@@ -1608,9 +1608,12 @@ var TreeCompare = function(){
         setXPos(treeData.root, 0);
 
         // Update the nodes…
+        // Assign a unique numeric identifer to each node
+        // "zero" being the number of leaves
         var node = treeData.svg.selectAll("g.node")
             .data(nodes, function(d) {
                 return d.id || (d.id = ++treeData.i);
+
             });
 
         // Enter any new nodes at the parent's previous position.
@@ -1842,8 +1845,6 @@ var TreeCompare = function(){
                 d3.select(this).text("")
             });
 
-        //console.log("=====================");
-
         //function important for collapsing
         node.each(function(d) {
             if (d._children) {
@@ -1861,7 +1862,6 @@ var TreeCompare = function(){
                     .attr("d", function(d) {
                         //console.log("TRANSITION WITH NODE");
                         //console.dir(d);
-
                         return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
                     })
                     .style("fill", function(d) {
@@ -1934,10 +1934,19 @@ var TreeCompare = function(){
          Called twice, once for black bg lines, once for foreground coloured lines in comparison view
          */
         function renderLinks(type) {
+
             // Update the links…
             var select = (type === "bg") ? "linkbg" : "link";
             //console.log(select);
+
+            // return an array of all the DOM element of class path.front
+            // which data is the list of IDs of each links
             var link = treeData.svg.selectAll("path." + select)
+                // Links is the data array which each element is assigned a target ID key
+                // Any element in the specified data array whose key is different
+                // from keys of all the existing elements, becomes a part of the enter selection.
+                // If the key of a new element matches the key of one of the existing elements
+                // then it is NOT a part of the enter selection.
                 .data(links, function(d) {
                     return d.target.id;
                 })
@@ -1954,17 +1963,20 @@ var TreeCompare = function(){
                     if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
                     } else {
-                            if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                                return "green";
-                                //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                            } else {
-                                return defaultLineColor; //changed from defaultLineColor;
-                            }
-
+                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                            return "green";
+                            //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                        } else {
+                            return defaultLineColor; //changed from defaultLineColor;
+                        }
                     }
                 });
 
             // Enter any new links at the parent"s previous position.
+            // enter().insert will create as many elements as the number of elements in the enter selection
+            // If the specified type is a string, inserts a new element of this type (tag name)
+            // before the element matching the specified before selector for each selected element.
+            // For example, a before selector :first-child will prepend nodes before the first child.
             link.enter().insert("path","g")
                 .attr("class", function(d) {
                     if (type === "bg") {
@@ -1976,6 +1988,7 @@ var TreeCompare = function(){
                 .attr("d", function(d) {
                     var d = d.source;
                     if (source === treeData.root) {
+
                         if (d.parent) { //draws the paths between nodes starting at root node
                             var output = "M" + d.parent.y + "," + d.parent.x + "L" + d.parent.y + "," + d.parent.x + "L" + d.parent.y + "," + d.parent.x;
                             return output;
@@ -1984,6 +1997,7 @@ var TreeCompare = function(){
                             return output;
                         }
                     } else {
+
                         var output = "M" + source.y + "," + source.x + "L" + source.y + "," + source.x + "L" + source.y + "," + source.x;
                         return output;
                     }
@@ -2314,8 +2328,10 @@ var TreeCompare = function(){
      ---------------*/
     function renderTree(name, canvasId, scaleId, otherTreeName) {
 
+
         //get the trees by name
         var baseTree = trees[findTreeIndex(name)];
+
         if (otherTreeName !== undefined) {
             var otherTree = trees[findTreeIndex(name)];
             compareMode = false;
@@ -2442,7 +2458,6 @@ var TreeCompare = function(){
             });
         }
 
-
         //set up the d3 vis
         var i = 0;
 
@@ -2484,6 +2499,7 @@ var TreeCompare = function(){
             }
 
         }
+
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
             var canvasLeft = "vis-container1";
@@ -2564,7 +2580,7 @@ var TreeCompare = function(){
             }
         }
 
-        var timeoutIdReroot = 0;
+           var timeoutIdReroot = 0;
         // action when clicking on reroot button in the center of the compare mode
         $("#" + "rerootButton" + canvasId).mousedown(function() {
             var load = true;
@@ -2592,6 +2608,7 @@ var TreeCompare = function(){
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
         });
+
 
         //set up search box and attach event handlers
         if (settings.enableSearch) {
@@ -2657,7 +2674,6 @@ var TreeCompare = function(){
                 });
             }
 
-
             var visible = false;
             $('#searchButton' + canvasId).click(function() {
                 if (!visible) {
@@ -2683,7 +2699,7 @@ var TreeCompare = function(){
                     hideSearchBar();
                 }
             });
-
+            // variable i is set to the number of leaves
             var leafObjs = [];
             for (var i = 0; i < baseTree.root.leaves.length; i++) {
                 leafObjs.push(baseTree.root.leaves[i]);
@@ -2692,7 +2708,6 @@ var TreeCompare = function(){
             $("#" + canvasId + " svg").click(function() {
                 hideSearchBar();
             });
-
 
             //var t0 = performance.now();
             //main event handler, performs search every time a char is typed so can get realtime results
@@ -2831,6 +2846,7 @@ var TreeCompare = function(){
             });
         }
 
+        // variable i is set to the number of leaves (see above)
         jQuery.extend(baseTree.data, {
             canvasId: canvasId,
             root: root,
@@ -2842,6 +2858,7 @@ var TreeCompare = function(){
             zoomBehaviourSemantic: zoomBehaviourSemantic,
             scaleId: scaleId
         });
+
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
             //d.clickedParentHighlight = false;
@@ -3286,10 +3303,6 @@ var TreeCompare = function(){
             trees[index1].root = tree1;
             trees[index2].root = tree2;
 
-            //console.log("Tree2 data when workers are done");
-            //console.dir(trees[index1].data);
-
-            //console.log("WORKERS DONE!");
 
             trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
@@ -3298,6 +3311,39 @@ var TreeCompare = function(){
             trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
             renderTree(name2, canvas2, scale2, name1);
+
+
+            // When adding a new link (by expanding a node for instance)
+            // the links array gets updated, but the enter function does not
+            // return the right selection
+            // (acts as if nothing was added at all)
+            // Thus the tree looks clumsy
+            // Please note that in case "Collapse" followed by a "Expand"
+            // this issue does not occur...
+            // And the bug is specific to the new implementation
+            // using workers
+
+            // The reason is the following:
+            // the new nodes are added at the beginning of the list and are assigned
+            // already existing numeric IDs...
+            // Example:
+            // New nodes:
+            // TARGET ID: node_8657 TARGET NUMERIC ID: 739
+            // TARGET ID: node_8994 TARGET NUMERIC ID: 738
+            // 739 and 738 are already assigned to 2 existing nodes:
+            // TARGET ID: node_8354 TARGET NUMERIC ID: 738
+            // TARGET ID: node_7193 TARGET NUMERIC ID: 739
+            //
+            // To fix this bug, we need to reset all the numeric identifiers
+            // Please note that the numeric identifiers are built by incrementing the
+            // number of leaves in the tree.
+            postorderTraverse(trees[index1].root, function(d) {
+                d.id =null;
+            });
+
+            postorderTraverse(trees[index2].root, function(d) {
+                d.id =null;
+            });
 
             compareMode = true;
             settings.loadedCallback();
@@ -3317,6 +3363,7 @@ var TreeCompare = function(){
      index2 index of the second tree in the trees table
      */
     function preprocessTrees(index1, index2, name1, canvas1, name2, canvas2, scale1, scale2) {
+
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
@@ -4087,9 +4134,8 @@ var TreeCompare = function(){
      */
     function getClickEventListenerNode(tree, isCompared, comparedTree) {
 
-        //console.log("Function getClickEventListenerNode");
-
         function nodeClick(d) {
+
             var svg = tree.data.svg;
 
             // function that allows to swap two branches when clicking on note d
@@ -4115,6 +4161,7 @@ var TreeCompare = function(){
             }
 
             function collapse(d) {
+
                 /* Called on collapse AND uncollapse / expand. */
                 var load = false;
                 if (isCompared && d._children) {
@@ -4130,6 +4177,7 @@ var TreeCompare = function(){
                         d.collapsed = false;
                         d.children = d._children;
                         d._children = null;
+
                         if (isCompared) {
                             // fixed bug on collapsing then highlighting and uncollapsing
                             if (d.clickedParentHighlight) {
@@ -4145,6 +4193,7 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback(); // stops the spinning wheels
                     }
+
                     update(d, tree.data);
                 }, 2);
 
