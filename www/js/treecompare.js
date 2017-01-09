@@ -344,6 +344,7 @@ var TreeCompare = function(){
         function is_nhx_tag_found(nhx_tags, tag_to_check){
 
             //console.log("tag to check: :"+tag_to_check);
+            // prepend with : to differentiate :S=, :Sw= and :SO=
             return jQuery.inArray(":"+tag_to_check, nhx_tags);
 
 
@@ -406,16 +407,46 @@ var TreeCompare = function(){
                                         tree.duplication = nhxtag_value;
                                         break;
 
-                                    case 'L':
+                                    case ':L':
 
                                         //console.log("likelihood to: "+nhxtag[1]);
                                         tree.likelihood = nhxtag_value;
                                         break;
 
-                                    case 'E':
+                                    case ':E':
 
                                         //console.log("EC number to: "+nhxtag[1]);
                                         tree.ECNumber = nhxtag_value;
+                                        break;
+
+                                    case ':T':
+
+                                        //console.log("EC number to: "+nhxtag[1]);
+                                        tree.taxanomyID = nhxtag_value;
+                                        break;
+
+                                    case ':O':
+
+                                        //console.log("EC number to: "+nhxtag[1]);
+                                        tree.orthologous = nhxtag_value;
+                                        break;
+
+                                    case ':SO':
+
+                                        //console.log("EC number to: "+nhxtag[1]);
+                                        tree.superorthologous = nhxtag_value;
+                                        break;
+
+                                    case ':Sw':
+
+                                        //console.log("EC number to: "+nhxtag[1]);
+                                        tree.subtree = nhxtag_value;
+                                        break;
+
+                                    case ':Co':
+
+                                        //console.log("EC number to: "+nhxtag[1]);
+                                        tree.collapseThis = nhxtag_value;
                                         break;
                                 }
 
@@ -1786,17 +1817,45 @@ var TreeCompare = function(){
                         return "";
                     } else if (settings.internalLabels === "name") { //print bootstrap values
                         return d.branchSupport
-                    } else if (settings.internalLabels === "species") { //print bootstrap values
+                    } else if (settings.internalLabels === "species") { //print species values
                         return d.species
-                    } else if (settings.internalLabels === "taxonomy") { //print bootstrap values
+                    } else if (settings.internalLabels === "taxonomyID") { //print taxonomy values
                         return d.taxonomy
-                    } else if (settings.internalLabels === "ECNumber") { //print bootstrap values
+                    } else if (settings.internalLabels === "ECNumber") { //print ec number values for this node
                         return d.ECNumber
                     } else if (settings.internalLabels === "length") {
                         if (d.length) {
                             return d.length.toFixed(3);
                         }
 
+                   } else if (settings.internalLabels === "likelihood") {
+                        if (d.likelihood) {
+                            return d.likelihood.toFixed(3);
+                        }
+                    } else if (settings.internalLabels === "orthologous") {
+                        if (d.orthologous) {
+                            return d.orthologous;
+                        }
+                    } else if (settings.internalLabels === "superorthologous") {
+                        if (d.superorthologous) {
+                            return d.superorthologous;
+                        }
+
+                    } else if (settings.internalLabels === "subtree") {
+                        if (d.subtree == 'Y') {
+                            return 'Y';
+                        } else {
+                            return 'N';
+                        }
+
+                    } else if (settings.internalLabels === "collapseThis") {
+                        if (d.collapseThis == 'Y') {
+                            return 'Y';
+                        } else {
+                            return 'N';
+                        }
+
+                        
                     } else if (settings.internalLabels === "duplication") {
                         if (d.duplication == 'Y') {
                             return 'duplication';
@@ -1808,6 +1867,8 @@ var TreeCompare = function(){
                         if (d[currentS]) {
                             return d[currentS].toFixed(3);
                         }
+
+
                     }
 
                 }
