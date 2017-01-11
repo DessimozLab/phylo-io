@@ -23,6 +23,12 @@
       ga('create', 'UA-105586-10', 'auto');
       ga('send', 'pageview');
     </script>
+    <style>
+        .extraMargin + span:after {
+            content:"\000A";
+            white-space: pre;
+        }
+    </style>
 </head>
 
 <body>
@@ -135,41 +141,20 @@
                                 <button type="button" id="collapseInc" class="btn btn-primary collapseElem collapseButton">+</button>
                             </div>
                             <b>Internal Labels:</b>
-                            <form class="internalLabels">
-                                <input type="radio" name="internalLabels" value="none" checked>None
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="name">Branch Labels/Support
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="length">Length
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="similarity">Similarity
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="species">Species
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="duplication">Duplication/speciation
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="ECNumber">EC Number
-                                <br>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="taxonomyID">NCBI Taxonomy ID
-                                <br/>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="likelihood">Parent branch log value
-                                <br/>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="orthologous">Display orthology
-                                <br/>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="superorthologous">Display super orthology
-                                <br/>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="subtree">Subtree
-
-                                <br/>
-                                <input type="radio" class="extraMargin" name="internalLabels"
-                                       value="collapseThis">Collapsed nodes
+                            <form class="internalLabels" id="labelForm">
+                                <input type="radio" name="internalLabels" value="none" checked><span>None</span><br>
+                                <input type="radio" class="extraMargin" name="internalLabels" value="name"><span>Branch Labels/Support</span>
+                                <input type="radio" class="extraMargin" name="internalLabels" value="length"><span>Length</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="similarity"><span>Similarity</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="species"><span>Species</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="duplication"><span>Duplication/speciation</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="ECNumber"><span>EC Number</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="taxonomyID"><span>NCBI Taxonomy ID</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="likelihood"><span>Parent branch log value</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="orthologous"><span>Display orthology</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="superorthologous"><span>Display super orthology</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="subtree"><span>Subtree</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="collapseThis"><span>Collapsed nodes</span>
 
                             </form>
                             <b>Adjust Tree Style:</b>
@@ -330,6 +315,13 @@
         treecomp.inputTreeFile("newickInSingle");
         treecomp.inputTreeFile("newickIn1");
         treecomp.inputTreeFile("newickIn2");
+
+        // hide optional settings by default
+        //$('.opt').parent().hide();
+        var v= $("input[type=radio].opt");
+        $(v).each(function(i){
+            ($(this).hide().next().hide())
+        });
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "view-btn"){

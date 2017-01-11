@@ -350,6 +350,8 @@ var TreeCompare = function(){
 
         }
 
+        var settingsLbls = [];
+
         for (var i = 0; i < new_tokens.length; i++) {
             var token = new_tokens[i];
             switch (token) {
@@ -398,54 +400,65 @@ var TreeCompare = function(){
                                     case ':S':
 
                                         //console.log("species to: "+nhxtag_value);
+                                        settingsLbls.push('species');
+
                                         tree.species = nhxtag_value;
                                         break;
 
                                     case ':D':
 
                                         //console.log("duplication to: "+nhxtag_value);
+                                        settingsLbls.push('duplication');
+
                                         tree.duplication = nhxtag_value;
                                         break;
 
                                     case ':L':
 
                                         //console.log("likelihood to: "+nhxtag[1]);
+                                        settingsLbls.push('likelihood');
                                         tree.likelihood = nhxtag_value;
                                         break;
 
                                     case ':E':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('ECNumber');
                                         tree.ECNumber = nhxtag_value;
                                         break;
 
                                     case ':T':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('taxanomyID');
                                         tree.taxanomyID = nhxtag_value;
                                         break;
 
                                     case ':O':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('orthologous');
                                         tree.orthologous = nhxtag_value;
                                         break;
 
                                     case ':SO':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('superorthologous');
                                         tree.superorthologous = nhxtag_value;
                                         break;
 
                                     case ':Sw':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('subtree');
                                         tree.subtree = nhxtag_value;
                                         break;
 
                                     case ':Co':
 
                                         //console.log("EC number to: "+nhxtag[1]);
+                                        settingsLbls.push('collapseThis');
                                         tree.collapseThis = nhxtag_value;
                                         break;
                                 }
@@ -454,9 +467,7 @@ var TreeCompare = function(){
 
                         });
 
-
-
-                    }else{
+                    } else {
                         if (!(x===";" || x==="")){
                             tree.branchSupport = x;
                         }
@@ -503,6 +514,21 @@ var TreeCompare = function(){
                     }
             }
         }
+
+        // update settings radiobuttons
+        // TODO, hide not used radios, what do we show always?
+        if(settingsLbls.length > 0){
+
+            settingsLbls = settingsLbls.filter(
+                function(a){if (!this[a]) {this[a] = 1; return a;}}, {}
+            );
+
+            jQuery.each(settingsLbls, function( i, stglbl) {
+                $('[name=internalLabels][value='+stglbl+']').show().next().show();
+            });
+
+        }
+
         return tree;
     }
 
@@ -1864,8 +1890,8 @@ var TreeCompare = function(){
                         }
 
                     } else if (settings.internalLabels === "similarity") {
-                        if (d[currentS]) {
-                            return d[currentS].toFixed(3);
+                        if (d.similarity) {
+                            return d.similarity;
                         }
 
 
