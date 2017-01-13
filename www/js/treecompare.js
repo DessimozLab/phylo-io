@@ -462,9 +462,7 @@ var TreeCompare = function(){
                                         tree.collapseThis = nhxtag_value;
                                         break;
                                 }
-
                             }
-
                         });
 
                     } else {
@@ -1790,12 +1788,12 @@ var TreeCompare = function(){
                     return "orange"; //changed from red
                 } else if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                     if (d._children){
-                        return "blue";
+                        return "red";
                     }else {
                         return colorScale(d[currentS])
                     }
                 } else {
-                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "blue" : "black";
+                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "red" : "black";
                 }
             });
 
