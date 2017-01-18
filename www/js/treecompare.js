@@ -1,6 +1,7 @@
 var TreeCompare = function(){
 
     var trees = [];
+
     var backupRoot = [];
     var renderedTrees = [];
     var gistID="";
@@ -274,7 +275,46 @@ var TreeCompare = function(){
     }
 
     /*
+     JSON to Newick converter, just copied code from:
+     https://github.com/daviddao/biojs-io-newick/blob/master/src/newick.js
+     ==> Should we include the whole library, instead?
+     */
+    function tree2Newick(tree) {
+        function nested(nest){
+            var subtree = "";
+
+            if(nest.hasOwnProperty('children')){
+                var children = [];
+                nest.children.forEach(function(child){
+                    var subsubtree = nested(child);
+                    children.push(subsubtree);
+                });
+                var substring = children.join();
+                if(nest.hasOwnProperty('name')){
+                    subtree = "("+substring+")" + nest.name;
+                }
+                if(nest.hasOwnProperty('length')){ // Does length mean branch length?
+                    subtree = subtree + ":"+nest.length;
+                }
+            }
+            else{
+                var leaf = "";
+                if(nest.hasOwnProperty('name')){
+                    leaf = nest.name;
+                }
+                if(nest.hasOwnProperty('length')){
+                    leaf = leaf + ":"+nest.length;
+                }
+                subtree = subtree + leaf;
+            }
+            return subtree;
+        }
+        return nested(tree) +";";
+    }
+
+    /*
      Newick to JSON converter, just copied code from newick.js
+     ==> Should we include the whole library, instead?
      */
     function convertTree(s) { //s is newick file format
         var ancestors = [];
@@ -2211,7 +2251,7 @@ var TreeCompare = function(){
         // wait for transition before generating download
         if (settings.enableDownloadButtons) {
             setTimeout(function() {
-                updateDownloadLinkContent(treeData.canvasId);
+                updateDownloadLinkContent(treeData.canvasId, treeData);
             }, duration);
         }
 
@@ -2353,7 +2393,7 @@ var TreeCompare = function(){
     /*
      Update the content of the SVG download link
      */
-    function updateDownloadLinkContent(canvasId) {
+    function updateDownloadLinkContent(canvasId, tree) {
 
         $("#downloadButtons" + canvasId).empty();
 
@@ -2399,6 +2439,16 @@ var TreeCompare = function(){
         svgLink.setAttribute("href", 'data:image/svg+xml;base64,' + btoa(svgString));
         svgLink.setAttribute("download", "phylo.io.svg");
         text = document.createTextNode("SVG");
+        svgLink.appendChild(text);
+        item.appendChild(svgLink);
+        document.getElementById("exportList" + canvasId).appendChild(item);
+
+        item = document.createElement("li");
+        item.setAttribute("id", "saveNwk" + canvasId);
+        svgLink = document.createElement("a");
+        svgLink.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root)));
+        svgLink.setAttribute("download", "phylo.io.nwk");
+        text = document.createTextNode("Newick");
         svgLink.appendChild(text);
         item.appendChild(svgLink);
         document.getElementById("exportList" + canvasId).appendChild(item);
@@ -3362,7 +3412,7 @@ var TreeCompare = function(){
             }
             d3.select("#" + canvasId + " svg g")
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
-            updateDownloadLinkContent(canvasId);
+            updateDownloadLinkContent(canvasId, baseTree.data);
         }
     }
 
