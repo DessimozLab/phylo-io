@@ -688,7 +688,7 @@ TreeCompare = (function() {
             //var t1 = performance.now();
             //console.log("Call renderTree took " + (t1 - t0) + " milliseconds.");
 
-
+            console.log(trees[index1]);
             compareMode = true;
             settings.loadedCallback();
         }, 5);
@@ -795,8 +795,9 @@ TreeCompare = (function() {
              * d: previous distance p->d
              */
             q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-            q.ID = makeId("node_");
+            q.ID =makeId("node_");
             q.children[0] = node; //new root
+            q.children[0].ID = node.ID;
             q.children[0].length = dist;
             q.children[0].branchSupport = btmp;
             p = node.parent;
@@ -845,7 +846,8 @@ TreeCompare = (function() {
                 //d.bcnhighlight = null;
                 //d.highlight = 0;
                 //d.clickedHighlight = null;
-                    d.leaves = getChildLeaves(d);
+                //d.ID = makeId("node_");
+                d.leaves = getChildLeaves(d);
             },false);
             //new_root.leaves = getChildLeaves(new_root);
             tree.root = new_root;
@@ -2013,21 +2015,23 @@ TreeCompare = (function() {
                 .style("cursor", "pointer")
                 .on("click", function(d) { // This is to reroot
                     d = e.target;
+                    console.log(d);
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
                     settings.loadingCallback();
                     setTimeout(function() {
                         var rerootedTree = reroot(tree, d);
-                        console.log(rerootedTree);
                         if (isCompared){
                             var index1 = findTreeIndex(tree.name);
                             var index2 = findTreeIndex(comparedTree.name);
                             preprocessTrees(index1, index2);
-                            console.log(trees[index1]);
+                            //console.log(trees[index1]);
                             settings.loadedCallback();
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
+                            //console.log(tree);
+                            //console.log(comparedTree);
                         } else {
                             settings.loadedCallback();
                             update(tree.root, rerootedTree.data);
