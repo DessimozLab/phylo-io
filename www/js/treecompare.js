@@ -995,12 +995,12 @@ var TreeCompare = function(){
     function findBestCorrespondingTree(canvasId){
         var isCompared = true;
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
-            var tree = trees[trees.length-2];
-            var fixedTree = trees[trees.length-1];
+            var tree = trees[trees.length-2]; // current tree (left)
+            var fixedTree = trees[trees.length-1]; // other tree (right)
 
         }else{
-            var tree = trees[trees.length-1];
-            var fixedTree = trees[trees.length-2];
+            var tree = trees[trees.length-1]; // current tree (right)
+            var fixedTree = trees[trees.length-2]; // other tree (left)
 
         }
 
@@ -1015,7 +1015,8 @@ var TreeCompare = function(){
         //------
         // REROOT function to change root point based on determined node
         // input: itree - to rerooted tree
-        //        node - the target node of the branch where rerooting should happen
+        //        node - the target node of the branch where rerooting should happen.
+        //               node is the BCN of the first child of the opposite tree
         //        iFinalView - condition
         //------
         //TODO: this function is implemented twice and could probably be done in a more efficient way
@@ -1042,8 +1043,6 @@ var TreeCompare = function(){
                     root = backupRoot;
                 }
 
-
-
                 var i, d, tmp;
                 var btmp, bd;
                 var p, q, r, s, new_root;
@@ -1058,16 +1057,27 @@ var TreeCompare = function(){
                  * i: previous position of q in p
                  * d: previous distance p->d
                  */
-                q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-                //console.log(q);
+
+                // q is an empty node. Its only property is elementS copied from node.parent.elementS
+                // elementS is the similarity score between a node and its BCN in the other tree
+                // elementS defines the colouring of the branches
+                q = new_root = new_node(node.parent);
+
                 q.ID = node.ID;
-                q.children[0] = node; //new root
+                q.children[0] = node; //new root set to node, the BCN of the first child of the opposite tree
                 q.children[0].length = dist;
                 q.children[0].branchSupport = btmp;
+
+                // p is the parent of the BCN of the first child of the opposite tree
                 p = node.parent;
+
+                // ???
                 q.children[0].parent = q;
+
+                // Get the index of the node in the list of children
                 for (i = 0; i < p.children.length; ++i)
                     if (p.children[i] == node) break;
+
                 q.children[1] = p;
                 d = p.length;
                 bd = p.branchSupport;
@@ -1078,35 +1088,34 @@ var TreeCompare = function(){
 
 
                 while (r != null) {
-                    s = r.parent; /* store r's parent */
-                    p.children[i] = r; /* change r to p's children */
-                    for (i = 0; i < r.children.length; ++i) /* update i */
+                    s = r.parent; // store r's parent
+                    p.children[i] = r; // change r to p's children
+                    for (i = 0; i < r.children.length; ++i) // update i
                         if (r.children[i] == p) break;
-                    r.parent = p; /* update r's parent */
-                    tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                    r.parent = p; // update r's parent
+                    tmp = r.length; r.length = d; d = tmp; // swap r->d and d, i.e. update r->d
                     btmp = r.branchSupport; r.branchSupport = bd; bd = btmp;
-                    q = p; p = r; r = s; /* update p, q and r */
+                    q = p; p = r; r = s; // update p, q and r
                     if(isCompared) { //ensures that only partially the BCNs are recomputed
                         q.elementBCN = null;
                     }
                 }
 
-                /* now p is the root node */
-                if (p.children.length == 2) { /* remove p and link the other child of p to q */
-                    r = p.children[1 - i]; /* get the other child */
-                    for (i = 0; i < q.children.length; ++i) /* the position of p in q */
+                // now p is the root node
+                if (p.children.length == 2) { // remove p and link the other child of p to q
+                    r = p.children[1 - i]; // get the other child
+                    for (i = 0; i < q.children.length; ++i) // the position of p in q
                         if (q.children[i] == p) break;
                     r.length += p.length;
                     r.parent = q;
-                    q.children[i] = r; /* link r to q */
-                } else { /* remove one child in p */
+                    q.children[i] = r; // link r to q
+                } else { // remove one child in p
                     for (j = k = 0; j < p.children.length; ++j) {
                         p.children[k] = p.children[j];
                         if (j != i) ++k;
                     }
                     --p.children.length;
                 }
-
 
                 try{
                     postorderTraverse(new_root, function(d) {
@@ -1191,6 +1200,19 @@ var TreeCompare = function(){
 
             //var t0 = performance.now();
             updateVisibleBCNs(tree1.root, tree2.root, false);
+
+            /*var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1.root, tree2: tree2.root, recalculate: iFinalView} });
+            var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2.root, tree2: tree1.root, recalculate: iFinalView} });
+
+            $.when(worker1, worker2).done(function(tree1, tree2) {
+                update(tree2.root, tree2.data);
+                update(tree1.root, tree1.data);
+            });*/
+
+                /*updateVisibleBCNs(tree1.root, tree2.root, iFinalView);
+            update(tree2.root, tree2.data);
+            update(tree1.root, tree1.data);*/
+
             //var t1 = performance.now();
             //console.log("Call updateVisibleBCNs took " + (t1 - t0) + " milliseconds.");
 
@@ -1206,7 +1228,6 @@ var TreeCompare = function(){
                 //var t1 = performance.now();
                 //console.log("Call update took " + (t1 - t0) + " milliseconds.");
             }
-
         }
 
         //------
@@ -1232,12 +1253,12 @@ var TreeCompare = function(){
     function findBestCorrespondingLeafOrder(canvasId){
 
         if (canvasId=="vis-container1"){ //ensures that the right tree is fixed based on canvasID
-            var tree = trees[trees.length-2];
-            var fixedTree = trees[trees.length-1];
+            var tree = trees[trees.length-2]; // current tree
+            var fixedTree = trees[trees.length-1]; // other tree
 
         }else{
-            var tree = trees[trees.length-1];
-            var fixedTree = trees[trees.length-2];
+            var tree = trees[trees.length-1]; // current tree
+            var fixedTree = trees[trees.length-2]; // other tree
 
         }
 
@@ -1279,15 +1300,16 @@ var TreeCompare = function(){
         // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
         //------
         function getCorrespondingNode(treeLeaves, ifixedTree){
+
             var bestCorrespondingFixTreeLeaves = "";
             var bestCount = 0;
             postorderTraverse(ifixedTree.root, function(d){
                 if (d.children || d._children){
                     var fixedTreeLeaves = getChildLeafNames(d);
                     var count = 0;
-                    for (var i = 0; i < fixedTreeLeaves.length; i++){
 
-                        if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
+                     for (var i = 0; i < fixedTreeLeaves.length; i++){
+                         if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
                             count += 1;
                         }
                     }
@@ -1309,6 +1331,7 @@ var TreeCompare = function(){
         //
         //------
         postorderTraverse(tree.root,function(d){
+
             if (d.children || d._children){
                 var leaves = getChildLeafNames(d);
                 var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
@@ -2374,6 +2397,7 @@ var TreeCompare = function(){
         item.setAttribute("id", "saveSvg" + canvasId);
         svgLink = document.createElement("a");
         svgLink.setAttribute("href", 'data:image/svg+xml;base64,' + btoa(svgString));
+        svgLink.setAttribute("download", "phylo.io.svg");
         text = document.createTextNode("SVG");
         svgLink.appendChild(text);
         item.appendChild(svgLink);
@@ -2470,7 +2494,10 @@ var TreeCompare = function(){
 
             var image = new Image;
             image.onload = function() {
+
                 context.clearRect ( 0, 0, width, height );
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, width, height);
                 context.drawImage(image, 0, 0, width, height);
 
                 canvas.toBlob( function(blob) {
