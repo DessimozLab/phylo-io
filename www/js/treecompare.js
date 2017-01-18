@@ -4768,8 +4768,8 @@ var TreeCompare = function(){
                     function (d) {
                         if (d._children) {
                             return "expand all >";
-                        } else if (d.children) {
-                            return "collapse all >";
+                        //} else if (d.children) {
+                            // return "collapse all >";
                         }
                     },
                     function (d) {
