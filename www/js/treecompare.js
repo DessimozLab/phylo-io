@@ -3456,9 +3456,6 @@ var TreeCompare = function(){
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
-        //console.log("Tree1 data at the beginning of the function");
-        //console.dir(trees[index1].data);
-
         if (recalculate === undefined) {
             recalculate = true;
         }
@@ -3477,11 +3474,11 @@ var TreeCompare = function(){
             var name1 = trees[index1].name;
             var name2 = trees[index2].name;
 
-            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+            trees[index1].data.clickEvent = getClickEventListenerNode(index1, true, index2);//Click event listener for nodes
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
             renderTree(name1, canvas1, scale1, name2);
 
-            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+            trees[index2].data.clickEvent = getClickEventListenerNode(index2, true, index1);
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
             renderTree(name2, canvas2, scale2, name1);
 
@@ -3809,7 +3806,7 @@ var TreeCompare = function(){
             if (settings.autoCollapse !== null) {
                 limitDepth(trees[index].root, settings.autoCollapse);
             }
-            trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
+            trees[index].data.clickEvent = getClickEventListenerNode(index, false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(name, canvasId, scaleId);
             settings.loadedCallback();
@@ -4136,7 +4133,10 @@ var TreeCompare = function(){
     /*
      get relevant event listener for clicking on a node depending on what mode is selected
      */
-    function getClickEventListenerNode(tree, isCompared, comparedTree) {
+    function getClickEventListenerNode(treeIndex, isCompared, comparedTreeIndex) {
+
+        var tree = trees[treeIndex];
+        var comparedTree = trees[comparedTreeIndex];
 
         function nodeClick(d) {
 
@@ -4244,7 +4244,6 @@ var TreeCompare = function(){
                     }
                     update(d, tree.data);
                 }, 2)
-
             }
 
             function highlight(d) {
@@ -4287,15 +4286,11 @@ var TreeCompare = function(){
                                     leaves[i].correspondingLeaf.correspondingHighlight = false;
                                 }
                             }
-
                             colorLinkNodeOver(new_d, false);
                             update(new_d, tree.data);
                             update(otherTreeData.root, otherTreeData);
                         }
-
-
                     }
-
 
                     if (!_.contains(highlightedNodes, d)) {
                         clearHighlight(tree.root);
@@ -4311,17 +4306,16 @@ var TreeCompare = function(){
                             //clearHighlight(tree.root);
                             //clearHighlight(otherTree);
 
-
                             for (var i = 0; i < leaves.length; i++) {
                                 if(leaves[i].correspondingLeaf !== undefined) {
                                     leaves[i].correspondingLeaf.correspondingHighlight = true;
                                 }
-
                             }
                             expandPathToNode(d[currentBCN]);
                             settings.loadingCallback();
                             setTimeout(function() {
-                                getVisibleBCNs(otherTree, tree.root, false);
+                                getVisibleBCNsUsingWorkers(treeIndex, comparedTreeIndex, false);
+
                                 settings.loadedCallback();
                                 colorLinkNodeOver(d, true);
                                 update(d, tree.data);
@@ -4338,7 +4332,6 @@ var TreeCompare = function(){
                                         .attr("transform", "scale(" + currentScale + ")" + "translate(" + otherTreeData.zoomBehaviour.translate() + ")");
                                 }
                             }, 2);
-
                         }
                     } else {
                         d.clickedHighlight = false;
@@ -4361,9 +4354,7 @@ var TreeCompare = function(){
                         colorLinkNodeOver(d, false);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
-
                     }
-
                 }
             }
 
@@ -4591,9 +4582,7 @@ var TreeCompare = function(){
                     d3.select(this).transition().duration(50).style("fill", "white");
                 });
             });
-
         }
-
         return nodeClick;
 
     }
