@@ -734,45 +734,89 @@ var TreeCompare = function(){
             var num = trees.length;
             name = "Tree " + num;
         }
-        var tree = convertTree(newick);
-        /*try {
-         var tree = convertTree(newick); // calls convert function from above
-         //console.log(tree)
-         } catch (err) {
-         throw "Invalid Newick";
-         }*/
-        for (var i = 0; i < trees.length; i++) {
-            if (name === trees[i].name) {
-                throw "Tree With Name Already Exists";
+        var newicks = newick.split(";").slice(0, -1);
+        var treeCollection = [];
+        console.log(newicks);
+        // the following is important to allow the support to load multiple trees at once
+        // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
+        if (newicks.length > 1){
+            for(var i = 0; i < newicks.length; i++){
+                var sub_tree_name = "Tree " + i;
+                var tree = convertTree(newicks[i]);
+
+                //add required parameters to each node
+                postorderTraverse(tree, function(d) {
+                    d.ID = makeId("node_");
+                    d.leaves = getChildLeaves(d);
+                    d.clickedParentHighlight = false;
+                    d.mouseoverHighlight = false; //when mouse is over node
+                    d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+                    d.correspondingHighlight = false;
+                    d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+                });
+
+                var root_ID = makeId("node_");
+                for (var j = 0; j < tree.children.length; j++){
+                    tree.children[j].ID = root_ID;
+                }
+
+                var fullTree = {
+                    root: tree,
+                    name: sub_tree_name,
+                    data: {}
+                };
+                fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
+                treeCollection[i] = fullTree;
             }
+            var fullTreeCollection = {
+                trees: treeCollection,
+                name: name,
+                data: {}
+            };
+            trees.push(fullTreeCollection);
+            console.log(trees);
+            return tree_collection;
+        } else {
+            var tree = convertTree(newick);
+            /*try {
+             var tree = convertTree(newick); // calls convert function from above
+             //console.log(tree)
+             } catch (err) {
+             throw "Invalid Newick";
+             }*/
+            for (var i = 0; i < trees.length; i++) {
+                if (name === trees[i].name) {
+                    throw "Tree With Name Already Exists";
+                }
+            }
+            //add required parameters to each node
+            postorderTraverse(tree, function(d) {
+                d.ID = makeId("node_");
+                d.leaves = getChildLeaves(d);
+                d.clickedParentHighlight = false;
+                d.mouseoverHighlight = false; //when mouse is over node
+                d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+                d.correspondingHighlight = false;
+                d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+            });
+
+            var root_ID = makeId("node_");
+            for (var i = 0; i < tree.children.length; i++){
+                tree.children[i].ID = root_ID;
+            }
+
+            var fullTree = {
+                root: tree,
+                name: name,
+                data: {}
+            };
+            fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
+            trees.push(fullTree);
+
+            return fullTree;
         }
-        //add required parameters to each node
-        postorderTraverse(tree, function(d) {
-            d.ID = makeId("node_");
-            d.leaves = getChildLeaves(d);
-            d.clickedParentHighlight = false;
-            d.mouseoverHighlight = false; //when mouse is over node
-            d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
-            d.correspondingHighlight = false;
-            d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
-        });
-
-        var root_ID = makeId("node_");
-        for (var i = 0; i < tree.children.length; i++){
-            tree.children[i].ID = root_ID;
-        }
-
-        var fullTree = {
-            root: tree,
-            name: name,
-            data: {}
-        };
-        fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
-
-        trees.push(fullTree);
-
-        return fullTree;
     }
+
 
     /*
     depending on number of leaves function returns optimal collapsing depth
