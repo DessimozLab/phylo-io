@@ -383,6 +383,8 @@
             var tree2 = treecomp.addTreeGistURL(gistID[2]);
 
             $("#page-content-wrapper").empty();
+            //TODO: The following line will wrap the tree visualization in compare mode into a div that will allow to easier place the reroot and reorder functions to the center in future version!
+            //$("#page-content-wrapper").html('<div class="container-fluid"><div class="vis-container-2" id="vis-container1"></div><div class="vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div></div>'); this will wrap the visualization
             $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
             treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
             $("#colorScale").html("<b>Similarity to most common node:</b>");

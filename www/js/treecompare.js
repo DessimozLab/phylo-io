@@ -736,7 +736,6 @@ var TreeCompare = function(){
         }
         var newicks = newick.split(";").slice(0, -1);
         var treeCollection = [];
-        console.log(newicks);
         // the following is important to allow the support to load multiple trees at once
         // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
         if (newicks.length > 1){
@@ -768,14 +767,15 @@ var TreeCompare = function(){
                 fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
                 treeCollection[i] = fullTree;
             }
+            // generate a collection of full tree objects that will be pushed into the trees array of trees
             var fullTreeCollection = {
                 trees: treeCollection,
                 name: name,
                 data: {}
             };
             trees.push(fullTreeCollection);
-            console.log(trees);
-            return tree_collection;
+            //TODO: this here needs to be changed: right now it only returns the last tree that is part of the fullTreeCollection, but does it matter????
+            return fullTree;
         } else {
             var tree = convertTree(newick);
             /*try {
@@ -2532,28 +2532,8 @@ var TreeCompare = function(){
         }
     }
 
-    /*---------------
-     /
-     /    Main function for setting up a d3 visualisation of a tree
-     /
-     ---------------*/
-    function renderTree(name, canvasId, scaleId, otherTreeName) {
-
-
-        //get the trees by name
-        var baseTree = trees[findTreeIndex(name)];
-
-        if (otherTreeName !== undefined) {
-            var otherTree = trees[findTreeIndex(name)];
-            compareMode = false;
-        }
-        renderedTrees.push(baseTree);
-
-        //clear the canvas of any previous visualisation
-        $("#" + canvasId).empty();
-        $("#" + scaleId).empty();
-        scaleId = "#" + scaleId;
-
+    function renderZoomSlider(tree, canvasId){
+        var name = tree.name;
         //renders the manual zoom slider if turned on
         if (settings.enableZoomSliders) {
             $("#" + canvasId).append('<div class="zoomSliderContainer">Zoom: <input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
@@ -2564,7 +2544,9 @@ var TreeCompare = function(){
                 "margin-top": "5px",
             });
         }
+    }
 
+    function renderSizeControls(tree, canvasId){
         //add the tree width/height controls and attach their event handlers
         if (settings.enableSizeControls) {
             var topMargin = settings.enableZoomSliders ? "50px" : "10px";
@@ -2617,23 +2599,23 @@ var TreeCompare = function(){
 
             // set up function for buttons on left top corner
             function actionUp() {
-                sizeVertical(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
+                sizeVertical(tree.data, false);
+                update(tree.root, tree.data, 0);
             }
 
             function actionDown() {
-                sizeVertical(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
+                sizeVertical(tree.data, true);
+                update(tree.root, tree.data, 0);
             }
 
             function actionLeft() {
-                sizeHorizontal(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
+                sizeHorizontal(tree.data, false);
+                update(tree.root, tree.data, 0);
             }
 
             function actionRight() {
-                sizeHorizontal(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
+                sizeHorizontal(tree.data, true);
+                update(tree.root, tree.data, 0);
             }
 
             var timeoutIdUp = 0;
@@ -2668,25 +2650,10 @@ var TreeCompare = function(){
                 clearTimeout(timeoutIdRight);
             });
         }
+    }
 
-        //set up the d3 vis
-        var i = 0;
-
-        var width = $("#" + canvasId).width();
-        var height = $("#" + canvasId).height();
-
-        var tree = d3.layout.tree()
-            .size([height, width]);
-
-        var diagonal = d3.svg.diagonal()
-            .projection(function(d) {
-                return [d.y, d.x];
-            });
-
-        var svg = d3.select("#" + canvasId).append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g");
+    // function to render the download buttons
+    function renderDownloadButton(canvasId){
 
         // draws link to download svg
         if (settings.enableDownloadButtons) {
@@ -2710,7 +2677,9 @@ var TreeCompare = function(){
             }
 
         }
+    }
 
+    function renderMiddleButtonsCompareMode(canvasId){
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
             var canvasLeft = "vis-container1";
@@ -2791,7 +2760,7 @@ var TreeCompare = function(){
             }
         }
 
-           var timeoutIdReroot = 0;
+        var timeoutIdReroot = 0;
         // action when clicking on reroot button in the center of the compare mode
         $("#" + "rerootButton" + canvasId).mousedown(function() {
             var load = true;
@@ -2819,8 +2788,9 @@ var TreeCompare = function(){
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
         });
+    }
 
-
+    function renderSearchBar(tree, canvasId){
         //set up search box and attach event handlers
         if (settings.enableSearch) {
             $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
@@ -2889,10 +2859,10 @@ var TreeCompare = function(){
             $('#searchButton' + canvasId).click(function() {
                 if (!visible) {
                     visible = true;
-                    postorderTraverse(baseTree.data.root, function(d) {
+                    postorderTraverse(tree.data.root, function(d) {
                         d.searchHighlight =false;
                     });
-                    update(baseTree.root,baseTree.data);
+                    update(tree.root,tree.data);
                     $("#searchInput" + canvasId).css({
                         "display": "inline"
                     });
@@ -2903,51 +2873,49 @@ var TreeCompare = function(){
                     });
 
                 } else { //if search unselected then remove orange highlight from branches
-                    postorderTraverse(baseTree.data.root, function(d) {
+                    postorderTraverse(tree.data.root, function(d) {
                         d.searchHighlight =false;
                     });
-                    update(baseTree.root,baseTree.data);
+                    update(tree.root,tree.data);
                     hideSearchBar();
                 }
             });
             // variable i is set to the number of leaves
             var leafObjs = [];
-            for (var i = 0; i < baseTree.root.leaves.length; i++) {
-                leafObjs.push(baseTree.root.leaves[i]);
+            for (var i = 0; i < tree.root.leaves.length; i++) {
+                leafObjs.push(tree.root.leaves[i]);
             }
 
             $("#" + canvasId + " svg").click(function() {
                 hideSearchBar();
             });
 
-            //var t0 = performance.now();
             //main event handler, performs search every time a char is typed so can get realtime results
             $("#searchInput" + canvasId).bind("paste keyup", function() {
                 $("#resultsList" + canvasId).empty();
                 var text = $(this).val();
                 var results = _.filter(leafObjs, function(leaf) {
-                    //return startsWith(leaf.name.toLowerCase(), text.toLowerCase());
                     return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
                 });
                 var results_name = [];
                 for (var i = 0; i < results.length; i++){
                     results_name.push(results[i].name)
                 }
-                postorderTraverse(baseTree.data.root,function(d){
+                postorderTraverse(tree.data.root,function(d){
                     expandPathToLeaf(d,true,false);
                 });
-                update(baseTree.root,baseTree.data);
+                update(tree.root,tree.data);
 
                 if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
                     $("#resultsBox" + canvasId).slideDown(200);
                     $("#resultsList" + canvasId).empty();
 
-                    postorderTraverse(baseTree.data.root,function(d){
+                    postorderTraverse(tree.data.root,function(d){
                         if(results_name.indexOf(d.name)>-1){
                             expandPathToLeaf(d,false,false);
                         }
                     });
-                    update(baseTree.root,baseTree.data);
+                    update(tree.root,tree.data);
 
                     for (var i = 0; i < results.length; i++) {
                         $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
@@ -2981,12 +2949,12 @@ var TreeCompare = function(){
                                 //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
                                 settings.loadingCallback();
                                 setTimeout(function() {
-                                    getVisibleBCNs(baseTree.root, otherTree.root, false);
+                                    getVisibleBCNs(tree.root, otherTree.root, false);
                                     settings.loadedCallback();
-                                    update(baseTree.root, baseTree.data);
+                                    update(tree.root, tree.data);
                                 }, 2);
                             } else {
-                                update(baseTree.root, baseTree.data);
+                                update(tree.root, tree.data);
                             }
                         });
                     }
@@ -3005,6 +2973,66 @@ var TreeCompare = function(){
 
             });
         }
+    }
+
+
+    // helper function to set up canvas to place the tree inside
+    function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
+
+        //get the trees by name
+        var baseTree = trees[findTreeIndex(name)];
+
+        if (otherTreeName !== undefined) {
+            var otherTree = trees[findTreeIndex(name)];
+            compareMode = false;
+        }
+        renderedTrees.push(baseTree);
+
+        //clear the canvas of any previous visualisation
+        $("#" + canvasId).empty();
+        $("#" + scaleId).empty();
+        scaleId = "#" + scaleId;
+
+        renderZoomSlider(baseTree, canvasId);
+        renderSizeControls(baseTree, canvasId);
+        renderDownloadButton(canvasId);
+        renderMiddleButtonsCompareMode(canvasId);
+        renderSearchBar(baseTree, canvasId);
+    }
+
+    /*---------------
+     /
+     /    Main function for setting up a d3 visualisation of a tree
+     /
+     ---------------*/
+    function renderTree(name, canvasId, scaleId, otherTreeName) {
+
+        //get the trees by name
+        var baseTree = trees[findTreeIndex(name)];
+
+        if (otherTreeName !== undefined) {
+            var otherTree = trees[findTreeIndex(name)];
+            compareMode = false;
+        }
+        renderedTrees.push(baseTree);
+        //set up the d3 vis
+        var i = 0;
+
+        var width = $("#" + canvasId).width();
+        var height = $("#" + canvasId).height();
+
+        var tree = d3.layout.tree()
+            .size([height, width]);
+
+        var diagonal = d3.svg.diagonal()
+            .projection(function(d) {
+                return [d.y, d.x];
+            });
+
+        var svg = d3.select("#" + canvasId).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g");
 
         var zoomBehaviour = d3.behavior.zoom()
             .scaleExtent([settings.scaleMin, settings.scaleMax])
@@ -3126,136 +3154,7 @@ var TreeCompare = function(){
         baseTree.data.zoomBehaviour.scale(0.8);
         d3.select("#" + baseTree.data.canvasId + " svg g")
             .attr("transform", "translate(" + [100, 100] + ") scale(0.8)");
-        getFisheye();
 
-
-        //handle all the fisheye zoom stuff
-        // TODO is not working correctly and should be depracted
-        d3.select("#" + canvasId).on("mousemove", function() {
-            if (settings.enableFisheyeZoom) {
-                var link = svg.selectAll("path.link");
-                var linkbg = svg.selectAll("path.linkbg");
-                var node = svg.selectAll("g.node");
-                var scale = zoomBehaviour.scale();
-
-                var fisheye = d3.fisheye.circular()
-                    .radius(600 / (scale * 3))
-                    .distortion(2 / (scale / 0.9));
-
-                var mousePos = [(d3.mouse(this)[1] - zoomBehaviour.translate()[1]) / scale, (d3.mouse(this)[0] - zoomBehaviour.translate()[0]) / scale];
-                fisheye.focus(mousePos);
-
-                node.each(function(d) {
-                    d.fisheye = fisheye(d);
-                });
-
-                node.select("circle")
-                    .attr("r", function(d) {
-                        return d.fisheye.z * settings.nodeSize;
-                    })
-                    .attr("cy", function(d) {
-                        return d.fisheye.x - d.x;
-                    });
-
-                node.select("path")
-                    .attr("d", function(d) {
-                        if (d._children) {
-                            var maxLength = getMaxLength(baseTree.root);
-                            var lengthMult = baseTree.data.treeWidth;
-                            var total = 0;
-                            var leafHeight = baseTree.data.treeHeight;
-                            _.each(d.leaves, function(e) {
-                                total = total + (getLength(e) * (lengthMult / maxLength));
-                            });
-                            var avg = total / d.leaves.length;
-                            var offset = leafHeight / triangleHeightDivisor * d.leaves.length / 2;
-                            return "M" + 0 + "," + (d.fisheye.x - d.x) + "L" + ((avg - (getLength(d) * (lengthMult / maxLength)))) + "," + ((-offset) - d.x + d.fisheye.x) + "L" + (avg - (getLength(d) * (lengthMult / maxLength))) + "," + (offset - d.x + d.fisheye.x) + "L" + 0 + "," + (d.fisheye.x - d.x);
-                        }
-                    });
-
-                node.select(".triangleText")
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x;
-                    })
-                    .attr("font-size", function(d) {
-                        if (d3.select(this).attr("font-size")) {
-                            var mult = (d.fisheye.z / 2) > 1 ? (d.fisheye.z / 2) : 1;
-                            return settings.fontSize * mult;
-                        }
-                    });
-                node.select("rect")
-                    .attr("width", function(d) {
-                        if (d.clickedHighlight) {
-                            return d.fisheye.z * settings.nodeSize * 2;
-                        }
-                    })
-                    .attr("height", function(d) {
-                        if (d.clickedHighlight) {
-                            return d.fisheye.z * settings.nodeSize * 2;
-                        }
-                    })
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x - (d.fisheye.z * settings.nodeSize);
-                    });
-
-                node.select("text")
-                    .attr("font-size", function(d) {
-                        if (d3.select(this).attr("font-size")) {
-                            var mult = (d.fisheye.z / 2) > 1 ? (d.fisheye.z / 2) : 1;
-                            return settings.fontSize * mult;
-                        }
-                    })
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x;
-
-                    });
-
-                link.select(".triangleText")
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x;
-                    })
-                    .attr("font-size", function(d) {
-                        if (d3.select(this).attr("font-size")) {
-                            var mult = (d.fisheye.z / 2) > 1 ? (d.fisheye.z / 2) : 1;
-                            return settings.fontSize * mult;
-                        }
-                    });
-
-                link.select("rect")
-                    .attr("width", function(d) {
-                        if (d.clickedHighlight) {
-                            return d.fisheye.z * settings.nodeSize * 2;
-                        }
-                    })
-                    .attr("height", function(d) {
-                        if (d.clickedHighlight) {
-                            return d.fisheye.z * settings.nodeSize * 2;
-                        }
-                    })
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x - (d.fisheye.z * settings.nodeSize);
-                    });
-
-                link.select("text")
-                    .attr("font-size", function(d) {
-                        if (d3.select(this).attr("font-size")) {
-                            var mult = (d.fisheye.z / 2) > 1 ? (d.fisheye.z / 2) : 1;
-                            return settings.fontSize * mult;
-                        }
-                    })
-                    .attr("y", function(d) {
-                        return d.fisheye.x - d.x;
-
-                    });
-                link.attr("d", function(d) {
-                    return "M" + d.source.y + "," + d.source.fisheye.x + "L" + d.source.y + "," + d.target.fisheye.x + "L" + d.target.y + "," + d.target.fisheye.x;
-                });
-
-                linkbg.attr("d", function(d) {
-                    return "M" + d.source.y + "," + d.source.fisheye.x + "L" + d.source.y + "," + d.target.fisheye.x + "L" + d.target.y + "," + d.target.fisheye.x;
-                });
-            }
-        });// End of fisheye zoom stuff
 
         d3.select(self.frameElement).style("height", "500px");
 
@@ -3834,28 +3733,19 @@ var TreeCompare = function(){
     function viewTree(name, canvasId, scaleId) {
         renderedTrees = [];
         var index = findTreeIndex(name);
+        console.log(trees[index]);
+        if (trees[index].hasOwnProperty("trees")){
+            console.log('we have multiple trees');
+        }
         settings.loadingCallback();
         setTimeout(function() {
-            uncollapseAll(trees[index].root);
-            stripPreprocessing(trees[index].root);
-            getDepths(trees[index].root);
 
-            postorderTraverse(trees[index].root, function(d) {
-                if (d.name==="collapsed" || d.collapsed) {
-                    d._children = d.children;
-                    d.collapsed = true;
-                    d.children = null;
-                    //d.name=""
-                }
-            });
+            initialiseTree(trees[index].root, settings.autoCollapse);
 
-
-            if (settings.autoCollapse !== null) {
-                limitDepth(trees[index].root, settings.autoCollapse);
-            }
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-            renderTree(name, canvasId, scaleId);
+            initializeRenderTreeCanvas(name, canvasId, scaleId);
+            renderTree(name,canvasId,scaleId);
             settings.loadedCallback();
         }, 2);
 
