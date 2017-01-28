@@ -739,6 +739,7 @@ var TreeCompare = function(){
         // the following is important to allow the support to load multiple trees at once
         // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
         if (newicks.length > 1){
+
             for(var i = 0; i < newicks.length; i++){
                 var sub_tree_name = "Tree " + i;
                 var tree = convertTree(newicks[i]);
@@ -762,6 +763,7 @@ var TreeCompare = function(){
                 var fullTree = {
                     root: tree,
                     name: sub_tree_name,
+                    display: false,
                     data: {}
                 };
                 fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
@@ -2975,29 +2977,174 @@ var TreeCompare = function(){
         }
     }
 
+    function renderTreeToggleButtons(treeCollection, canvasId, scaleId){
+
+        $("#" + canvasId).append('<div id="treeToggleButtons"></div>');
+        $("#" + canvasId + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #treeToggleButtons").append('<button type="button" id="rightToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #treeToggleButtons").css({
+            "position": "absolute",
+            "margin-left": "auto",
+            "margin-right": "auto",
+            "left": "0",
+            "right": "0",
+            "width": "78px",
+            "bottom": "5px"
+        });
+        //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
+        $("#" + canvasId + " .treeToggleButton").css({
+            "font-size": "10px",
+            "width": "26px",
+            "height": "26px",
+            "vertical-align": "top",
+            "opacity":"0.3"
+        });
+        $("#" + canvasId + " .treeToggleButton").on("mouseover", function() {
+            $(this).css({
+                "opacity": "1"
+            })
+        });
+        $("#" + canvasId + " .treeToggleButton").on("mouseout", function() {
+            $(this).css({
+                "opacity": "0.3"
+            })
+        });
+        $("#" + canvasId + " .treeToggleButton span").css({
+            "vertical-align": "middle"
+        });
+        $("#" + canvasId + " #leftToggleButton").css({
+            "text-align": "center",
+            "float": "left"
+        });
+        $("#" + canvasId + " #rightToggleButton").css({
+            "text-align": "center",
+            "margin-left": "26px",
+            "float": "right"
+        });
+
+        function actionLeft() {
+            var index = findSubTreeIndex(treeCollection.trees);
+            var canvasId = treeCollection.data.canvasId;
+            var scaleId = treeCollection.data.scaleId;
+            var currentTree = treeCollection.trees[index];
+            currentTree.display = false;
+            if (index === 0){
+                var toggledTree = treeCollection.trees[treeCollection.trees.length-1];
+            }else {
+                var toggledTree = treeCollection.trees[index-1];
+            }
+            toggledTree.display = true;
+            var name = toggledTree.name;
+
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                //clear the canvas of any previous visualisation
+                renderTree(toggledTree,name,canvasId,scaleId);
+                settings.loadedCallback();
+            }, 2);
+        }
+
+        function actionRight() {
+            var index = findSubTreeIndex(treeCollection.trees);
+            var canvasId = treeCollection.data.canvasId;
+            var scaleId = treeCollection.data.scaleId;
+            treeCollection.trees[index].display = false;
+            if (index === (treeCollection.trees.length-1)){
+                var toggledTree = treeCollection.trees[0];
+            }else {
+                var toggledTree = treeCollection.trees[index+1];
+            }
+            toggledTree.display = true;
+            var name = toggledTree.name;
+            //clear the canvas of any previous visualisation
+
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                //clear the canvas of any previous visualisation
+                renderTree(toggledTree,name,canvasId,scaleId);
+                settings.loadedCallback();
+            }, 2);
+        }
+
+        var timeoutIdleft = 0;
+        $("#" + canvasId + " #leftToggleButton").mousedown(function() {
+            d3.select("svg").remove();
+            actionLeft();
+            timeoutIdleft = setInterval(actionLeft, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdleft);
+        });
+
+        var timeoutIdRight = 0;
+        $("#" + canvasId + " #rightToggleButton").mousedown(function() {
+            d3.select("svg").remove();
+            actionRight();
+            timeoutIdRight = setInterval(actionRight, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdRight);
+        });
+    }
+
 
     // helper function to set up canvas to place the tree inside
     function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
 
         //get the trees by name
-        var baseTree = trees[findTreeIndex(name)];
+        var baseTree = trees[findTreeIndex(trees, name)];
 
-        if (otherTreeName !== undefined) {
-            var otherTree = trees[findTreeIndex(name)];
-            compareMode = false;
+        if (baseTree.hasOwnProperty("trees")){
+            var tree = baseTree.trees[0];
+            console.log(tree);
+            if (otherTreeName !== undefined) {
+                var otherTree = trees[findTreeIndex(trees, name)];
+                compareMode = false;
+            }
+            renderedTrees.push(tree);
+
+            //clear the canvas of any previous visualisation
+            $("#" + canvasId).empty();
+            $("#" + scaleId).empty();
+
+            // variable i is set to the number of leaves (see above)
+            jQuery.extend(baseTree.data, {
+                canvasId: canvasId,
+                scaleId: scaleId
+            });
+
+            renderTreeToggleButtons(baseTree, canvasId, scaleId);
+            //render various buttons and search bars and sliders
+            renderZoomSlider(tree, canvasId);
+            renderSizeControls(tree, canvasId);
+            renderDownloadButton(canvasId);
+            renderMiddleButtonsCompareMode(canvasId);
+            renderSearchBar(tree, canvasId);
+
+        }else{
+            if (otherTreeName !== undefined) {
+                var otherTree = trees[findTreeIndex(trees, name)];
+                compareMode = false;
+            }
+            renderedTrees.push(baseTree);
+
+            //clear the canvas of any previous visualisation
+            $("#" + canvasId).empty();
+            $("#" + scaleId).empty();
+
+            //render various buttons and search bars and sliders
+            renderZoomSlider(baseTree, canvasId);
+            renderSizeControls(baseTree, canvasId);
+            renderDownloadButton(canvasId);
+            renderMiddleButtonsCompareMode(canvasId);
+            renderSearchBar(baseTree, canvasId);
         }
-        renderedTrees.push(baseTree);
-
-        //clear the canvas of any previous visualisation
-        $("#" + canvasId).empty();
-        $("#" + scaleId).empty();
-        scaleId = "#" + scaleId;
-
-        renderZoomSlider(baseTree, canvasId);
-        renderSizeControls(baseTree, canvasId);
-        renderDownloadButton(canvasId);
-        renderMiddleButtonsCompareMode(canvasId);
-        renderSearchBar(baseTree, canvasId);
     }
 
     /*---------------
@@ -3005,16 +3152,19 @@ var TreeCompare = function(){
      /    Main function for setting up a d3 visualisation of a tree
      /
      ---------------*/
-    function renderTree(name, canvasId, scaleId, otherTreeName) {
+    function renderTree(baseTree, name, canvasId, scaleId, otherTreeName) {
 
         //get the trees by name
-        var baseTree = trees[findTreeIndex(name)];
 
         if (otherTreeName !== undefined) {
-            var otherTree = trees[findTreeIndex(name)];
+            var otherTree = trees[findTreeIndex(trees, name)];
             compareMode = false;
         }
         renderedTrees.push(baseTree);
+
+        //clear the canvas of any previous visualisation
+        $("#" + scaleId).empty();
+        scaleId = "#" + scaleId;
         //set up the d3 vis
         var i = 0;
 
@@ -3092,7 +3242,7 @@ var TreeCompare = function(){
             tree: tree,
             svg: svg,
             i: i,
-            id: findTreeIndex(name),
+            id: findTreeIndex(trees, name),
             zoomBehaviour: zoomBehaviour,
             zoomBehaviourSemantic: zoomBehaviourSemantic,
             scaleId: scaleId
@@ -3150,6 +3300,7 @@ var TreeCompare = function(){
             baseTree.data.treeHeight = newHeight;
         }
         update(baseTree.root, baseTree.data);
+
         baseTree.data.zoomBehaviour.translate([100, 100]);
         baseTree.data.zoomBehaviour.scale(0.8);
         d3.select("#" + baseTree.data.canvasId + " svg g")
@@ -3671,9 +3822,20 @@ var TreeCompare = function(){
     /*
      get index of a tree in trees by its name
      */
-    function findTreeIndex(name) {
-        for (var i = 0; i < trees.length; i++) {
-            if (name === trees[i].name) {
+    function findSubTreeIndex(treeCollection) {
+        for (var i = 0; i < treeCollection.length; i++) {
+            if (treeCollection[i].display) {
+                return i;
+            }
+        }
+    }
+
+    /*
+     get index of a tree in trees by its name
+     */
+    function findTreeIndex(treeCollection, name) {
+        for (var i = 0; i < treeCollection.length; i++) {
+            if (name === treeCollection[i].name) {
                 return i;
             }
         }
@@ -3707,21 +3869,96 @@ var TreeCompare = function(){
         renderedTrees = [];
         var index1 = findTreeIndex(name1);
         var index2 = findTreeIndex(name2);
-        settings.loadingCallback();
-        setTimeout(function() {
 
-            initialiseTree(trees[index1].root, settings.autoCollapse);
-            initialiseTree(trees[index2].root, settings.autoCollapse);
+        initializeRenderTreeCanvas(name1, canvas1, scale1);
+        initializeRenderTreeCanvas(name2, canvas2, scale2);
 
-            // render tress (workers) -> once done, run comprison (workers)
-            renderTree(name1, canvas1, scale1, name2);
-            renderTree(name2, canvas2, scale2, name1);
+        // 4 cases to check if left and right have multiple trees
+        if (trees[index1].hasOwnProperty("trees") && trees[index2].hasOwnProperty("trees")){
+            var firstTree1 = trees[index1].trees[0];
+            var firstTree2 = trees[index2].trees[0];
+            firstTree1.display = true;
+            firstTree2.display = true;
 
-            //var t0 = performance.now();
-            preprocessTrees(index1, index2);
-            //var t1 = performance.now();
-            //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
-        }, 5);
+
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(firstTree1.root, settings.autoCollapse);
+                initialiseTree(firstTree2.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                renderTree(firstTree1, name1, canvas1, scale1, name2);
+                renderTree(firstTree2, name2, canvas2, scale2, name1);
+
+                //var t0 = performance.now();
+                preprocessTrees(index1, index2);
+                //var t1 = performance.now();
+                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+            }, 5);
+        }else if (trees[index1].hasOwnProperty("trees") && !trees[index2].hasOwnProperty("trees")) {
+            var firstTree1 = trees[index1].trees[0];
+            var firstTree2 = trees[index2].trees[0];
+            firstTree1.display = true;
+            firstTree2.display = true;
+
+
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(firstTree1.root, settings.autoCollapse);
+                initialiseTree(firstTree2.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                renderTree(firstTree1, name1, canvas1, scale1, name2);
+                renderTree(firstTree2, name2, canvas2, scale2, name1);
+
+                //var t0 = performance.now();
+                preprocessTrees(index1, index2);
+                //var t1 = performance.now();
+                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+            }, 5);
+
+        }else if (!trees[index1].hasOwnProperty("trees") && trees[index2].hasOwnProperty("trees")) {
+            var firstTree1 = trees[index1].trees[0];
+            var firstTree2 = trees[index2].trees[0];
+            firstTree1.display = true;
+            firstTree2.display = true;
+
+
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(firstTree1.root, settings.autoCollapse);
+                initialiseTree(firstTree2.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                renderTree(firstTree1, name1, canvas1, scale1, name2);
+                renderTree(firstTree2, name2, canvas2, scale2, name1);
+
+                //var t0 = performance.now();
+                preprocessTrees(index1, index2);
+                //var t1 = performance.now();
+                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+            }, 5);
+
+        }else{
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(trees[index1].root, settings.autoCollapse);
+                initialiseTree(trees[index2].root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                renderTree(trees[index1],name1, canvas1, scale1, name2);
+                renderTree(trees[index2],name2, canvas2, scale2, name1);
+
+                //var t0 = performance.now();
+                //preprocessTrees(index1, index2);
+                //var t1 = performance.now();
+                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+            }, 5);
+        }
 
     }
 
@@ -3731,24 +3968,37 @@ var TreeCompare = function(){
      /
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
+
         renderedTrees = [];
-        var index = findTreeIndex(name);
-        console.log(trees[index]);
+        var index = findTreeIndex(trees, name);
+        initializeRenderTreeCanvas(name, canvasId, scaleId);
+        //console.log(trees[index]);
+
         if (trees[index].hasOwnProperty("trees")){
-            console.log('we have multiple trees');
+            var firstTree = trees[index].trees[0];
+            firstTree.display = true;
+
+            settings.loadingCallback();
+            setTimeout(function() {
+                initialiseTree(firstTree.root, settings.autoCollapse);
+                firstTree.data.clickEvent = getClickEventListenerNode(firstTree, false, {});
+                firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
+
+                renderTree(firstTree,name,canvasId,scaleId);
+                settings.loadedCallback();
+            }, 2);
+        } else{
+            settings.loadingCallback();
+            setTimeout(function() {
+
+                initialiseTree(trees[index].root, settings.autoCollapse);
+                trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
+                trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
+
+                renderTree(trees[index],name,canvasId,scaleId);
+                settings.loadedCallback();
+            }, 2);
         }
-        settings.loadingCallback();
-        setTimeout(function() {
-
-            initialiseTree(trees[index].root, settings.autoCollapse);
-
-            trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
-            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-            initializeRenderTreeCanvas(name, canvasId, scaleId);
-            renderTree(name,canvasId,scaleId);
-            settings.loadedCallback();
-        }, 2);
-
     }
 
     /*
