@@ -741,7 +741,7 @@ var TreeCompare = function(){
         if (newicks.length > 1) {
 
             for(var i = 0; i < newicks.length; i++){
-                var sub_tree_name = "Tree " + i;
+                var sub_tree_name = "Sub_Tree " + i;
                 var tree = convertTree(newicks[i]);
 
                 //add required parameters to each node
@@ -862,7 +862,7 @@ var TreeCompare = function(){
     remove a tree from array of trees
      */
     function removeTree(name) {
-        trees.splice(findTreeIndex(name), 1);
+        trees.splice(findTreeIndex(trees,name), 1);
         for (var i = 0; i < renderedTrees.length; i++) {
             if (renderedTrees[i].name === name) {
                 $("#" + renderedTrees[i].data.canvasId).empty();
@@ -1211,9 +1211,9 @@ var TreeCompare = function(){
             }
 
             if (isCompared){
-                var index1 = findTreeIndex(tree.name);
-                var index2 = findTreeIndex(fixedTree.name);
-                preprocessTrees(index1, index2);
+                var index1 = findTreeIndex(trees, tree.name);
+                var index2 = findTreeIndex(trees, fixedTree.name);
+                preprocessTrees(trees[index1], trees[index2]);
                 settings.loadedCallback();
                 update(tree.root, rerootedTree.data);
                 update(fixedTree.root, fixedTree.data);
@@ -2538,7 +2538,7 @@ var TreeCompare = function(){
         var name = tree.name;
         //renders the manual zoom slider if turned on
         if (settings.enableZoomSliders) {
-            $("#" + canvasId).append('<div class="zoomSliderContainer">Zoom: <input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+            $("#" + canvasId).append('<div class="zoomSliderContainer">Zoom: <input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(trees, name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
             $(".zoomSliderContainer").css({
                 "position": "absolute",
                 "color": "black",
@@ -2977,7 +2977,7 @@ var TreeCompare = function(){
         }
     }
 
-    function renderTreeToggleButtons(treeCollection, canvasId, scaleId){
+    function renderTreeToggleButtons(treeCollection, canvasId){
 
         $("#" + canvasId).append('<div id="treeToggleButtons"></div>');
         $("#" + canvasId + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
@@ -3099,12 +3099,13 @@ var TreeCompare = function(){
 
         //get the trees by name
         var baseTree = trees[findTreeIndex(trees, name)];
+        if (otherTreeName !== undefined) {
+            var otherTree = trees[findTreeIndex(trees, name)];
+            compareMode = false;
+        }
+        //console.log(trees);
         if (baseTree.hasOwnProperty("trees")){
             var tree = baseTree.trees[0];
-            if (otherTreeName !== undefined) {
-                var otherTree = trees[findTreeIndex(trees, name)];
-                compareMode = false;
-            }
             renderedTrees.push(tree);
 
             //clear the canvas of any previous visualisation
@@ -3116,8 +3117,8 @@ var TreeCompare = function(){
                 canvasId: canvasId,
                 scaleId: scaleId
             });
-
-            renderTreeToggleButtons(baseTree, canvasId, scaleId);
+            console.log(baseTree);
+            renderTreeToggleButtons(baseTree, canvasId);
             //render various buttons and search bars and sliders
             renderZoomSlider(tree, canvasId);
             renderSizeControls(tree, canvasId);
@@ -3125,22 +3126,24 @@ var TreeCompare = function(){
             renderSearchBar(tree, canvasId);
 
         }else{
-            if (otherTreeName !== undefined) {
-                var otherTree = trees[findTreeIndex(trees, name)];
-                compareMode = false;
-            }
             renderedTrees.push(baseTree);
 
             //clear the canvas of any previous visualisation
             $("#" + canvasId).empty();
             $("#" + scaleId).empty();
 
+            // variable i is set to the number of leaves (see above)
+            jQuery.extend(baseTree.data, {
+                canvasId: canvasId,
+                scaleId: scaleId
+            });
+
             //render various buttons and search bars and sliders
             renderZoomSlider(baseTree, canvasId);
             renderSizeControls(baseTree, canvasId);
+            renderSearchBar(baseTree, canvasId);
             renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
-            renderSearchBar(baseTree, canvasId);
         }
     }
 
@@ -3152,7 +3155,6 @@ var TreeCompare = function(){
     function renderTree(baseTree, name, canvasId, scaleId, otherTreeName) {
 
         //get the trees by name
-
         if (otherTreeName !== undefined) {
             var otherTree = trees[findTreeIndex(trees, name)];
             compareMode = false;
@@ -3180,7 +3182,6 @@ var TreeCompare = function(){
             .attr("width", width)
             .attr("height", height)
             .append("g");
-
         var zoomBehaviour = d3.behavior.zoom()
             .scaleExtent([settings.scaleMin, settings.scaleMax])
             .on("zoom", zoom);
@@ -3570,11 +3571,12 @@ var TreeCompare = function(){
 
             trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
             trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
-            renderTree(name1, canvas1, scale1, name2);
+            console.log(trees);
+            renderTree(trees[index1], name1, canvas1, scale1, name2);
 
             trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
             trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-            renderTree(name2, canvas2, scale2, name1);
+            renderTree(trees[index2], name2, canvas2, scale2, name1);
 
 
             // When adding a new link (by expanding a node for instance)
@@ -3626,10 +3628,10 @@ var TreeCompare = function(){
      index1 index of the first tree in the trees table
      index2 index of the second tree in the trees table
      */
-    function preprocessTrees(index1, index2) {
+    function preprocessTrees(trees1, trees2) {
 
-        var tree1 = trees[index1].root;
-        var tree2 = trees[index2].root;
+        var tree1 = trees1.root;
+        var tree2 = trees2.root;
 
         //var t0 = performance.now();
         for (var i = 0; i < tree1.leaves.length; i++) {
@@ -3654,7 +3656,8 @@ var TreeCompare = function(){
         createDeepLeafList(tree2);
 
         //var t0 = performance.now();
-        getVisibleBCNsUsingWorkers(index1, index2);
+        getVisibleBCNs(tree1,tree2);
+        //getVisibleBCNsUsingWorkers(index1, index2);
         //var t1 = performance.now();
         ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
     }
@@ -3864,9 +3867,10 @@ var TreeCompare = function(){
      ---------------*/
     function compareTrees(name1, canvas1, name2, canvas2, scale1, scale2) {
         renderedTrees = [];
-        var index1 = findTreeIndex(name1);
-        var index2 = findTreeIndex(name2);
-
+        var index1 = findTreeIndex(trees,name1);
+        var index2 = findTreeIndex(trees,name2);
+        console.log(index1);
+        console.log(index2);
         initializeRenderTreeCanvas(name1, canvas1, scale1);
         initializeRenderTreeCanvas(name2, canvas2, scale2);
 
@@ -3884,14 +3888,17 @@ var TreeCompare = function(){
                 initialiseTree(firstTree1.root, settings.autoCollapse);
                 initialiseTree(firstTree2.root, settings.autoCollapse);
 
-                // render tress (workers) -> once done, run comprison (workers)
-                renderTree(firstTree1, name1, canvas1, scale1, name2);
-                renderTree(firstTree2, name2, canvas2, scale2, name1);
+                preprocessTrees(firstTree1, firstTree2);
 
-                //var t0 = performance.now();
-                preprocessTrees(index1, index2);
-                //var t1 = performance.now();
-                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+                // render tress (workers) -> once done, run comprison (workers)
+                firstTree1.data.clickEvent = getClickEventListenerNode(firstTree1, true, firstTree2);//Click event listener for nodes
+                firstTree1.data.clickEventLink = getClickEventListenerLink(firstTree1, true, firstTree2);//Click event listener for links. Assigns a function to the event.
+                renderTree(firstTree1, name1, canvas1, scale1, name2);
+
+                firstTree2.data.clickEvent = getClickEventListenerNode(firstTree2, true, firstTree1);
+                firstTree2.data.clickEventLink = getClickEventListenerLink(firstTree2, true, firstTree1);
+                renderTree(firstTree2, name2, canvas2, scale2, name1);
+                settings.loadedCallback();
             }, 5);
         }else if (trees[index1].hasOwnProperty("trees") && !trees[index2].hasOwnProperty("trees")) {
             var firstTree1 = trees[index1].trees[0];
@@ -3906,14 +3913,17 @@ var TreeCompare = function(){
                 initialiseTree(firstTree1.root, settings.autoCollapse);
                 initialiseTree(firstTree2.root, settings.autoCollapse);
 
-                // render tress (workers) -> once done, run comprison (workers)
-                renderTree(firstTree1, name1, canvas1, scale1, name2);
-                renderTree(firstTree2, name2, canvas2, scale2, name1);
+                preprocessTrees(firstTree1, firstTree2);
 
-                //var t0 = performance.now();
-                preprocessTrees(index1, index2);
-                //var t1 = performance.now();
-                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+                // render tress (workers) -> once done, run comprison (workers)
+                trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                renderTree(trees[index1], name1, canvas1, scale1, name2);
+
+                trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                renderTree(trees[index2], name2, canvas2, scale2, name1);
+                settings.loadedCallback();
             }, 5);
 
         }else if (!trees[index1].hasOwnProperty("trees") && trees[index2].hasOwnProperty("trees")) {
@@ -3929,14 +3939,17 @@ var TreeCompare = function(){
                 initialiseTree(firstTree1.root, settings.autoCollapse);
                 initialiseTree(firstTree2.root, settings.autoCollapse);
 
-                // render tress (workers) -> once done, run comprison (workers)
-                renderTree(firstTree1, name1, canvas1, scale1, name2);
-                renderTree(firstTree2, name2, canvas2, scale2, name1);
+                preprocessTrees(firstTree1, firstTree2);
 
-                //var t0 = performance.now();
-                preprocessTrees(index1, index2);
-                //var t1 = performance.now();
-                //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
+                // render tress (workers) -> once done, run comprison (workers)
+                trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                renderTree(trees[index1], name1, canvas1, scale1, name2);
+
+                trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                renderTree(trees[index2], name2, canvas2, scale2, name1);
+                settings.loadedCallback();
             }, 5);
 
         }else{
@@ -3946,12 +3959,20 @@ var TreeCompare = function(){
                 initialiseTree(trees[index1].root, settings.autoCollapse);
                 initialiseTree(trees[index2].root, settings.autoCollapse);
 
+                preprocessTrees(trees[index1], trees[index2]);
+
                 // render tress (workers) -> once done, run comprison (workers)
-                renderTree(trees[index1],name1, canvas1, scale1, name2);
-                renderTree(trees[index2],name2, canvas2, scale2, name1);
+                trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                renderTree(trees[index1], name1, canvas1, scale1, name2);
+
+                trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                renderTree(trees[index2], name2, canvas2, scale2, name1);
+                settings.loadedCallback();
 
                 //var t0 = performance.now();
-                //preprocessTrees(index1, index2);
+
                 //var t1 = performance.now();
                 //console.log("Call preprocessTrees took " + (t1 - t0) + " milliseconds.");
             }, 5);
@@ -3966,10 +3987,12 @@ var TreeCompare = function(){
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
         renderedTrees = [];
+        console.log(name);
         var index = findTreeIndex(trees, name);
         initializeRenderTreeCanvas(name, canvasId, scaleId);
         if (trees[index].hasOwnProperty("trees")){
             var firstTree = trees[index].trees[0];
+            var name = firstTree.name;
             firstTree.display = true;
 
             settings.loadingCallback();
@@ -4265,9 +4288,9 @@ var TreeCompare = function(){
                     setTimeout(function() {
                         var rerootedTree = reroot(tree, d);
                         if (isCompared){
-                            var index1 = findTreeIndex(tree.name);
-                            var index2 = findTreeIndex(comparedTree.name);
-                            preprocessTrees(index1, index2);
+                            var index1 = findTreeIndex(trees,tree.name);
+                            var index2 = findTreeIndex(trees,comparedTree.name);
+                            preprocessTrees(trees[index1], trees[index2]);
                             //preprocessTrees(index1, index2);
                             //console.log(trees[index1]);
                             settings.loadedCallback();
