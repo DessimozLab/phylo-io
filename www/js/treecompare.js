@@ -738,7 +738,7 @@ var TreeCompare = function(){
         var treeCollection = [];
         // the following is important to allow the support to load multiple trees at once
         // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
-        if (newicks.length > 1){
+        if (newicks.length > 1) {
 
             for(var i = 0; i < newicks.length; i++){
                 var sub_tree_name = "Tree " + i;
@@ -777,7 +777,7 @@ var TreeCompare = function(){
             };
             trees.push(fullTreeCollection);
             //TODO: this here needs to be changed: right now it only returns the last tree that is part of the fullTreeCollection, but does it matter????
-            return fullTree;
+            return fullTreeCollection.trees[0];
         } else {
             var tree = convertTree(newick);
             /*try {
@@ -3099,10 +3099,8 @@ var TreeCompare = function(){
 
         //get the trees by name
         var baseTree = trees[findTreeIndex(trees, name)];
-
         if (baseTree.hasOwnProperty("trees")){
             var tree = baseTree.trees[0];
-            console.log(tree);
             if (otherTreeName !== undefined) {
                 var otherTree = trees[findTreeIndex(trees, name)];
                 compareMode = false;
@@ -3123,7 +3121,6 @@ var TreeCompare = function(){
             //render various buttons and search bars and sliders
             renderZoomSlider(tree, canvasId);
             renderSizeControls(tree, canvasId);
-            renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
             renderSearchBar(tree, canvasId);
 
@@ -3968,12 +3965,9 @@ var TreeCompare = function(){
      /
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
-
         renderedTrees = [];
         var index = findTreeIndex(trees, name);
         initializeRenderTreeCanvas(name, canvasId, scaleId);
-        //console.log(trees[index]);
-
         if (trees[index].hasOwnProperty("trees")){
             var firstTree = trees[index].trees[0];
             firstTree.display = true;
@@ -3985,6 +3979,7 @@ var TreeCompare = function(){
                 firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
 
                 renderTree(firstTree,name,canvasId,scaleId);
+                renderDownloadButton(canvasId);
                 settings.loadedCallback();
             }, 2);
         } else{
