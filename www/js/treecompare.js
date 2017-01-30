@@ -747,7 +747,20 @@ var TreeCompare = function(){
     function addTree(newick, name, mode) {
 
         var num = trees.length;
-        var newicks = newick.split(";").slice(0, -1);
+
+        // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
+        if (newick.indexOf(";") !== -1){
+            var tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm,"").split(";");
+            if (tmpNewicks.length > 1){
+                var newicks = tmpNewicks.slice(0, -1);
+            }
+        }else{
+            var tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm,";").split(";");
+            if (tmpNewicks.length > 1){
+                var newicks = tmpNewicks.slice(0, -1);
+            }
+        }
+
         resetTreeVisStatus(trees);
         // the following is important to allow the support to load multiple trees at once
         // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
@@ -1173,13 +1186,20 @@ var TreeCompare = function(){
      ---------------*/
     function findBestCorrespondingTree(canvasId){
         var isCompared = true;
-        if (canvasId=="vis-container1"){ //ensures that the right tree is fixed
-            var tree = trees[trees.length-2];
-            var fixedTree = trees[trees.length-1];
+        var canvasLeft = "vis-container1";
+        var canvasRight = "vis-container2";
+
+        if (canvasId === canvasLeft){ //ensures that the right tree is fixed
+            var name = d3.select("#" + canvasLeft + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            var fixedName = d3.select("#" + canvasRight + " svg").attr("id");
+            var tree = trees[findTreeIndex(name)];
+            var fixedTree = trees[findTreeIndex(fixedName)];
 
         }else{
-            var tree = trees[trees.length-1];
-            var fixedTree = trees[trees.length-2];
+            var name = d3.select("#" + canvasRight + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            var fixedName = d3.select("#" + canvasLeft + " svg").attr("id");
+            var tree = trees[findTreeIndex(name)];
+            var fixedTree = trees[findTreeIndex(fixedName)];
 
         }
 
@@ -1218,13 +1238,20 @@ var TreeCompare = function(){
      ---------------*/
     function findBestCorrespondingLeafOrder(canvasId){
 
-        if (canvasId=="vis-container1"){ //ensures that the right tree is fixed based on canvasID
-            var tree = trees[trees.length-2]; // current tree
-            var fixedTree = trees[trees.length-1]; // other tree
+        var canvasLeft = "vis-container1";
+        var canvasRight = "vis-container2";
+
+        if (canvasId === canvasLeft){ //ensures that the right tree is fixed
+            var name = d3.select("#" + canvasLeft + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            var fixedName = d3.select("#" + canvasRight + " svg").attr("id");
+            var tree = trees[findTreeIndex(name)];
+            var fixedTree = trees[findTreeIndex(fixedName)];
 
         }else{
-            var tree = trees[trees.length-1]; // current tree
-            var fixedTree = trees[trees.length-2]; // other tree
+            var name = d3.select("#" + canvasRight + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            var fixedName = d3.select("#" + canvasLeft + " svg").attr("id");
+            var tree = trees[findTreeIndex(name)];
+            var fixedTree = trees[findTreeIndex(fixedName)];
 
         }
 
@@ -3255,9 +3282,9 @@ var TreeCompare = function(){
             //render various buttons and search bars and sliders
             renderZoomSlider(tree, canvasId);
             renderSizeControls(tree, canvasId);
-            renderMiddleButtonsCompareMode(canvasId);
             renderSearchBar(tree, canvasId);
             renderDownloadButton(canvasId);
+            renderMiddleButtonsCompareMode(canvasId);
 
         }else{
             renderedTrees.push(baseTree);
