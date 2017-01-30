@@ -782,6 +782,7 @@ var TreeCompare = function(){
                     multiple: true,
                     display: true,
                     part: i,
+                    last: (num+newicks.length-1),
                     data: {}
                 };
             } else {
@@ -791,6 +792,7 @@ var TreeCompare = function(){
                     mode: mode,
                     display: true,
                     part: i,
+                    last: (num+newicks.length-1),
                     data: {}
                 };
             }
@@ -3008,9 +3010,7 @@ var TreeCompare = function(){
 
         function actionLeft(old_name) {
             var index = findTreeIndex(old_name);
-            //console.log(d3.select("#" + canvasId + " svg").attr("id"));
-            //var sub_index = trees[index].part; .select("svg").attr("width")
-            var num_trees = trees.length;
+            var num_trees = trees[index].last;
             trees[index].display = false;
             if (index === 0){
                 var toggledTree = trees[num_trees-1];
@@ -3035,8 +3035,9 @@ var TreeCompare = function(){
         function actionRight(old_name) {
             var index = findTreeIndex(old_name);
             var sub_index = trees[index].part;
-            var num_trees = trees.length;
+            var num_trees = trees[index].last; // this is only working when view mode is active
             trees[index].display = false;
+            // main function to assure cycling when toggle action is called
             if (index === (num_trees-1)){
                 var toggledTree = trees[num_trees-sub_index-1];
             }else {
@@ -3060,7 +3061,6 @@ var TreeCompare = function(){
         var timeoutIdleft = 0;
         $("#" + canvasId + " #leftToggleButton").mousedown(function() {
             var old_name = d3.select("#" + canvasId + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            console.log(old_name);
             d3.select("svg").remove();
             actionLeft(old_name);
             timeoutIdleft = setInterval(actionLeft, 150);
