@@ -3080,7 +3080,7 @@ var TreeCompare = function(){
     }
 
 
-    function renderTreeToggleButtonsCompareMode(name, canvas, scale, nameOpposite, canvasOpposite, scaleOpposite){
+    function renderTreeToggleButtonsCompareMode(canvas, scale, canvasOpposite, scaleOpposite){
 
         $("#" + canvas).append('<div id="treeToggleButtons"></div>');
         $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
@@ -3151,11 +3151,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-                renderTree(toggledTree, new_name, canvas, scale, nameOpposite);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, nameOpposite, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
                 settings.loadedCallback();
             }, 5);
         }
@@ -3188,11 +3188,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-                renderTree(toggledTree, new_name, canvas, scale, nameOpposite);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, nameOpposite, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
                 settings.loadedCallback();
             }, 5);
         }
@@ -4033,16 +4033,16 @@ var TreeCompare = function(){
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
 
-            renderTreeToggleButtonsCompareMode(name1, canvas1, scale1, name2, canvas2, scale2);
-            renderTreeToggleButtonsCompareMode(name2, canvas2, scale2, name1, canvas1, scale1);
+            renderTreeToggleButtonsCompareMode(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleButtonsCompareMode(canvas2, scale2, canvas1, scale1);
 
         }else if (trees[index1].hasOwnProperty("multiple") && !trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtonsCompareMode(name1, canvas1, scale1, name2, canvas2, scale2);
+            renderTreeToggleButtonsCompareMode(canvas1, scale1, canvas2, scale2);
 
         }else if (!trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtonsCompareMode(name2, canvas2, scale2, name1, canvas1, scale1);
+            renderTreeToggleButtonsCompareMode(canvas2, scale2, canvas1, scale1);
 
         }
 
