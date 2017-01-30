@@ -547,8 +547,8 @@
                 try {
                     //$("#page-content-wrapper").empty();
                     $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
-                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined);
-                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined);
+                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined,"left");
+                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined,"right");
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
@@ -572,7 +572,7 @@
             } else if (mode === "view-btn") {
                 try {
                     //
-                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
+                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined,"single");
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
