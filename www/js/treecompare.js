@@ -3061,7 +3061,7 @@ var TreeCompare = function(){
         var timeoutIdleft = 0;
         $("#" + canvasId + " #leftToggleButton").mousedown(function() {
             var old_name = d3.select("#" + canvasId + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            d3.select("svg").remove();
+            d3.select("#" + canvasId + " svg").remove();
             actionLeft(old_name);
             timeoutIdleft = setInterval(actionLeft, 150);
         }).bind('mouseup mouseleave', function() {
@@ -3071,7 +3071,8 @@ var TreeCompare = function(){
         var timeoutIdRight = 0;
         $("#" + canvasId + " #rightToggleButton").mousedown(function() {
             var old_name = d3.select("#" + canvasId + " svg").attr("id");
-            d3.select("svg").remove();
+            console.log(old_name);
+            d3.select("#" + canvasId + " svg").remove();
             actionRight(old_name);
             timeoutIdRight = setInterval(actionRight, 150);
         }).bind('mouseup mouseleave', function() {
@@ -3862,11 +3863,9 @@ var TreeCompare = function(){
         initializeRenderTreeCanvas(name2, canvas2, scale2);
 
         // 4 cases to check if left and right have multiple trees
-        if (trees[index1].hasOwnProperty("trees") && trees[index2].hasOwnProperty("trees")){
-            var firstTree1 = trees[index1].trees[0];
-            var firstTree2 = trees[index2].trees[0];
-            firstTree1.display = true;
-            firstTree2.display = true;
+        if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
+            var firstTree1 = trees[index1];
+            var firstTree2 = trees[index2];
 
 
             settings.loadingCallback();
@@ -3887,6 +3886,10 @@ var TreeCompare = function(){
                 renderTree(firstTree2, name2, canvas2, scale2, name1);
                 settings.loadedCallback();
             }, 5);
+
+            renderTreeToggleButtons(name1, canvas1, scale1);
+            renderTreeToggleButtons(name2, canvas2, scale2);
+
         }else if (trees[index1].hasOwnProperty("trees") && !trees[index2].hasOwnProperty("trees")) {
             var firstTree1 = trees[index1].trees[0];
             var firstTree2 = trees[index2].trees[0];
