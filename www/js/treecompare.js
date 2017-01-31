@@ -3160,7 +3160,6 @@ var TreeCompare = function(){
             }
             toggledTree.display = true;
             var new_name = toggledTree.name;
-            console.log("toggledTree " + new_name);
 
             settings.loadingCallback();
             setTimeout(function() {
@@ -3197,7 +3196,6 @@ var TreeCompare = function(){
             }
             toggledTree.display = true;
             var new_name = toggledTree.name;
-            console.log("toggledTree " + new_name);
 
             settings.loadingCallback();
             setTimeout(function() {
@@ -3695,40 +3693,40 @@ var TreeCompare = function(){
      First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
      At the end of the function, each node from each tree will end up with a BCN and a similarity score
      */
-    function getVisibleBCNsUsingWorkers(index1, index2, recalculate) {
+    function getVisibleBCNsUsingWorkers(tree1, tree2, recalculate) {
 
-        var tree1 = trees[index1].root;
-        var tree2 = trees[index2].root;
+        var tree1Root = tree1.root;
+        var tree2Root = tree2.root;
 
         //console.log("Tree1 data at the beginning of the function");
-        //console.dir(trees[index1].data);
+        //console.dir(tree1.data);
 
         if (recalculate === undefined) {
             recalculate = true;
         }
 
-        var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
-        var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
+        var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1Root, tree2: tree2Root, recalculate: recalculate} });
+        var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2Root, tree2: tree1Root, recalculate: recalculate} });
 
-        $.when(worker1, worker2).done(function(tree1, tree2){
-            trees[index1].root = tree1;
-            trees[index2].root = tree2;
+        $.when(worker1, worker2).done(function(tree1Root, tree2Root){
+            tree1.root = tree1Root;
+            tree2.root = tree2Root;
 
-            var canvas1 = trees[index1].data.canvasId;
-            var canvas2 = trees[index2].data.canvasId;
-            var scale1 = trees[index1].data.scaleId.substr(1);
-            var scale2 = trees[index2].data.scaleId.substr(1);
-            var name1 = trees[index1].name;
-            var name2 = trees[index2].name;
+            var canvas1 = tree1.data.canvasId;
+            var canvas2 = tree2.data.canvasId;
+            var scale1 = tree1.data.scaleId.substr(1);
+            var scale2 = tree2.data.scaleId.substr(1);
+            var name1 = tree1.name;
+            var name2 = tree2.name;
 
-            trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
-            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+            tree1.data.clickEvent = getClickEventListenerNode(tree1, true, tree2);//Click event listener for nodes
+            tree1.data.clickEventLink = getClickEventListenerLink(tree1, true, tree2);//Click event listener for links. Assigns a function to the event.
             console.log(trees);
-            renderTree(trees[index1], name1, canvas1, scale1, name2);
+            renderTree(tree1, name1, canvas1, scale1, name2);
 
-            trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
-            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-            renderTree(trees[index2], name2, canvas2, scale2, name1);
+            tree2.data.clickEvent = getClickEventListenerNode(tree2, true, tree1);
+            tree2.data.clickEventLink = getClickEventListenerLink(tree2, true, tree1);
+            renderTree(tree2, name2, canvas2, scale2, name1);
 
 
             // When adding a new link (by expanding a node for instance)
@@ -3755,11 +3753,11 @@ var TreeCompare = function(){
             // To fix this bug, we need to reset all the numeric identifiers
             // Please note that the numeric identifiers are built by incrementing the
             // number of leaves in the tree.
-            postorderTraverse(trees[index1].root, function(d) {
+            postorderTraverse(tree1.root, function(d) {
                 d.id =null;
             });
 
-            postorderTraverse(trees[index2].root, function(d) {
+            postorderTraverse(tree2.root, function(d) {
                 d.id =null;
             });
 
@@ -3809,7 +3807,7 @@ var TreeCompare = function(){
 
         //var t0 = performance.now();
         getVisibleBCNs(tree1,tree2);
-        //getVisibleBCNsUsingWorkers(index1, index2);
+        //getVisibleBCNsUsingWorkers(tree1, tree2);
         //var t1 = performance.now();
         ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
     }
