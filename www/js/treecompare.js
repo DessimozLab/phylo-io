@@ -1772,8 +1772,7 @@ var TreeCompare = function(){
             })
             .style("fill", function(d) {
                 if (d.clickedHighlight || d.bcnhighlight) {
-                    //return d.clickedHighlight;
-                    return "green"; //changed from red, so that boxes look different when highlighted to when searched
+                    return "red"; //changed from red, so that boxes look different when highlighted to when searched
                 }
             })
             .attr("y", -settings.nodeSize + "px")
@@ -2360,8 +2359,6 @@ var TreeCompare = function(){
         // getSVGString (svgNode ) and svgString2Image( svgString, width, height, format, callback )
         function getSVGString( svgNode ) {
             svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-            var cssStyleText = getCSSStyles( svgNode );
-            appendCSS( cssStyleText, svgNode );
 
             var serializer = new XMLSerializer();
             var svgString = serializer.serializeToString(svgNode);
@@ -2369,61 +2366,6 @@ var TreeCompare = function(){
             svgString = svgString.replace(/NS\d+:href/g, 'xlink:href') // Safari NS namespace fix
 
             return svgString;
-
-            function getCSSStyles( parentElement ) {
-                var selectorTextArr = [];
-
-                // Add Parent element Id and Classes to the list
-                selectorTextArr.push( '#'+parentElement.id );
-                for (var c = 0; c < parentElement.classList.length; c++)
-                    if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
-                        selectorTextArr.push( '.'+parentElement.classList[c] );
-
-                // Add Children element Ids and Classes to the list
-                var nodes = parentElement.getElementsByTagName("*");
-                for (var i = 0; i < nodes.length; i++) {
-                    var id = nodes[i].id;
-                    if ( !contains('#'+id, selectorTextArr) )
-                        selectorTextArr.push( '#'+id );
-
-                    var classes = nodes[i].classList;
-                    for (var c = 0; c < classes.length; c++)
-                        if ( !contains('.'+classes[c], selectorTextArr) )
-                            selectorTextArr.push( '.'+classes[c] );
-                }
-
-                // Extract CSS Rules
-                var extractedCSSText = "";
-                for (var i = 0; i < document.styleSheets.length; i++) {
-                    var s = document.styleSheets[i];
-
-                    try {
-                        if(!s.cssRules) continue;
-                    } catch( e ) {
-                        if(e.name !== 'SecurityError') throw e; // for Firefox
-                        continue;
-                    }
-
-                    var cssRules = s.cssRules;
-                    for (var r = 0; r < cssRules.length; r++) {
-                        if ( contains( cssRules[r].selectorText, selectorTextArr ) )
-                            extractedCSSText += cssRules[r].cssText;
-                    }
-                }
-                return extractedCSSText
-
-                function contains(str,arr) {
-                    return arr.indexOf( str ) === -1 ? false : true;
-                }
-            }
-
-            function appendCSS( cssText, element ) {
-                var styleElement = document.createElement("style");
-                styleElement.setAttribute("type","text/css");
-                styleElement.innerHTML = cssText;
-                var refNode = element.hasChildNodes() ? element.children[0] : null;
-                element.insertBefore( styleElement, refNode );
-            }
         }
 
         function svgString2Image( svgString, width, height, format, callback ) {
@@ -3451,13 +3393,17 @@ var TreeCompare = function(){
      First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
      At the end of the function, each node from each tree will end up with a BCN and a similarity score
      */
-    function getVisibleBCNsUsingWorkers(index1, index2, recalculate) {
+    function getVisibleBCNsUsingWorkers(index1, index2, recalculate, highlight) {
 
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
         if (recalculate === undefined) {
             recalculate = true;
+        }
+
+        if (highlight === undefined) {
+            highlight = false;
         }
 
         var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
@@ -3467,56 +3413,58 @@ var TreeCompare = function(){
             trees[index1].root = tree1;
             trees[index2].root = tree2;
 
-            var canvas1 = trees[index1].data.canvasId;
-            var canvas2 = trees[index2].data.canvasId;
-            var scale1 = trees[index1].data.scaleId.substr(1);
-            var scale2 = trees[index2].data.scaleId.substr(1);
-            var name1 = trees[index1].name;
-            var name2 = trees[index2].name;
+            if (!highlight) {
 
-            trees[index1].data.clickEvent = getClickEventListenerNode(index1, true, index2);//Click event listener for nodes
-            trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
-            renderTree(name1, canvas1, scale1, name2);
+                var canvas1 = trees[index1].data.canvasId;
+                var canvas2 = trees[index2].data.canvasId;
+                var scale1 = trees[index1].data.scaleId.substr(1);
+                var scale2 = trees[index2].data.scaleId.substr(1);
+                var name1 = trees[index1].name;
+                var name2 = trees[index2].name;
 
-            trees[index2].data.clickEvent = getClickEventListenerNode(index2, true, index1);
-            trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-            renderTree(name2, canvas2, scale2, name1);
+                trees[index1].data.clickEvent = getClickEventListenerNode(index1, true, index2);//Click event listener for nodes
+                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                renderTree(name1, canvas1, scale1, name2);
 
+                trees[index2].data.clickEvent = getClickEventListenerNode(index2, true, index1);
+                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                renderTree(name2, canvas2, scale2, name1);
 
-            // When adding a new link (by expanding a node for instance)
-            // the links array gets updated, but the enter function does not
-            // return the right selection
-            // (acts as if nothing was added at all)
-            // Thus the tree looks clumsy
-            // Please note that in case "Collapse" followed by a "Expand"
-            // this issue does not occur...
-            // And the bug is specific to the new implementation
-            // using workers
+                // When adding a new link (by expanding a node for instance)
+                // the links array gets updated, but the enter function does not
+                // return the right selection
+                // (acts as if nothing was added at all)
+                // Thus the tree looks clumsy
+                // Please note that in case "Collapse" followed by a "Expand"
+                // this issue does not occur...
+                // And the bug is specific to the new implementation
+                // using workers
 
-            // The reason is the following:
-            // the new nodes are added at the beginning of the list and are assigned
-            // already existing numeric IDs...
-            // Example:
-            // New nodes:
-            // TARGET ID: node_8657 TARGET NUMERIC ID: 739
-            // TARGET ID: node_8994 TARGET NUMERIC ID: 738
-            // 739 and 738 are already assigned to 2 existing nodes:
-            // TARGET ID: node_8354 TARGET NUMERIC ID: 738
-            // TARGET ID: node_7193 TARGET NUMERIC ID: 739
-            //
-            // To fix this bug, we need to reset all the numeric identifiers
-            // Please note that the numeric identifiers are built by incrementing the
-            // number of leaves in the tree.
-            postorderTraverse(trees[index1].root, function(d) {
-                d.id =null;
-            });
+                // The reason is the following:
+                // the new nodes are added at the beginning of the list and are assigned
+                // already existing numeric IDs...
+                // Example:
+                // New nodes:
+                // TARGET ID: node_8657 TARGET NUMERIC ID: 739
+                // TARGET ID: node_8994 TARGET NUMERIC ID: 738
+                // 739 and 738 are already assigned to 2 existing nodes:
+                // TARGET ID: node_8354 TARGET NUMERIC ID: 738
+                // TARGET ID: node_7193 TARGET NUMERIC ID: 739
+                //
+                // To fix this bug, we need to reset all the numeric identifiers
+                // Please note that the numeric identifiers are built by incrementing the
+                // number of leaves in the tree.
+                postorderTraverse(trees[index1].root, function (d) {
+                    d.id = null;
+                });
 
-            postorderTraverse(trees[index2].root, function(d) {
-                d.id =null;
-            });
+                postorderTraverse(trees[index2].root, function (d) {
+                    d.id = null;
+                });
 
-            compareMode = true;
-            settings.loadedCallback();
+                compareMode = true;
+                settings.loadedCallback();
+            }
         });
     }
 
@@ -3561,6 +3509,7 @@ var TreeCompare = function(){
 
         //var t0 = performance.now();
         getVisibleBCNsUsingWorkers(index1, index2);
+
         //var t1 = performance.now();
         ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
     }
@@ -4127,9 +4076,6 @@ var TreeCompare = function(){
 
         return linkClick
     }
-
-
-
     /*
      get relevant event listener for clicking on a node depending on what mode is selected
      */
@@ -4249,6 +4195,7 @@ var TreeCompare = function(){
             function highlight(d) {
                 var bcnColors = d3.scale.category20();
                 if (isCompared) {
+
                     function colorLinkNodeOver(n, hl) {
                         if (n.children) {
                             for (var i = 0; i < n.children.length; i++) {
@@ -4293,18 +4240,16 @@ var TreeCompare = function(){
                     }
 
                     if (!_.contains(highlightedNodes, d)) {
+
                         clearHighlight(tree.root);
                         if (highlightedNodes.length < maxHighlightedNodes) {
                             //d.clickedHighlight = bcnColors(highlightedNodes.length);
                             d.clickedHighlight = "red";
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
+
                             highlightedNodes.push(d);
                             var leaves = d.leaves;
-                            var otherTree = comparedTree.root;
                             var otherTreeData = comparedTree.data;
-                            var otherTreeLeaves = otherTreeData.leaves;
-                            //clearHighlight(tree.root);
-                            //clearHighlight(otherTree);
 
                             for (var i = 0; i < leaves.length; i++) {
                                 if(leaves[i].correspondingLeaf !== undefined) {
@@ -4312,15 +4257,25 @@ var TreeCompare = function(){
                                 }
                             }
                             expandPathToNode(d[currentBCN]);
+
                             settings.loadingCallback();
                             setTimeout(function() {
-                                getVisibleBCNsUsingWorkers(treeIndex, comparedTreeIndex, false);
+                                getVisibleBCNsUsingWorkers(treeIndex, comparedTreeIndex, false, true);
 
+                                currentName = d.name
+                                postorderTraverse(otherTreeData.root, function(d) {
+                                    if (d.name == currentName) {
+                                        d.bcnhighlight = "red";
+                                    }
+                                });
                                 settings.loadedCallback();
                                 colorLinkNodeOver(d, true);
+
                                 update(d, tree.data);
                                 update(otherTreeData.root, otherTreeData);
+
                                 if (settings.moveOnClick) {
+
                                     var currentScale = otherTreeData.zoomBehaviour.scale();
 
                                     var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
@@ -4584,7 +4539,6 @@ var TreeCompare = function(){
             });
         }
         return nodeClick;
-
     }
 
     //return all the externalised functions
