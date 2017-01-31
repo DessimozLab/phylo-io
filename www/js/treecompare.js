@@ -812,8 +812,6 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
-        //TODO: this here needs to be changed: right now it only returns the last tree that is part of the fullTreeCollection, but does it matter????
-        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -3045,7 +3043,6 @@ var TreeCompare = function(){
             }
             toggledTree.display = true;
             var new_name = toggledTree.name;
-            console.log("toggledTree " + new_name);
             settings.loadingCallback();
             setTimeout(function() {
 
@@ -3071,7 +3068,6 @@ var TreeCompare = function(){
             }
             toggledTree.display = true;
             var new_name = toggledTree.name;
-            console.log("toggledTree " + new_name);
             settings.loadingCallback();
             setTimeout(function() {
 
@@ -3097,7 +3093,6 @@ var TreeCompare = function(){
         var timeoutIdRight = 0;
         $("#" + canvasId + " #rightToggleButton").mousedown(function() {
             var oldName = d3.select("#" + canvasId + " svg").attr("id");
-            console.log(oldName);
             d3.select("#" + canvasId + " svg").remove();
             actionRight(oldName);
             timeoutIdRight = setInterval(actionRight, 150);
@@ -3228,8 +3223,6 @@ var TreeCompare = function(){
         $("#" + canvas + " #leftToggleButton").mousedown(function() {
             var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
             var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-            console.log(oldName);
-            console.log(oppositeTreeName);
             d3.select("#" + canvas + " svg").remove();
             d3.select("#" + canvasOpposite + " svg").remove();
             actionLeft(oldName, oppositeTreeName);
@@ -3242,8 +3235,6 @@ var TreeCompare = function(){
         $("#" + canvas + " #rightToggleButton").mousedown(function() {
             var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
             var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-            console.log(oldName);
-            console.log(oppositeTreeName);
             d3.select("#" + canvas + " svg").remove();
             d3.select("#" + canvasOpposite + " svg").remove();
             actionRight(oldName, oppositeTreeName);
@@ -4082,7 +4073,6 @@ var TreeCompare = function(){
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
         renderedTrees = [];
-        console.log(name);
         var index = findTreeIndex(name);
         initializeRenderTreeCanvas(name, canvasId, scaleId);
         if (trees[index].hasOwnProperty("multiple")){
