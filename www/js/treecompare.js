@@ -4035,25 +4035,15 @@ var TreeCompare = function(){
                             var index1 = findTreeIndex(tree.name);
                             var index2 = findTreeIndex(comparedTree.name);
                             preprocessTrees(index1, index2);
-                            //preprocessTrees(index1, index2);
-                            //console.log(trees[index1]);
-                            settings.loadedCallback();
+                            
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
-                            //console.log(tree);
-                            //console.log(comparedTree);
                         } else {
-                            settings.loadedCallback();
                             update(tree.root, rerootedTree.data);
                         }
                     }, 2);
-
                     removeTooltips(svg);
                     manualReroot = true;
-                    //if (!manualReroot){
-                    //    manualReroot = true;
-                    //}
-
                 });
 
             $(document).click(function(event) {
