@@ -37,7 +37,7 @@ var TreeCompare = function(){
     var paddingVertical = 50;
     var paddingHorizontal = 100;
 
-    var scaleTextColor = "white";
+    var scaleTextColor = "black";
 
     var triangleHeightDivisor = 4;
 
@@ -2929,20 +2929,19 @@ var TreeCompare = function(){
 
         //render the scale if we have somewhere to put it
         if (scaleId) {
-            d3.select(scaleId).append("svg")
-                .attr("width", $(scaleId).width())
-                .attr("height", $(scaleId).height())
-                .append("g");
-            //draw scale line
-            d3.select(scaleId + " svg").append("path")
+            d3.select("#" + canvasId + " svg")
+                .append("g")
+                .attr("transform", "translate(100,500)")
+                .append("path")
                 .attr("d", function() {
-                    var width = parseFloat(d3.select(scaleId + " svg").style("width"));
+                    var width = parseFloat(d3.select("#" + canvasId + " svg").style("width"));
                     scaleLineWidth = width * 0.75;
                     return "M" + scaleLinePadding + ",20L" + (scaleLineWidth + scaleLinePadding) + ",20"
                 })
                 .attr("stroke-width", 1)
                 .attr("stroke", settings.scaleColor);
-            var scaleText = d3.select(scaleId + " svg").append("text")
+             var scaleText = d3.select("#" + canvasId + " svg").append("text")
+                 .attr("transform", "translate(100,500)")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
                 .attr("y", 35)
                 .attr("font-family", "sans-serif")
@@ -4035,7 +4034,7 @@ var TreeCompare = function(){
                             var index1 = findTreeIndex(tree.name);
                             var index2 = findTreeIndex(comparedTree.name);
                             preprocessTrees(index1, index2);
-                            
+
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
                         } else {

@@ -280,7 +280,7 @@
         var gistID = $(location).attr('hash').split("#"); //get gist id from url
 
         var treecomp = TreeCompare().init({
-            scaleColor: "white",
+            scaleColor: "black",
             loadingCallback: function() {
                 spinner.spin(spinnerTarget);
             },
@@ -383,7 +383,7 @@
             var tree2 = treecomp.addTreeGistURL(gistID[2]);
 
             $("#page-content-wrapper").empty();
-            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
             treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
             $("#colorScale").html("<b>Similarity to most common node:</b>");
             treecomp.renderColorScale("colorScale");
@@ -544,7 +544,7 @@
             if (mode === "compare-btn") {
                 try {
                     //$("#page-content-wrapper").empty();
-                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
                     var tree1 = treecomp.addTree($("#newickIn1").val(),undefined);
                     var tree2 = treecomp.addTree($("#newickIn2").val(),undefined);
                     treecomp.changeSettings({
@@ -577,7 +577,7 @@
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
                     //$("#page-content-wrapper").empty();
-                    $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
+                    $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div>');
                     treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
                     $("#colorScale").empty();
                 } catch (e) {
@@ -642,10 +642,12 @@
 
             // Add right tree into left tree's svg
             var g = document.createElement('g');
-            var lastElementIndex = svg2.childNodes.length - 1;
+            var lastElementIndex = svg2.childNodes.length - 3;
+            var scaleTextIndex = svg2.childNodes.length - 2;
             if (lastElementIndex > -1) {
                 g.setAttribute('transform', 'translate(' + l_w + ',0)');
                 g.appendChild(svg2.childNodes[lastElementIndex]);
+                g.appendChild(svg2.childNodes[scaleTextIndex]);
                 svg1.appendChild(g);
             }
 
