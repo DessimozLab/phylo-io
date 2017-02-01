@@ -2437,16 +2437,15 @@ var TreeCompare = function(){
      ---------------*/
     function renderTree(name, canvasId, scaleId, otherTreeName) {
 
+        var index1 = findTreeIndex(name);
+        var index2 = findTreeIndex(otherTreeName);
 
         //get the trees by name
-        var baseTree = trees[findTreeIndex(name)];
-
+        var baseTree = trees[index1];
         if (otherTreeName !== undefined) {
-            var otherTree = trees[findTreeIndex(name)];
+            var otherTree = trees[index2];
             compareMode = false;
         }
-        renderedTrees.push(baseTree);
-
         //clear the canvas of any previous visualisation
         $("#" + canvasId).empty();
         $("#" + scaleId).empty();
@@ -2879,7 +2878,7 @@ var TreeCompare = function(){
                                 //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
                                 settings.loadingCallback();
                                 setTimeout(function() {
-                                    getVisibleBCNs(baseTree.root, otherTree.root, false);
+                                    getVisibleBCNsUsingWorkers(index1, index2, false, false);
                                     settings.loadedCallback();
                                     update(baseTree.root, baseTree.data);
                                 }, 2);
@@ -3290,10 +3289,11 @@ var TreeCompare = function(){
         if (renderedTrees.length === 2) {
             settings.loadingCallback();
             setTimeout(function() {
-                getVisibleBCNs(renderedTrees[0].root, renderedTrees[1].root, false);
+                // renderedTrees and trees index do not
+                // necessarily correspond
+                getVisibleBCNsUsingWorkers(findTreeIndex(renderedTrees[0].name), findTreeIndex(renderedTrees[1].name));
                 update(renderedTrees[0].root, renderedTrees[0].data);
                 update(renderedTrees[1].root, renderedTrees[1].data);
-                settings.loadedCallback();
             }, 2);
         } else {
             update(renderedTrees[0].root, renderedTrees[0].data);
@@ -3506,8 +3506,8 @@ var TreeCompare = function(){
         createDeepLeafList(tree1);
         createDeepLeafList(tree2);
 
-        //var t0 = performance.now();
-        getVisibleBCNsUsingWorkers(index1, index2);
+        getVisibleBCNsUsingWorkers(index1, index2);//var t0 = performance.now();
+
 
         //var t1 = performance.now();
         ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
@@ -3719,6 +3719,9 @@ var TreeCompare = function(){
             renderTree(name1, canvas1, scale1, name2);
             renderTree(name2, canvas2, scale2, name1);
 
+            renderedTrees.push(trees[index1]);
+            renderedTrees.push(trees[index2]);
+
             //var t0 = performance.now();
             preprocessTrees(index1, index2);
             //var t1 = performance.now();
@@ -3756,7 +3759,10 @@ var TreeCompare = function(){
             }
             trees[index].data.clickEvent = getClickEventListenerNode(index, false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
+
             renderTree(name, canvasId, scaleId);
+            renderedTrees.push(trees[index]);
+
             settings.loadedCallback();
         }, 2);
 
