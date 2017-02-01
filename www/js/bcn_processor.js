@@ -6,6 +6,11 @@
  */
 importScripts('underscore.min.js');
 
+/*
+ Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
+ if recalculate==false, doesn't calculate for a node if it aleady has a value
+ Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
+ */
 function wrapGetAllBCNs(tree1, tree2, recalculate) {
 
     function getAllBCNs(d, t) {

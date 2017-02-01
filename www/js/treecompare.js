@@ -3345,45 +3345,6 @@ var TreeCompare = function(){
     }
 
     /*
-     Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
-     if recalculate==false, doesn't calculate for a node if it aleady has a value
-     Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
-     */
-    function getVisibleBCNs(tree1, tree2, recalculate) {
-
-        if (recalculate === undefined) {
-            recalculate = true;
-        }
-
-        function getAllBCNs(d, t) {
-            var children = d.children ? d.children : [];
-            //var children = getChildren(d);
-            if (children.length > 0) {
-                for (var a = 0; a < children.length; a++) {
-                    getAllBCNs(children[a], t);
-                }
-                //var t0 = performance.now();
-                if (recalculate || !d.elementBCN) {
-                    BCN(d, t);
-                }
-                //var t1 = performance.now();
-                //console.log("Call getVisibleBCNs:BCN if children " + (t1 - t0) + " milliseconds.");
-                return;
-            } else {
-                if (recalculate || !d.elementBCN) {
-                    BCN(d, t);
-                }
-                return;
-            }
-        }
-        //var t0 = performance.now();
-        getAllBCNs(tree1, tree2);
-        getAllBCNs(tree2, tree1);
-        //var t1 = performance.now();
-        //console.log("Call getVisibleBCNs:getAllBCNs took " + (t1 - t0) + " milliseconds.");
-    }
-
-    /*
      Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
      if recalculate==false, doesn't calculate for a node if it already has a value
@@ -4131,6 +4092,7 @@ var TreeCompare = function(){
                                 });
                             }
                             postorderTraverse(d, function(e) {
+                                    // Use web workers?
                                     BCN(e, comparedTree.root);
                                 }, false);
                         }
@@ -4168,6 +4130,7 @@ var TreeCompare = function(){
                                         e.clickedParentHighlight = true;
                                     });
                                 }
+                                // Web workers instead?
                                 BCN(e, comparedTree.root);
                             }
                         });
