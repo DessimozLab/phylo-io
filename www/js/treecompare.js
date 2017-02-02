@@ -853,12 +853,12 @@ var TreeCompare = function(){
             .text("0")
             .attr("x", 0)
             .attr("y", height + 20)
-            .attr("fill", settings.scaleColor);
+            .attr("fill", "white");
         svg.append("text")
             .text("1")
             .attr("x", width - 10)
             .attr("y", height + 20)
-            .attr("fill", settings.scaleColor)
+            .attr("fill", "white")
 
     }
 
@@ -2928,10 +2928,6 @@ var TreeCompare = function(){
 
         //render the scale if we have somewhere to put it
         if (scaleId) {
-
-            var width = parseFloat(d3.select("#" + canvasId + " svg").style("width"));
-            var height = parseFloat(d3.select("#" + canvasId + " svg").style("height"));
-
             var translatewidth = 100;
             var translateheight = height - 100;
 
@@ -3568,32 +3564,6 @@ var TreeCompare = function(){
      - Root has leaves: A, B, C and D (terminal leaves)
      - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
      */
-    /*function createDeepLeafList(v) {
-        var deepLeafList = [];
-        var counter = 0;
-
-        function buildDeepLeafList(d) {
-            var children = getChildren(d);
-            if (children.length > 0) {
-                if (counter > 0) {
-                    deepLeafList.push(_.sortBy(_.map(d.leaves, namesOnly), function(str) {
-                        return str
-                    }).toString());
-                }
-                counter += 1;
-                for (var i = 0; i < children.length; i++) {
-                    buildDeepLeafList(children[i]);
-                }
-                return;
-            } else {
-                deepLeafList.push(d.name);
-                return;
-            }
-        }
-        buildDeepLeafList(v);
-        return deepLeafList;
-
-    }*/
     function createDeepLeafList(_tree) {
 
         postorderTraverse(_tree, function(d){
