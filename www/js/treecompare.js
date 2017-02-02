@@ -959,7 +959,10 @@ var TreeCompare = function(){
     /*
     returns longest length from root for visible nodes only (d)
      */
-    function getMaxLengthVisible(root) {
+    // THIS FUNCTION BREAKS THE DISPLAY OF THE TREE (SHRUNK)
+    // REPLACED BY A OLD VERSION:
+    // https://github.com/DessimozLab/phylo-io/blob/8c7596b04c3b602b7da915f0d62675f684fd3744/www/js/treecompare.js
+    /*function getMaxLengthVisible(root) {
         var max = 0;
         function getMax_internal(d,distfromroot) {
             distfromroot+=d.length;
@@ -974,7 +977,26 @@ var TreeCompare = function(){
         }
         getMax_internal(root,0);
         return max;
+    }*/
+
+
+    function getMaxLengthVisible(root) {
+        var max = 0;
+
+        function getMax_internal(d, max) {
+            if (d.children) {
+                var children = d.children;
+                for (var i = 0; i < children.length; i++) {
+                    max = Math.max(getMax_internal(children[i], max), max)
+                }
+                return max;
+            } else {
+                return (d.length ? Math.max(d.length, max) : max)
+            }
+        }
+        return getMax_internal(root, max);
     }
+
 
 
     /*
@@ -1608,6 +1630,7 @@ var TreeCompare = function(){
 
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
+
             if (settings.useLengths) { //setting selected by user
                 d.y = getLength(d) * (lengthMult / maxLength); //adjust position to screen size
                 d.baseY = d.y;
@@ -2028,22 +2051,21 @@ var TreeCompare = function(){
                     }
                 })
                 .attr("d", function(d) {
+
                     var d = d.source;
+                    var output = "";
                     if (source === treeData.root) {
 
                         if (d.parent) { //draws the paths between nodes starting at root node
                             var output = "M" + d.parent.y + "," + d.parent.x + "L" + d.parent.y + "," + d.parent.x + "L" + d.parent.y + "," + d.parent.x;
-                            return output;
                         } else { //here when reroot is selected....
                             var output = "M" + source.y + "," + source.x + "L" + source.y + "," + source.x + "L" + source.y + "," + source.x;
-                            return output;
                         }
                     } else {
 
                         var output = "M" + source.y + "," + source.x + "L" + source.y + "," + source.x + "L" + source.y + "," + source.x;
-                        return output;
                     }
-
+                    return output;
                 })
                 .attr("id", function(d) { //adds source.id of node
                     return d.source.ID+':'+ d.target.ID;
