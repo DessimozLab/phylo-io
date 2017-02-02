@@ -2928,19 +2928,25 @@ var TreeCompare = function(){
 
         //render the scale if we have somewhere to put it
         if (scaleId) {
+
+            var width = parseFloat(d3.select("#" + canvasId + " svg").style("width"));
+            var height = parseFloat(d3.select("#" + canvasId + " svg").style("height"));
+
+            var translatewidth = 100;
+            var translateheight = height - 100;
+
             d3.select("#" + canvasId + " svg")
                 .append("g")
-                .attr("transform", "translate(100,500)")
+                .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .append("path")
                 .attr("d", function() {
-                    var width = parseFloat(d3.select("#" + canvasId + " svg").style("width"));
                     scaleLineWidth = width * 0.75;
                     return "M" + scaleLinePadding + ",20L" + (scaleLineWidth + scaleLinePadding) + ",20"
                 })
                 .attr("stroke-width", 1)
                 .attr("stroke", settings.scaleColor);
              var scaleText = d3.select("#" + canvasId + " svg").append("text")
-                 .attr("transform", "translate(100,500)")
+                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
                 .attr("y", 35)
                 .attr("font-family", "sans-serif")
@@ -4092,7 +4098,6 @@ var TreeCompare = function(){
                                 });
                             }
                             postorderTraverse(d, function(e) {
-                                    // Use web workers?
                                     BCN(e, comparedTree.root);
                                 }, false);
                         }
@@ -4130,7 +4135,6 @@ var TreeCompare = function(){
                                         e.clickedParentHighlight = true;
                                     });
                                 }
-                                // Web workers instead?
                                 BCN(e, comparedTree.root);
                             }
                         });
