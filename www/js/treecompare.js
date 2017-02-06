@@ -3806,8 +3806,8 @@ var TreeCompare = function(){
         createDeepLeafList(tree2);
 
         //var t0 = performance.now();
-        getVisibleBCNs(tree1,tree2);
-        //getVisibleBCNsUsingWorkers(tree1, tree2);
+        //getVisibleBCNs(tree1,tree2);
+        getVisibleBCNsUsingWorkers(tree1, tree2);
         //var t1 = performance.now();
         ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
     }
@@ -4033,6 +4033,7 @@ var TreeCompare = function(){
             initialiseTree(firstTree1.root, settings.autoCollapse);
             initialiseTree(firstTree2.root, settings.autoCollapse);
 
+            // function where actual comparison is done
             preprocessTrees(firstTree1, firstTree2);
 
             // render tress (workers) -> once done, run comprison (workers)
