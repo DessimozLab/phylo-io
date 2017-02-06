@@ -383,7 +383,8 @@
             var tree2 = treecomp.addTreeGistURL(gistID[2]);
 
             $("#page-content-wrapper").empty();
-            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
+
+            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
             treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
             $("#colorScale").html("<b>Similarity to most common node:</b>");
             treecomp.renderColorScale("colorScale");
@@ -544,9 +545,9 @@
             if (mode === "compare-btn") {
                 try {
                     //$("#page-content-wrapper").empty();
-                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
-                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined);
-                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined);
+                    $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div><div class="vis-scale-2" id="vis-scale1"></div><div class="vis-scale-2" id="vis-scale2"></div>');
+                    var tree1 = treecomp.addTree($("#newickIn1").val(),undefined,"left");
+                    var tree2 = treecomp.addTree($("#newickIn2").val(),undefined,"right");
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
@@ -570,7 +571,7 @@
             } else if (mode === "view-btn") {
                 try {
                     //
-                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
+                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined,"single");
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
