@@ -132,14 +132,6 @@ var TreeCompare = function(){
         return output;
     }
 
-    function findDisplayedTree() {
-        for (var i = 0; i < trees.length; i++){
-            if (trees[i].display === true){
-                return trees[i].name;
-            }
-        }
-    }
-
     /*
      external function for changing settings, any rendered trees are updated
      */
@@ -3125,23 +3117,21 @@ var TreeCompare = function(){
             toggledTree.display = true;
             var new_name = toggledTree.name;
 
+            initialiseTree(toggledTree.root, settings.autoCollapse);
+            initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+            // render tress (workers) -> once done, run comprison (workers)
+            toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
+            toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
+            renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+
+            oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+            oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+            renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+
             settings.loadingCallback();
             setTimeout(function() {
-
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                initialiseTree(oppositeTree.root, settings.autoCollapse);
-
                 preprocessTrees(toggledTree, oppositeTree);
-
-                // render tress (workers) -> once done, run comprison (workers)
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
-
-                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
-                settings.loadedCallback();
             }, 5);
         }
 
@@ -3161,23 +3151,21 @@ var TreeCompare = function(){
             toggledTree.display = true;
             var new_name = toggledTree.name;
 
+            initialiseTree(toggledTree.root, settings.autoCollapse);
+            initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+            // render tress (workers) -> once done, run comprison (workers)
+            toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
+            toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
+            renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+
+            oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+            oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+            renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+
             settings.loadingCallback();
             setTimeout(function() {
-
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                initialiseTree(oppositeTree.root, settings.autoCollapse);
-
                 preprocessTrees(toggledTree, oppositeTree);
-
-                // render tress (workers) -> once done, run comprison (workers)
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
-
-                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
-                settings.loadedCallback();
             }, 5);
         }
 
@@ -3321,20 +3309,21 @@ var TreeCompare = function(){
 
         //render the scale if we have somewhere to put it
         if (scaleId) {
-            d3.select(scaleId).append("svg")
-                .attr("width", $(scaleId).width())
-                .attr("height", $(scaleId).height())
-                .append("g");
-            //draw scale line
-            d3.select(scaleId + " svg").append("path")
+            var translatewidth = 100;
+            var translateheight = height - 100;
+
+            d3.select("#" + canvasId + " svg")
+                .append("g")
+                .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
+                .append("path")
                 .attr("d", function() {
-                    var width = parseFloat(d3.select(scaleId + " svg").style("width"));
-                    scaleLineWidth = width * 0.75;
+                    scaleLineWidth = width * 0.25;
                     return "M" + scaleLinePadding + ",20L" + (scaleLineWidth + scaleLinePadding) + ",20"
                 })
                 .attr("stroke-width", 1)
                 .attr("stroke", settings.scaleColor);
-            var scaleText = d3.select(scaleId + " svg").append("text")
+            var scaleText = d3.select("#" + canvasId + " svg").append("text")
+                .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
                 .attr("y", 35)
                 .attr("font-family", "sans-serif")
@@ -3612,6 +3601,45 @@ var TreeCompare = function(){
     }
 
     /*
+     Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
+     if recalculate==false, doesn't calculate for a node if it aleady has a value
+     Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
+     */
+    function getVisibleBCNs(tree1, tree2, recalculate) {
+
+        if (recalculate === undefined) {
+            recalculate = true;
+        }
+
+        function getAllBCNs(d, t) {
+            var children = d.children ? d.children : [];
+            //var children = getChildren(d);
+            if (children.length > 0) {
+                for (var a = 0; a < children.length; a++) {
+                    getAllBCNs(children[a], t);
+                }
+                //var t0 = performance.now();
+                if (recalculate || !d.elementBCN) {
+                    BCN(d, t);
+                }
+                //var t1 = performance.now();
+                //console.log("Call getVisibleBCNs:BCN if children " + (t1 - t0) + " milliseconds.");
+                return;
+            } else {
+                if (recalculate || !d.elementBCN) {
+                    BCN(d, t);
+                }
+                return;
+            }
+        }
+        //var t0 = performance.now();
+        getAllBCNs(tree1, tree2);
+        getAllBCNs(tree2, tree1);
+        //var t1 = performance.now();
+        //console.log("Call getVisibleBCNs:getAllBCNs took " + (t1 - t0) + " milliseconds.");
+    }
+
+    /*
      Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
      if recalculate==false, doesn't calculate for a node if it already has a value
@@ -3620,11 +3648,10 @@ var TreeCompare = function(){
      First compares all nodes of tree1 to tree2 and then all nodes of tree2 to tree1
      At the end of the function, each node from each tree will end up with a BCN and a similarity score
      */
-    function getVisibleBCNsUsingWorkers(tree1, tree2, recalculate, highlight) {
+    function getVisibleBCNsUsingWorkers(index1, index2, recalculate, highlight) {
 
-        var tree1Root = tree1.root;
-        var tree2Root = tree2.root;
-        console.log(tree1Root)
+        var tree1 = trees[index1].root;
+        var tree2 = trees[index2].root;
 
         if (recalculate === undefined) {
             recalculate = true;
@@ -3634,28 +3661,36 @@ var TreeCompare = function(){
             highlight = false;
         }
 
-        var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1Root, tree2: tree2Root, recalculate: recalculate} });
-        var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2Root, tree2: tree1Root, recalculate: recalculate} });
-        $.when(worker1, worker2).done(function(tree1Root, tree2Root){
-            tree1.root = tree1Root;
-            tree2.root = tree2Root;
+
+        var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
+        var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
+
+        $.when(worker1, worker2).done(function(tree1, tree2){
+            trees[index1].root = tree1;
+            trees[index2].root = tree2;
             if (!highlight) {
-                var canvas1 = tree1.data.canvasId;
-                var canvas2 = tree2.data.canvasId;
-                var scale1 = tree1.data.scaleId.substr(1);
-                var scale2 = tree2.data.scaleId.substr(1);
-                var name1 = tree1.name;
-                var name2 = tree2.name;
 
-                tree1.data.clickEvent = getClickEventListenerNode(tree1, true, tree2);//Click event listener for nodes
-                tree1.data.clickEventLink = getClickEventListenerLink(tree1, true, tree2);//Click event listener for links. Assigns a function to the event.
-                console.log(trees);
-                renderTree(tree1, name1, canvas1, scale1, name2);
+                //update(trees[index1].root,trees[index1].data);
+                //update(trees[index2].root,trees[index2].data);
 
-                tree2.data.clickEvent = getClickEventListenerNode(tree2, true, tree1);
-                tree2.data.clickEventLink = getClickEventListenerLink(tree2, true, tree1);
-                renderTree(tree2, name2, canvas2, scale2, name1);
 
+                var canvas1 = trees[index1].data.canvasId;
+                var canvas2 = trees[index2].data.canvasId;
+                var scale1 = trees[index1].data.scaleId.substr(1);
+                var scale2 = trees[index2].data.scaleId.substr(1);
+                var name1 = trees[index1].name;
+                var name2 = trees[index2].name;
+
+                d3.select("#" + canvas1 + " svg").remove();
+                d3.select("#" + canvas2 + " svg").remove();
+
+                trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                renderTree(trees[index1], name1, canvas1, scale1, name2);
+
+                trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                renderTree(trees[index2], name2, canvas2, scale2, name1);
 
                 // When adding a new link (by expanding a node for instance)
                 // the links array gets updated, but the enter function does not
@@ -3681,17 +3716,17 @@ var TreeCompare = function(){
                 // To fix this bug, we need to reset all the numeric identifiers
                 // Please note that the numeric identifiers are built by incrementing the
                 // number of leaves in the tree.
-                postorderTraverse(tree1.root, function(d) {
-                d.id =null;
+                postorderTraverse(trees[index1].root, function (d) {
+                    d.id = null;
                 });
 
-                postorderTraverse(tree2.root, function(d) {
-                d.id =null;
+                postorderTraverse(trees[index2].root, function (d) {
+                    d.id = null;
                 });
+
                 compareMode = true;
                 settings.loadedCallback();
             }
-
         });
     }
 
@@ -3726,11 +3761,16 @@ var TreeCompare = function(){
         createDeepLeafList(tree1);
         createDeepLeafList(tree2);
 
-        //var t0 = performance.now();
-        //getVisibleBCNs(tree1,tree2);
-        getVisibleBCNsUsingWorkers(trees1, trees2);
-        //var t1 = performance.now();
-        ///console.log("Call preprocessTrees:getVisibleBCNs took " + (t1 - t0) + " milliseconds.");
+        // use web workers only if trees are very large
+        if(tree1.deepLeafList.length > 100 || tree1.deepLeafList.length > 100){
+            getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
+        } else {
+            getVisibleBCNs(tree1,tree2);
+            update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees1.name)].data);
+            update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees2.name)].data);
+            settings.loadedCallback();
+        }
+
     }
 
     /*
@@ -3915,32 +3955,32 @@ var TreeCompare = function(){
         var index1 = findTreeIndex(name1);
         var index2 = findTreeIndex(name2);
 
+        //initialize all functions
         initializeRenderTreeCanvas(name1, canvas1, scale1);
         initializeRenderTreeCanvas(name2, canvas2, scale2);
 
         var firstTree1 = trees[index1];
         var firstTree2 = trees[index2];
 
+        initialiseTree(firstTree1.root, settings.autoCollapse);
+        initialiseTree(firstTree2.root, settings.autoCollapse);
+
+        // render tress (workers) -> once done, run comprison (workers)
+        firstTree1.data.clickEvent = getClickEventListenerNode(firstTree1, true, firstTree2);//Click event listener for nodes
+        firstTree1.data.clickEventLink = getClickEventListenerLink(firstTree1, true, firstTree2);//Click event listener for links. Assigns a function to the event.
+        renderTree(firstTree1, name1, canvas1, scale1, name2);
+
+        firstTree2.data.clickEvent = getClickEventListenerNode(firstTree2, true, firstTree1);
+        firstTree2.data.clickEventLink = getClickEventListenerLink(firstTree2, true, firstTree1);
+        renderTree(firstTree2, name2, canvas2, scale2, name1);
 
         settings.loadingCallback();
         setTimeout(function() {
-
-            initialiseTree(firstTree1.root, settings.autoCollapse);
-            initialiseTree(firstTree2.root, settings.autoCollapse);
-
-            // function where actual comparison is done
             preprocessTrees(firstTree1, firstTree2);
+            //settings.loadedCallback();
+        }, 10);
 
-            // render tress (workers) -> once done, run comprison (workers)
-            firstTree1.data.clickEvent = getClickEventListenerNode(firstTree1, true, firstTree2);//Click event listener for nodes
-            firstTree1.data.clickEventLink = getClickEventListenerLink(firstTree1, true, firstTree2);//Click event listener for links. Assigns a function to the event.
-            renderTree(firstTree1, name1, canvas1, scale1, name2);
 
-            firstTree2.data.clickEvent = getClickEventListenerNode(firstTree2, true, firstTree1);
-            firstTree2.data.clickEventLink = getClickEventListenerLink(firstTree2, true, firstTree1);
-            renderTree(firstTree2, name2, canvas2, scale2, name1);
-            settings.loadedCallback();
-        }, 5);
 
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
