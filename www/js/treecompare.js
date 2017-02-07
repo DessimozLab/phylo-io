@@ -2955,7 +2955,7 @@ var TreeCompare = function(){
             "left": "0",
             "right": "0",
             "width": "78px",
-            "bottom": "5px"
+            "top": "20px"
         });
         //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
         $("#" + canvasId + " .treeToggleButton").css({
@@ -3070,7 +3070,7 @@ var TreeCompare = function(){
             "left": "0",
             "right": "0",
             "width": "78px",
-            "bottom": "5px"
+            "top": "20px"
         });
         //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
         $("#" + canvas + " .treeToggleButton").css({
@@ -3310,7 +3310,7 @@ var TreeCompare = function(){
         //render the scale if we have somewhere to put it
         if (scaleId) {
             var translatewidth = 100;
-            var translateheight = height - 100;
+            var translateheight = height - 50;
 
             d3.select("#" + canvasId + " svg")
                 .append("g")
