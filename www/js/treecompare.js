@@ -2945,13 +2945,19 @@ var TreeCompare = function(){
         }
     }
 
-    function renderTreeToggleDropDown(name, canvasId, scaleId){
+    /*----------------------
+    |
+    | Function that renders the drop down menu once multiple trees are loaded
+    |
+     ----------------------*/
+    function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
+        //var name = d3.select("#" + canvas + " svg").attr("id");
         var index = findTreeIndex(name);
         var numTrees = trees[index].total-1;
         var indexStartTree = trees.length - numTrees;
         var indexLastTree = trees.length;
 
-        var downloadButton = d3.select("#" + canvasId + " #treeToggleButtons");
+        var downloadButton = d3.select("#" + canvas + " #treeToggleButtons");
         downloadButton.append("button")
             .attr("id", "dropDownToggleButton")
             .attr("class", "btn btn-primary dropdown-toggle")
@@ -2967,7 +2973,7 @@ var TreeCompare = function(){
             .style("height", "26px");
 
         // span element is added in order to easier display and place the tree numbers on the dropDown menu
-        var dropdownToggleButton = d3.select("#" + canvasId + " #dropDownToggleButton");
+        var dropdownToggleButton = d3.select("#" + canvas + " #dropDownToggleButton");
         dropdownToggleButton.append("span")
             .attr("id", "dropDownToggleButtonText")
             .style("position","absolute")
@@ -2975,34 +2981,32 @@ var TreeCompare = function(){
             .style("text-align", "left")
             .text(trees[index].part+"/"+(numTrees-1));
 
-        var textWidth = parseFloat(d3.select("#" + canvasId + " #dropDownToggleButtonText").style("width"));
+        // define placement of text that tells which tree is currently used
+        var textWidth = parseFloat(d3.select("#" + canvas + " #dropDownToggleButtonText").style("width"));
         var leftAlign = (26-textWidth)/2;
-        var textHeight = parseFloat(d3.select("#" + canvasId + " #dropDownToggleButtonText").style("height"));
+        var textHeight = parseFloat(d3.select("#" + canvas + " #dropDownToggleButtonText").style("height"));
         var topAlign = (26-textHeight)/2;
 
-        var dropdownToggleButtonText = d3.select("#" + canvasId + " #dropDownToggleButtonText");
+        var dropdownToggleButtonText = d3.select("#" + canvas + " #dropDownToggleButtonText");
         dropdownToggleButtonText.style("top",parseInt(topAlign)+ "px")
             .style("left",parseInt(leftAlign)+  "px");
 
-
         downloadButton.append("ul")
             .attr("class", "dropdown-menu")
-            .attr("aria-labelledby", "dropdownMenu1" + canvasId)
-            .attr("id", "exportList" + canvasId);
-
-
+            .attr("aria-labelledby", "dropdownMenu1" + canvas)
+            .attr("id", "exportList" + canvas);
 
         var item, text, svgLink;
 
         for(var i=indexStartTree-1; i<indexLastTree-1; i++){
             item = document.createElement("li");
-            item.setAttribute("id", canvasId + "_tree_" + i);
+            item.setAttribute("id", canvas + "_tree_" + i);
             svgLink = document.createElement("a");
             text = document.createTextNode(trees[i].part);
             svgLink.appendChild(text);
             item.appendChild(svgLink);
-            document.getElementById("exportList" + canvasId).appendChild(item);
-            d3.select('#' + canvasId + "_tree_" + i).on('click', function(){
+            document.getElementById("exportList" + canvas).appendChild(item);
+            d3.select('#' + canvas + "_tree_" + i).on('click', function(){
                 var splitId = d3.select(this).attr("id").split("_");
                 var ind = parseInt(splitId[splitId.length-1]);
                 dropDownAction(ind)
@@ -3010,180 +3014,51 @@ var TreeCompare = function(){
         }
 
         function dropDownAction(i){
-            d3.select("#" + canvasId + " svg").remove();
+            d3.select("#" + canvas + " svg").remove();
             var toggledTree = trees[i];
             var newName = toggledTree.name;
-            settings.loadingCallback();
-            setTimeout(function() {
-
+            if(oppositeCanvas !== undefined){ // compare mode
+                var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
+                d3.select("#" + oppositeCanvas + " svg").remove();
+                var index2 = findTreeIndex(oppositeName);
+                var oppositeTree = trees[index2];
                 initialiseTree(toggledTree.root, settings.autoCollapse);
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                //clear the canvas of any previous visualisation
-                renderTree(toggledTree,newName,canvasId,scaleId);
-                settings.loadedCallback();
-            }, 2);
-            dropdownToggleButtonText.text(toggledTree.part+"/"+(numTrees-1));
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, newName, canvas, scale, oppositeName);
+
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName);
+
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+                dropdownToggleButtonText.text(toggledTree.part+"/"+(numTrees-1));
+            } else { // view mode
+                settings.loadingCallback();
+                setTimeout(function() {
+
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    renderTree(toggledTree,newName,canvas,scale);
+
+                    settings.loadedCallback();
+                }, 2);
+                dropdownToggleButtonText.text(toggledTree.part+"/"+(numTrees-1));
+            }
         }
-
-
-
-
-        // function action(oldName) {
-        //     var index = findTreeIndex(oldName);
-        //     var sub_index = trees[index].part;
-        //     var num_trees = trees[index].last; // this is only working when view mode is active
-        //     trees[index].display = false;
-        //     // main function to assure cycling when toggle action is called
-        //     if (index === (num_trees-1)){
-        //         var toggledTree = trees[num_trees-sub_index-1];
-        //     }else {
-        //         var toggledTree = trees[index+1];
-        //     }
-        //     toggledTree.display = true;
-        //     var new_name = toggledTree.name;
-        //     settings.loadingCallback();
-        //     setTimeout(function() {
-        //
-        //         initialiseTree(toggledTree.root, settings.autoCollapse);
-        //         toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-        //         toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-        //         //clear the canvas of any previous visualisation
-        //         renderTree(toggledTree,new_name,canvasId,scaleId);
-        //         settings.loadedCallback();
-        //     }, 2);
-        // }
-        //
-        // var timeoutIdRight = 0;
-        // $("#" + canvasId + " #dropDownToggleMenu").mousedown(function() {
-        //     var oldName = d3.select("#" + canvasId + " svg").attr("id");
-        //     d3.select("#" + canvasId + " svg").remove();
-        //     action(oldName);
-        //     timeoutIdRight = setInterval(action, 150);
-        // }).bind('mouseup mouseleave', function() {
-        //     clearTimeout(timeoutIdRight);
-        // });
 
     }
 
-    function renderTreeToggleButtons(name, canvasId, scaleId){
-
-        $("#" + canvasId).append('<div id="treeToggleButtons"></div>');
-        $("#" + canvasId + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-        $("#" + canvasId + " #treeToggleButtons").append('<button type="button" id="rightToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-        $("#" + canvasId + " #treeToggleButtons").css({
-            "position": "absolute",
-            "margin-left": "auto",
-            "margin-right": "auto",
-            "left": "0",
-            "right": "0",
-            "width": "78px",
-            "top": "20px"
-        });
-        //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
-        $("#" + canvasId + " .treeToggleButton").css({
-            "font-size": "10px",
-            "width": "26px",
-            "height": "26px",
-            "vertical-align": "top",
-            "opacity":"0.3"
-        });
-        $("#" + canvasId + " .treeToggleButton").on("mouseover", function() {
-            $(this).css({
-                "opacity": "1"
-            })
-        });
-        $("#" + canvasId + " .treeToggleButton").on("mouseout", function() {
-            $(this).css({
-                "opacity": "0.3"
-            })
-        });
-        $("#" + canvasId + " .treeToggleButton span").css({
-            "vertical-align": "middle"
-        });
-        $("#" + canvasId + " #leftToggleButton").css({
-            "text-align": "center",
-            "float": "left"
-        });
-        $("#" + canvasId + " #rightToggleButton").css({
-            "text-align": "center",
-            "margin-left": "26px",
-            "float": "right"
-        });
-
-        function actionLeft(oldName) {
-            var index = findTreeIndex(oldName);
-            var num_trees = trees[index].last;
-            trees[index].display = false;
-            if (trees[index].part === 0){
-                var toggledTree = trees[num_trees-1];
-            }else {
-                var toggledTree = trees[index-1];
-            }
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-            settings.loadingCallback();
-            setTimeout(function() {
-
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                //clear the canvas of any previous visualisation
-                renderTree(toggledTree,new_name,canvasId,scaleId);
-                settings.loadedCallback();
-            }, 2);
-            d3.select("#" + canvasId + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
-        }
-
-        function actionRight(oldName) {
-            var index = findTreeIndex(oldName);
-            var sub_index = trees[index].part;
-            var num_trees = trees[index].last; // this is only working when view mode is active
-            trees[index].display = false;
-            // main function to assure cycling when toggle action is called
-            if (index === (num_trees-1)){
-                var toggledTree = trees[num_trees-sub_index-1];
-            }else {
-                var toggledTree = trees[index+1];
-            }
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-            settings.loadingCallback();
-            setTimeout(function() {
-
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                //clear the canvas of any previous visualisation
-                renderTree(toggledTree,new_name,canvasId,scaleId);
-                settings.loadedCallback();
-            }, 2);
-            d3.select("#" + canvasId + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
-        }
-
-        var timeoutIdleft = 0;
-        $("#" + canvasId + " #leftToggleButton").mousedown(function() {
-            var oldName = d3.select("#" + canvasId + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            d3.select("#" + canvasId + " svg").remove();
-            actionLeft(oldName);
-            timeoutIdleft = setInterval(actionLeft, 150);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdleft);
-        });
-
-        var timeoutIdRight = 0;
-        $("#" + canvasId + " #rightToggleButton").mousedown(function() {
-            var oldName = d3.select("#" + canvasId + " svg").attr("id");
-            d3.select("#" + canvasId + " svg").remove();
-            actionRight(oldName);
-            timeoutIdRight = setInterval(actionRight, 150);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdRight);
-        });
-    }
 
 
-    function renderTreeToggleButtonsCompareMode(canvas, scale, canvasOpposite, scaleOpposite){
+    function renderTreeToggleButtons(canvas, scale, canvasOpposite, scaleOpposite){
 
         $("#" + canvas).append('<div id="treeToggleButtons"></div>');
         $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-primary treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
@@ -3230,8 +3105,6 @@ var TreeCompare = function(){
 
         function actionLeft(oldName, oppositeTreeName) {
             var index1 = findTreeIndex(oldName);
-            var index2 = findTreeIndex(oppositeTreeName);
-            var oppositeTree = trees[index2];
             var num_trees = trees[index1].last;
             trees[index1].display = false;
             if (trees[index1].part === 0){
@@ -3242,65 +3115,106 @@ var TreeCompare = function(){
             toggledTree.display = true;
             var new_name = toggledTree.name;
 
-            initialiseTree(toggledTree.root, settings.autoCollapse);
-            initialiseTree(oppositeTree.root, settings.autoCollapse);
+            if(oppositeTreeName !== undefined){ // compare mode
+                var index2 = findTreeIndex(oppositeTreeName);
+                var oppositeTree = trees[index2];
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
 
-            // render tress (workers) -> once done, run comprison (workers)
-            toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
-            toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-            renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                // render tress (workers) -> once done, run comprison (workers)
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
 
-            oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-            oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-            renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
 
-            settings.loadingCallback();
-            setTimeout(function() {
-                preprocessTrees(toggledTree, oppositeTree);
-            }, 5);
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+            } else{ // view mode
+                settings.loadingCallback();
+                setTimeout(function() {
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    renderTree(toggledTree,new_name,canvas,scale);
+                    settings.loadedCallback();
+                }, 2);
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+            }
+
+
         }
 
         function actionRight(oldName, oppositeTreeName) {
             var index1 = findTreeIndex(oldName);
-            var index2 = findTreeIndex(oppositeTreeName);
             var sub_index = trees[index1].part;
-            var oppositeTree = trees[index2];
             var num_trees = trees[index1].last;
             trees[index1].display = false;
+
             // main function to assure cycling when toggle action is called
             if (index1 === (num_trees-1)){
                 var toggledTree = trees[num_trees-sub_index-1];
             }else {
                 var toggledTree = trees[index1+1];
             }
+
             toggledTree.display = true;
             var new_name = toggledTree.name;
 
-            initialiseTree(toggledTree.root, settings.autoCollapse);
-            initialiseTree(oppositeTree.root, settings.autoCollapse);
+            if (oppositeTreeName !== undefined){
+                var index2 = findTreeIndex(oppositeTreeName);
+                var oppositeTree = trees[index2];
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
 
-            // render tress (workers) -> once done, run comprison (workers)
-            toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);//Click event listener for nodes
-            toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);//Click event listener for links. Assigns a function to the event.
-            renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
 
-            oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-            oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-            renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
 
-            settings.loadingCallback();
-            setTimeout(function() {
-                preprocessTrees(toggledTree, oppositeTree);
-            }, 5);
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+            }else {
+                settings.loadingCallback();
+                setTimeout(function() {
+
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    //clear the canvas of any previous visualisation
+                    renderTree(toggledTree,new_name,canvas,scale);
+                    settings.loadedCallback();
+                }, 2);
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+            }
+
+
         }
 
         var timeoutIdleft = 0;
         $("#" + canvas + " #leftToggleButton").mousedown(function() {
             var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
             d3.select("#" + canvas + " svg").remove();
-            d3.select("#" + canvasOpposite + " svg").remove();
-            actionLeft(oldName, oppositeTreeName);
+
+            if(canvasOpposite !== undefined){ // compare mode
+                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
+                d3.select("#" + canvasOpposite + " svg").remove();
+                actionLeft(oldName, oppositeTreeName);
+            } else { // view mode
+                actionLeft(oldName);
+            }
+
             timeoutIdleft = setInterval(actionLeft, 150);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdleft);
@@ -3309,10 +3223,16 @@ var TreeCompare = function(){
         var timeoutIdRight = 0;
         $("#" + canvas + " #rightToggleButton").mousedown(function() {
             var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
             d3.select("#" + canvas + " svg").remove();
-            d3.select("#" + canvasOpposite + " svg").remove();
-            actionRight(oldName, oppositeTreeName);
+
+            if(canvasOpposite !== undefined){ // compare mode
+                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
+                d3.select("#" + canvasOpposite + " svg").remove();
+                actionRight(oldName, oppositeTreeName);
+            } else { // view mode
+                actionRight(oldName);
+            }
+
             timeoutIdRight = setInterval(actionRight, 150);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdRight);
@@ -4110,16 +4030,18 @@ var TreeCompare = function(){
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
 
-            renderTreeToggleButtonsCompareMode(canvas1, scale1, canvas2, scale2);
-            renderTreeToggleButtonsCompareMode(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
+            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
 
         }else if (trees[index1].hasOwnProperty("multiple") && !trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtonsCompareMode(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
 
         }else if (!trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtonsCompareMode(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
 
         }
 
@@ -4146,7 +4068,7 @@ var TreeCompare = function(){
                 renderTree(firstTree,name,canvasId,scaleId);
                 settings.loadedCallback();
             }, 2);
-            renderTreeToggleButtons(name, canvasId, scaleId);
+            renderTreeToggleButtons(canvasId, scaleId);
             renderTreeToggleDropDown(name, canvasId, scaleId);
         } else{
             settings.loadingCallback();
