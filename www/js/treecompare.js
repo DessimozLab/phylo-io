@@ -742,6 +742,7 @@ var TreeCompare = function(){
 
         // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
         if (newick.indexOf(";") !== -1){
+            //var tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, ""); // remove blank lines
             var tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm,"").split(";");
             if (tmpNewicks.length > 1){
                 var newicks = tmpNewicks.slice(0, -1);
@@ -752,6 +753,8 @@ var TreeCompare = function(){
                 var newicks = tmpNewicks.slice(0, -1);
             }
         }
+
+        console.log(newicks);
 
         resetTreeVisStatus(trees);
         // the following is important to allow the support to load multiple trees at once
@@ -785,9 +788,9 @@ var TreeCompare = function(){
                     mode: mode,
                     multiple: true,
                     display: true,
-                    part: i,
-                    last: (num+newicks.length-1),
-                    total: newicks.length,
+                    part: i, // index part of the collection of trees
+                    last: (num+newicks.length-1), // index of last tree
+                    total: newicks.length, // number of all trees in collection
                     data: {}
                 };
             } else {
@@ -806,6 +809,7 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
+        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -2951,11 +2955,11 @@ var TreeCompare = function(){
     |
      ----------------------*/
     function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
-        //var name = d3.select("#" + canvas + " svg").attr("id");
         var index = findTreeIndex(name);
-        var numTrees = trees[index].total-1;
-        var indexStartTree = trees.length - numTrees;
-        var indexLastTree = trees.length;
+        var numTrees = trees[index].total;
+        var indexStartTree = index;
+        var indexLastTree = trees[index].last;
+
 
         var downloadButton = d3.select("#" + canvas + " #treeToggleButtons");
         downloadButton.append("button")
@@ -2969,7 +2973,7 @@ var TreeCompare = function(){
             .style("margin-right","auto")
             .style("left","26px")
             .style("right","26px")
-            .style("width", "26px")
+            .style("width", "39px")
             .style("height", "26px");
 
         // span element is added in order to easier display and place the tree numbers on the dropDown menu
@@ -2979,17 +2983,19 @@ var TreeCompare = function(){
             .style("position","absolute")
             .style("font-size", "10px")
             .style("text-align", "left")
-            .text(trees[index].part+"/"+(numTrees-1));
+            .text((numTrees-1)+"/"+(numTrees-1));
 
         // define placement of text that tells which tree is currently used
         var textWidth = parseFloat(d3.select("#" + canvas + " #dropDownToggleButtonText").style("width"));
-        var leftAlign = (26-textWidth)/2;
+        var leftAlign = (39-textWidth)/2;
         var textHeight = parseFloat(d3.select("#" + canvas + " #dropDownToggleButtonText").style("height"));
         var topAlign = (26-textHeight)/2;
 
         var dropdownToggleButtonText = d3.select("#" + canvas + " #dropDownToggleButtonText");
         dropdownToggleButtonText.style("top",parseInt(topAlign)+ "px")
             .style("left",parseInt(leftAlign)+  "px");
+
+        dropdownToggleButtonText.text(trees[index].part+"/"+(numTrees-1));
 
         downloadButton.append("ul")
             .attr("class", "dropdown-menu")
@@ -2998,7 +3004,7 @@ var TreeCompare = function(){
 
         var item, text, svgLink;
 
-        for(var i=indexStartTree-1; i<indexLastTree-1; i++){
+        for(var i=indexStartTree; i<=indexLastTree; i++){
             item = document.createElement("li");
             item.setAttribute("id", canvas + "_tree_" + i);
             svgLink = document.createElement("a");
@@ -3013,9 +3019,10 @@ var TreeCompare = function(){
             });
         }
 
-        function dropDownAction(i){
+        function dropDownAction(ind){
+            var name = d3.select("#" + canvas + " svg").attr("id");
             d3.select("#" + canvas + " svg").remove();
-            var toggledTree = trees[i];
+            var toggledTree = trees[ind];
             var newName = toggledTree.name;
             if(oppositeCanvas !== undefined){ // compare mode
                 var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
@@ -3069,7 +3076,7 @@ var TreeCompare = function(){
             "margin-right": "auto",
             "left": "0",
             "right": "0",
-            "width": "78px",
+            "width": "91px",
             "top": "20px"
         });
         //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
@@ -3108,7 +3115,7 @@ var TreeCompare = function(){
             var num_trees = trees[index1].last;
             trees[index1].display = false;
             if (trees[index1].part === 0){
-                var toggledTree = trees[num_trees-1];
+                var toggledTree = trees[num_trees];
             }else {
                 var toggledTree = trees[index1-1];
             }
@@ -3134,7 +3141,7 @@ var TreeCompare = function(){
                 setTimeout(function() {
                     preprocessTrees(toggledTree, oppositeTree);
                 }, 5);
-                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
             } else{ // view mode
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -3144,7 +3151,7 @@ var TreeCompare = function(){
                     renderTree(toggledTree,new_name,canvas,scale);
                     settings.loadedCallback();
                 }, 2);
-                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
             }
 
 
@@ -3157,8 +3164,8 @@ var TreeCompare = function(){
             trees[index1].display = false;
 
             // main function to assure cycling when toggle action is called
-            if (index1 === (num_trees-1)){
-                var toggledTree = trees[num_trees-sub_index-1];
+            if (index1 === (num_trees)){
+                var toggledTree = trees[num_trees-sub_index];
             }else {
                 var toggledTree = trees[index1+1];
             }
@@ -3184,7 +3191,7 @@ var TreeCompare = function(){
                 setTimeout(function() {
                     preprocessTrees(toggledTree, oppositeTree);
                 }, 5);
-                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
             }else {
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -3196,7 +3203,7 @@ var TreeCompare = function(){
                     renderTree(toggledTree,new_name,canvas,scale);
                     settings.loadedCallback();
                 }, 2);
-                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-2));
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
             }
 
 
@@ -3997,6 +4004,8 @@ var TreeCompare = function(){
      ---------------*/
     function compareTrees(name1, canvas1, name2, canvas2, scale1, scale2) {
         renderedTrees = [];
+        console.log(name1);
+        console.log(name2);
         var index1 = findTreeIndex(name1);
         var index2 = findTreeIndex(name2);
 
@@ -4060,25 +4069,19 @@ var TreeCompare = function(){
             var firstTree = trees[index];
             var name = firstTree.name;
 
-            settings.loadingCallback();
-            setTimeout(function() {
-                initialiseTree(firstTree.root, settings.autoCollapse);
-                firstTree.data.clickEvent = getClickEventListenerNode(firstTree, false, {});
-                firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
-                renderTree(firstTree,name,canvasId,scaleId);
-                settings.loadedCallback();
-            }, 2);
+            initialiseTree(firstTree.root, settings.autoCollapse);
+            firstTree.data.clickEvent = getClickEventListenerNode(firstTree, false, {});
+            firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
+            renderTree(firstTree,name,canvasId,scaleId);
+
             renderTreeToggleButtons(canvasId, scaleId);
             renderTreeToggleDropDown(name, canvasId, scaleId);
+
         } else{
-            settings.loadingCallback();
-            setTimeout(function() {
-                initialiseTree(trees[index].root, settings.autoCollapse);
-                trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
-                trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-                renderTree(trees[index],name,canvasId,scaleId);
-                settings.loadedCallback();
-            }, 2);
+            initialiseTree(trees[index].root, settings.autoCollapse);
+            trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
+            trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
+            renderTree(trees[index],name,canvasId,scaleId);
         }
     }
 
