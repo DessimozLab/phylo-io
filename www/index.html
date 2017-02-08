@@ -644,10 +644,17 @@
             var g = document.createElement('g');
             var lastElementIndex = svg2.childNodes.length - 3;
             var scaleTextIndex = svg2.childNodes.length - 2;
+
             if (lastElementIndex > -1) {
                 g.setAttribute('transform', 'translate(' + l_w + ',0)');
-                g.appendChild(svg2.childNodes[lastElementIndex]);
-                g.appendChild(svg2.childNodes[scaleTextIndex]);
+                main = svg2.childNodes[lastElementIndex];
+                scale = svg2.childNodes[scaleTextIndex];
+                scaleText = svg2.lastElementChild;
+
+                g.appendChild(main);
+                g.appendChild(scale);
+                g.appendChild(scaleText);
+
                 svg1.appendChild(g);
             }
 
