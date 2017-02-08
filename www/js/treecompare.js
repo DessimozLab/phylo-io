@@ -4043,10 +4043,12 @@ var TreeCompare = function(){
         }else if (trees[index1].hasOwnProperty("multiple") && !trees[index2].hasOwnProperty("multiple")) {
 
             renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
 
         }else if (!trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")) {
 
             renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
 
         }
 
