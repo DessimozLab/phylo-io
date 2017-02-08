@@ -754,8 +754,6 @@ var TreeCompare = function(){
             }
         }
 
-        console.log(newicks);
-
         resetTreeVisStatus(trees);
         // the following is important to allow the support to load multiple trees at once
         // multiple trees from the text field will be loaded into a tree array that will be given to the main tree object
@@ -809,7 +807,6 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
-        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -4004,8 +4001,7 @@ var TreeCompare = function(){
      ---------------*/
     function compareTrees(name1, canvas1, name2, canvas2, scale1, scale2) {
         renderedTrees = [];
-        console.log(name1);
-        console.log(name2);
+
         var index1 = findTreeIndex(name1);
         var index2 = findTreeIndex(name2);
 
