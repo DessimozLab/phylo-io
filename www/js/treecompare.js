@@ -8,13 +8,11 @@ var TreeCompare = function(){
 
     //global variable set if manual reroot used!!!
     var manualReroot = false;
-
     var scaleLineWidth = 0;
     var scaleLinePadding = 10;
-
     var compareMode = false;
-
     var maxDepth = 0;
+    var idCounter = 0;
 
     /*
      colors for the color scale for comparing nodes to best common node
@@ -30,22 +28,15 @@ var TreeCompare = function(){
 
     //grey - black
     var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
-
     var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
-
     var padding = 20;
     var paddingVertical = 50;
     var paddingHorizontal = 100;
-
     var scaleTextColor = "black";
-
     var triangleHeightDivisor = 4;
-
     var defaultLineColor = "grey";
-
     var currentS = "elementS";
     var currentBCN = "elementBCN";
-
     var highlightedNodes = [];
     var maxHighlightedNodes = 20;
 
@@ -124,11 +115,13 @@ var TreeCompare = function(){
     window.onresize = resize;
 
     /*
-     create ID with random number generator
+     create ID using a global idCounter
      */
     function makeId(prefix) {
         prefix || (prefix = '');
-        var output = prefix + Math.floor(1000 + Math.random() * 9000);
+        //var output = prefix + Math.floor(1000 + Math.random() * 9000);
+        var output = prefix +idCounter;
+        idCounter++;
         return output;
     }
 
@@ -807,6 +800,7 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
+        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -2078,14 +2072,27 @@ var TreeCompare = function(){
                     var d = d.source;
                     if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
+                    } else if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)){
+                        return colorScale(parseFloat(e["branchSupport"])/1000)
+                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight){
+                        return "green";
+                        //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                            return "green";
-                            //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                        } else {
                             return defaultLineColor; //changed from defaultLineColor;
-                        }
                     }
+
+                    // if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                    //     console.log(parseFloat(d["branchSupport"])/1000);
+                    //     return colorScale(parseFloat(e["branchSupport"])/1000)
+                    // } else {
+                    //     if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    //         return "green";
+                    //         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                    //     } else {
+                    //         console.log("default")
+                    //         return defaultLineColor; //changed from defaultLineColor;
+                    //     }
+                    // }
                 });
 
             // Enter any new links at the parent"s previous position.
@@ -2872,6 +2879,7 @@ var TreeCompare = function(){
                 for (var i = 0; i < results.length; i++){
                     results_name.push(results[i].name)
                 }
+                console.log(tree);
                 postorderTraverse(tree.data.root,function(d){
                     expandPathToLeaf(d,true,false);
                 });
@@ -2899,6 +2907,7 @@ var TreeCompare = function(){
                         var indices = [];
                         $("#resultsList" + canvasId + " ." + i).on("click", function() {
                             var index = $(this).attr("class");
+                            console.log(index);
                             indices.push(parseInt(index));
                             for (var i = 0; i<results.length; i++){
                                 if (indices.indexOf(i)<0){
@@ -2910,24 +2919,16 @@ var TreeCompare = function(){
                                     expandPathToLeaf(results[indices[i]],false);
                                 }
                             } else {
+                                console.log(results_name[index]);
+
                                 for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
                                     expandPathToLeaf(results[indices[i]],true,false);
                                 }
                                 expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
-
-                            if (otherTreeName !== undefined) {
-                                //calculate any emerging node's BCNs if they haven't been shown yet and are exposed by search
-                                settings.loadingCallback();
-                                setTimeout(function() {
-                                    getVisibleBCNs(tree.root, otherTree.root, false);
-                                    settings.loadedCallback();
-                                    update(tree.root, tree.data);
-                                }, 2);
-                            } else {
-                                update(tree.root, tree.data);
-                            }
+                            update(tree.root, tree.data);
                         });
+
                     }
 
                 }
@@ -2939,8 +2940,6 @@ var TreeCompare = function(){
                         });
                     });
                 }
-                //var t1 = performance.now();
-                //console.log("main event handler " + (t1 - t0) + " milliseconds.");
 
             });
         }
@@ -3715,31 +3714,31 @@ var TreeCompare = function(){
         var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
 
         $.when(worker1, worker2).done(function(tree1, tree2){
-            trees[index1].root = tree1;
-            trees[index2].root = tree2;
+            trees[index1].data.root = tree1;
+            trees[index2].data.root = tree2;
             if (!highlight) {
 
-                //update(trees[index1].root,trees[index1].data);
-                //update(trees[index2].root,trees[index2].data);
+                update(trees[index1].root,trees[index1].data);
+                update(trees[index2].root,trees[index2].data);
 
 
-                var canvas1 = trees[index1].data.canvasId;
-                var canvas2 = trees[index2].data.canvasId;
-                var scale1 = trees[index1].data.scaleId.substr(1);
-                var scale2 = trees[index2].data.scaleId.substr(1);
-                var name1 = trees[index1].name;
-                var name2 = trees[index2].name;
-
-                d3.select("#" + canvas1 + " svg").remove();
-                d3.select("#" + canvas2 + " svg").remove();
-
-                trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
-                trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
-                renderTree(trees[index1], name1, canvas1, scale1, name2);
-
-                trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
-                trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
-                renderTree(trees[index2], name2, canvas2, scale2, name1);
+                // var canvas1 = trees[index1].data.canvasId;
+                // var canvas2 = trees[index2].data.canvasId;
+                // var scale1 = trees[index1].data.scaleId.substr(1);
+                // var scale2 = trees[index2].data.scaleId.substr(1);
+                // var name1 = trees[index1].name;
+                // var name2 = trees[index2].name;
+                //
+                // d3.select("#" + canvas1 + " svg").remove();
+                // d3.select("#" + canvas2 + " svg").remove();
+                //
+                // trees[index1].data.clickEvent = getClickEventListenerNode(trees[index1], true, trees[index2]);//Click event listener for nodes
+                // trees[index1].data.clickEventLink = getClickEventListenerLink(trees[index1], true, trees[index2]);//Click event listener for links. Assigns a function to the event.
+                // renderTree(trees[index1], name1, canvas1, scale1, name2);
+                //
+                // trees[index2].data.clickEvent = getClickEventListenerNode(trees[index2], true, trees[index1]);
+                // trees[index2].data.clickEventLink = getClickEventListenerLink(trees[index2], true, trees[index1]);
+                // renderTree(trees[index2], name2, canvas2, scale2, name1);
 
                 // When adding a new link (by expanding a node for instance)
                 // the links array gets updated, but the enter function does not
@@ -3765,13 +3764,13 @@ var TreeCompare = function(){
                 // To fix this bug, we need to reset all the numeric identifiers
                 // Please note that the numeric identifiers are built by incrementing the
                 // number of leaves in the tree.
-                postorderTraverse(trees[index1].root, function (d) {
-                    d.id = null;
-                });
-
-                postorderTraverse(trees[index2].root, function (d) {
-                    d.id = null;
-                });
+                // postorderTraverse(trees[index1].root, function (d) {
+                //     d.id = null;
+                // });
+                //
+                // postorderTraverse(trees[index2].root, function (d) {
+                //     d.id = null;
+                // });
 
                 compareMode = true;
                 settings.loadedCallback();
@@ -3813,7 +3812,7 @@ var TreeCompare = function(){
         // use web workers only if trees are very large
         if(tree1.deepLeafList.length > 100 || tree1.deepLeafList.length > 100){
             getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
-        } else {
+        } else { //TODO: can be removed
             getVisibleBCNs(tree1,tree2);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees1.name)].data);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees2.name)].data);
@@ -4030,7 +4029,7 @@ var TreeCompare = function(){
             //settings.loadedCallback();
         }, 10);
 
-
+        console.log(trees);
 
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
@@ -4061,6 +4060,7 @@ var TreeCompare = function(){
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
         renderedTrees = [];
+        console.log(trees);
         var index = findTreeIndex(name);
         initializeRenderTreeCanvas(name, canvasId, scaleId);
         if (trees[index].hasOwnProperty("multiple")){
@@ -4076,6 +4076,7 @@ var TreeCompare = function(){
             renderTreeToggleDropDown(name, canvasId, scaleId);
 
         } else{
+
             initialiseTree(trees[index].root, settings.autoCollapse);
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
@@ -4389,13 +4390,11 @@ var TreeCompare = function(){
 
         return linkClick
     }
+
     /*
      get relevant event listener for clicking on a node depending on what mode is selected
      */
-    function getClickEventListenerNode(treeIndex, isCompared, comparedTreeIndex) {
-
-        var tree = trees[treeIndex];
-        var comparedTree = trees[comparedTreeIndex];
+    function getClickEventListenerNode(tree, isCompared, comparedTree) {
 
         function nodeClick(d) {
 
@@ -4445,12 +4444,12 @@ var TreeCompare = function(){
                             // fixed bug on collapsing then highlighting and uncollapsing
                             if (d.clickedParentHighlight) {
                                 postorderTraverse(d, function(e) {
-                                   e.clickedParentHighlight = true;
+                                    e.clickedParentHighlight = true;
                                 });
                             }
                             postorderTraverse(d, function(e) {
-                                    BCN(e, comparedTree.root);
-                                }, false);
+                                BCN(e, comparedTree.root);
+                            }, false);
                         }
                     }
                     if (load) {
@@ -4503,12 +4502,12 @@ var TreeCompare = function(){
                     }
                     update(d, tree.data);
                 }, 2)
+
             }
 
             function highlight(d) {
                 var bcnColors = d3.scale.category20();
                 if (isCompared) {
-
                     function colorLinkNodeOver(n, hl) {
                         if (n.children) {
                             for (var i = 0; i < n.children.length; i++) {
@@ -4546,49 +4545,46 @@ var TreeCompare = function(){
                                     leaves[i].correspondingLeaf.correspondingHighlight = false;
                                 }
                             }
+
                             colorLinkNodeOver(new_d, false);
                             update(new_d, tree.data);
                             update(otherTreeData.root, otherTreeData);
                         }
+
+
                     }
 
-                    if (!_.contains(highlightedNodes, d)) {
 
+                    if (!_.contains(highlightedNodes, d)) {
                         clearHighlight(tree.root);
                         if (highlightedNodes.length < maxHighlightedNodes) {
                             //d.clickedHighlight = bcnColors(highlightedNodes.length);
                             d.clickedHighlight = "red";
                             d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
-
                             highlightedNodes.push(d);
                             var leaves = d.leaves;
+                            var otherTree = comparedTree.root;
                             var otherTreeData = comparedTree.data;
+                            var otherTreeLeaves = otherTreeData.leaves;
+                            //clearHighlight(tree.root);
+                            //clearHighlight(otherTree);
+
 
                             for (var i = 0; i < leaves.length; i++) {
                                 if(leaves[i].correspondingLeaf !== undefined) {
                                     leaves[i].correspondingLeaf.correspondingHighlight = true;
                                 }
+
                             }
                             expandPathToNode(d[currentBCN]);
-
                             settings.loadingCallback();
                             setTimeout(function() {
-                                getVisibleBCNsUsingWorkers(treeIndex, comparedTreeIndex, false, true);
-
-                                currentName = d.name
-                                postorderTraverse(otherTreeData.root, function(d) {
-                                    if (d.name == currentName) {
-                                        d.bcnhighlight = "red";
-                                    }
-                                });
+                                getVisibleBCNs(otherTree, tree.root, false);
                                 settings.loadedCallback();
                                 colorLinkNodeOver(d, true);
-
                                 update(d, tree.data);
                                 update(otherTreeData.root, otherTreeData);
-
                                 if (settings.moveOnClick) {
-
                                     var currentScale = otherTreeData.zoomBehaviour.scale();
 
                                     var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
@@ -4600,6 +4596,7 @@ var TreeCompare = function(){
                                         .attr("transform", "scale(" + currentScale + ")" + "translate(" + otherTreeData.zoomBehaviour.translate() + ")");
                                 }
                             }, 2);
+
                         }
                     } else {
                         d.clickedHighlight = false;
@@ -4622,7 +4619,9 @@ var TreeCompare = function(){
                         colorLinkNodeOver(d, false);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
+
                     }
+
                 }
             }
 
@@ -4775,22 +4774,22 @@ var TreeCompare = function(){
             //TODO: this has to be changed that also the subtree can be all expanded
             if (d.children || d._children) {
                 add_menu_item (this,
-                      function(d) {
-                          // If d has *any* descendant that is collapsed, show label.
-                          var found = false;
+                    function(d) {
+                        // If d has *any* descendant that is collapsed, show label.
+                        var found = false;
 
-                          function check_collapsed(e) {
-                              if (e._children && e !== d) {
-                                  found = true;
-                              } else if(!found && e.children) {
-                                  e.children.forEach(check_collapsed);
-                              }
-                          };
-                          check_collapsed(d);
-                          if (found) {
-                              return "expand all >";
-                          }
-                      },
+                        function check_collapsed(e) {
+                            if (e._children && e !== d) {
+                                found = true;
+                            } else if(!found && e.children) {
+                                e.children.forEach(check_collapsed);
+                            }
+                        };
+                        check_collapsed(d);
+                        if (found) {
+                            return "expand all >";
+                        }
+                    },
                     function (d) {
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
@@ -4850,8 +4849,11 @@ var TreeCompare = function(){
                     d3.select(this).transition().duration(50).style("fill", "white");
                 });
             });
+
         }
+
         return nodeClick;
+
     }
 
     //return all the externalised functions
