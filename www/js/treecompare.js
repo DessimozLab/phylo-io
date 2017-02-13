@@ -12,7 +12,7 @@ var TreeCompare = function(){
     var scaleLinePadding = 10;
     var compareMode = false;
     var maxDepth = 0;
-    var idCounter = 0;
+
 
     /*
      colors for the color scale for comparing nodes to best common node
@@ -732,6 +732,7 @@ var TreeCompare = function(){
     function addTree(newick, name, mode) {
 
         var num = trees.length;
+        var idCounter = 0;
 
         // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
         if (newick.indexOf(";") !== -1){
@@ -759,19 +760,20 @@ var TreeCompare = function(){
 
             //add required parameters to each node
             postorderTraverse(tree, function(d) {
-                d.ID = makeId("node_");
+                d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
                 d.clickedParentHighlight = false;
                 d.mouseoverHighlight = false; //when mouse is over node
                 d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
                 d.correspondingHighlight = false;
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+                idCounter++;
             });
 
-            var root_ID = makeId("node_");
-            for (var j = 0; j < tree.children.length; j++){
-                tree.children[j].ID = root_ID;
-            }
+            // var root_ID = name+"_node_"+idCounter;
+            // for (var j = 0; j < tree.children.length; j++){
+            //     tree.children[j].ID = root_ID;
+            // }
             if (newicks.length > 1){
                 var fullTree = {
                     root: tree,
@@ -800,6 +802,7 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
+        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -1093,6 +1096,7 @@ var TreeCompare = function(){
     /* Reroot: put the root in the middle of node and its parent */
     function reroot(tree, node)
     {
+        var idCounter = 0;
         var root = tree.root;
         if(node.parent !== root){
 
@@ -1117,9 +1121,9 @@ var TreeCompare = function(){
              * d: previous distance p->d
              */
             q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-            q.ID =makeId("node_");
+            //q.ID =makeId("node_");
             q.children[0] = node; //new root
-            q.children[0].ID = node.ID;
+            //q.children[0].ID = node.ID;
             q.children[0].length = dist;
             q.children[0].branchSupport = btmp;
             p = node.parent;
@@ -1127,7 +1131,7 @@ var TreeCompare = function(){
             for (i = 0; i < p.children.length; ++i)
                 if (p.children[i] == node) break;
             q.children[1] = p;
-            q.children[1].ID =  makeId("node_");
+            //q.children[1].ID =  makeId("node_");
             d = p.length;
             bd = p.branchSupport;
             p.length = tmp - dist;
@@ -1168,8 +1172,9 @@ var TreeCompare = function(){
                 //d.bcnhighlight = null;
                 //d.highlight = 0;
                 //d.clickedHighlight = null;
-                //d.ID = makeId("node_");
+                d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
+                idCounter++;
             },false);
             //new_root.leaves = getChildLeaves(new_root);
             tree.root = new_root;
@@ -4704,6 +4709,7 @@ var TreeCompare = function(){
                     .attr("class", "tooltipElem tooltipElemText")
                     .attr("y", (-rectHeight - triHeight + tpad + textDone))
                     .attr("x", ((-rectWidth / 2) + rpad))
+                    .attr("id", text_f)
                     .style("fill", "white")
                     .style("font-weight", "bold")
                     .text(function(d) {
