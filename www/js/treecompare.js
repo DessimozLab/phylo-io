@@ -3266,7 +3266,7 @@ var TreeCompare = function(){
                     update(baseTree.root,baseTree.data);
 
                     for (var i = 0; i < results.length; i++) {
-                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
+                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
                         $("#resultsList" + canvasId + " li").css({
                             "margin-left": "-25px",
                             "list-style-type": "none",
@@ -3292,7 +3292,8 @@ var TreeCompare = function(){
                                 }
                                 expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
-                            update(baseTree.root, baseTree.data);
+                            console.log(results);
+                            update(baseTree, baseTree.data);
                         });
 
                     }
@@ -3659,8 +3660,8 @@ var TreeCompare = function(){
         }
 
         function getAllBCNs(d, t) {
-            var children = d.children ? d.children : [];
-            //var children = getChildren(d);
+            //var children = d.children ? d.children : [];
+            var children = getChildren(d);
             if (children.length > 0) {
                 for (var a = 0; a < children.length; a++) {
                     getAllBCNs(children[a], t);
@@ -3700,6 +3701,7 @@ var TreeCompare = function(){
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
+
         if (recalculate === undefined) {
             recalculate = true;
         }
@@ -3708,21 +3710,57 @@ var TreeCompare = function(){
             highlight = false;
         }
 
-
         var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
         var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
 
-        $.when(worker1, worker2).done(function(tree1, tree2){
+        $.when(worker1, worker2).done(function(t1, t2){
+            var bcnvalT1 = [];
+            var bcnobjT1 = [];
+            var bcnvalT2 = [];
+            var bcnobjT2 = [];
 
+            var test = [];
 
-            trees[index1].data.root = tree1;
-            trees[index2].data.root = tree2;
+            postorderTraverse(t1,function(d){
+                 bcnobjT1.push(d.elementBCN);
+                 bcnvalT1.push(d.elementS);
+
+                 if(d.elementS !== null){
+                     test.push(d.id);
+                 }
+            });
+            console.log(test);
+            postorderTraverse(t2,function(d){
+                bcnobjT2.push(d.elementBCN);
+                bcnvalT2.push(d.elementS);
+            });
+
+            var i = 0;
+            postorderTraverse(trees[index1].data.root,function(d){
+                d.elementBCN = bcnobjT1[i];
+                d.elementS = bcnvalT1[i];
+                i++;
+            });
+            var i = 0;
+            postorderTraverse(trees[index2].data.root,function(d){
+                d.elementBCN = bcnobjT2[i];
+                d.elementS = bcnvalT2[i];
+                i++;
+            });
+
+            // postorderTraverse(tree2,function(d){
+            //     d.searchHighlight = false;
+            // });
+
+            // trees[index1].root = t1;
+            // trees[index2].root = t2;
+            // trees[index1].data.root = trees[index1].root;
+            // trees[index2].data.root = trees[index2].root;
 
             if (!highlight) {
 
-
-                update(trees[index1].root,trees[index1].data);
-                update(trees[index2].root,trees[index2].data);
+                update(trees[index1],trees[index1].data);
+                update(trees[index2],trees[index2].data);
 
 
                 // var canvas1 = trees[index1].data.canvasId;
@@ -3767,7 +3805,6 @@ var TreeCompare = function(){
                 // To fix this bug, we need to reset all the numeric identifiers
                 // Please note that the numeric identifiers are built by incrementing the
                 // number of leaves in the tree.
-
 
                 compareMode = true;
                 settings.loadedCallback();

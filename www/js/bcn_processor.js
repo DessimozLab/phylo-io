@@ -15,7 +15,8 @@ function wrapGetAllBCNs(tree1, tree2, recalculate) {
 
     function getAllBCNs(d, t) {
 
-        var children = d.children ? d.children : [];
+        //var children = d.children ? d.children : [];
+        var children = getChildren(d);
         if (children.length > 0) {
             for (var a = 0; a < children.length; a++) {
                 getAllBCNs(children[a], t);

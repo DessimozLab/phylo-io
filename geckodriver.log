@@ -1,0 +1,600 @@
+1486998029582	geckodriver	INFO	Listening on 127.0.0.1:54280
+1486998030629	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.dw2TIR9Il9i4
+1486998030630	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486998030635	geckodriver::marionette	INFO	Connecting to Marionette on localhost:54289
+1486998031136	Marionette	INFO	Listening on port 54289
+1486998210625	geckodriver	INFO	Listening on 127.0.0.1:54411
+1486998211677	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.kpexOqeRCE2x
+1486998211679	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486998211685	geckodriver::marionette	INFO	Connecting to Marionette on localhost:54417
+1486998212219	Marionette	INFO	Listening on port 54417
+JavaScript warning: http://scripts.zeit.de/iqd/cdn_zeit/live/iqadcontroller.js.gz, line 31: unreachable code after return statement
+JavaScript warning: http://scripts.zeit.de/iqd/cdn_zeit/live/iqadcontroller.js.gz, line 207: unreachable code after return statement
+JavaScript warning: https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js, line 19: unreachable code after return statement
+JavaScript warning: http://scripts.zeit.de/iqd/cdn_zeit/live/iqadcontroller.js.gz, line 31: unreachable code after return statement
+JavaScript warning: http://scripts.zeit.de/iqd/cdn_zeit/live/iqadcontroller.js.gz, line 218: unreachable code after return statement
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+1486999312900	geckodriver	INFO	Listening on 127.0.0.1:54882
+1486999313976	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.0c72HYWbUf6k
+1486999313977	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486999313980	geckodriver::marionette	INFO	Connecting to Marionette on localhost:54888
+1486999314483	Marionette	INFO	Listening on port 54888
+1486999512952	geckodriver	INFO	Listening on 127.0.0.1:55024
+1486999513997	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.J8lFw4vhwXk5
+1486999513998	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486999514003	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55030
+1486999514501	Marionette	INFO	Listening on port 55030
+1486999600978	geckodriver	INFO	Listening on 127.0.0.1:55101
+1486999602028	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.8fLLjeI16Iqs
+1486999602029	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486999602034	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55107
+1486999602550	Marionette	INFO	Listening on port 55107
+1486999815189	geckodriver	INFO	Listening on 127.0.0.1:55212
+1486999816241	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.jdJ4D6WCOeQH
+1486999816243	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486999816248	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55218
+1486999816769	Marionette	INFO	Listening on port 55218
+1486999862200	geckodriver	INFO	Listening on 127.0.0.1:55283
+1486999863250	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Om9TObrHbFjx
+1486999863252	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1486999863256	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55289
+1486999863772	Marionette	INFO	Listening on port 55289
+1487000029665	geckodriver	INFO	Listening on 127.0.0.1:55451
+1487000030717	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.ExtsCd8AQQNj
+1487000030719	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000030724	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55457
+1487000031235	Marionette	INFO	Listening on port 55457
+1487000210153	geckodriver	INFO	Listening on 127.0.0.1:55543
+1487000211203	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.19m1EcVdBlr4
+1487000211204	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000211209	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55549
+1487000211722	Marionette	INFO	Listening on port 55549
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+1487000349447	geckodriver	INFO	Listening on 127.0.0.1:55711
+1487000350493	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.witSOX3sSCN9
+1487000350495	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000350499	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55718
+1487000351003	Marionette	INFO	Listening on port 55718
+1487000703669	geckodriver	INFO	Listening on 127.0.0.1:56075
+1487000704713	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.LHwGJi9DZROB
+1487000704715	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000704720	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56082
+1487000705246	Marionette	INFO	Listening on port 56082
+1487000751323	geckodriver	INFO	Listening on 127.0.0.1:56146
+1487000752372	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.AQQ3l8smw3qv
+1487000752374	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000752380	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56152
+1487000752890	Marionette	INFO	Listening on port 56152
+1487000833302	geckodriver	INFO	Listening on 127.0.0.1:56224
+1487000834345	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.2MhwwxdcfGH4
+1487000834347	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000834349	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56230
+1487000834852	Marionette	INFO	Listening on port 56230
+1487000888324	geckodriver	INFO	Listening on 127.0.0.1:56305
+1487000889375	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.2DoLb1rkOu9b
+1487000889377	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000889382	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56311
+1487000889889	Marionette	INFO	Listening on port 56311
+1487000940511	geckodriver	INFO	Listening on 127.0.0.1:56371
+1487000941566	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.sCKiBW47hYl5
+1487000941568	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487000941572	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56377
+1487000942075	Marionette	INFO	Listening on port 56377
+1487001119931	geckodriver	INFO	Listening on 127.0.0.1:56477
+1487001120979	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.VXvewq33lKLj
+1487001120980	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487001120986	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56483
+1487001121503	Marionette	INFO	Listening on port 56483
+1487001190895	geckodriver	INFO	Listening on 127.0.0.1:56569
+1487001191945	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.6sa5l9D3FowT
+1487001191947	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487001191951	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56575
+1487001192448	Marionette	INFO	Listening on port 56575
+1487001244280	geckodriver	INFO	Listening on 127.0.0.1:56665
+1487001245334	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.4TFcoG3QbDOX
+1487001245336	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487001245341	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56671
+1487001245851	Marionette	INFO	Listening on port 56671
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+1487002223849	geckodriver	INFO	Listening on 127.0.0.1:56987
+1487002224896	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.BRrfz6RkxGb3
+1487002224898	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002224902	geckodriver::marionette	INFO	Connecting to Marionette on localhost:56993
+1487002225417	Marionette	INFO	Listening on port 56993
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3724: TypeError: $.extent is not a function
+1487002270263	geckodriver	INFO	Listening on 127.0.0.1:57056
+1487002271308	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.pi7ZQgPw2E7N
+1487002271309	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002271312	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57062
+1487002271826	Marionette	INFO	Listening on port 57062
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3724: TypeError: $.extent is not a function
+1487002340388	geckodriver	INFO	Listening on 127.0.0.1:57139
+1487002341435	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.aaDxzDX67zUC
+1487002341437	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002341440	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57145
+1487002341961	Marionette	INFO	Listening on port 57145
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1529: TypeError: treeData.tree is undefined
+1487002414043	geckodriver	INFO	Listening on 127.0.0.1:57213
+1487002415095	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Vcw1LEd3hW9N
+1487002415096	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002415100	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57219
+1487002415612	Marionette	INFO	Listening on port 57219
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1529: TypeError: treeData.tree is undefined
+1487002464917	geckodriver	INFO	Listening on 127.0.0.1:57281
+1487002465967	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.iPDCLNO3T3qL
+1487002465969	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002465975	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57287
+1487002466475	Marionette	INFO	Listening on port 57287
+1487002490573	geckodriver	INFO	Listening on 127.0.0.1:57346
+1487002491614	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.vB6DDay3Be5i
+1487002491615	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002491620	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57353
+1487002492124	Marionette	INFO	Listening on port 57353
+1487002511836	geckodriver	INFO	Listening on 127.0.0.1:57410
+1487002512875	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.l8lTIK0PYcap
+1487002512876	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487002512881	geckodriver::marionette	INFO	Connecting to Marionette on localhost:57416
+1487002513397	Marionette	INFO	Listening on port 57416
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1529: TypeError: treeData.tree is undefined
+1487009930740	geckodriver	INFO	Listening on 127.0.0.1:58574
+1487009931798	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.ZpmCyBlh9gKT
+1487009931800	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487009931802	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58581
+1487009932318	Marionette	INFO	Listening on port 58581
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1529: TypeError: treeData.tree is undefined
+1487009995071	geckodriver	INFO	Listening on 127.0.0.1:58667
+1487009996124	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.BrL7GReMp9TE
+1487009996125	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487009996130	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58673
+1487009996632	Marionette	INFO	Listening on port 58673
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+1487010024774	geckodriver	INFO	Listening on 127.0.0.1:58742
+1487010025821	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.vySgztCxyKNW
+1487010025823	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487010025828	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58748
+1487010026321	Marionette	INFO	Listening on port 58748
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+1487010167268	geckodriver	INFO	Listening on 127.0.0.1:58834
+1487010168315	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Uz6YkKxZwOn2
+1487010168316	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487010168321	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58840
+1487010168822	Marionette	INFO	Listening on port 58840
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+1487014258140	geckodriver	INFO	Listening on 127.0.0.1:59835
+1487014259191	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.aYNF6QBaZxLM
+1487014259193	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487014259197	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59841
+1487014259761	Marionette	INFO	Listening on port 59841
+1487014901788	geckodriver	INFO	Listening on 127.0.0.1:60033
+1487014902879	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.lFQlx126za79
+1487014902882	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487014902887	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60039
+1487014903538	Marionette	INFO	Listening on port 60039
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+1487015082006	geckodriver	INFO	Listening on 127.0.0.1:60162
+1487015083058	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.JIs5NrbWREGu
+1487015083060	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015083064	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60168
+1487015083613	Marionette	INFO	Listening on port 60168
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1532: TypeError: treeData.root.leaves is undefined
+1487015304292	geckodriver	INFO	Listening on 127.0.0.1:60274
+1487015305345	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.5dv7xUdpdBUb
+1487015305346	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015305351	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60280
+1487015305906	Marionette	INFO	Listening on port 60280
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3725: TypeError: $.extent is not a function
+1487015369960	geckodriver	INFO	Listening on 127.0.0.1:60362
+1487015371040	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.cpFnuLtFSMUv
+1487015371042	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015371044	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60368
+1487015371618	Marionette	INFO	Listening on port 60368
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3712: TypeError: $.extent is not a function
+1487015471563	geckodriver	INFO	Listening on 127.0.0.1:60542
+1487015472613	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.DiKVqxjJBqZ4
+1487015472615	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015472619	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60548
+1487015473182	Marionette	INFO	Listening on port 60548
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3712: TypeError: $.extent is not a function
+1487015572571	geckodriver	INFO	Listening on 127.0.0.1:60651
+1487015573589	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.DUe41XAeUyIU
+1487015573591	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015573595	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60657
+1487015574158	Marionette	INFO	Listening on port 60657
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3712: TypeError: cyclic object value
+1487015635038	geckodriver	INFO	Listening on 127.0.0.1:60735
+1487015636090	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.yU4UtPyqmtvB
+1487015636092	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015636096	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60741
+1487015636658	Marionette	INFO	Listening on port 60741
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3753: ReferenceError: tdata1 is not defined
+1487015809997	geckodriver	INFO	Listening on 127.0.0.1:60834
+1487015811048	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.cvcwXwAE38fM
+1487015811050	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487015811054	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60840
+1487015811612	Marionette	INFO	Listening on port 60840
+1487016138324	geckodriver	INFO	Listening on 127.0.0.1:60969
+1487016139411	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.k5ySIWz5c6rO
+1487016139413	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487016139417	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60978
+1487016141209	Marionette	INFO	Listening on port 60978
+1487016290818	geckodriver	INFO	Listening on 127.0.0.1:61112
+1487016291877	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.cb9BLmh0pFqH
+1487016291879	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487016291883	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61118
+1487016292440	Marionette	INFO	Listening on port 61118
+1487016393547	geckodriver	INFO	Listening on 127.0.0.1:61198
+1487016394593	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.HnE98Xu9zVlZ
+1487016394595	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487016394599	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61204
+1487016395153	Marionette	INFO	Listening on port 61204
+1487016543197	geckodriver	INFO	Listening on 127.0.0.1:61306
+1487016544252	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Mlf795AaBxPc
+1487016544254	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487016544259	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61313
+1487016544813	Marionette	INFO	Listening on port 61313
+1487018064107	geckodriver	INFO	Listening on 127.0.0.1:62347
+1487018065169	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.pMgLx5S4xLRp
+1487018065171	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018065173	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62353
+1487018065697	Marionette	INFO	Listening on port 62353
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+1487018342031	geckodriver	INFO	Listening on 127.0.0.1:62497
+1487018343084	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.V8zleFhATBlg
+1487018343085	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018343090	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62503
+1487018343588	Marionette	INFO	Listening on port 62503
+1487018389516	geckodriver	INFO	Listening on 127.0.0.1:62572
+1487018390567	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.JqAuGkfhMAGo
+1487018390569	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018390573	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62578
+1487018391080	Marionette	INFO	Listening on port 62578
+1487018449882	geckodriver	INFO	Listening on 127.0.0.1:62652
+1487018450936	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.SAr7wHSvN3AB
+1487018450938	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018450942	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62659
+1487018451444	Marionette	INFO	Listening on port 62659
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3818: ReferenceError: index1 is not defined
+1487018537845	geckodriver	INFO	Listening on 127.0.0.1:62754
+1487018538900	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.D3bV7aTecrq1
+1487018538902	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018538906	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62760
+1487018539441	Marionette	INFO	Listening on port 62760
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3818: ReferenceError: bla is not defined
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+JavaScript warning: resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/server/actors/script.js, line 349: DebuggeeWouldRun: debuggee `file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js:106' would run
+JavaScript warning: resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/server/actors/webbrowser.js, line 1805: DebuggeeWouldRun: debuggee `file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js:76' would run
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3818: ReferenceError: bla is not defined
+JavaScript error: chrome://devtools/content/debugger/views/filter-view.js, line 611: SyntaxError: unterminated parenthetical
+1487018941100	geckodriver	INFO	Listening on 127.0.0.1:62926
+1487018942226	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.jXS29QS0QVR4
+1487018942227	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487018942230	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62932
+1487018942836	Marionette	INFO	Listening on port 62932
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3818: ReferenceError: bla is not defined
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+console.error: 
+  TabSources.prototype._fetchSourceMap threw an exception: Error: Failed to fetch file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/underscore-min.map. Code 2152857618.
+Stack: mainThreadFetch/onResponse@resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/shared/DevToolsUtils.js:436:23
+NetUtil_asyncFetch/<.onStopRequest@resource://gre/modules/NetUtil.jsm:128:17
+Line: 436, column: 23
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3818: ReferenceError: bla is not defined
+1487019644304	geckodriver	INFO	Listening on 127.0.0.1:63165
+1487019645369	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.sQN2J7kFgBnY
+1487019645371	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487019645373	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63173
+1487019645877	Marionette	INFO	Listening on port 63173
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3726: ReferenceError: index1 is not defined
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+1487019901725	geckodriver	INFO	Listening on 127.0.0.1:63285
+1487019902789	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Pp3piFo0g9Sv
+1487019902791	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487019902795	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63293
+1487019903333	Marionette	INFO	Listening on port 63293
+1487019928764	geckodriver	INFO	Listening on 127.0.0.1:63320
+1487019929782	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.CDkmRMvekgvk
+1487019929784	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487019929788	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63326
+1487019930283	Marionette	INFO	Listening on port 63326
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 3728: TypeError: trees[index1] is undefined
+1487020007509	geckodriver	INFO	Listening on 127.0.0.1:63424
+1487020008524	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.zuKXVvk6Xe5b
+1487020008526	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487020008529	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63431
+1487020009035	Marionette	INFO	Listening on port 63431
+1487020062586	geckodriver	INFO	Listening on 127.0.0.1:63503
+1487020063638	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.jEcSaXBtnfqV
+1487020063640	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487020063646	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63509
+1487020064203	Marionette	INFO	Listening on port 63509
+1487020771308	geckodriver	INFO	Listening on 127.0.0.1:63821
+1487020772365	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.8KHrTmhMfZeY
+1487020772367	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487020772371	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63827
+1487020772917	Marionette	INFO	Listening on port 63827
+1487020781685	geckodriver	INFO	Listening on 127.0.0.1:63899
+1487020782737	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.YCFuGwdQxkRj
+1487020782739	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487020782744	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63905
+1487020783278	Marionette	INFO	Listening on port 63905
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+1487021140794	geckodriver	INFO	Listening on 127.0.0.1:64096
+1487021141868	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.BUYNo2NfkapN
+1487021141870	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487021141872	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64102
+1487021142410	Marionette	INFO	Listening on port 64102
+1487021176821	geckodriver	INFO	Listening on 127.0.0.1:64172
+1487021177873	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.VYC5WddSyls1
+1487021177875	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487021177881	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64180
+1487021178381	Marionette	INFO	Listening on port 64180
+1487021386081	geckodriver	INFO	Listening on 127.0.0.1:64302
+1487021387134	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.BpVcEtlAvRxq
+1487021387135	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487021387140	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64308
+1487021387654	Marionette	INFO	Listening on port 64308
+1487021462415	geckodriver	INFO	Listening on 127.0.0.1:64395
+1487021463462	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.YuQf0faehljE
+1487021463464	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487021463468	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64401
+1487021463970	Marionette	INFO	Listening on port 64401
+1487021622653	geckodriver	INFO	Listening on 127.0.0.1:64543
+1487021623702	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.CYI5sJW4EydT
+1487021623704	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487021623708	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64549
+1487021624211	Marionette	INFO	Listening on port 64549
