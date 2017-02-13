@@ -800,7 +800,6 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
-        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -2072,14 +2071,15 @@ var TreeCompare = function(){
                     var d = d.source;
                     if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
-                    } else if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)){
-                        return colorScale(parseFloat(e["branchSupport"])/1000)
-                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight){
-                        return "green";
-                        //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
+                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                            return "green";
+                            //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                        } else {
                             return defaultLineColor; //changed from defaultLineColor;
+                        }
                     }
+
 
                     // if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                     //     console.log(parseFloat(d["branchSupport"])/1000);
@@ -2768,182 +2768,7 @@ var TreeCompare = function(){
         });
     }
 
-    function renderSearchBar(tree, canvasId){
-        //set up search box and attach event handlers
-        if (settings.enableSearch) {
-            $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
-            $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
-            $("#searchBox" + canvasId).css({
-                "max-width": "250px",
-                "min-height": "45px",
-                "padding": "5px",
-                "right": "5px",
-                "top": "5px",
-                "position": "absolute",
-                "background-color": "gray",
-                "-webkit-border-radius": "5px",
-                "-moz-border-radius": "5px",
-                "border-radius": "5px"
 
-            });
-            $("#searchInput" + canvasId).css({
-                "float": "right",
-                "width": "0px",
-                "margin-left": "0px",
-                "margin-top": "5px",
-                "display": "none"
-
-            });
-            $("#searchButton" + canvasId).css({
-                "width": "50px",
-                "float": "right"
-
-            });
-            $("#resultsBox" + canvasId).css({
-                "width": "200px",
-                "position": "absolute",
-                "margin-right": "10px",
-                "max-height": "200px",
-                "overflow": "scroll",
-                "margin-top": "40px",
-                "background-color": "#efefef",
-                "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "display": "none",
-                "padding-top": "10px"
-
-            });
-
-            function hideSearchBar() {
-                visible = false;
-                $("#resultsList" + canvasId).empty();
-                $("#resultsBox" + canvasId).slideUp(300, function() {
-                    $("#resultsBox" + canvasId).css({
-                        "display": "none"
-                    });
-                });
-                $("#searchInput" + canvasId).animate({
-                    width: "0px"
-                }, 600, function() {
-                    $("#searchInput" + canvasId).css({
-                        "display": "none"
-                    });
-                    $("#searchInput" + canvasId).val("");
-                });
-            }
-
-            var visible = false;
-            $('#searchButton' + canvasId).click(function() {
-                if (!visible) {
-                    visible = true;
-                    postorderTraverse(tree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(tree.root,tree.data);
-                    $("#searchInput" + canvasId).css({
-                        "display": "inline"
-                    });
-                    $("#searchInput" + canvasId).animate({
-                        width: "150px"
-                    }, 600, function() {
-                        $("#searchInput" + canvasId).focus();
-                    });
-
-                } else { //if search unselected then remove orange highlight from branches
-                    postorderTraverse(tree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(tree.root,tree.data);
-                    hideSearchBar();
-                }
-            });
-            // variable i is set to the number of leaves
-            var leafObjs = [];
-            for (var i = 0; i < tree.root.leaves.length; i++) {
-                leafObjs.push(tree.root.leaves[i]);
-            }
-
-            $("#" + canvasId + " svg").click(function() {
-                hideSearchBar();
-            });
-
-            //main event handler, performs search every time a char is typed so can get realtime results
-            $("#searchInput" + canvasId).bind("paste keyup", function() {
-                $("#resultsList" + canvasId).empty();
-                var text = $(this).val();
-                var results = _.filter(leafObjs, function(leaf) {
-                    return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
-                });
-                var results_name = [];
-                for (var i = 0; i < results.length; i++){
-                    results_name.push(results[i].name)
-                }
-                console.log(tree);
-                postorderTraverse(tree.data.root,function(d){
-                    expandPathToLeaf(d,true,false);
-                });
-                update(tree.root,tree.data);
-
-                if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
-                    $("#resultsBox" + canvasId).slideDown(200);
-                    $("#resultsList" + canvasId).empty();
-
-                    postorderTraverse(tree.data.root,function(d){
-                        if(results_name.indexOf(d.name)>-1){
-                            expandPathToLeaf(d,false,false);
-                        }
-                    });
-                    update(tree.root,tree.data);
-
-                    for (var i = 0; i < results.length; i++) {
-                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
-                        $("#resultsList" + canvasId + " li").css({
-                            "margin-left": "-25px",
-                            "list-style-type": "none",
-                            "cursor": "pointer",
-                            "cursor": "hand"
-                        });
-                        var indices = [];
-                        $("#resultsList" + canvasId + " ." + i).on("click", function() {
-                            var index = $(this).attr("class");
-                            console.log(index);
-                            indices.push(parseInt(index));
-                            for (var i = 0; i<results.length; i++){
-                                if (indices.indexOf(i)<0){
-                                    expandPathToLeaf(results[i],true,false);
-                                }
-                            }
-                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
-                                for (var i = 0; i<indices.length; i++){
-                                    expandPathToLeaf(results[indices[i]],false);
-                                }
-                            } else {
-                                console.log(results_name[index]);
-
-                                for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
-                                    expandPathToLeaf(results[indices[i]],true,false);
-                                }
-                                expandPathToLeaf(results[indices[indices.length-1]],false);
-                            }
-                            update(tree.root, tree.data);
-                        });
-
-                    }
-
-                }
-                else {
-                    $("#resultsList" + canvasId).empty();
-                    $("#resultsBox" + canvasId).slideUp(200, function() {
-                        $("#resultsBox" + canvasId).css({
-                            "display": "none"
-                        });
-                    });
-                }
-
-            });
-        }
-    }
 
     /*----------------------
     |
@@ -3271,7 +3096,6 @@ var TreeCompare = function(){
             //render various buttons and search bars and sliders
             renderZoomSlider(tree, canvasId);
             renderSizeControls(tree, canvasId);
-            renderSearchBar(tree, canvasId);
             renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
 
@@ -3291,7 +3115,6 @@ var TreeCompare = function(){
             //render various buttons and search bars and sliders
             renderZoomSlider(baseTree, canvasId);
             renderSizeControls(baseTree, canvasId);
-            renderSearchBar(baseTree, canvasId);
             renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
         }
@@ -3310,6 +3133,178 @@ var TreeCompare = function(){
             compareMode = true;
         }
         renderedTrees.push(baseTree);
+        $("#searchBox" + canvasId).remove();
+        if (settings.enableSearch) {
+
+            $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
+            $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
+            $("#searchBox" + canvasId).css({
+                "max-width": "250px",
+                "min-height": "45px",
+                "padding": "5px",
+                "right": "5px",
+                "top": "5px",
+                "position": "absolute",
+                "background-color": "gray",
+                "-webkit-border-radius": "5px",
+                "-moz-border-radius": "5px",
+                "border-radius": "5px"
+
+            });
+            $("#searchInput" + canvasId).css({
+                "float": "right",
+                "width": "0px",
+                "margin-left": "0px",
+                "margin-top": "5px",
+                "display": "none"
+
+            });
+            $("#searchButton" + canvasId).css({
+                "width": "50px",
+                "float": "right"
+
+            });
+            $("#resultsBox" + canvasId).css({
+                "width": "200px",
+                "position": "absolute",
+                "margin-right": "10px",
+                "max-height": "200px",
+                "overflow": "scroll",
+                "margin-top": "40px",
+                "background-color": "#efefef",
+                "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+                "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+                "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+                "display": "none",
+                "padding-top": "10px"
+
+            });
+
+            function hideSearchBar() {
+                visible = false;
+                $("#resultsList" + canvasId).empty();
+                $("#resultsBox" + canvasId).slideUp(300, function() {
+                    $("#resultsBox" + canvasId).css({
+                        "display": "none"
+                    });
+                });
+                $("#searchInput" + canvasId).animate({
+                    width: "0px"
+                }, 600, function() {
+                    $("#searchInput" + canvasId).css({
+                        "display": "none"
+                    });
+                    $("#searchInput" + canvasId).val("");
+                });
+            }
+
+            var visible = false;
+            $('#searchButton' + canvasId).click(function() {
+                if (!visible) {
+                    visible = true;
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
+                    $("#searchInput" + canvasId).css({
+                        "display": "inline"
+                    });
+                    $("#searchInput" + canvasId).animate({
+                        width: "150px"
+                    }, 600, function() {
+                        $("#searchInput" + canvasId).focus();
+                    });
+
+                } else { //if search unselected then remove orange highlight from branches
+                    postorderTraverse(baseTree.data.root, function(d) {
+                        d.searchHighlight =false;
+                    });
+                    update(baseTree.root,baseTree.data);
+                    hideSearchBar();
+                }
+            });
+            // variable i is set to the number of leaves
+            var leafObjs = [];
+            for (var i = 0; i < baseTree.root.leaves.length; i++) {
+                leafObjs.push(baseTree.root.leaves[i]);
+            }
+
+            $("#" + canvasId + " svg").click(function() {
+                hideSearchBar();
+            });
+
+            //main event handler, performs search every time a char is typed so can get realtime results
+            $("#searchInput" + canvasId).bind("paste keyup", function() {
+                $("#resultsList" + canvasId).empty();
+                var text = $(this).val();
+                var results = _.filter(leafObjs, function(leaf) {
+                    return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
+                });
+                var results_name = [];
+                for (var i = 0; i < results.length; i++){
+                    results_name.push(results[i].name)
+                }
+                postorderTraverse(baseTree.data.root,function(d){
+                    expandPathToLeaf(d,true,false);
+                });
+                update(baseTree.root,baseTree.data);
+
+                if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
+                    $("#resultsBox" + canvasId).slideDown(200);
+                    $("#resultsList" + canvasId).empty();
+
+                    postorderTraverse(baseTree.data.root,function(d){
+                        if(results_name.indexOf(d.name)>-1){
+                            expandPathToLeaf(d,false,false);
+                        }
+                    });
+                    update(baseTree.root,baseTree.data);
+
+                    for (var i = 0; i < results.length; i++) {
+                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
+                        $("#resultsList" + canvasId + " li").css({
+                            "margin-left": "-25px",
+                            "list-style-type": "none",
+                            "cursor": "pointer",
+                            "cursor": "hand"
+                        });
+                        var indices = [];
+                        $("#resultsList" + canvasId + " ." + i).on("click", function() {
+                            var index = $(this).attr("class");
+                            indices.push(parseInt(index));
+                            for (var i = 0; i<results.length; i++){
+                                if (indices.indexOf(i)<0){
+                                    expandPathToLeaf(results[i],true,false);
+                                }
+                            }
+                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                                for (var i = 0; i<indices.length; i++){
+                                    expandPathToLeaf(results[indices[i]],false);
+                                }
+                            } else {
+                                for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
+                                    expandPathToLeaf(results[indices[i]],true,false);
+                                }
+                                expandPathToLeaf(results[indices[indices.length-1]],false);
+                            }
+                            update(baseTree.root, baseTree.data);
+                        });
+
+                    }
+
+                }
+                else {
+                    $("#resultsList" + canvasId).empty();
+                    $("#resultsBox" + canvasId).slideUp(200, function() {
+                        $("#resultsBox" + canvasId).css({
+                            "display": "none"
+                        });
+                    });
+                }
+
+            });
+        }
+
 
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();
@@ -3582,7 +3577,6 @@ var TreeCompare = function(){
 
         for (var i = 0; i < renderedTrees.length; i++) {
             maxDepth = getMaxAutoCollapse();
-            //console.log(maxDepth);
             if (depth === null) {
                 uncollapseAll(renderedTrees[i].root);
             } else {
@@ -3714,9 +3708,13 @@ var TreeCompare = function(){
         var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
 
         $.when(worker1, worker2).done(function(tree1, tree2){
+
+
             trees[index1].data.root = tree1;
             trees[index2].data.root = tree2;
+
             if (!highlight) {
+
 
                 update(trees[index1].root,trees[index1].data);
                 update(trees[index2].root,trees[index2].data);
@@ -3764,13 +3762,7 @@ var TreeCompare = function(){
                 // To fix this bug, we need to reset all the numeric identifiers
                 // Please note that the numeric identifiers are built by incrementing the
                 // number of leaves in the tree.
-                // postorderTraverse(trees[index1].root, function (d) {
-                //     d.id = null;
-                // });
-                //
-                // postorderTraverse(trees[index2].root, function (d) {
-                //     d.id = null;
-                // });
+
 
                 compareMode = true;
                 settings.loadedCallback();
@@ -3896,7 +3888,6 @@ var TreeCompare = function(){
         }
         v.elementBCN = elementBCNNode;
         v.elementS = maxElementS;
-        //console.log(v.elementBCN);
     }
 
     /*
@@ -4029,7 +4020,7 @@ var TreeCompare = function(){
             //settings.loadedCallback();
         }, 10);
 
-        console.log(trees);
+
 
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
@@ -4060,7 +4051,6 @@ var TreeCompare = function(){
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
         renderedTrees = [];
-        console.log(trees);
         var index = findTreeIndex(name);
         initializeRenderTreeCanvas(name, canvasId, scaleId);
         if (trees[index].hasOwnProperty("multiple")){
@@ -4081,6 +4071,7 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
+
         }
     }
 
@@ -4358,7 +4349,6 @@ var TreeCompare = function(){
 
                             preprocessTrees(trees[index1], trees[index2]);
                             //preprocessTrees(index1, index2);
-                            //console.log(trees[index1]);
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
                         } else {
