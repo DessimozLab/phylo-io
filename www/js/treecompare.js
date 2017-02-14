@@ -899,7 +899,7 @@ var TreeCompare = function(){
                     break;
                 }
             }
-            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
+            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(1);
             scaleText.text(text);
         }
     }
