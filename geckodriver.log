@@ -598,3 +598,240 @@ Full stack:
 1487021623704	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
 1487021623708	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64549
 1487021624211	Marionette	INFO	Listening on port 64549
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+2017-02-13 23:22:02.780 geckodriver[44719:5927419] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.776 geckodriver[44283:5927635] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.778 geckodriver[44177:5927410] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.779 geckodriver[41789:5927356] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[41197:5927342] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[45239:5927423] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.776 geckodriver[42684:5927670] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[44539:5927418] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.781 geckodriver[45488:5927428] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.776 geckodriver[43313:5927657] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[40793:5927335] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.777 geckodriver[40446:5927322] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.777 geckodriver[44011:5927402] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.778 geckodriver[41274:5927345] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[41941:5927359] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.779 geckodriver[40718:5927712] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.778 geckodriver[40267:5927314] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.778 geckodriver[41425:5927348] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[40946:5927334] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[42766:5927376] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.780 geckodriver[44619:5927417] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.781 geckodriver[40558:5927323] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[43616:5927393] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[43774:5927645] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[43465:5927388] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[44464:5927412] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[42166:5927371] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[42607:5927369] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[41864:5927358] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[43693:5927398] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[42843:5927377] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[40348:5927319] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[41122:5927339] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[41350:5927352] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[43233:5927383] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[43154:5927380] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[41541:5927351] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[40871:5927337] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[41025:5927340] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[45975:5927439] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[43858:5927400] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[43935:5927401] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[43389:5927387] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[42091:5927365] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[40634:5927324] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.781 geckodriver[41694:5927363] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.781 geckodriver[45391:5927427] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[43540:5927391] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[42241:5927366] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[45814:5927434] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[45642:5927432] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[43068:5927382] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[45318:5927424] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.784 geckodriver[45892:5927436] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.785 geckodriver[42016:5927368] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.783 geckodriver[45561:5927431] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.782 geckodriver[44388:5927415] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.786 geckodriver[41617:5927354] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.787 geckodriver[45720:5927433] Metadata.framework [Error]: server port invalidated for uid 501
+2017-02-13 23:22:02.798 geckodriver[44283:5927634] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[40446:5927716] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[41425:5927689] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[44177:5927636] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[44719:5927421] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[42766:5927666] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[41197:5927699] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[44619:5927626] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[44539:5927628] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[45239:5927622] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[43389:5927654] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[40634:5927713] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[45975:5927604] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[40871:5927707] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[41025:5927702] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[42843:5927664] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[43154:5927660] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.799 geckodriver[40793:5927708] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41350:5927694] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42607:5927669] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43693:5927646] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[44464:5927630] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43465:5927652] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45814:5927608] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42241:5927672] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45642:5927612] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41941:5927680] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43068:5927661] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[40267:5927721] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41789:5927684] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.812 geckodriver[43068:5927663] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[40267:5927722] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[41941:5927682] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[45814:5927609] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[45642:5927613] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[43465:5927653] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[42241:5927674] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44464:5927631] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[43693:5927647] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[42607:5927671] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[41350:5927695] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[43154:5927662] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[40793:5927711] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[40871:5927709] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[40634:5927714] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[42843:5927665] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[45975:5927605] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[41025:5927704] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[43389:5927655] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[45239:5927623] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44539:5927629] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[42766:5927667] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44619:5927627] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[41425:5927690] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44177:5927637] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[41197:5927701] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44719:5927625] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[40446:5927719] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.812 geckodriver[44283:5927406] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.800 geckodriver[45892:5927606] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.801 geckodriver[44388:5927632] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45561:5927614] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41864:5927681] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[40348:5927718] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[40558:5927715] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42016:5927677] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[40946:5927338] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41274:5927345] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45720:5927610] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[40718:5927325] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45318:5927620] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42166:5927673] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43616:5927648] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[44011:5927638] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43540:5927650] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43774:5927644] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43935:5927640] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41122:5927700] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41694:5927685] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43313:5927386] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42091:5927676] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45391:5927618] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[45488:5927616] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[42684:5927670] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[41617:5927686] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43233:5927658] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.800 geckodriver[43858:5927642] Metadata.framework [Error]: client check-in failed: (-308) (ipc/mig) server died
+2017-02-13 23:22:02.823 geckodriver[40558:5927717] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[41864:5927683] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[45561:5927615] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[44388:5927633] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[40348:5927720] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[45892:5927607] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.823 geckodriver[41789:5927691] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[41617:5927687] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[42684:5927375] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[45488:5927617] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[43858:5927643] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[45391:5927619] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[43774:5927397] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[42016:5927679] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[45720:5927611] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[41274:5927698] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[40946:5927706] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[43616:5927649] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[40718:5927329] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[45318:5927621] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[42166:5927675] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[44011:5927639] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[41122:5927703] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[43313:5927389] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.829 geckodriver[43540:5927651] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[42091:5927678] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[43935:5927641] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[41694:5927688] Metadata.framework [Error]: couldn't get the client port
+2017-02-13 23:22:02.828 geckodriver[43233:5927659] Metadata.framework [Error]: couldn't get the client port
+1487058040470	geckodriver	INFO	Listening on 127.0.0.1:49545
+1487058041629	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.4HogpBVcmTzc
+1487058041631	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin
+1487058041681	geckodriver::marionette	INFO	Connecting to Marionette on localhost:49555
+1487058042583	Marionette	INFO	Listening on port 49555
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2446: TypeError: svgNode is null
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/d3.min.js, line 3956: TypeError: n[i] is undefined
+*************************
+A coding exception was thrown and uncaught in a Task.
+
+Full message: TypeError: NetworkError when attempting to fetch resource.
+Full stack: 
+*************************
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2456: TypeError: svgNode is null

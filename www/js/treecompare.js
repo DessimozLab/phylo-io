@@ -1513,11 +1513,15 @@ var TreeCompare = function(){
      /    UPDATE: Main function that is every time called once an action on the visualization is performed
      /
      ---------------*/
-    function update(source, treeData, duration) {
+    function update(source, treeData, duration, treeToggle) {
 
         //time taken for animations in ms
         if (duration === undefined) {
             duration = 750;
+        }
+
+        if (treeToggle === undefined){
+            treeToggle = false;
         }
 
 
@@ -1851,12 +1855,20 @@ var TreeCompare = function(){
             .attr("x", -settings.nodeSize + "px");
 
 
+
+
         // Node changes with transition
-        var nodeUpdate = node.transition()
-            .duration(duration)
-            .attr("transform", function(d) {
-                return "translate(" + d.y + "," + d.x + ")";
-            });
+        if(treeToggle === true){
+            var nodeUpdate = node.attr("transform", function(d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+        } else {
+            var nodeUpdate = node.transition()
+                .duration(duration)
+                .attr("transform", function(d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+        }
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
@@ -2861,11 +2873,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, newName, canvas, scale, oppositeName);
+                renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName);
+                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -2879,7 +2891,7 @@ var TreeCompare = function(){
                     initialiseTree(toggledTree.root, settings.autoCollapse);
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree,newName,canvas,scale);
+                    renderTree(toggledTree,newName,canvas,scale,undefined, true);
 
                     settings.loadedCallback();
                 }, 2);
@@ -2957,11 +2969,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -2974,7 +2986,7 @@ var TreeCompare = function(){
                     initialiseTree(toggledTree.root, settings.autoCollapse);
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree,new_name,canvas,scale);
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
                     settings.loadedCallback();
                 }, 2);
                 d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
@@ -3007,11 +3019,11 @@ var TreeCompare = function(){
 
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -3026,7 +3038,7 @@ var TreeCompare = function(){
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
                     //clear the canvas of any previous visualisation
-                    renderTree(toggledTree,new_name,canvas,scale);
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
                     settings.loadedCallback();
                 }, 2);
                 d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
@@ -3130,13 +3142,18 @@ var TreeCompare = function(){
      /    Main function for setting up a d3 visualisation of a tree
      /
      ---------------*/
-    function renderTree(baseTree, name, canvasId, scaleId, otherTreeName) {
+    function renderTree(baseTree, name, canvasId, scaleId, otherTreeName, treeToggle) {
 
         //get the trees by name
         if (otherTreeName !== undefined) {
             var otherTree = trees[findTreeIndex(name)];
             compareMode = true;
         }
+
+        if (treeToggle === undefined){
+            treeToggle = false;
+        }
+
         renderedTrees.push(baseTree);
         $("#searchBox" + canvasId).remove();
         if (settings.enableSearch) {
@@ -3449,7 +3466,7 @@ var TreeCompare = function(){
             baseTree.data.treeWidth = newWidth;
             baseTree.data.treeHeight = newHeight;
         }
-        update(baseTree.root, baseTree.data);
+        update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);
         baseTree.data.zoomBehaviour.scale(0.8);
@@ -3719,17 +3736,11 @@ var TreeCompare = function(){
             var bcnvalT2 = [];
             var bcnobjT2 = [];
 
-            var test = [];
-
             postorderTraverse(t1,function(d){
                  bcnobjT1.push(d.elementBCN);
                  bcnvalT1.push(d.elementS);
 
-                 if(d.elementS !== null){
-                     test.push(d.id);
-                 }
             });
-            console.log(test);
             postorderTraverse(t2,function(d){
                 bcnobjT2.push(d.elementBCN);
                 bcnvalT2.push(d.elementS);
@@ -3748,14 +3759,6 @@ var TreeCompare = function(){
                 i++;
             });
 
-            // postorderTraverse(tree2,function(d){
-            //     d.searchHighlight = false;
-            // });
-
-            // trees[index1].root = t1;
-            // trees[index2].root = t2;
-            // trees[index1].data.root = trees[index1].root;
-            // trees[index2].data.root = trees[index2].root;
 
             if (!highlight) {
 
