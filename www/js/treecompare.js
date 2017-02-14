@@ -12,7 +12,7 @@ var TreeCompare = function(){
     var scaleLinePadding = 10;
     var compareMode = false;
     var maxDepth = 0;
-    var idCounter = 0;
+
 
     /*
      colors for the color scale for comparing nodes to best common node
@@ -766,6 +766,7 @@ var TreeCompare = function(){
     function addTree(newick, name, mode) {
 
         var num = trees.length;
+        var idCounter = 0;
 
         // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
         if (newick.indexOf(";") !== -1){
@@ -805,19 +806,20 @@ var TreeCompare = function(){
 
             //add required parameters to each node
             postorderTraverse(tree, function(d) {
-                d.ID = makeId("node_");
+                d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
                 d.clickedParentHighlight = false;
                 d.mouseoverHighlight = false; //when mouse is over node
                 d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
                 d.correspondingHighlight = false;
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+                idCounter++;
             });
 
-            var root_ID = makeId("node_");
-            for (var j = 0; j < tree.children.length; j++){
-                tree.children[j].ID = root_ID;
-            }
+            // var root_ID = name+"_node_"+idCounter;
+            // for (var j = 0; j < tree.children.length; j++){
+            //     tree.children[j].ID = root_ID;
+            // }
             if (newicks.length > 1){
                 var fullTree = {
                     root: tree,
@@ -901,6 +903,35 @@ var TreeCompare = function(){
                 }
             }
         }
+    }
+
+    /*
+    Function to scale values based on maximum value
+    Bootstrap can be between:
+    1) [0,1]
+    2) [0,100]
+    3) [0,1000] swisstree only
+     */
+    function findScaleValueBranchSupport(tree){
+        var branchSupport = [];
+        postorderTraverse(tree, function(d){
+            if (d["branchSupport"]){
+                branchSupport.push(d["branchSupport"])
+            }
+        });
+        var maxBranchSupport = Math.max.apply(Math,branchSupport);
+
+        if (maxBranchSupport <= 1){
+            return 1
+        } else if (maxBranchSupport <= 100){
+            return 100
+        } else if (maxBranchSupport <= 1000) {
+            return 1000
+        }
+        else {
+            return undefined
+        }
+
     }
 
     /*
@@ -1139,6 +1170,7 @@ var TreeCompare = function(){
     /* Reroot: put the root in the middle of node and its parent */
     function reroot(tree, node)
     {
+        var idCounter = 0;
         var root = tree.root;
         if(node.parent !== root){
 
@@ -1163,9 +1195,9 @@ var TreeCompare = function(){
              * d: previous distance p->d
              */
             q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
-            q.ID =makeId("node_");
+            //q.ID =makeId("node_");
             q.children[0] = node; //new root
-            q.children[0].ID = node.ID;
+            //q.children[0].ID = node.ID;
             q.children[0].length = dist;
             q.children[0].branchSupport = btmp;
             p = node.parent;
@@ -1173,7 +1205,7 @@ var TreeCompare = function(){
             for (i = 0; i < p.children.length; ++i)
                 if (p.children[i] == node) break;
             q.children[1] = p;
-            q.children[1].ID =  makeId("node_");
+            //q.children[1].ID =  makeId("node_");
             d = p.length;
             bd = p.branchSupport;
             p.length = tmp - dist;
@@ -1214,8 +1246,9 @@ var TreeCompare = function(){
                 //d.bcnhighlight = null;
                 //d.highlight = 0;
                 //d.clickedHighlight = null;
-                //d.ID = makeId("node_");
+                d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
+                idCounter++;
             },false);
             //new_root.leaves = getChildLeaves(new_root);
             tree.root = new_root;
@@ -1555,11 +1588,15 @@ var TreeCompare = function(){
      /    UPDATE: Main function that is every time called once an action on the visualization is performed
      /
      ---------------*/
-    function update(source, treeData, duration) {
+    function update(source, treeData, duration, treeToggle) {
 
         //time taken for animations in ms
         if (duration === undefined) {
             duration = 750;
+        }
+
+        if (treeToggle === undefined){
+            treeToggle = false;
         }
 
 
@@ -1893,12 +1930,20 @@ var TreeCompare = function(){
             .attr("x", -settings.nodeSize + "px");
 
 
+
+
         // Node changes with transition
-        var nodeUpdate = node.transition()
-            .duration(duration)
-            .attr("transform", function(d) {
-                return "translate(" + d.y + "," + d.x + ")";
-            });
+        if(treeToggle === true){
+            var nodeUpdate = node.attr("transform", function(d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+        } else {
+            var nodeUpdate = node.transition()
+                .duration(duration)
+                .attr("transform", function(d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+        }
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
@@ -2116,30 +2161,22 @@ var TreeCompare = function(){
                         return "green"
                     }
                     var d = d.source;
-                    if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
-                    } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                        if (e["branchSupport"]){
+                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                        } else {
+                            return defaultLineColor;
+                        }
+                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
                             return "green";
                             //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                        } else {
-                            return defaultLineColor; //changed from defaultLineColor;
-                        }
+                    } else {
+                        return defaultLineColor; //changed from defaultLineColor;
+
                     }
 
-
-                    // if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
-                    //     console.log(parseFloat(d["branchSupport"])/1000);
-                    //     return colorScale(parseFloat(e["branchSupport"])/1000)
-                    // } else {
-                    //     if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                    //         return "green";
-                    //         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                    //     } else {
-                    //         console.log("default")
-                    //         return defaultLineColor; //changed from defaultLineColor;
-                    //     }
-                    // }
                 });
 
             // Enter any new links at the parent"s previous position.
@@ -2192,15 +2229,23 @@ var TreeCompare = function(){
                         return "green";
                     }
                     var d = d.source;
-                    if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+
+                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         return colorScale(d[currentS])
-                    } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight){ //here the color of the branches after the selected node is set to green
-                            return "green";
+                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                        if (e["branchSupport"]){
+                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
+                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight) {
+                        return "green";
+                        //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                    } else {
+                        return defaultLineColor; //changed from defaultLineColor;
+
                     }
+
                 })
                 .style("cursor", "pointer")
                 .on("mouseover",linkMouseover)
@@ -2903,11 +2948,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, newName, canvas, scale, oppositeName);
+                renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName);
+                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -2921,7 +2966,7 @@ var TreeCompare = function(){
                     initialiseTree(toggledTree.root, settings.autoCollapse);
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree,newName,canvas,scale);
+                    renderTree(toggledTree,newName,canvas,scale,undefined, true);
 
                     settings.loadedCallback();
                 }, 2);
@@ -2999,11 +3044,11 @@ var TreeCompare = function(){
                 // render tress (workers) -> once done, run comprison (workers)
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -3016,7 +3061,7 @@ var TreeCompare = function(){
                     initialiseTree(toggledTree.root, settings.autoCollapse);
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree,new_name,canvas,scale);
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
                     settings.loadedCallback();
                 }, 2);
                 d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
@@ -3049,11 +3094,11 @@ var TreeCompare = function(){
 
                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
 
                 oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
                 oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
 
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -3068,7 +3113,7 @@ var TreeCompare = function(){
                     toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
                     toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
                     //clear the canvas of any previous visualisation
-                    renderTree(toggledTree,new_name,canvas,scale);
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
                     settings.loadedCallback();
                 }, 2);
                 d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part+"/"+(toggledTree.total-1));
@@ -3172,13 +3217,18 @@ var TreeCompare = function(){
      /    Main function for setting up a d3 visualisation of a tree
      /
      ---------------*/
-    function renderTree(baseTree, name, canvasId, scaleId, otherTreeName) {
+    function renderTree(baseTree, name, canvasId, scaleId, otherTreeName, treeToggle) {
 
         //get the trees by name
         if (otherTreeName !== undefined) {
             var otherTree = trees[findTreeIndex(name)];
             compareMode = true;
         }
+
+        if (treeToggle === undefined){
+            treeToggle = false;
+        }
+
         renderedTrees.push(baseTree);
         $("#searchBox" + canvasId).remove();
         if (settings.enableSearch) {
@@ -3308,7 +3358,7 @@ var TreeCompare = function(){
                     update(baseTree.root,baseTree.data);
 
                     for (var i = 0; i < results.length; i++) {
-                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a href="#">' + results[i].name + '</a></li>');
+                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
                         $("#resultsList" + canvasId + " li").css({
                             "margin-left": "-25px",
                             "list-style-type": "none",
@@ -3334,7 +3384,8 @@ var TreeCompare = function(){
                                 }
                                 expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
-                            update(baseTree.root, baseTree.data);
+                            console.log(results);
+                            update(baseTree, baseTree.data);
                         });
 
                     }
@@ -3491,7 +3542,6 @@ var TreeCompare = function(){
             baseTree.data.treeHeight = newHeight;
         }
 
-
         if(undoIndex == 0){
             // save treedata to undo
             undoTreeData[undoIndex] = _.clone(baseTree.data);
@@ -3506,7 +3556,7 @@ var TreeCompare = function(){
             //undoIndex = undoIndex+1
         }
 
-        update(baseTree.root, baseTree.data);
+        update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);
         baseTree.data.zoomBehaviour.scale(0.8);
@@ -3717,8 +3767,8 @@ var TreeCompare = function(){
         }
 
         function getAllBCNs(d, t) {
-            var children = d.children ? d.children : [];
-            //var children = getChildren(d);
+            //var children = d.children ? d.children : [];
+            var children = getChildren(d);
             if (children.length > 0) {
                 for (var a = 0; a < children.length; a++) {
                     getAllBCNs(children[a], t);
@@ -3758,6 +3808,7 @@ var TreeCompare = function(){
         var tree1 = trees[index1].root;
         var tree2 = trees[index2].root;
 
+
         if (recalculate === undefined) {
             recalculate = true;
         }
@@ -3766,21 +3817,43 @@ var TreeCompare = function(){
             highlight = false;
         }
 
-
         var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
         var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
 
-        $.when(worker1, worker2).done(function(tree1, tree2){
+        $.when(worker1, worker2).done(function(t1, t2){
+            var bcnvalT1 = [];
+            var bcnobjT1 = [];
+            var bcnvalT2 = [];
+            var bcnobjT2 = [];
 
+            postorderTraverse(t1,function(d){
+                 bcnobjT1.push(d.elementBCN);
+                 bcnvalT1.push(d.elementS);
 
-            trees[index1].data.root = tree1;
-            trees[index2].data.root = tree2;
+            });
+            postorderTraverse(t2,function(d){
+                bcnobjT2.push(d.elementBCN);
+                bcnvalT2.push(d.elementS);
+            });
+
+            var i = 0;
+            postorderTraverse(trees[index1].data.root,function(d){
+                d.elementBCN = bcnobjT1[i];
+                d.elementS = bcnvalT1[i];
+                i++;
+            });
+            var i = 0;
+            postorderTraverse(trees[index2].data.root,function(d){
+                d.elementBCN = bcnobjT2[i];
+                d.elementS = bcnvalT2[i];
+                i++;
+            });
+
 
             if (!highlight) {
 
-
-                update(trees[index1].root,trees[index1].data);
-                update(trees[index2].root,trees[index2].data);
+                update(trees[index1],trees[index1].data);
+                update(trees[index2],trees[index2].data);
 
 
                 // var canvas1 = trees[index1].data.canvasId;
@@ -3825,7 +3898,6 @@ var TreeCompare = function(){
                 // To fix this bug, we need to reset all the numeric identifiers
                 // Please note that the numeric identifiers are built by incrementing the
                 // number of leaves in the tree.
-
 
                 compareMode = true;
                 settings.loadedCallback();
@@ -4029,6 +4101,7 @@ var TreeCompare = function(){
     }
 
     function initialiseTree(tree, autocollapse) {
+        var maxBranchSupport = findScaleValueBranchSupport(tree);
         uncollapseAll(tree); // use postorderTraverse, does not call update function
         stripPreprocessing(tree); // use postorderTraverse, reset all existing settings
         getDepths(tree); // get all the children and set their level in the hierarchy
@@ -4039,6 +4112,9 @@ var TreeCompare = function(){
                 d._children = d.children;
                 d.collapsed = true;
                 d.children = null;
+            }
+            if (d["branchSupport"]){
+                d.maxBranchSupport = maxBranchSupport;
             }
         });
 
@@ -4808,6 +4884,7 @@ var TreeCompare = function(){
                     .attr("class", "tooltipElem tooltipElemText")
                     .attr("y", (-rectHeight - triHeight + tpad + textDone))
                     .attr("x", ((-rectWidth / 2) + rpad))
+                    .attr("id", text_f)
                     .style("fill", "white")
                     .style("font-weight", "bold")
                     .text(function(d) {
