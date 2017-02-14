@@ -2114,7 +2114,7 @@ var TreeCompare = function(){
                         return "green"
                     }
                     var d = d.source;
-                    if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
                     } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         if (e["branchSupport"]){
@@ -2130,19 +2130,6 @@ var TreeCompare = function(){
 
                     }
 
-
-                    // if (d["branchSupport"] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
-                    //     console.log(parseFloat(d["branchSupport"])/1000);
-                    //     return colorScale(parseFloat(e["branchSupport"])/1000)
-                    // } else {
-                    //     if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                    //         return "green";
-                    //         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                    //     } else {
-                    //         console.log("default")
-                    //         return defaultLineColor; //changed from defaultLineColor;
-                    //     }
-                    // }
                 });
 
             // Enter any new links at the parent"s previous position.
@@ -2196,7 +2183,7 @@ var TreeCompare = function(){
                     }
                     var d = d.source;
 
-                    if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         return colorScale(d[currentS])
                     } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         if (e["branchSupport"]){

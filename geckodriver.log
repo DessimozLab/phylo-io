@@ -835,3 +835,12 @@ Full message: TypeError: NetworkError when attempting to fetch resource.
 Full stack: 
 *************************
 JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 2456: TypeError: svgNode is null
+JavaScript error: chrome://browser/content/places/browserPlacesViews.js, line 263: TypeError: this.controller is undefined
+JavaScript error: chrome://browser/content/places/browserPlacesViews.js, line 263: TypeError: this.controller is undefined
+console.error: 
+  Protocol error (noSuchActor): No such actor for ID: server1.conn0.child1/highlighter31
+1487083613049	Marionette	INFO	Listening on port 49555
+1487083631459	Marionette	INFO	Listening on port 49555
+JavaScript error: chrome://browser/content/places/browserPlacesViews.js, line 263: TypeError: this.controller is undefined
+JavaScript error: chrome://browser/content/places/browserPlacesViews.js, line 263: TypeError: this.controller is undefined
+JavaScript warning: resource://gre/modules/commonjs/toolkit/loader.js -> resource://devtools/client/shared/demangle.js, line 0: Successfully compiled asm.js code (total compilation time 42ms; caching disabled in FF51 due to bug; will be reenabled in FF52)
