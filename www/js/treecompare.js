@@ -75,7 +75,11 @@ var TreeCompare = function(){
         autoCollapse: null
     };
 
-        //Add a work helper function to the jQuery object
+    var undoIndex = 0;
+    var undoTreeData = [];
+    var undoSource = [];
+
+    //Add a work helper function to the jQuery object
     $.work = function(args) {
         var def = $.Deferred(function(dfd) {
             var worker;
@@ -122,6 +126,23 @@ var TreeCompare = function(){
     }
 
     window.onresize = resize;
+
+    /*
+    * undo button
+    */
+    $("#undoBtn").click(function(e) {
+
+
+        console.log("undobtn clicked");
+        undoIndex = $("#undoBtn").data('undoIdx');
+
+        undoIndex = undoIndex-1;
+        $('#undoBtn').data('undoIdx', undoIndex);
+        console.log("updating using undoIdx "+undoIndex);
+        console.log(undoTreeData[undoIndex]);
+        update(undoSource[undoIndex], undoTreeData[undoIndex], null);
+
+    });
 
     /*
      create ID with random number generator
@@ -433,6 +454,7 @@ var TreeCompare = function(){
                                     case ':B':
 
                                         //console.log("brachsupport to : "+nhxtag_value);
+                                        settingsLbls.push('name');
                                         tree.branchSupport = nhxtag_value;
                                         break;
 
@@ -506,6 +528,7 @@ var TreeCompare = function(){
 
                     } else {
                         if (!(x===";" || x==="")){
+                            settingsLbls.push('name');
                             tree.branchSupport = x;
                         }
                     }
@@ -518,6 +541,7 @@ var TreeCompare = function(){
                     tree = ancestors.pop();
                     var x = new_tokens[i + 1];
                     if (!(x===";" || x==="")){
+                        settingsLbls.push('name');
                         tree.branchSupport = x;
                     }
                     break;
@@ -1311,6 +1335,7 @@ var TreeCompare = function(){
                 }
             }
         },true);
+
         update(tree.root, tree.data);
     }
 
@@ -2260,7 +2285,7 @@ var TreeCompare = function(){
             colorLinkMouseOver(d);
             //console.log(d);
             if (!settings.enableFisheyeZoom) {
-                update(d.source, treeData);
+                //update(d.source, treeData);
             }
         }
 
@@ -3055,6 +3080,22 @@ var TreeCompare = function(){
             baseTree.data.treeWidth = newWidth;
             baseTree.data.treeHeight = newHeight;
         }
+
+
+        if(undoIndex == 0){
+            // save treedata to undo
+            undoTreeData[undoIndex] = _.clone(baseTree.data);
+            undoSource[undoIndex] = _.clone(baseTree.root);
+            // update latest undo idx to the button -> 0
+            $('#undoBtn').data('undoIdx', undoIndex);
+
+            console.log("treedata saved to idx: "+undoIndex);
+            console.log(undoTreeData[undoIndex]);
+
+            // update global
+            //undoIndex = undoIndex+1
+        }
+
         update(baseTree.root, baseTree.data);
         baseTree.data.zoomBehaviour.translate([100, 100]);
         baseTree.data.zoomBehaviour.scale(0.8);
@@ -3766,7 +3807,19 @@ var TreeCompare = function(){
     function uncollapseAll(root, tree) {
         postorderTraverse(root, uncollapseNode);
         if (tree !== undefined) {
+
+            // save treedata to undo
+            undoTreeData[undoIndex] = tree.data;
+            undoSource[undoIndex] = root;
+            // update latest undo idx to the button
+            $('#undoBtn').data('undoIdx', undoIndex);
+
+            // update global
+            undoIndex = undoIndex+1
+
+
             update(root, tree.data);
+
         }
     }
 
@@ -4073,6 +4126,14 @@ var TreeCompare = function(){
                     d.children[0] = second;
                     d.children[1] = first;
 
+                    undoIndex = undoIndex+1;
+
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
                     update(d, tree.data);
                 }, 2);
 
@@ -4111,6 +4172,18 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback(); // stops the spinning wheels
                     }
+
+                    undoIndex = undoIndex+1;
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
+
+                    console.log("collapse treedata saved to idx: "+undoIndex);
+                    console.log(undoTreeData[undoIndex]);
+
 
                     update(d, tree.data);
                 }, 2);
@@ -4156,6 +4229,15 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback();
                     }
+
+                    undoIndex = undoIndex+1;
+
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
                     update(d, tree.data);
                 }, 2)
             }
