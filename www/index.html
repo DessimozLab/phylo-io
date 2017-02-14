@@ -134,6 +134,9 @@
                     <li>
                         <div id="colorScale"></div>
                     </li>
+
+                    <li><button id="undoBtn" data-undoIdx="0">undo</button></li>
+
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
                         <div id="settingsPanel">
@@ -146,7 +149,8 @@
                             <b>Internal Labels:</b>
                             <form class="internalLabels" id="labelForm">
                                 <input type="radio" name="internalLabels" value="none" checked><span>None</span><br>
-                                <input type="radio" class="extraMargin" name="internalLabels" value="name"><span>Branch Labels/Support</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels"
+                                       value="name"><span>Branch Labels/Support</span>
                                 <input type="radio" class="extraMargin" name="internalLabels" value="length"><span>Length</span>
                                 <input type="radio" class="extraMargin opt" name="internalLabels" value="similarity"><span>Similarity</span>
                                 <input type="radio" class="extraMargin opt" name="internalLabels" value="species"><span>Species</span>
@@ -321,10 +325,8 @@
 
         // hide optional settings by default
         //$('.opt').parent().hide();
-        var v= $("input[type=radio].opt");
-        $(v).each(function(i){
-            ($(this).hide().next().hide())
-        });
+
+        hideOptionalSettings();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "view-btn"){
@@ -540,6 +542,8 @@
         ------*/
         $("#renderButton").click(function(e) {
             $("#renderErrorMessage").empty();
+            hideOptionalSettings();
+
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
@@ -677,6 +681,16 @@
          /    SETTINGS
          /
          ------*/
+        function hideOptionalSettings(){
+
+            var v= $("input[type=radio].opt");
+            $(v).each(function(i){
+                ($(this).hide().next().hide())
+            });
+
+        }
+
+
         var settingsShown = false;
 
         $("#settings").click(function(e) {
