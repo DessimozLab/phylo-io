@@ -657,14 +657,10 @@
 
                 svg1.appendChild(g);
             }
-
-            // Create the download button
-            var download = document.createElement('a');
-            download.setAttribute('href-lang', 'image/svg+xml');
-            download.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
+            svgExport.setAttribute('hreflang', 'image/svg+xml');
+            svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
 
             isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1));
-
             if (isCompared) {
                 download_fn = document.getElementById("newickIn1Label").value +
                         "-with-" +
@@ -673,9 +669,7 @@
                 download_fn = document.getElementById("newickInSingleLabel").value;
             }
             download_fn = (download_fn === '' || download_fn === "-with-") ? "side-by-side" : download_fn;
-
-            download.setAttribute("download", download_fn);
-            download.click();
+            svgExport.setAttribute("download", download_fn + ".svg");
         });
 
         /*------
