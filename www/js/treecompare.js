@@ -802,7 +802,6 @@ var TreeCompare = function(){
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
             trees.push(fullTree);
         }
-        console.log(trees);
         return trees[(trees.length - newicks.length)];
     }
 
@@ -858,6 +857,35 @@ var TreeCompare = function(){
                 }
             }
         }
+    }
+
+    /*
+    Function to scale values based on maximum value
+    Bootstrap can be between:
+    1) [0,1]
+    2) [0,100]
+    3) [0,1000] swisstree only
+     */
+    function findScaleValueBranchSupport(tree){
+        var branchSupport = [];
+        postorderTraverse(tree, function(d){
+            if (d["branchSupport"]){
+                branchSupport.push(d["branchSupport"])
+            }
+        });
+        var maxBranchSupport = Math.max.apply(Math,branchSupport);
+
+        if (maxBranchSupport <= 1){
+            return 1
+        } else if (maxBranchSupport <= 100){
+            return 100
+        } else if (maxBranchSupport <= 1000) {
+            return 1000
+        }
+        else {
+            return undefined
+        }
+
     }
 
     /*
@@ -2088,13 +2116,18 @@ var TreeCompare = function(){
                     var d = d.source;
                     if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
                         return colorScale(d[currentS])
-                    } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                        if (e["branchSupport"]){
+                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                        } else {
+                            return defaultLineColor;
+                        }
+                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
                             return "green";
                             //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                        } else {
-                            return defaultLineColor; //changed from defaultLineColor;
-                        }
+                    } else {
+                        return defaultLineColor; //changed from defaultLineColor;
+
                     }
 
 
@@ -2162,15 +2195,23 @@ var TreeCompare = function(){
                         return "green";
                     }
                     var d = d.source;
+
                     if (d[currentS] && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         return colorScale(d[currentS])
-                    } else {
-                        if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight){ //here the color of the branches after the selected node is set to green
-                            return "green";
+                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                        if (e["branchSupport"]){
+                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
+                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight) {
+                        return "green";
+                        //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                    } else {
+                        return defaultLineColor; //changed from defaultLineColor;
+
                     }
+
                 })
                 .style("cursor", "pointer")
                 .on("mouseover",linkMouseover)
@@ -4011,6 +4052,7 @@ var TreeCompare = function(){
     }
 
     function initialiseTree(tree, autocollapse) {
+        var maxBranchSupport = findScaleValueBranchSupport(tree);
         uncollapseAll(tree); // use postorderTraverse, does not call update function
         stripPreprocessing(tree); // use postorderTraverse, reset all existing settings
         getDepths(tree); // get all the children and set their level in the hierarchy
@@ -4021,6 +4063,9 @@ var TreeCompare = function(){
                 d._children = d.children;
                 d.collapsed = true;
                 d.children = null;
+            }
+            if (d["branchSupport"]){
+                d.maxBranchSupport = maxBranchSupport;
             }
         });
 
