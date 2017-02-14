@@ -319,6 +319,7 @@ var TreeCompare = function(){
     function convertTree(s) { //s is newick file format
         var ancestors = [];
         var tree = {};
+        var settingsLbls = [];
 
         s = s.replace(/(\r\n|\n|\r)/gm,""); // remove all new line characters
 
@@ -389,8 +390,6 @@ var TreeCompare = function(){
 
 
         }
-
-        var settingsLbls = [];
 
         for (var i = 0; i < new_tokens.length; i++) {
             var token = new_tokens[i];
@@ -554,8 +553,16 @@ var TreeCompare = function(){
         }
 
         // update settings radiobuttons
+        updateSettingsLabels(settingsLbls);
+
+        return tree;
+    }
+
+    function updateSettingsLabels(settingsLbls){
+
+        // update settings radiobuttons
         // TODO, hide not used radios, what do we show always?
-        if(settingsLbls.length > 0){
+        if(settingsLbls && settingsLbls.length > 0){
 
             settingsLbls = settingsLbls.filter(
                 function(a){if (!this[a]) {this[a] = 1; return a;}}, {}
@@ -565,9 +572,12 @@ var TreeCompare = function(){
                 $('[name=internalLabels][value='+stglbl+']').show().next().show();
             });
 
+        } else {
+            /* hide optional radio buttons */
+            $('[name=internalLabels] .opt').hide();
         }
 
-        return tree;
+
     }
 
     /*
@@ -734,6 +744,10 @@ var TreeCompare = function(){
             var num = trees.length;
             name = "Tree " + num;
         }
+
+        // reset settings radiobuttons
+        updateSettingsLabels();
+
         var tree = convertTree(newick);
         /*try {
          var tree = convertTree(newick); // calls convert function from above
