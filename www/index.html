@@ -284,26 +284,26 @@
 
         var gistID = $(location).attr('hash').split("#"); //get gist id from url
 
-        var treecomp = TreeCompare().init({
-            scaleColor: "black",
-            loadingCallback: function() {
-                spinner.spin(spinnerTarget);
-            },
-            loadedCallback: function() {
-                spinner.stop();
-            },
-            enableRerootFixedButtons: $("#rerootFixedButtons").val(),
-            enableSwapFixedButtons: $("#swapFixedButtons").val(),
-            lineThickness: $("#lineThickness").val(),
-            nodeSize: $("#nodeSize").val(),
-            fontSize: $("#fontSize").val(),
-            useLengths: $("#useLengths").is(":checked"),
-            selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
-            comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
-            moveOnClick: $("#moveOnMouseOver").is(":checked"),
-            clickAction: $("input[name=clickAction]:checked").val(),
-            autoCollapse: $("#collapseAmount").html()
-        });
+            var treecomp = TreeCompare().init({
+                scaleColor: "black",
+                loadingCallback: function() {
+                    spinner.spin(spinnerTarget);
+                },
+                loadedCallback: function() {
+                    spinner.stop();
+                },
+                enableRerootFixedButtons: $("#rerootFixedButtons").val(),
+                enableSwapFixedButtons: $("#swapFixedButtons").val(),
+                lineThickness: $("#lineThickness").val(),
+                nodeSize: $("#nodeSize").val(),
+                fontSize: $("#fontSize").val(),
+                useLengths: $("#useLengths").is(":checked"),
+                selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
+                comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
+                moveOnClick: $("#moveOnMouseOver").is(":checked"),
+                clickAction: $("input[name=clickAction]:checked").val(),
+                autoCollapse: $("#collapseAmount").html()
+            });
 
         /* Download name */
         var update_download_fn = function(canvasId, labelId) {
@@ -558,7 +558,7 @@
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
-
+                    //TODO: change this
                     treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");

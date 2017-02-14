@@ -124,13 +124,10 @@ var TreeCompare = function(){
     $("#undoBtn").click(function(e) {
 
 
-        console.log("undobtn clicked");
         undoIndex = $("#undoBtn").data('undoIdx');
 
         undoIndex = undoIndex-1;
         $('#undoBtn').data('undoIdx', undoIndex);
-        console.log("updating using undoIdx "+undoIndex);
-        console.log(undoTreeData[undoIndex]);
         update(undoSource[undoIndex], undoTreeData[undoIndex], null);
 
     });
@@ -2616,111 +2613,6 @@ var TreeCompare = function(){
         }
     }
 
-    function renderSizeControls(tree, canvasId){
-        //add the tree width/height controls and attach their event handlers
-        if (settings.enableSizeControls) {
-            var topMargin = settings.enableZoomSliders ? "50px" : "10px";
-            $("#" + canvasId).append('<div id="zoomButtons"></div>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").css({
-                "width": "78px",
-                "top": "50px",
-                "left": "10px",
-                "position": "absolute"
-            });
-            $("#" + canvasId + " .zoomButton").css({
-                "font-size": "10px",
-                "width": "26px",
-                "height": "26px",
-                "vertical-align": "top",
-                "opacity":"0.3"
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseover", function() {
-                $(this).css({
-                    "opacity": "1"
-                })
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseout", function() {
-                $(this).css({
-                    "opacity": "0.3"
-                })
-            });
-            $("#" + canvasId + " .zoomButton span").css({
-                "vertical-align": "middle"
-            });
-            $("#" + canvasId + " #upButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-            $("#" + canvasId + " #leftButton").css({
-                "float": "left"
-            });
-            $("#" + canvasId + " #rightButton").css({
-                "margin-left": "26px",
-                "float": "right"
-            });
-            $("#" + canvasId + " #downButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-
-            // set up function for buttons on left top corner
-            function actionUp() {
-                sizeVertical(tree.data, false);
-                update(tree.root, tree.data, 0);
-            }
-
-            function actionDown() {
-                sizeVertical(tree.data, true);
-                update(tree.root, tree.data, 0);
-            }
-
-            function actionLeft() {
-                sizeHorizontal(tree.data, false);
-                update(tree.root, tree.data, 0);
-            }
-
-            function actionRight() {
-                sizeHorizontal(tree.data, true);
-                update(tree.root, tree.data, 0);
-            }
-
-            var timeoutIdUp = 0;
-            $("#" + canvasId + " #upButton").mousedown(function() {
-                actionUp();
-                timeoutIdUp = setInterval(actionUp, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdUp);
-            });
-
-            var timeoutIddown = 0;
-            $("#" + canvasId + " #downButton").mousedown(function() {
-                actionDown();
-                timeoutIddown = setInterval(actionDown, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIddown);
-            });
-
-            var timeoutIdleft = 0;
-            $("#" + canvasId + " #leftButton").mousedown(function() {
-                actionLeft();
-                timeoutIdleft = setInterval(actionLeft, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdleft);
-            });
-
-            var timeoutIdRight = 0;
-            $("#" + canvasId + " #rightButton").mousedown(function() {
-                actionRight();
-                timeoutIdRight = setInterval(actionRight, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdRight);
-            });
-        }
-    }
 
     // function to render the download buttons
     function renderDownloadButton(canvasId){
@@ -3187,7 +3079,6 @@ var TreeCompare = function(){
             //console.log(baseTree);
             //render various buttons and search bars and sliders
             renderZoomSlider(tree, canvasId);
-            renderSizeControls(tree, canvasId);
             renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
 
@@ -3206,7 +3097,6 @@ var TreeCompare = function(){
 
             //render various buttons and search bars and sliders
             renderZoomSlider(baseTree, canvasId);
-            renderSizeControls(baseTree, canvasId);
             renderDownloadButton(canvasId);
             renderMiddleButtonsCompareMode(canvasId);
         }
@@ -3231,6 +3121,111 @@ var TreeCompare = function(){
 
         renderedTrees.push(baseTree);
         $("#searchBox" + canvasId).remove();
+        $("#" + canvasId + " #zoomButtons").remove();
+
+        if (settings.enableSizeControls) {
+            var topMargin = settings.enableZoomSliders ? "50px" : "10px";
+            $("#" + canvasId).append('<div id="zoomButtons"></div>');
+            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
+            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
+            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
+            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
+            $("#" + canvasId + " #zoomButtons").css({
+                "width": "78px",
+                "top": "50px",
+                "left": "10px",
+                "position": "absolute"
+            });
+            $("#" + canvasId + " .zoomButton").css({
+                "font-size": "10px",
+                "width": "26px",
+                "height": "26px",
+                "vertical-align": "top",
+                "opacity":"0.3"
+            });
+            $("#" + canvasId + " .zoomButton").on("mouseover", function() {
+                $(this).css({
+                    "opacity": "1"
+                })
+            });
+            $("#" + canvasId + " .zoomButton").on("mouseout", function() {
+                $(this).css({
+                    "opacity": "0.3"
+                })
+            });
+            $("#" + canvasId + " .zoomButton span").css({
+                "vertical-align": "middle"
+            });
+            $("#" + canvasId + " #upButton").css({
+                "display": "block",
+                "margin-left": "26px",
+            });
+            $("#" + canvasId + " #leftButton").css({
+                "float": "left"
+            });
+            $("#" + canvasId + " #rightButton").css({
+                "margin-left": "26px",
+                "float": "right"
+            });
+            $("#" + canvasId + " #downButton").css({
+                "display": "block",
+                "margin-left": "26px",
+            });
+
+            // set up function for buttons on left top corner
+            function actionUp() {
+                sizeVertical(baseTree.data, false);
+                update(baseTree.root, baseTree.data, 0);
+            }
+
+            function actionDown() {
+                sizeVertical(baseTree.data, true);
+                update(baseTree.root, baseTree.data, 0);
+            }
+
+            function actionLeft() {
+                sizeHorizontal(baseTree.data, false);
+                update(baseTree.root, baseTree.data, 0);
+            }
+
+            function actionRight() {
+                sizeHorizontal(baseTree.data, true);
+                update(baseTree.root, baseTree.data, 0);
+            }
+
+            var timeoutIdUp = 0;
+            $("#" + canvasId + " #upButton").mousedown(function() {
+                actionUp();
+                timeoutIdUp = setInterval(actionUp, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIdUp);
+            });
+
+            var timeoutIddown = 0;
+            $("#" + canvasId + " #downButton").mousedown(function() {
+                actionDown();
+                timeoutIddown = setInterval(actionDown, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIddown);
+            });
+
+            var timeoutIdleft = 0;
+            $("#" + canvasId + " #leftButton").mousedown(function() {
+                actionLeft();
+                timeoutIdleft = setInterval(actionLeft, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIdleft);
+            });
+
+            var timeoutIdRight = 0;
+            $("#" + canvasId + " #rightButton").mousedown(function() {
+                actionRight();
+                timeoutIdRight = setInterval(actionRight, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIdRight);
+            });
+        }
+
         if (settings.enableSearch) {
 
             $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
@@ -3384,7 +3379,6 @@ var TreeCompare = function(){
                                 }
                                 expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
-                            console.log(results);
                             update(baseTree, baseTree.data);
                         });
 
@@ -3549,8 +3543,6 @@ var TreeCompare = function(){
             // update latest undo idx to the button -> 0
             $('#undoBtn').data('undoIdx', undoIndex);
 
-            console.log("treedata saved to idx: "+undoIndex);
-            console.log(undoTreeData[undoIndex]);
 
             // update global
             //undoIndex = undoIndex+1
@@ -4612,9 +4604,6 @@ var TreeCompare = function(){
                     // update latest undo idx to the button
                     $('#undoBtn').data('undoIdx', undoIndex);
 
-
-                    console.log("collapse treedata saved to idx: "+undoIndex);
-                    console.log(undoTreeData[undoIndex]);
 
 
                     update(d, tree.data);
