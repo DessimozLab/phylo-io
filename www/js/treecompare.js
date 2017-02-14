@@ -66,7 +66,11 @@ var TreeCompare = function(){
         autoCollapse: null
     };
 
-        //Add a work helper function to the jQuery object
+    var undoIndex = 0;
+    var undoTreeData = [];
+    var undoSource = [];
+
+    //Add a work helper function to the jQuery object
     $.work = function(args) {
         var def = $.Deferred(function(dfd) {
             var worker;
@@ -115,7 +119,24 @@ var TreeCompare = function(){
     window.onresize = resize;
 
     /*
-     create ID using a global idCounter
+    * undo button
+    */
+    $("#undoBtn").click(function(e) {
+
+
+        console.log("undobtn clicked");
+        undoIndex = $("#undoBtn").data('undoIdx');
+
+        undoIndex = undoIndex-1;
+        $('#undoBtn').data('undoIdx', undoIndex);
+        console.log("updating using undoIdx "+undoIndex);
+        console.log(undoTreeData[undoIndex]);
+        update(undoSource[undoIndex], undoTreeData[undoIndex], null);
+
+    });
+
+    /*
+     create ID with random number generator
      */
     function makeId(prefix) {
         prefix || (prefix = '');
@@ -312,6 +333,7 @@ var TreeCompare = function(){
     function convertTree(s) { //s is newick file format
         var ancestors = [];
         var tree = {};
+        var settingsLbls = [];
 
         s = s.replace(/(\r\n|\n|\r)/gm,""); // remove all new line characters
 
@@ -383,8 +405,6 @@ var TreeCompare = function(){
 
         }
 
-        var settingsLbls = [];
-
         for (var i = 0; i < new_tokens.length; i++) {
             var token = new_tokens[i];
             switch (token) {
@@ -427,6 +447,7 @@ var TreeCompare = function(){
                                     case ':B':
 
                                         //console.log("brachsupport to : "+nhxtag_value);
+                                        settingsLbls.push('name');
                                         tree.branchSupport = nhxtag_value;
                                         break;
 
@@ -500,6 +521,7 @@ var TreeCompare = function(){
 
                     } else {
                         if (!(x===";" || x==="")){
+                            settingsLbls.push('name');
                             tree.branchSupport = x;
                         }
                     }
@@ -512,6 +534,7 @@ var TreeCompare = function(){
                     tree = ancestors.pop();
                     var x = new_tokens[i + 1];
                     if (!(x===";" || x==="")){
+                        settingsLbls.push('name');
                         tree.branchSupport = x;
                     }
                     break;
@@ -547,8 +570,16 @@ var TreeCompare = function(){
         }
 
         // update settings radiobuttons
+        updateSettingsLabels(settingsLbls);
+
+        return tree;
+    }
+
+    function updateSettingsLabels(settingsLbls){
+
+        // update settings radiobuttons
         // TODO, hide not used radios, what do we show always?
-        if(settingsLbls.length > 0){
+        if(settingsLbls && settingsLbls.length > 0){
 
             settingsLbls = settingsLbls.filter(
                 function(a){if (!this[a]) {this[a] = 1; return a;}}, {}
@@ -558,9 +589,12 @@ var TreeCompare = function(){
                 $('[name=internalLabels][value='+stglbl+']').show().next().show();
             });
 
+        } else {
+            /* hide optional radio buttons */
+            $('[name=internalLabels] .opt').hide();
         }
 
-        return tree;
+
     }
 
     /*
@@ -744,8 +778,20 @@ var TreeCompare = function(){
             var tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm,";").split(";");
             if (tmpNewicks.length > 1){
                 var newicks = tmpNewicks.slice(0, -1);
+
             }
         }
+        // reset settings radiobuttons
+        updateSettingsLabels();
+        /*try {
+         var tree = convertTree(newick); // calls convert function from above
+         //console.log(tree)
+         } catch (err) {
+         throw "Invalid Newick";
+         }*/
+        // for (var i = 0; i < trees.length; i++) {
+        //     if (name === trees[i].name) {
+        //         throw "Tree With Name Already Exists";
 
         resetTreeVisStatus(trees);
         // the following is important to allow the support to load multiple trees at once
@@ -915,7 +961,7 @@ var TreeCompare = function(){
                     break;
                 }
             }
-            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
+            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(1);
             scaleText.text(text);
         }
     }
@@ -1341,6 +1387,7 @@ var TreeCompare = function(){
                 }
             }
         },true);
+
         update(tree.root, tree.data);
     }
 
@@ -2304,7 +2351,7 @@ var TreeCompare = function(){
             colorLinkMouseOver(d);
             //console.log(d);
             if (!settings.enableFisheyeZoom) {
-                update(d.source, treeData);
+                //update(d.source, treeData);
             }
         }
 
@@ -3443,6 +3490,22 @@ var TreeCompare = function(){
             baseTree.data.treeWidth = newWidth;
             baseTree.data.treeHeight = newHeight;
         }
+
+
+        if(undoIndex == 0){
+            // save treedata to undo
+            undoTreeData[undoIndex] = _.clone(baseTree.data);
+            undoSource[undoIndex] = _.clone(baseTree.root);
+            // update latest undo idx to the button -> 0
+            $('#undoBtn').data('undoIdx', undoIndex);
+
+            console.log("treedata saved to idx: "+undoIndex);
+            console.log(undoTreeData[undoIndex]);
+
+            // update global
+            //undoIndex = undoIndex+1
+        }
+
         update(baseTree.root, baseTree.data);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);
@@ -4100,7 +4163,19 @@ var TreeCompare = function(){
     function uncollapseAll(root, tree) {
         postorderTraverse(root, uncollapseNode);
         if (tree !== undefined) {
+
+            // save treedata to undo
+            undoTreeData[undoIndex] = tree.data;
+            undoSource[undoIndex] = root;
+            // update latest undo idx to the button
+            $('#undoBtn').data('undoIdx', undoIndex);
+
+            // update global
+            undoIndex = undoIndex+1
+
+
             update(root, tree.data);
+
         }
     }
 
@@ -4407,6 +4482,14 @@ var TreeCompare = function(){
                     d.children[0] = second;
                     d.children[1] = first;
 
+                    undoIndex = undoIndex+1;
+
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
                     update(d, tree.data);
                 }, 2);
 
@@ -4445,6 +4528,18 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback(); // stops the spinning wheels
                     }
+
+                    undoIndex = undoIndex+1;
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
+
+                    console.log("collapse treedata saved to idx: "+undoIndex);
+                    console.log(undoTreeData[undoIndex]);
+
 
                     update(d, tree.data);
                 }, 2);
@@ -4490,6 +4585,15 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback();
                     }
+
+                    undoIndex = undoIndex+1;
+
+                    // save treedata to undo
+                    undoTreeData[undoIndex] = _.clone(tree.data);
+                    undoSource[undoIndex] = _.clone(d);
+                    // update latest undo idx to the button
+                    $('#undoBtn').data('undoIdx', undoIndex);
+
                     update(d, tree.data);
                 }, 2)
 
