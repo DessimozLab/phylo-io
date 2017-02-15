@@ -134,6 +134,9 @@
                     <li>
                         <div id="colorScale"></div>
                     </li>
+
+                    <li><button id="undoBtn" data-undoIdx="0">undo</button></li>
+
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
                         <div id="settingsPanel">
@@ -145,6 +148,7 @@
                             </div>
                             <b>Internal Labels:</b>
                             <form class="internalLabels" id="labelForm">
+
                                 <input type="radio" name="internalLabels" value="none" id="internalLabelsNone" checked><span>None</span><br>
                                 <input type="radio" class="extraMargin" name="internalLabels" value="name" value="internalLabelsName"><span>Branch Labels/Support</span>
                                 <input type="radio" class="extraMargin" name="internalLabels" value="length" value="internalLabelsLength"><span>Length</span>
@@ -158,6 +162,7 @@
                                 <input type="radio" class="extraMargin opt" name="internalLabels" value="superorthologous" id="internalLabelsSuperorthologous"><span>Display super orthology</span>
                                 <input type="radio" class="extraMargin opt" name="internalLabels" value="subtree" id="internalLabelsSubtree"><span>Subtree</span>
                                 <input type="radio" class="extraMargin opt" name="internalLabels" value="collapseThis" id="internalLabelsCollapseThis"><span>Collapsed nodes</span>
+
 
                             </form>
                             <b>Adjust Tree Style:</b>
@@ -279,26 +284,26 @@
 
         var gistID = $(location).attr('hash').split("#"); //get gist id from url
 
-        var treecomp = TreeCompare().init({
-            scaleColor: "black",
-            loadingCallback: function() {
-                spinner.spin(spinnerTarget);
-            },
-            loadedCallback: function() {
-                spinner.stop();
-            },
-            enableRerootFixedButtons: $("#rerootFixedButtons").val(),
-            enableSwapFixedButtons: $("#swapFixedButtons").val(),
-            lineThickness: $("#lineThickness").val(),
-            nodeSize: $("#nodeSize").val(),
-            fontSize: $("#fontSize").val(),
-            useLengths: $("#useLengths").is(":checked"),
-            selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
-            comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
-            moveOnClick: $("#moveOnMouseOver").is(":checked"),
-            clickAction: $("input[name=clickAction]:checked").val(),
-            autoCollapse: $("#collapseAmount").html()
-        });
+            var treecomp = TreeCompare().init({
+                scaleColor: "black",
+                loadingCallback: function() {
+                    spinner.spin(spinnerTarget);
+                },
+                loadedCallback: function() {
+                    spinner.stop();
+                },
+                enableRerootFixedButtons: $("#rerootFixedButtons").val(),
+                enableSwapFixedButtons: $("#swapFixedButtons").val(),
+                lineThickness: $("#lineThickness").val(),
+                nodeSize: $("#nodeSize").val(),
+                fontSize: $("#fontSize").val(),
+                useLengths: $("#useLengths").is(":checked"),
+                selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
+                comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
+                moveOnClick: $("#moveOnMouseOver").is(":checked"),
+                clickAction: $("input[name=clickAction]:checked").val(),
+                autoCollapse: $("#collapseAmount").html()
+            });
 
         /* Download name */
         var update_download_fn = function(canvasId, labelId) {
@@ -321,10 +326,8 @@
 
         // hide optional settings by default
         //$('.opt').parent().hide();
-        var v= $("input[type=radio].opt");
-        $(v).each(function(i){
-            ($(this).hide().next().hide())
-        });
+
+        hideOptionalSettings();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "view-btn"){
@@ -541,6 +544,8 @@
         ------*/
         $("#renderButton").click(function(e) {
             $("#renderErrorMessage").empty();
+            hideOptionalSettings();
+
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
@@ -553,7 +558,7 @@
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
-
+                    //TODO: change this
                     treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");
@@ -644,20 +649,23 @@
             var g = document.createElement('g');
             var lastElementIndex = svg2.childNodes.length - 3;
             var scaleTextIndex = svg2.childNodes.length - 2;
+
             if (lastElementIndex > -1) {
                 g.setAttribute('transform', 'translate(' + l_w + ',0)');
-                g.appendChild(svg2.childNodes[lastElementIndex]);
-                g.appendChild(svg2.childNodes[scaleTextIndex]);
+                main = svg2.childNodes[lastElementIndex];
+                scale = svg2.childNodes[scaleTextIndex];
+                scaleText = svg2.lastElementChild;
+
+                g.appendChild(main);
+                g.appendChild(scale);
+                g.appendChild(scaleText);
+
                 svg1.appendChild(g);
             }
-
-            // Create the download button
-            var download = document.createElement('a');
-            download.setAttribute('href-lang', 'image/svg+xml');
-            download.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
+            svgExport.setAttribute('hreflang', 'image/svg+xml');
+            svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
 
             isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1));
-
             if (isCompared) {
                 download_fn = document.getElementById("newickIn1Label").value +
                         "-with-" +
@@ -666,9 +674,7 @@
                 download_fn = document.getElementById("newickInSingleLabel").value;
             }
             download_fn = (download_fn === '' || download_fn === "-with-") ? "side-by-side" : download_fn;
-
-            download.setAttribute("download", download_fn);
-            download.click();
+            svgExport.setAttribute("download", download_fn + ".svg");
         });
 
         /*------
@@ -676,6 +682,16 @@
          /    SETTINGS
          /
          ------*/
+        function hideOptionalSettings(){
+
+            var v= $("input[type=radio].opt");
+            $(v).each(function(i){
+                ($(this).hide().next().hide())
+            });
+
+        }
+
+
         var settingsShown = false;
 
         $("#settings").click(function(e) {
