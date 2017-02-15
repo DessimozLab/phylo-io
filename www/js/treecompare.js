@@ -1247,16 +1247,15 @@ var TreeCompare = function(){
                 d.leaves = getChildLeaves(d);
                 idCounter++;
             },false);
-            //new_root.leaves = getChildLeaves(new_root);
             tree.root = new_root;
             tree.data.root = tree.root; //create clickEvent that is given to update function
 
-            //update(tree.root, tree.data);
             return tree;
         } else {
             return tree;
         }
     }
+
 
 
 
@@ -2151,22 +2150,20 @@ var TreeCompare = function(){
                 .style("stroke", function(d) {
                     //if (type === "front") {
                     var e = d.target;
-                    if (e.searchHighlight) {
-                        return "orange"; //changed from "red"
-                    }
+                    var f = d.source;
                     if (e.mouseoverLinkHighlight){//color branch for re-rooting
-                        return "green"
-                    }
-                    var d = d.source;
-                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
-                        return colorScale(d[currentS])
-                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                        return "green";
+                    } else if (e.searchHighlight) {
+                        return "orange";
+                    } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
+                        return colorScale(f[currentS])
+                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
                         if (e["branchSupport"]){
                             return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    } else if (f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight) {
                             return "green";
                             //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
@@ -2219,23 +2216,20 @@ var TreeCompare = function(){
                 })
                 .style("stroke", function(d) {
                     var e = d.target;
-                    if (e.searchHighlight) {
-                        return "orange"; //changed from red
-                    }
+                    var f = d.source;
                     if (e.mouseoverLinkHighlight){ //color branch between two nodes in green for re-rooting
                         return "green";
-                    }
-                    var d = d.source;
-
-                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
-                        return colorScale(d[currentS])
-                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    } else if (e.searchHighlight) {
+                        return "orange"; //changed from red
+                    } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                        return colorScale(f[currentS])
+                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         if (e["branchSupport"]){
                             return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight) {
+                    } else if (f.clickedParentHighlight || f.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || f.clickedHighlight) {
                         return "green";
                         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
@@ -2393,7 +2387,7 @@ var TreeCompare = function(){
             colorLinkMouseOver(d);
             //console.log(d);
             if (!settings.enableFisheyeZoom) {
-                //update(d.source, treeData);
+                update(d.source, treeData);
             }
         }
 
@@ -2404,13 +2398,12 @@ var TreeCompare = function(){
                 var tree2 = trees[trees.length-1];
                 if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node" && d.target.getAttribute("class")!=="linkbg"))
                 {
-                    removeTooltips(tree1.data.svg);
-                    removeTooltips(tree2.data.svg);
+                    $(".tooltipElem").remove()
                 }
             }else{
                 if((d.target.getAttribute("class")!=="link" && d.target.getAttribute("class")!=="node"))
                 {
-                    removeTooltips(treeData.svg);
+                    $(".tooltipElem").remove()
                 }
             }
 
@@ -3102,6 +3095,280 @@ var TreeCompare = function(){
         }
     }
 
+    function renderSearchButton(baseTree, canvasId){
+
+        $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
+        $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
+        $("#searchBox" + canvasId).css({
+            "max-width": "250px",
+            "min-height": "45px",
+            "padding": "5px",
+            "right": "5px",
+            "top": "5px",
+            "position": "absolute",
+            "background-color": "gray",
+            "-webkit-border-radius": "5px",
+            "-moz-border-radius": "5px",
+            "border-radius": "5px"
+
+        });
+        $("#searchInput" + canvasId).css({
+            "float": "right",
+            "width": "0px",
+            "margin-left": "0px",
+            "margin-top": "5px",
+            "display": "none"
+
+        });
+        $("#searchButton" + canvasId).css({
+            "width": "50px",
+            "float": "right"
+
+        });
+        $("#resultsBox" + canvasId).css({
+            "width": "200px",
+            "position": "absolute",
+            "margin-right": "10px",
+            "max-height": "200px",
+            "overflow": "scroll",
+            "margin-top": "40px",
+            "background-color": "#efefef",
+            "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "display": "none",
+            "padding-top": "10px"
+
+        });
+
+        function hideSearchBar() {
+            visible = false;
+            $("#resultsList" + canvasId).empty();
+            $("#resultsBox" + canvasId).slideUp(300, function() {
+                $("#resultsBox" + canvasId).css({
+                    "display": "none"
+                });
+            });
+            $("#searchInput" + canvasId).animate({
+                width: "0px"
+            }, 600, function() {
+                $("#searchInput" + canvasId).css({
+                    "display": "none"
+                });
+                $("#searchInput" + canvasId).val("");
+            });
+        }
+
+        var visible = false;
+        $('#searchButton' + canvasId).click(function() {
+            if (!visible) {
+                visible = true;
+                postorderTraverse(baseTree.data.root, function(d) {
+                    d.searchHighlight =false;
+                });
+                update(baseTree.root,baseTree.data);
+                $("#searchInput" + canvasId).css({
+                    "display": "inline"
+                });
+                $("#searchInput" + canvasId).animate({
+                    width: "150px"
+                }, 600, function() {
+                    $("#searchInput" + canvasId).focus();
+                });
+
+            } else { //if search unselected then remove orange highlight from branches
+                postorderTraverse(baseTree.data.root, function(d) {
+                    d.searchHighlight =false;
+                });
+                update(baseTree.root,baseTree.data);
+                hideSearchBar();
+            }
+        });
+        // variable i is set to the number of leaves
+        var leafObjs = [];
+        for (var i = 0; i < baseTree.root.leaves.length; i++) {
+            leafObjs.push(baseTree.root.leaves[i]);
+        }
+
+        $("#" + baseTree.name).click(function() {
+            hideSearchBar();
+        });
+
+        //main event handler, performs search every time a char is typed so can get realtime results
+        $("#searchInput" + canvasId).bind("paste keyup", function() {
+            $("#resultsList" + canvasId).empty();
+            var text = $(this).val();
+            var results = _.filter(leafObjs, function(leaf) {
+                return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
+            });
+            var results_name = [];
+            for (var i = 0; i < results.length; i++){
+                results_name.push(results[i].name)
+            }
+            postorderTraverse(baseTree.data.root,function(d){
+                expandPathToLeaf(d,true,false);
+            });
+            update(baseTree.root,baseTree.data);
+
+            if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
+                $("#resultsBox" + canvasId).slideDown(200);
+                $("#resultsList" + canvasId).empty();
+
+                postorderTraverse(baseTree.data.root,function(d){
+                    if(results_name.indexOf(d.name)>-1){
+                        expandPathToLeaf(d,false,false);
+                    }
+                });
+                update(baseTree.root,baseTree.data);
+
+                for (var i = 0; i < results.length; i++) {
+                    $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
+                    $("#resultsList" + canvasId + " li").css({
+                        "margin-left": "-25px",
+                        "list-style-type": "none",
+                        "cursor": "pointer",
+                        "cursor": "hand"
+                    });
+                    var indices = [];
+                    $("#resultsList" + canvasId + " ." + i).on("click", function() {
+                        var index = $(this).attr("class");
+                        indices.push(parseInt(index));
+                        for (var i = 0; i<results.length; i++){
+                            if (indices.indexOf(i)<0){
+                                expandPathToLeaf(results[i],true,false);
+                            }
+                        }
+                        if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                            for (var i = 0; i<indices.length; i++){
+                                expandPathToLeaf(results[indices[i]],false);
+                            }
+                        } else {
+                            for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
+                                expandPathToLeaf(results[indices[i]],true,false);
+                            }
+                            expandPathToLeaf(results[indices[indices.length-1]],false);
+                        }
+                        update(baseTree, baseTree.data);
+                    });
+
+                }
+
+            }
+            else {
+                $("#resultsList" + canvasId).empty();
+                $("#resultsBox" + canvasId).slideUp(200, function() {
+                    $("#resultsBox" + canvasId).css({
+                        "display": "none"
+                    });
+                });
+            }
+
+        });
+    }
+
+    function renderSizeControls(baseTree, canvasId){
+        var topMargin = settings.enableZoomSliders ? "50px" : "10px";
+        $("#" + canvasId).append('<div id="zoomButtons"></div>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").css({
+            "width": "78px",
+            "top": "50px",
+            "left": "10px",
+            "position": "absolute"
+        });
+        $("#" + canvasId + " .zoomButton").css({
+            "font-size": "10px",
+            "width": "26px",
+            "height": "26px",
+            "vertical-align": "top",
+            "opacity":"0.3"
+        });
+        $("#" + canvasId + " .zoomButton").on("mouseover", function() {
+            $(this).css({
+                "opacity": "1"
+            })
+        });
+        $("#" + canvasId + " .zoomButton").on("mouseout", function() {
+            $(this).css({
+                "opacity": "0.3"
+            })
+        });
+        $("#" + canvasId + " .zoomButton span").css({
+            "vertical-align": "middle"
+        });
+        $("#" + canvasId + " #upButton").css({
+            "display": "block",
+            "margin-left": "26px",
+        });
+        $("#" + canvasId + " #leftButton").css({
+            "float": "left"
+        });
+        $("#" + canvasId + " #rightButton").css({
+            "margin-left": "26px",
+            "float": "right"
+        });
+        $("#" + canvasId + " #downButton").css({
+            "display": "block",
+            "margin-left": "26px",
+        });
+
+        // set up function for buttons on left top corner
+        function actionUp() {
+            sizeVertical(baseTree.data, false);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionDown() {
+            sizeVertical(baseTree.data, true);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionLeft() {
+            sizeHorizontal(baseTree.data, false);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionRight() {
+            sizeHorizontal(baseTree.data, true);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        var timeoutIdUp = 0;
+        $("#" + canvasId + " #upButton").mousedown(function() {
+            actionUp();
+            timeoutIdUp = setInterval(actionUp, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdUp);
+        });
+
+        var timeoutIddown = 0;
+        $("#" + canvasId + " #downButton").mousedown(function() {
+            actionDown();
+            timeoutIddown = setInterval(actionDown, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIddown);
+        });
+
+        var timeoutIdleft = 0;
+        $("#" + canvasId + " #leftButton").mousedown(function() {
+            actionLeft();
+            timeoutIdleft = setInterval(actionLeft, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdleft);
+        });
+
+        var timeoutIdRight = 0;
+        $("#" + canvasId + " #rightButton").mousedown(function() {
+            actionRight();
+            timeoutIdRight = setInterval(actionRight, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdRight);
+        });
+    }
+
     /*---------------
      /
      /    Main function for setting up a d3 visualisation of a tree
@@ -3122,280 +3389,6 @@ var TreeCompare = function(){
         renderedTrees.push(baseTree);
         $("#searchBox" + canvasId).remove();
         $("#" + canvasId + " #zoomButtons").remove();
-
-        if (settings.enableSizeControls) {
-            var topMargin = settings.enableZoomSliders ? "50px" : "10px";
-            $("#" + canvasId).append('<div id="zoomButtons"></div>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").css({
-                "width": "78px",
-                "top": "50px",
-                "left": "10px",
-                "position": "absolute"
-            });
-            $("#" + canvasId + " .zoomButton").css({
-                "font-size": "10px",
-                "width": "26px",
-                "height": "26px",
-                "vertical-align": "top",
-                "opacity":"0.3"
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseover", function() {
-                $(this).css({
-                    "opacity": "1"
-                })
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseout", function() {
-                $(this).css({
-                    "opacity": "0.3"
-                })
-            });
-            $("#" + canvasId + " .zoomButton span").css({
-                "vertical-align": "middle"
-            });
-            $("#" + canvasId + " #upButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-            $("#" + canvasId + " #leftButton").css({
-                "float": "left"
-            });
-            $("#" + canvasId + " #rightButton").css({
-                "margin-left": "26px",
-                "float": "right"
-            });
-            $("#" + canvasId + " #downButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-
-            // set up function for buttons on left top corner
-            function actionUp() {
-                sizeVertical(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionDown() {
-                sizeVertical(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionLeft() {
-                sizeHorizontal(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionRight() {
-                sizeHorizontal(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            var timeoutIdUp = 0;
-            $("#" + canvasId + " #upButton").mousedown(function() {
-                actionUp();
-                timeoutIdUp = setInterval(actionUp, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdUp);
-            });
-
-            var timeoutIddown = 0;
-            $("#" + canvasId + " #downButton").mousedown(function() {
-                actionDown();
-                timeoutIddown = setInterval(actionDown, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIddown);
-            });
-
-            var timeoutIdleft = 0;
-            $("#" + canvasId + " #leftButton").mousedown(function() {
-                actionLeft();
-                timeoutIdleft = setInterval(actionLeft, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdleft);
-            });
-
-            var timeoutIdRight = 0;
-            $("#" + canvasId + " #rightButton").mousedown(function() {
-                actionRight();
-                timeoutIdRight = setInterval(actionRight, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdRight);
-            });
-        }
-
-        if (settings.enableSearch) {
-
-            $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
-            $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
-            $("#searchBox" + canvasId).css({
-                "max-width": "250px",
-                "min-height": "45px",
-                "padding": "5px",
-                "right": "5px",
-                "top": "5px",
-                "position": "absolute",
-                "background-color": "gray",
-                "-webkit-border-radius": "5px",
-                "-moz-border-radius": "5px",
-                "border-radius": "5px"
-
-            });
-            $("#searchInput" + canvasId).css({
-                "float": "right",
-                "width": "0px",
-                "margin-left": "0px",
-                "margin-top": "5px",
-                "display": "none"
-
-            });
-            $("#searchButton" + canvasId).css({
-                "width": "50px",
-                "float": "right"
-
-            });
-            $("#resultsBox" + canvasId).css({
-                "width": "200px",
-                "position": "absolute",
-                "margin-right": "10px",
-                "max-height": "200px",
-                "overflow": "scroll",
-                "margin-top": "40px",
-                "background-color": "#efefef",
-                "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "display": "none",
-                "padding-top": "10px"
-
-            });
-
-            function hideSearchBar() {
-                visible = false;
-                $("#resultsList" + canvasId).empty();
-                $("#resultsBox" + canvasId).slideUp(300, function() {
-                    $("#resultsBox" + canvasId).css({
-                        "display": "none"
-                    });
-                });
-                $("#searchInput" + canvasId).animate({
-                    width: "0px"
-                }, 600, function() {
-                    $("#searchInput" + canvasId).css({
-                        "display": "none"
-                    });
-                    $("#searchInput" + canvasId).val("");
-                });
-            }
-
-            var visible = false;
-            $('#searchButton' + canvasId).click(function() {
-                if (!visible) {
-                    visible = true;
-                    postorderTraverse(baseTree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(baseTree.root,baseTree.data);
-                    $("#searchInput" + canvasId).css({
-                        "display": "inline"
-                    });
-                    $("#searchInput" + canvasId).animate({
-                        width: "150px"
-                    }, 600, function() {
-                        $("#searchInput" + canvasId).focus();
-                    });
-
-                } else { //if search unselected then remove orange highlight from branches
-                    postorderTraverse(baseTree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(baseTree.root,baseTree.data);
-                    hideSearchBar();
-                }
-            });
-            // variable i is set to the number of leaves
-            var leafObjs = [];
-            for (var i = 0; i < baseTree.root.leaves.length; i++) {
-                leafObjs.push(baseTree.root.leaves[i]);
-            }
-
-            $("#" + canvasId + " svg").click(function() {
-                hideSearchBar();
-            });
-
-            //main event handler, performs search every time a char is typed so can get realtime results
-            $("#searchInput" + canvasId).bind("paste keyup", function() {
-                $("#resultsList" + canvasId).empty();
-                var text = $(this).val();
-                var results = _.filter(leafObjs, function(leaf) {
-                    return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
-                });
-                var results_name = [];
-                for (var i = 0; i < results.length; i++){
-                    results_name.push(results[i].name)
-                }
-                postorderTraverse(baseTree.data.root,function(d){
-                    expandPathToLeaf(d,true,false);
-                });
-                update(baseTree.root,baseTree.data);
-
-                if (typeof results_name != "undefined" && results_name != null && results_name.length > 0) {
-                    $("#resultsBox" + canvasId).slideDown(200);
-                    $("#resultsList" + canvasId).empty();
-
-                    postorderTraverse(baseTree.data.root,function(d){
-                        if(results_name.indexOf(d.name)>-1){
-                            expandPathToLeaf(d,false,false);
-                        }
-                    });
-                    update(baseTree.root,baseTree.data);
-
-                    for (var i = 0; i < results.length; i++) {
-                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
-                        $("#resultsList" + canvasId + " li").css({
-                            "margin-left": "-25px",
-                            "list-style-type": "none",
-                            "cursor": "pointer",
-                            "cursor": "hand"
-                        });
-                        var indices = [];
-                        $("#resultsList" + canvasId + " ." + i).on("click", function() {
-                            var index = $(this).attr("class");
-                            indices.push(parseInt(index));
-                            for (var i = 0; i<results.length; i++){
-                                if (indices.indexOf(i)<0){
-                                    expandPathToLeaf(results[i],true,false);
-                                }
-                            }
-                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
-                                for (var i = 0; i<indices.length; i++){
-                                    expandPathToLeaf(results[indices[i]],false);
-                                }
-                            } else {
-                                for (var i = 0; i<indices.length-1; i++){ // allows only to select one entry
-                                    expandPathToLeaf(results[indices[i]],true,false);
-                                }
-                                expandPathToLeaf(results[indices[indices.length-1]],false);
-                            }
-                            update(baseTree, baseTree.data);
-                        });
-
-                    }
-
-                }
-                else {
-                    $("#resultsList" + canvasId).empty();
-                    $("#resultsBox" + canvasId).slideUp(200, function() {
-                        $("#resultsBox" + canvasId).css({
-                            "display": "none"
-                        });
-                    });
-                }
-
-            });
-        }
 
 
         //clear the canvas of any previous visualisation
@@ -3557,6 +3550,17 @@ var TreeCompare = function(){
 
 
         d3.select(self.frameElement).style("height", "500px");
+
+        //----------------------------------------------------
+        if (settings.enableSizeControls) {
+            renderSizeControls(baseTree, canvasId)
+        }
+
+        if (settings.enableSearch) {
+            renderSearchButton(baseTree, canvasId)
+        }
+        //----------------------------------------------------
+
 
         function semanticZoom() {
             var scale = d3.event.scale;
@@ -4401,15 +4405,6 @@ var TreeCompare = function(){
     }
 
     /*
-     clear tooltips from the visualisation
-     */
-    function removeTooltips(svg) {
-        if (svg) {
-            svg.selectAll(".tooltipElem").remove();
-        }
-    }
-
-    /*
      get relevant event listener for clicking on a link depending on what mode is selected
      */
     function getClickEventListenerLink(tree, isCompared, comparedTree) {
@@ -4417,8 +4412,12 @@ var TreeCompare = function(){
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
+            console.log(svg);
 
-
+            // to ensure that when link click is performed search coloring is removed
+            postorderTraverse(tree.root,function(d){
+                d.searchHighlight = false;
+            });
 
             if (!d.children && !d._children && d.searchHighlight === true) {
                 expandPathToLeaf(d, true);
@@ -4432,16 +4431,23 @@ var TreeCompare = function(){
             var rectWidth = 150;
             var rectHeight = 90;
 
-            removeTooltips(svg);
+
+            //$("#tooltipElem").remove();
 
             //d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
-
-            // get coordinates of mouse click event
-            var coordinates = [0, 0];
-            coordinates = d3.mouse(this);
+            var coordinates = d3.mouse(this);
             var x = coordinates[0];
             var y = coordinates[1];
 
+
+            //draw the little triangle
+            d3.select(this.parentNode).append("path")
+                .attr("class", "tooltipElem")
+                .style("fill", "gray")
+                .attr("d", function() {
+                    return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
+                })
+                .style("fill", "gray");
 
             d3.select(this.parentNode).append("rect")
                 .attr("class", "tooltipElem")
@@ -4456,29 +4462,39 @@ var TreeCompare = function(){
                 .attr("rx", 10)
                 .attr("ry", 10)
                 .style("fill", "gray");
-            //draw the little triangle
-            d3.select(this.parentNode).append("path")
-                .attr("class", "tooltipElem")
-                .style("fill", "gray")
-                .attr("d", function() {
-                    return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
-                })
-                .style("fill", "gray");
+
 
             var rpad = 10;
             var tpad = 20;
             var textDone = 0;
             var textInc = 20;
 
-            d3.select(this.parentNode).append("text")
-                .attr("class", "tooltipElem tooltipElemText")
-                .attr("y", (y-rectHeight - triHeight + tpad + textDone))
-                .attr("x", (x+(-rectWidth / 2) + rpad))
-                .style("fill", "white")
-                .style("font-weight", "bold")
-                .text("reroot")
-                .style("cursor", "pointer")
-                .on("click", function(d) { // This is to reroot
+            function add_menu_item(selector, text_f, act_f) {
+                // get coordinates of mouse click event
+
+                d3.select(selector).append("text")
+                    .attr("class", "tooltipElem tooltipElemText")
+                    .attr("y", (y-rectHeight - triHeight + tpad + textDone))
+                    .attr("x", (x+(-rectWidth / 2) + rpad))
+                    .attr("id", text_f)
+                    .style("fill", "white")
+                    .style("font-weight", "bold")
+                    .text(function(d) {
+                        text = text_f(d);
+                        if (text) {
+                            textDone += textInc;
+                            return(text);
+                        }
+                    })
+                    .on("click", act_f);
+            };
+
+            add_menu_item(this.parentNode,
+                function(d){
+                    return 'reroot'
+                },
+                function(d){
+                    // This is to reroot
                     d = e.target;
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
@@ -4499,17 +4515,8 @@ var TreeCompare = function(){
                         }
                         settings.loadedCallback();
                     }, 2);
-                    removeTooltips(svg);
                     manualReroot = true;
-                });
-
-            $(document).click(function(event) {
-                if(!$(event.target).closest('#tooltipElem').length) {
-                    if($('#tooltipElem').is(":visible")) {
-                        $('#tooltipElem').hide()
-                    }
-                }
-            });
+                })
 
             d3.select(this.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
@@ -4836,7 +4843,6 @@ var TreeCompare = function(){
             var rectWidth = 150;
             var rectHeight = 110;
 
-            removeTooltips(svg);
 
             // this is defining the path of the tooltip
             // start of menu box container
@@ -4846,6 +4852,7 @@ var TreeCompare = function(){
                     return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
                 })
                 .style("fill", "gray");
+
             // this is defining the tooltip
             d3.select(this).append("rect")
                 .attr("class", "tooltipElem")
@@ -4894,7 +4901,6 @@ var TreeCompare = function(){
                     function (d) { // action function
                         edit_label(d);
                         d.mouseoverHighlight = false;
-                        removeTooltips(svg);
                     });
             }
             if (d.parent && (d._children || d.children)) {
@@ -4911,7 +4917,6 @@ var TreeCompare = function(){
                             e.mouseoverHighlight = false;
                         });
                         collapse(d);
-                        removeTooltips(svg);
                     });
 
                 add_menu_item(this,
@@ -4927,7 +4932,6 @@ var TreeCompare = function(){
                             e.mouseoverHighlight = false;
                         });
                         collapseAll(d);
-                        removeTooltips(svg);
                     });
             };
 
@@ -4955,7 +4959,6 @@ var TreeCompare = function(){
                             e.mouseoverHighlight = false;
                         });
                         uncollapseAll(d, tree);
-                        removeTooltips(svg);
                     });
             }
 
@@ -4971,7 +4974,6 @@ var TreeCompare = function(){
                         });
                         rotate(d);
                         update(tree.root, tree.data);
-                        removeTooltips(svg);
                     });
             };
 
@@ -4990,7 +4992,6 @@ var TreeCompare = function(){
                             e.mouseoverHighlight = false;
                         });
                         highlight(d);
-                        removeTooltips(svg);
                     });
             }
 
