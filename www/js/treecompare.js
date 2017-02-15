@@ -20,6 +20,9 @@ var TreeCompare = function(){
     //orange:
     //var colorScaleRange = ['rgb(254,240,217)', 'rgb(253,212,158)', 'rgb(253,187,132)', 'rgb(252,141,89)', 'rgb(227,74,51)', 'rgb(179,0,0)'];
 
+
+    var colorScaleRangeRest = ['rgb(179,0,0)', 'rgb(227,74,51)', 'rgb(252,141,89)', 'rgb(253,187,132)', 'rgb(253,212,158)', 'rgb(254,240,217)'];
+
     //blue - green - yellow - red
     //var colorScaleRange = ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
 
@@ -28,6 +31,7 @@ var TreeCompare = function(){
 
     //grey - black
     var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
+
     var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
     var padding = 20;
     var paddingVertical = 50;
@@ -1595,10 +1599,15 @@ var TreeCompare = function(){
             treeToggle = false;
         }
 
-
+        // Color scale for compare mode and bcn values from light yellow to dark blue
         var colorScale = d3.scale.linear()
             .domain(colorScaleDomain)
             .range(colorScaleRange);
+
+        // Color scale for branchsupport from white to dark red
+        var colorScaleRest = d3.scale.linear()
+            .domain(colorScaleDomain)
+            .range(colorScaleRangeRest);
 
         // Compute the new tree layout.
         var nodes = treeData.tree.nodes(treeData.root).reverse();
@@ -2159,7 +2168,7 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
                         if (e["branchSupport"]){
-                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                            return colorScaleRest(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
@@ -2225,7 +2234,7 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         if (e["branchSupport"]){
-                            return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                            return colorScaleRest(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
