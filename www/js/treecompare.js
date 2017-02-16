@@ -12,7 +12,6 @@ var TreeCompare = function(){
     var scaleLinePadding = 10;
     var compareMode = false;
 
-
     /*
      colors for the color scale for comparing nodes to best common node
 
@@ -119,15 +118,11 @@ var TreeCompare = function(){
     /*
     * undo button
     */
-    $("#undoBtn").click(function(e) {
-
-
+    $("#undoBtn").click(function() {
         undoIndex = $("#undoBtn").data('undoIdx');
-
         undoIndex = undoIndex-1;
         $('#undoBtn').data('undoIdx', undoIndex);
         update(undoSource[undoIndex], undoTreeData[undoIndex], null);
-
     });
 
     /*
@@ -187,7 +182,6 @@ var TreeCompare = function(){
                 jQuery.extend(trees[i].data, {
                     treeHeight: settingsIn.treeHeight
                 });
-
             }
         }
         updateAllRenderedTrees();
@@ -200,6 +194,26 @@ var TreeCompare = function(){
         for (var i = 0; i < renderedTrees.length; i++) {
             update(renderedTrees[i].data.root, renderedTrees[i].data);
         }
+    }
+
+    function getLabelsFromProperties(json, hasChildren) {
+        var output = "";
+        if(json.clickedHighlight && hasChildren){
+            output += "@@clickedHighlight"
+        }
+        if(json.bcnhighlight && hasChildren){
+            output += "@@bcnhighlight";
+        }
+        if(json.collapsed && hasChildren){
+            output += "@@collapsed";
+        }
+        if(json.clickedParentHighlight){
+            output += "@@clickedParentHighlight";
+        }
+        if(json.correspondingHighlight){
+            output += "@@correspondingHighlight";
+        }
+        return output;
     }
 
     /*
@@ -220,21 +234,7 @@ var TreeCompare = function(){
                 if(nest.hasOwnProperty('name')){
                     subtree = "("+substring+")" + nest.name;
                     if(addLabels){
-                        if(nest.clickedHighlight){
-                            subtree += "@@clickedHighlight"
-                        }
-                        if(nest.bcnhighlight){
-                            subtree += "@@bcnhighlight";
-                        }
-                        if(nest.collapsed){
-                            subtree += "@@collapsed";
-                        }
-                        if(nest.clickedParentHighlight){
-                            subtree += "@@clickedParentHighlight";
-                        }
-                        if(nest.correspondingHighlight){
-                            subtree += "@@correspondingHighlight";
-                        }
+                        subtree += getLabelsFromProperties(nest, true);
                     }
                 }
                 if(nest.hasOwnProperty('length')){
@@ -245,12 +245,7 @@ var TreeCompare = function(){
                 if(nest.hasOwnProperty('name')){
                     leaf = nest.name;
                     if(addLabels){
-                        if(nest.clickedParentHighlight){
-                            leaf += "@@clickedParentHighlight";
-                        }
-                        if(nest.correspondingHighlight){
-                            leaf += "@@correspondingHighlight";
-                        }
+                        leaf += getLabelsFromProperties(nest, false);
                     }
                 }
                 if(nest.hasOwnProperty('length')){
@@ -499,10 +494,9 @@ var TreeCompare = function(){
                         var tree_meta = token.split("@@"); // separation of metadata for export
                         tree.name = tree_meta[0];
                         tree.length = 0.1; // this is used in the case the tree does not have any branch values
+                        tree.collapsed = false;
                         if(tree_meta.indexOf("collapsed")!==-1){
                             tree.collapsed = true;
-                        }else{
-                            tree.collapsed = false;
                         }
                         if(tree_meta.indexOf("clickedParentHighlight")!==-1){
                             tree.clickedParentHighlight = true;
@@ -516,6 +510,7 @@ var TreeCompare = function(){
                         if(tree_meta.indexOf("clickedHighlight")!==-1){
                             tree.clickedHighlight = true;
                         }
+
                     } else if (x === ':') {
                         tree.length = parseFloat(token);
                     }
@@ -1175,7 +1170,13 @@ var TreeCompare = function(){
             return tree;
         } else {
             return tree;
+
         }
+    }
+
+    function getTreeFromCanvasId(id) {
+        var name = d3.select("#" + id + " svg").attr("id");
+        return trees[findTreeIndex(name)];
     }
 
     /*---------------
@@ -1189,21 +1190,17 @@ var TreeCompare = function(){
         var isCompared = true;
         var canvasLeft = "vis-container1";
         var canvasRight = "vis-container2";
-        var name;
-        var fixedName;
         var tree;
         var fixedTree;
+
         if (canvasId === canvasLeft){ //ensures that the right tree is fixed
-            name = d3.select("#" + canvasLeft + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            fixedName = d3.select("#" + canvasRight + " svg").attr("id");
-            tree = trees[findTreeIndex(name)];
-            fixedTree = trees[findTreeIndex(fixedName)];
+            tree = getTreeFromCanvasId(canvasLeft);
+            fixedTree = getTreeFromCanvasId(canvasRight);
         }else{
-            name = d3.select("#" + canvasRight + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            fixedName = d3.select("#" + canvasLeft + " svg").attr("id");
-            tree = trees[findTreeIndex(name)];
-            fixedTree = trees[findTreeIndex(fixedName)];
+            tree = getTreeFromCanvasId(canvasRight);
+            fixedTree = getTreeFromCanvasId(canvasLeft);
         }
+
         settings.loadingCallback();
         setTimeout(function() {
             //------
@@ -1231,7 +1228,6 @@ var TreeCompare = function(){
         }, 2);
     }
 
-
     /*---------------
      /
      /  Function to swap on nodes to optimize the visualisation between two trees
@@ -1243,20 +1239,15 @@ var TreeCompare = function(){
 
         var canvasLeft = "vis-container1";
         var canvasRight = "vis-container2";
-        var name;
-        var fixedName;
         var tree;
         var fixedTree;
+
         if (canvasId === canvasLeft){ //ensures that the right tree is fixed
-            name = d3.select("#" + canvasLeft + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            fixedName = d3.select("#" + canvasRight + " svg").attr("id");
-            tree = trees[findTreeIndex(name)];
-            fixedTree = trees[findTreeIndex(fixedName)];
+            tree = getTreeFromCanvasId(canvasLeft);
+            fixedTree = getTreeFromCanvasId(canvasRight);
         }else{
-            name = d3.select("#" + canvasRight + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            fixedName = d3.select("#" + canvasLeft + " svg").attr("id");
-            tree = trees[findTreeIndex(name)];
-            fixedTree = trees[findTreeIndex(fixedName)];
+            tree = getTreeFromCanvasId(canvasRight);
+            fixedTree = getTreeFromCanvasId(canvasLeft);
         }
 
         //------
@@ -1496,6 +1487,30 @@ var TreeCompare = function(){
 
     }
 
+    function getNodeColor(node){
+        if (node.clickedParentHighlight || node.correspondingHighlight || node.mouseoverHighlight) {
+            return "green"
+        }
+        else if (node._children) {
+            return "orange";
+        }
+        else {
+            return "black";
+        }
+    }
+
+    function getNodeTextColor(node) {
+        if (node.searchHighlight) {
+            return "orange";
+        }
+        else if (node.clickedParentHighlight || node.correspondingHighlight || node.mouseoverHighlight) {
+            return "green";
+        }
+        else {
+            return "black";
+        }
+    }
+
     /*---------------
      /
      /    UPDATE: Main function that is every time called once an action on the visualization is performed
@@ -1523,6 +1538,7 @@ var TreeCompare = function(){
 
         var leaves = treeData.root.leaves.length;
         var leavesVisible = getVisibleLeaves(treeData.root);
+
         var height = $("#" + treeData.canvasId).height();
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
@@ -1537,23 +1553,17 @@ var TreeCompare = function(){
         var newHeight;
         //calculate treeHeight if we are squashing tree into visible space
         if (settings.fitTree === "scale") {
-            if (treeData.prevNoLeavesVisible && leavesVisible > 0) {
-                newHeight = renderHeight / (leavesVisible + leavesHidden);
-                treeData.treeHeight = newHeight;
+            newHeight = renderHeight / (leavesVisible + leavesHidden);
+            if (leavesVisible === 0) {
+                newHeight = (newHeight * triangleHeightDivisor);
+                newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
             }
-            else if (leavesVisible === 0) {
-                    newHeight = renderHeight / (leavesVisible + leavesHidden);
-                    newHeight = (newHeight * triangleHeightDivisor);
-                    newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
-                    treeData.treeHeight = newHeight;
-            }
+            treeData.treeHeight = newHeight;
         }
 
-        if (leavesVisible > 0) {
-            treeData.prevNoLeavesVisible = false;
-        } else {
-            treeData.prevNoLeavesVisible = true;
-        }
+        // False if visible leaves, true otherwise
+        // Set to true in renderTree
+        treeData.prevNoLeavesVisible = !(leavesVisible > 0);
 
         var leafHeight = treeData.treeHeight;
         height = leaves * leafHeight/2;
@@ -1711,7 +1721,7 @@ var TreeCompare = function(){
                 } else if (d[currentS] && d.highlight < 1) {
                     return colorScale(d[currentS])
                 } else {
-                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "orange" : "black"; //last changed from black
+                    return getNodeColor(d);
                 }
             });
 
@@ -1774,7 +1784,7 @@ var TreeCompare = function(){
                 return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "bold" : "normal";
             })
             .style("fill", function(d) { // change the colour of the leaf text
-                return d.searchHighlight ? "orange" /* changed from red*/ : ((d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : "black");
+                return getNodeTextColor(d)
             })
             .attr("font-size", function(d) {
                 return settings.fontSize + "px"
@@ -1800,7 +1810,7 @@ var TreeCompare = function(){
                         return colorScale(d[currentS])
                     }
                 } else {
-                    return (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight) ? "green" : d._children ? "red" : "black";
+                    return getNodeColor(d);
                 }
             });
 
@@ -2044,15 +2054,16 @@ var TreeCompare = function(){
                         return "green"
                     }
                     d = d.source;
-                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                    var isHighlighted = (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight);
+                    if (d[currentS] && (settings.internalLabels === "none") && !isHighlighted) {
                         return colorScale(d[currentS])
-                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight)) {
+                    } else if ((settings.internalLabels === "name") && !isHighlighted) {
                         if (e["branchSupport"]){
                             return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    } else if (isHighlighted || e.mouseoverLinkHighlight) {
                             return "green";
                             //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
@@ -2111,15 +2122,16 @@ var TreeCompare = function(){
                     }
                     d = d.source;
 
-                    if (d[currentS] && (settings.internalLabels === "none") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    var isHighlighted = (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight);
+                    if (d[currentS] && (settings.internalLabels === "none") && !isHighlighted) {
                         return colorScale(d[currentS])
-                    } else if ((settings.internalLabels === "name") && !(d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    } else if ((settings.internalLabels === "name") && !isHighlighted) {
                         if (e["branchSupport"]){
                             return colorScale(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (d.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || d.clickedHighlight) {
+                    } else if (isHighlighted || d.clickedHighlight) {
                         return "green";
                         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
                     } else {
@@ -2329,19 +2341,9 @@ var TreeCompare = function(){
         }
     }
 
-    /*
-     Update the content of the SVG download link
-     */
-    function updateDownloadLinkContent(canvasId, tree) {
+    function prepareDownloadButton (canvasId) {
 
         $("#downloadButtons" + canvasId).empty();
-
-        // Code inspired by:
-        // https://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
-        var width = 300, height = 300;
-        var svg = d3.select("#" + canvasId + " svg")
-            .attr("version", 1.1)
-            .attr("xmlns", "http://www.w3.org/2000/svg");
 
         var downloadButton = d3.select("#downloadButtons" + canvasId);
 
@@ -2360,6 +2362,22 @@ var TreeCompare = function(){
             .attr("class", "dropdown-menu")
             .attr("aria-labelledby", "dropdownMenu1" + canvasId)
             .attr("id", "exportList" + canvasId);
+    }
+
+    /*
+     Update the content of the SVG download link
+     */
+    function updateDownloadLinkContent(canvasId, tree) {
+
+
+        // Code inspired by:
+        // https://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
+        var width = 300, height = 300;
+        var svg = d3.select("#" + canvasId + " svg")
+            .attr("version", 1.1)
+            .attr("xmlns", "http://www.w3.org/2000/svg");
+
+        prepareDownloadButton(canvasId)
 
         var item, text;
         var svgString = getSVGString(svg.node());
@@ -2515,84 +2533,86 @@ var TreeCompare = function(){
         }
     }
 
+    function prepareMiddleButtonsTable(id, left) {
+        if(id === left){
+            $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
+            $("#fixedButtonsText"+id).css({
+                "right": "30px",
+                "background-color": "white",
+                "bottom": "0px",
+                "font-size": "14px",
+                "color": "#999",
+                "position": "absolute"
+
+            });
+            var row1 = d3.select("#fixedButtonsText"+id).append("tr");
+
+            row1.append("td")
+                .attr("align","center")
+                .attr("width","15px")
+                .append("span")
+                .attr("class","glyphicon glyphicon-circle-arrow-left")
+                .style("cursor","pointer")
+                .attr("id","rerootButton"+id);
+
+            var row2 = d3.select("#fixedButtonsText"+id).append("tr");
+
+            row2.append("td")
+                .attr("align","center")
+                .attr("width","15px")
+                .append("span")
+                .attr("class","glyphicon glyphicon-circle-arrow-left")
+                .style("cursor","pointer")
+                .attr("id","swapButton"+id);
+        } else {
+            $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
+
+            $("#fixedButtonsText"+id).css({
+                "left": "-30px",
+                "background-color": "white",
+                "bottom": "0px",
+                "font-size": "14px",
+                "color": "#999",
+                "position": "absolute"
+
+            });
+
+            row1 = d3.select("#fixedButtonsText"+id).append("tr");
+            row1.append("td")
+                .attr("align","center")
+                .attr("width","60px")
+                .text("reroot")
+                .attr("title","find best rooting point according to opposite tree and reroot")
+                .attr("id","reroot-text");
+            row1.append("td")
+                .attr("align","center")
+                .attr("width","15px")
+                .append("span")
+                .attr("class","glyphicon glyphicon-circle-arrow-right")
+                .style("cursor","pointer")
+                .attr("id","rerootButton"+id);
+
+            row2 = d3.select("#fixedButtonsText"+id).append("tr");
+            row2.append("td")
+                .attr("align","center")
+                .attr("width","60px")
+                .text("reorder")
+                .attr("title","reorder leaves according to opposite tree")
+                .attr("id","reorder-text");
+            row2.append("td")
+                .attr("align","center")
+                .attr("width","15px")
+                .append("span")
+                .attr("class","glyphicon glyphicon-circle-arrow-right")
+                .style("cursor","pointer")
+                .attr("id","swapButton"+id);
+        }
+    }
+
     function renderMiddleButtonsCompareMode(canvasId){
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
-            var canvasLeft = "vis-container1";
-
-            if(canvasId === canvasLeft){
-                $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>');
-                $("#fixedButtonsText"+canvasId).css({
-                    "right": "30px",
-                    "background-color": "white",
-                    "bottom": "0px",
-                    "font-size": "14px",
-                    "color": "#999",
-                    "position": "absolute"
-
-                });
-                var row1 = d3.select("#fixedButtonsText"+canvasId).append("tr");
-
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-left")
-                    .style("cursor","pointer")
-                    .attr("id","rerootButton"+canvasId);
-
-                var row2 = d3.select("#fixedButtonsText"+canvasId).append("tr");
-
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-left")
-                    .style("cursor","pointer")
-                    .attr("id","swapButton"+canvasId);
-            } else {
-                $("#" + canvasId).append('<table id="fixedButtonsText' + canvasId + '"></table>');
-
-                $("#fixedButtonsText"+canvasId).css({
-                    "left": "-30px",
-                    "background-color": "white",
-                    "bottom": "0px",
-                    "font-size": "14px",
-                    "color": "#999",
-                    "position": "absolute"
-
-                });
-
-                row1 = d3.select("#fixedButtonsText"+canvasId).append("tr");
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","60px")
-                    .text("reroot")
-                    .attr("title","find best rooting point according to opposite tree and reroot")
-                    .attr("id","reroot-text");
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-right")
-                    .style("cursor","pointer")
-                    .attr("id","rerootButton"+canvasId);
-
-                row2 = d3.select("#fixedButtonsText"+canvasId).append("tr");
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","60px")
-                    .text("reorder")
-                    .attr("title","reorder leaves according to opposite tree")
-                    .attr("id","reorder-text");
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-right")
-                    .style("cursor","pointer")
-                    .attr("id","swapButton"+canvasId);
-            }
+            prepareMiddleButtonsTable(canvasId, "vis-container1");
         }
 
         var timeoutIdReroot = 0;
@@ -2624,8 +2644,6 @@ var TreeCompare = function(){
             clearTimeout(timeoutIdReroot);
         });
     }
-
-
 
     /*----------------------
     |
@@ -2739,8 +2757,6 @@ var TreeCompare = function(){
         }
 
     }
-
-
 
     function renderTreeToggleButtons(canvas, scale, canvasOpposite, scaleOpposite){
 
@@ -3230,18 +3246,21 @@ var TreeCompare = function(){
                         $("#resultsList" + canvasId + " ." + i).on("click", function() {
                             var index = $(this).attr("class");
                             indices.push(parseInt(index));
-                            for (i = 0; i<results.length; i++){
-                                if (indices.indexOf(i)<0){
-                                    expandPathToLeaf(results[i],true,false);
+
+                            var j;
+
+                            for (j = 0; j<results.length; j++){
+                                if (indices.indexOf(j)<0){
+                                    expandPathToLeaf(results[j],true,false);
                                 }
                             }
                             if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
-                                for (i = 0; i<indices.length; i++){
-                                    expandPathToLeaf(results[indices[i]],false);
+                                for (j = 0; j<indices.length; j++){
+                                    expandPathToLeaf(results[indices[j]],false);
                                 }
                             } else {
-                                for (i = 0; i<indices.length-1; i++){ // allows only to select one entry
-                                    expandPathToLeaf(results[indices[i]],true,false);
+                                for (j = 0; j<indices.length-1; j++){ // allows only to select one entry
+                                    expandPathToLeaf(results[indices[j]],true,false);
                                 }
                                 expandPathToLeaf(results[indices[indices.length-1]],false);
                             }
@@ -3257,7 +3276,6 @@ var TreeCompare = function(){
                         });
                     });
                 }
-
             });
         }
         //clear the canvas of any previous visualisation
@@ -4105,8 +4123,6 @@ var TreeCompare = function(){
             var d = e.target;
             var svg = tree.data.svg;
 
-
-
             if (!d.children && !d._children && d.searchHighlight === true) {
                 expandPathToLeaf(d, true);
                 update(tree.root, tree.data);
@@ -4387,8 +4403,6 @@ var TreeCompare = function(){
                             update(new_d, tree.data);
                             update(otherTreeData.root, otherTreeData);
                         }
-
-
                     }
 
                     var leaves;
@@ -4453,7 +4467,6 @@ var TreeCompare = function(){
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
                     }
-
                 }
             }
 
@@ -4497,7 +4510,6 @@ var TreeCompare = function(){
                         }
                     } else {
                         // Found label already
-                        alert('New label found already in tree(s).');
                     }
                 }
             }
@@ -4684,9 +4696,7 @@ var TreeCompare = function(){
             });
 
         }
-
         return nodeClick;
-
     }
 
     //return all the externalised functions
