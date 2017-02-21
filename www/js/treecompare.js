@@ -78,6 +78,8 @@ var TreeCompare = function(){
     var undoIndex = 0;
     var undoTreeData = [];
     var undoSource = [];
+    var undoAction = [];
+    var undoActionFunc = null;
 
     //Add a work helper function to the jQuery object
     $.work = function(args) {
@@ -136,11 +138,23 @@ var TreeCompare = function(){
         console.log("undobtn clicked");
         undoIndex = $("#undoBtn").data('undoIdx');
 
-        undoIndex = undoIndex-1;
-        $('#undoBtn').data('undoIdx', undoIndex);
-        console.log("updating using undoIdx "+undoIndex);
-        console.log(undoTreeData[undoIndex]);
-        update(undoSource[undoIndex], undoTreeData[undoIndex], null);
+        currentUndoIndex = undoIndex-1;
+        var undoTreeParam = undoTreeData[currentUndoIndex];
+        var undoSourceParam = undoSource[currentUndoIndex];
+        var undoActionFunc = undoAction[currentUndoIndex];
+        console.log("restoring to "+undoActionFunc);
+
+        // unset to skip storing the treedata in update
+        undoActionFunc = null;
+
+        console.log(undoTreeParam);
+        console.log(undoSourceParam);
+
+        undoIndex = currentUndoIndex;
+        $('#undoBtn').data('undoIdx', currentUndoIndex);
+        console.log("updating undoIdx to "+currentUndoIndex);
+
+        update(undoSourceParam, undoTreeParam);
 
     });
 
@@ -1505,11 +1519,28 @@ var TreeCompare = function(){
      ---------------*/
     function update(source, treeData, duration) {
 
+        if(undoActionFunc){
+
+            /* save to undo stack with function to call */
+            undoIndex = undoIndex+1;
+            undoTreeData[undoIndex] = clone(treeData);
+            undoSource[undoIndex] = clone(source);
+            undoAction[undoIndex] = undoActionFunc;
+
+            $('#undoBtn').data('undoIdx', undoIndex);
+
+            console.log("undoIndex "+undoIndex+" saved in update used func "+undoActionFunc);
+            console.log(undoSource[undoIndex]);
+            undoActionFunc = null;
+
+
+        }
+
+
         //time taken for animations in ms
         if (duration === undefined) {
             duration = 750;
         }
-
 
         var colorScale = d3.scale.linear()
             .domain(colorScaleDomain)
@@ -3083,17 +3114,8 @@ var TreeCompare = function(){
 
 
         if(undoIndex == 0){
-            // save treedata to undo
-            undoTreeData[undoIndex] = _.clone(baseTree.data);
-            undoSource[undoIndex] = _.clone(baseTree.root);
-            // update latest undo idx to the button -> 0
-            $('#undoBtn').data('undoIdx', undoIndex);
 
-            console.log("treedata saved to idx: "+undoIndex);
-            console.log(undoTreeData[undoIndex]);
-
-            // update global
-            //undoIndex = undoIndex+1
+            undoActionFunc = "init";
         }
 
         update(baseTree.root, baseTree.data);
@@ -3808,16 +3830,7 @@ var TreeCompare = function(){
         postorderTraverse(root, uncollapseNode);
         if (tree !== undefined) {
 
-            // save treedata to undo
-            undoTreeData[undoIndex] = tree.data;
-            undoSource[undoIndex] = root;
-            // update latest undo idx to the button
-            $('#undoBtn').data('undoIdx', undoIndex);
-
-            // update global
-            undoIndex = undoIndex+1
-
-
+            undoActionFunc = "uncollapseAll";
             update(root, tree.data);
 
         }
@@ -4126,13 +4139,7 @@ var TreeCompare = function(){
                     d.children[0] = second;
                     d.children[1] = first;
 
-                    undoIndex = undoIndex+1;
-
-                    // save treedata to undo
-                    undoTreeData[undoIndex] = _.clone(tree.data);
-                    undoSource[undoIndex] = _.clone(d);
-                    // update latest undo idx to the button
-                    $('#undoBtn').data('undoIdx', undoIndex);
+                    undoActionFunc = "rotate";
 
                     update(d, tree.data);
                 }, 2);
@@ -4173,17 +4180,7 @@ var TreeCompare = function(){
                         settings.loadedCallback(); // stops the spinning wheels
                     }
 
-                    undoIndex = undoIndex+1;
-                    // save treedata to undo
-                    undoTreeData[undoIndex] = _.clone(tree.data);
-                    undoSource[undoIndex] = _.clone(d);
-                    // update latest undo idx to the button
-                    $('#undoBtn').data('undoIdx', undoIndex);
-
-
-                    console.log("collapse treedata saved to idx: "+undoIndex);
-                    console.log(undoTreeData[undoIndex]);
-
+                    undoActionFunc = "collapse";
 
                     update(d, tree.data);
                 }, 2);
@@ -4230,13 +4227,7 @@ var TreeCompare = function(){
                         settings.loadedCallback();
                     }
 
-                    undoIndex = undoIndex+1;
-
-                    // save treedata to undo
-                    undoTreeData[undoIndex] = _.clone(tree.data);
-                    undoSource[undoIndex] = _.clone(d);
-                    // update latest undo idx to the button
-                    $('#undoBtn').data('undoIdx', undoIndex);
+                    undoActionFunc = "collapseAll";
 
                     update(d, tree.data);
                 }, 2)
@@ -4590,6 +4581,71 @@ var TreeCompare = function(){
         }
         return nodeClick;
     }
+
+
+    /* http://stackoverflow.com/a/11462081 */
+    function clone(src, deep) {
+
+        var toString = Object.prototype.toString;
+        if(!src || typeof src != "object"){
+            //any non-object ( Boolean, String, Number ), null, undefined, NaN
+            return src;
+        }
+
+        //Honor native/custom clone methods
+        if(src.clone && toString.call(src.clone) == "[object Function]"){
+            return src.clone(deep);
+        }
+
+        //DOM Elements
+        if(src.nodeType && toString.call(src.cloneNode) == "[object Function]"){
+            return src.cloneNode(deep);
+        }
+
+        //Date
+        if(toString.call(src) == "[object Date]"){
+            return new Date(src.getTime());
+        }
+
+        //RegExp
+        if(toString.call(src) == "[object RegExp]"){
+            return new RegExp(src);
+        }
+
+        //Function
+        if(toString.call(src) == "[object Function]"){
+            //Wrap in another method to make sure == is not true;
+            //Note: Huge performance issue due to closures, comment this :)
+            return (function(){
+                src.apply(this, arguments);
+            });
+
+        }
+
+        var ret, index;
+        //Array
+        if(toString.call(src) == "[object Array]"){
+            //[].slice(0) would soft clone
+            ret = src.slice();
+            if(deep){
+                index = ret.length;
+                while(index--){
+                    ret[index] = clone(ret[index], true);
+                }
+            }
+        }
+        //Object
+        else {
+            ret = src.constructor ? new src.constructor() : {};
+            for (var prop in src) {
+                ret[prop] = deep
+                    ? clone(src[prop], true)
+                    : src[prop];
+            }
+        }
+
+        return ret;
+    };
 
     //return all the externalised functions
     return {
