@@ -4469,13 +4469,9 @@ var TreeCompare = function(){
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
-            if(tree.data.canvasId === "vis-container1"){
-                var x = coordinates[0]+rpad;
-                var y = coordinates[1];
-            } else if (tree.data.canvasId === "vis-container2"){
-                var x = coordinates[0]+34; //TODO: why the hell is this??????
-                var y = coordinates[1];
-            }
+            var x = coordinates[0];
+            var y = coordinates[1];
+
 
 
             //draw the little triangle
@@ -4893,13 +4889,9 @@ var TreeCompare = function(){
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
-            if(tree.data.canvasId === "vis-container1"){
-                var x = coordinates[0]+rpad;
-                var y = coordinates[1];
-            } else if (tree.data.canvasId === "vis-container2"){
-                var x = coordinates[0]+34; //TODO: why the hell is this??????
-                var y = coordinates[1];
-            }
+            var x = coordinates[0]; //TODO: why the hell is this??????
+            var y = coordinates[1];
+
 
 
 
