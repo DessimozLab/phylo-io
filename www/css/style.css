@@ -384,7 +384,13 @@ input.treename::-webkit-input-placeholder{
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
-    opacity: 0.8;
+    opacity: 0.9;
+}
+
+.tooltipElemText{
+    fill: white;
+    font-size: 10pt;
+    font-weight: bold;
 }
 
 /*this following code makes the treename hide on focus*/

@@ -4436,7 +4436,6 @@ var TreeCompare = function(){
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
-            console.log(svg);
 
             // to ensure that when link click is performed search coloring is removed
             postorderTraverse(tree.root,function(d){
@@ -4455,8 +4454,11 @@ var TreeCompare = function(){
             var rectWidth = 150;
             var rectHeight = 90;
 
+            var rpad = 10;
+            var tpad = 20;
+            var textDone = 0;
+            var textInc = 20;
 
-            //$("#tooltipElem").remove();
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
             d3.selection.prototype.moveToFront = function() {
@@ -4467,10 +4469,13 @@ var TreeCompare = function(){
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
-            var x = coordinates[0]+triWidth;
-            var y = coordinates[1];
-
-
+            if(tree.data.canvasId === "vis-container1"){
+                var x = coordinates[0]+rpad;
+                var y = coordinates[1];
+            } else if (tree.data.canvasId === "vis-container2"){
+                var x = coordinates[0]+34; //TODO: why the hell is this??????
+                var y = coordinates[1];
+            }
 
 
             //draw the little triangle
@@ -4504,11 +4509,6 @@ var TreeCompare = function(){
 
 
 
-            var rpad = 10;
-            var tpad = 20;
-            var textDone = 0;
-            var textInc = 20;
-
             function add_menu_item(selector, text_f, act_f) {
                 // get coordinates of mouse click event
 
@@ -4517,8 +4517,6 @@ var TreeCompare = function(){
                     .attr("y", (y-rectHeight - triHeight + tpad + textDone))
                     .attr("x", (x+(-rectWidth / 2) + rpad))
                     .attr("id", text_f)
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
                     .text(function(d) {
                         text = text_f(d);
                         if (text) {
@@ -4530,10 +4528,10 @@ var TreeCompare = function(){
             };
 
             add_menu_item(".tooltipElem",
-                function(d){
+                function(){
                     return 'reroot'
                 },
-                function(d){
+                function(){
                     // This is to reroot
                     d = e.target;
                     postorderTraverse(d, function(e) {
@@ -4560,7 +4558,7 @@ var TreeCompare = function(){
 
             d3.select(this.parentNode.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "green");
+                    d3.select(this).transition().duration(50).style("fill", "green").style("cursor", "pointer");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
@@ -4876,54 +4874,70 @@ var TreeCompare = function(){
                 }
             }
 
-            //render the tooltip on click
-            //user then chooses which function above to call
             var triWidth = 10;
             var triHeight = 15;
             var rectWidth = 150;
             var rectHeight = 110;
 
-            d3.selectAll(".tooltipElem").remove();
-
-
-            // this is defining the path of the tooltip
-            // start of menu box container
-
-            d3.select(this).append("path")
-                .attr("class", "tooltipElem")
-                .attr("d", function(d) {
-                    return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
-                })
-
-            // this is defining the tooltip
-            d3.select(this).append("rect")
-                .attr("class", "tooltipElem")
-                .attr("x", function(d) {
-                    return -(rectWidth / 2);
-                })
-                .attr("y", function(d) {
-                    return -triHeight - rectHeight + 1;
-                })
-                .attr("width", rectWidth)
-                .attr("height", rectHeight)
-                .attr("rx", 10)
-                .attr("ry", 10)
-
             var rpad = 10;
             var tpad = 20;
             var textDone = 0;
             var textInc = 20;
-            //end of menu box container
-            // start of menu buttons
+
+            // ensures that operations on branches and nodes are displayed on top of links and nodes
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function() {
+                    this.parentNode.appendChild(this);
+                });
+            };
+
+            d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
+            var coordinates = d3.mouse(this.parentNode.parentNode);
+            if(tree.data.canvasId === "vis-container1"){
+                var x = coordinates[0]+rpad;
+                var y = coordinates[1];
+            } else if (tree.data.canvasId === "vis-container2"){
+                var x = coordinates[0]+34; //TODO: why the hell is this??????
+                var y = coordinates[1];
+            }
+
+
+
+            //draw the little triangle
+            var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
+                .attr("class", "tooltipElem")
+                .attr("top", x)
+                .attr("left",y)
+                .attr("width", rectWidth)
+                .attr("height", triHeight+rectHeight)
+                .moveToFront();
+
+
+            tooltipContainer.append("path")
+                .attr("d", function() {
+                    return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
+                });
+
+            tooltipContainer.append("rect")
+                .style("fill", "black")
+                .attr("x", function(){
+                    return x-(rectWidth / 2);
+                })
+                .attr("y", function() {
+                    return y-triHeight - rectHeight + 1;
+                })
+                .attr("width", rectWidth)
+                .attr("height", rectHeight)
+                .attr("rx", 10)
+                .attr("ry", 10);
+
 
             function add_menu_item(selector, text_f, act_f) {
                 d3.select(selector).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
+                    .attr("y", (y-rectHeight - triHeight + tpad + textDone))
+                    .attr("x", (x+(-rectWidth / 2) + rpad))
                     .attr("id", text_f)
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
                     .text(function(d) {
                         text = text_f(d);
                         if (text) {
@@ -4935,40 +4949,40 @@ var TreeCompare = function(){
             };
 
             if (!d.children && !d._children) {
-                add_menu_item(this,
-                    function (d) { // text function
+                add_menu_item(".tooltipElem",
+                    function () { // text function
                         return 'edit label >'
                     },
-                    function (d) { // action function
+                    function () { // action function
                         edit_label(d);
                         d.mouseoverHighlight = false;
                     });
             }
             if (d.parent && (d._children || d.children)) {
-                add_menu_item(this,
-                    function (d) { // text function
-                        if (d._children) { // children invisible
+                add_menu_item(".tooltipElem",
+                    function () { // text function
+                        if (d._children !== undefined) { // children invisible
                             return "expand >";
                         } else if (d.children) { //children visible
                             return "collapse >";
                         }
                     },
-                    function (d) { // action function
+                    function () { // action function
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
                         collapse(d);
                     });
 
-                add_menu_item(this,
-                    function (d) {
+                add_menu_item(".tooltipElem",
+                    function () {
                         if (d._children) {
                             return "expand all >";
                         } else if (d.children) {
                             return "collapse all >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4978,8 +4992,8 @@ var TreeCompare = function(){
 
             //TODO: this has to be changed that also the subtree can be all expanded
             if (d.children || d._children) {
-                add_menu_item (this,
-                    function(d) {
+                add_menu_item(".tooltipElem",
+                    function() {
                         // If d has *any* descendant that is collapsed, show label.
                         var found = false;
 
@@ -4995,7 +5009,7 @@ var TreeCompare = function(){
                             return "expand all >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -5005,11 +5019,11 @@ var TreeCompare = function(){
 
             // swap subtree menu option
             if (d.children) {
-                add_menu_item (this,
-                    function(d) {
+                add_menu_item(".tooltipElem",
+                    function() {
                         return "swap subtrees >";
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -5020,15 +5034,15 @@ var TreeCompare = function(){
 
 
             if (d.parent && d.elementBCN) {
-                add_menu_item (this,
-                    function (d) {
+                add_menu_item(".tooltipElem",
+                    function () {
                         if (d.clickedHighlight) {
                             return "unhighlight >";
                         } else {
                             return "highlight >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
@@ -5036,16 +5050,9 @@ var TreeCompare = function(){
                     });
             }
 
-            // ensures that operations on branches and nodes are displayed on top of links and nodes
-            d3.selection.prototype.moveToFront = function() {
-                return this.each(function() {
-                    this.parentNode.appendChild(this);
-                });
-            };
-            d3.select(this).moveToFront();
-            d3.select(this).selectAll(".tooltipElemText").each(function(d) {
+            d3.select(this.parentNode.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "green");
+                    d3.select(this).transition().duration(50).style("fill", "green").style("cursor", "pointer");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
