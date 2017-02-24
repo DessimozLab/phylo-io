@@ -380,6 +380,13 @@ input.treename::-webkit-input-placeholder{
     font-style: italic
 }
 
+.tooltipElem{
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    opacity: 0.8;
+}
+
 /*this following code makes the treename hide on focus*/
 /*
 .treename::-webkit-input-placeholder  {

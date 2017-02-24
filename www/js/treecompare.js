@@ -3422,6 +3422,8 @@ var TreeCompare = function(){
             .attr("height", height)
             .attr("id", name)
             .append("g");
+
+        // defines the zoom behaviour
         var zoomBehaviour = d3.behavior.zoom()
             .scaleExtent([settings.scaleMin, settings.scaleMax])
             .on("zoom", zoom);
@@ -3663,6 +3665,19 @@ var TreeCompare = function(){
             }
             d3.select("#" + canvasId + " svg g")
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
+            d3.selectAll(".tooltipElem").remove();
+
+            var tooltips = $("[id$=tooltipElem]	");
+            for (var i = 0; i < tooltips.length; i++) {
+                var tooltip = tooltips[i];
+                if (scrolling) {
+                    tooltip.parentNode.removeChild(tooltip)
+                } else {
+                    tooltipTransMat = $('#' + tooltip.id).css("-webkit-transform").match(/(-?[0-9\.]+)/g);
+                    tooltip.style['-webkit-transform'] = "translate(" + (parseFloat(tooltipTransMat[4]) + dx) + "px," + (parseFloat(tooltipTransMat[5]) + dy) + "px)"
+                }
+            }
+
             updateDownloadLinkContent(canvasId, baseTree.data);
         }
     }
@@ -4443,23 +4458,39 @@ var TreeCompare = function(){
 
             //$("#tooltipElem").remove();
 
-            //d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
-            var coordinates = d3.mouse(this);
-            var x = coordinates[0];
+            // ensures that operations on branches and nodes are displayed on top of links and nodes
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function() {
+                    this.parentNode.appendChild(this);
+                });
+            };
+
+            d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
+            var coordinates = d3.mouse(this.parentNode.parentNode);
+            var x = coordinates[0]+triWidth;
             var y = coordinates[1];
 
 
+
+
             //draw the little triangle
-            d3.select(this.parentNode).append("path")
+            var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
                 .attr("class", "tooltipElem")
-                .style("fill", "gray")
+                .attr("position","absolute")
+                .attr("top", x)
+                .attr("left",y)
+                .attr("width", rectWidth)
+                .attr("height", triHeight+rectHeight)
+                .moveToFront();
+
+
+            tooltipContainer.append("path")
                 .attr("d", function() {
                     return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
-                })
-                .style("fill", "gray");
+                });
 
-            d3.select(this.parentNode).append("rect")
-                .attr("class", "tooltipElem")
+            tooltipContainer.append("rect")
+                .style("fill", "black")
                 .attr("x", function(){
                     return x-(rectWidth / 2);
                 })
@@ -4469,8 +4500,8 @@ var TreeCompare = function(){
                 .attr("width", rectWidth)
                 .attr("height", rectHeight)
                 .attr("rx", 10)
-                .attr("ry", 10)
-                .style("fill", "gray");
+                .attr("ry", 10);
+
 
 
             var rpad = 10;
@@ -4498,7 +4529,7 @@ var TreeCompare = function(){
                     .on("click", act_f);
             };
 
-            add_menu_item(this.parentNode,
+            add_menu_item(".tooltipElem",
                 function(d){
                     return 'reroot'
                 },
@@ -4527,9 +4558,9 @@ var TreeCompare = function(){
                     manualReroot = true;
                 })
 
-            d3.select(this.parentNode).selectAll(".tooltipElemText").each(function(d) {
+            d3.select(this.parentNode.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "black");
+                    d3.select(this).transition().duration(50).style("fill", "green");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
@@ -4852,15 +4883,17 @@ var TreeCompare = function(){
             var rectWidth = 150;
             var rectHeight = 110;
 
+            d3.selectAll(".tooltipElem").remove();
+
 
             // this is defining the path of the tooltip
             // start of menu box container
+
             d3.select(this).append("path")
                 .attr("class", "tooltipElem")
                 .attr("d", function(d) {
                     return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
                 })
-                .style("fill", "gray");
 
             // this is defining the tooltip
             d3.select(this).append("rect")
@@ -4875,7 +4908,6 @@ var TreeCompare = function(){
                 .attr("height", rectHeight)
                 .attr("rx", 10)
                 .attr("ry", 10)
-                .style("fill", "gray");
 
             var rpad = 10;
             var tpad = 20;
@@ -5004,7 +5036,7 @@ var TreeCompare = function(){
                     });
             }
 
-            // end of menu buttons
+            // ensures that operations on branches and nodes are displayed on top of links and nodes
             d3.selection.prototype.moveToFront = function() {
                 return this.each(function() {
                     this.parentNode.appendChild(this);
@@ -5013,7 +5045,7 @@ var TreeCompare = function(){
             d3.select(this).moveToFront();
             d3.select(this).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "black");
+                    d3.select(this).transition().duration(50).style("fill", "green");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
