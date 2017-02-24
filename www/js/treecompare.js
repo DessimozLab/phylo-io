@@ -908,8 +908,7 @@ var TreeCompare = function(){
     }
 
     /*
-    Function to scale values based on maximum value
-    Bootstrap can be between:
+    Function to find maxBranchSupport in order to scale branchSupport values between 0 and 1
     1) [0,1]
     2) [0,100]
     3) [0,1000] swisstree only
@@ -2235,8 +2234,6 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         if (e["branchSupport"]){
-                            console.log(e)
-                            console.log(parseFloat(e["branchSupport"])/maxBranchSupport)
                             return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                         } else {
                             return defaultLineColor;
