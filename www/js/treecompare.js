@@ -322,6 +322,16 @@ var TreeCompare = function(){
         return nested(tree) +";";
     }
 
+    function getIdxToken(tokenArray, queryToken){
+        var posTokens = [];
+        for (var i = 0; i < tokenArray.length; i++){
+            if (tokenArray[i] === queryToken){
+                posTokens.push(i)
+            }
+        }
+        return posTokens;
+    }
+
     /*
      Newick to JSON converter, just copied code from newick.js
      ==> Should we include the whole library, instead?
@@ -336,17 +346,6 @@ var TreeCompare = function(){
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
 
         var nhx_tags = [':B', ':S', ':D', ':T', ':E', ':O', ':SO', ':L' , ':Sw', ':CO'];
-
-        function getIdxToken(tokenArray, queryToken){
-            var posTokens = [];
-            for (var i = 0; i < tokenArray.length; i++){
-                if (tokenArray[i] === queryToken){
-                    posTokens.push(i)
-                }
-
-            }
-            return posTokens;
-        }
 
         // the following part keeps the NHX datastructure
         var square_bracket_start = getIdxToken(tokens,"[");
@@ -368,13 +367,17 @@ var TreeCompare = function(){
         }
 
         try { //catch error when newick is not in place
-            if (tokens==="") throw "empty";// calls convert function from above
+            if (tokens==="") {
+                throw "empty";
+            }// calls convert function from above
         } catch (err) {
             throw "NoTree";
         }
 
         try {
-            if (checkTreeInput(s)==="TooLittle)") throw "empty"; // TODO:change this to &&NHX and not []
+            if (checkTreeInput(s)==="TooLittle)") {
+                throw "empty";
+            } // TODO:change this to &&NHX and not []
         } catch (err) {
                 throw "TooLittle)"
         }
@@ -1558,7 +1561,8 @@ var TreeCompare = function(){
                 newHeight = (newHeight * triangleHeightDivisor);
                 newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
             }
-            treeData.treeHeight = newHeight;
+            // Breaks the vertical re-sizing
+            //treeData.treeHeight = newHeight;
         }
 
         // False if visible leaves, true otherwise
@@ -2304,7 +2308,6 @@ var TreeCompare = function(){
                 }
             }
         });
-
     }
 
     /*
@@ -2986,6 +2989,314 @@ var TreeCompare = function(){
         }
     }
 
+    function buildSearchBox(canvasId) {
+        $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
+        $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
+    }
+
+    function buildSearchBoxStyle(canvasId) {
+        $("#searchBox" + canvasId).css({
+            "max-width": "250px",
+            "min-height": "45px",
+            "padding": "5px",
+            "right": "5px",
+            "top": "5px",
+            "position": "absolute",
+            "background-color": "gray",
+            "-webkit-border-radius": "5px",
+            "-moz-border-radius": "5px",
+            "border-radius": "5px"
+        });
+    }
+
+    function buildSearchInputStyle(canvasId) {
+        $("#searchInput" + canvasId).css({
+            "float": "right",
+            "width": "0px",
+            "margin-left": "0px",
+            "margin-top": "5px",
+            "display": "none"
+        });
+    }
+
+    function buildSearchButtonStyle(canvasId) {
+        $("#searchButton" + canvasId).css({
+            "width": "50px",
+            "float": "right"
+
+        });
+    }
+
+    function buildResultsBoxStyle(canvasId) {
+        $("#resultsBox" + canvasId).css({
+            "width": "200px",
+            "position": "absolute",
+            "margin-right": "10px",
+            "max-height": "200px",
+            "overflow": "scroll",
+            "margin-top": "40px",
+            "background-color": "#efefef",
+            "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
+            "display": "none",
+            "padding-top": "10px"
+        });
+    }
+
+    function displaySearchResults(results, canvasId, baseTree) {
+
+        for (var i = 0; i < results.length; i++) {
+            $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
+            $("#resultsList" + canvasId + " li").css({
+                "margin-left": "-25px",
+                "list-style-type": "none",
+                "cursor": "pointer"
+            });
+            var indices = [];
+            $("#resultsList" + canvasId + " ." + i).on("click", function() {
+                var index = $(this).attr("class");
+                indices.push(parseInt(index));
+
+                var j;
+
+                for (j = 0; j<results.length; j++){
+                    if (indices.indexOf(j)<0){
+                        expandPathToLeaf(results[j],true,false);
+                    }
+                }
+                if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                    for (j = 0; j<indices.length; j++){
+                        expandPathToLeaf(results[indices[j]],false);
+                    }
+                } else {
+                    for (j = 0; j<indices.length-1; j++){ // allows only to select one entry
+                        expandPathToLeaf(results[indices[j]],true,false);
+                    }
+                    expandPathToLeaf(results[indices[indices.length-1]],false);
+                }
+                update(baseTree, baseTree.data);
+            });
+        }
+    }
+
+    function showSearchBar(canvasId) {
+        $("#searchInput" + canvasId).css({
+            "display": "inline"
+        });
+        $("#searchInput" + canvasId).animate({
+            width: "150px"
+        }, 600, function() {
+            $("#searchInput" + canvasId).focus();
+        });
+    }
+
+    function hideSearchBar(canvasId) {
+        $("#resultsList" + canvasId).empty();
+        $("#resultsBox" + canvasId).slideUp(300, function() {
+            $("#resultsBox" + canvasId).css({
+                "display": "none"
+            });
+        });
+        $("#searchInput" + canvasId).animate({
+            width: "0px"
+        }, 600, function() {
+            $("#searchInput" + canvasId).css({
+                "display": "none"
+            });
+            $("#searchInput" + canvasId).val("");
+        });
+    }
+
+    function prepareSearchBar(canvasId, baseTree) {
+
+        buildSearchBox(canvasId);
+        buildSearchBoxStyle(canvasId);
+        buildSearchInputStyle(canvasId);
+        buildSearchButtonStyle(canvasId);
+        buildResultsBoxStyle(canvasId);
+
+        var visible = false;
+        $('#searchButton' + canvasId).click(function() {
+
+            postorderTraverse(baseTree.data.root, function(d) {
+                d.searchHighlight =false;
+            });
+            update(baseTree.root,baseTree.data);
+
+            if (!visible) {
+                visible = true;
+                showSearchBar(canvasId);
+            } else { //if search unselected then remove orange highlight from branches
+                visible = false;
+                hideSearchBar(canvasId);
+            }
+        });
+
+        // variable i is set to the number of leaves
+        var leafObjs = [];
+        for (var i = 0; i < baseTree.root.leaves.length; i++) {
+            leafObjs.push(baseTree.root.leaves[i]);
+        }
+        $("#" + canvasId + " svg").click(function() {
+            hideSearchBar(canvasId);
+        });
+
+        //main event handler, performs search every time a char is typed so can get realtime results
+        $("#searchInput" + canvasId).bind("paste keyup", function() {
+            $("#resultsList" + canvasId).empty();
+            var text = $(this).val();
+
+            // results is a list of leaves
+            // which name matches the key(s) pressed
+            // (auto-completion)
+            var results = _.filter(leafObjs, function(leaf) {
+                return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
+            });
+
+            var results_name = [];
+            var i;
+            for (i = 0; i < results.length; i++){
+                results_name.push(results[i].name)
+            }
+            postorderTraverse(baseTree.data.root,function(d){
+                expandPathToLeaf(d,true,false);
+            });
+            update(baseTree.root,baseTree.data);
+
+            if (typeof results_name !== "undefined" && results_name !== null && results_name.length > 0) {
+                $("#resultsBox" + canvasId).slideDown(200);
+                $("#resultsList" + canvasId).empty();
+
+                postorderTraverse(baseTree.data.root,function(d){
+                    if(results_name.indexOf(d.name)>-1){
+                        expandPathToLeaf(d,false,false);
+                    }
+                });
+                update(baseTree.root,baseTree.data);
+                displaySearchResults(results, canvasId, baseTree);
+            }
+            else {
+                $("#resultsList" + canvasId).empty();
+                $("#resultsBox" + canvasId).slideUp(200, function() {
+                    $("#resultsBox" + canvasId).css({
+                        "display": "none"
+                    });
+                });
+            }
+        });
+    }
+
+    function buildZoomButtons(canvasId) {
+        $("#" + canvasId).append('<div id="zoomButtons"></div>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
+        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
+    }
+
+    function buildZoomButtonsStyle(canvasId) {
+        $("#" + canvasId + " #zoomButtons").css({
+            "width": "78px",
+            "top": "50px",
+            "left": "10px",
+            "position": "absolute"
+        });
+        $("#" + canvasId + " .zoomButton").css({
+            "font-size": "10px",
+            "width": "26px",
+            "height": "26px",
+            "vertical-align": "top",
+            "opacity": "0.3"
+        });
+        $("#" + canvasId + " .zoomButton").on("mouseover", function () {
+            $(this).css({
+                "opacity": "1"
+            })
+        });
+        $("#" + canvasId + " .zoomButton").on("mouseout", function () {
+            $(this).css({
+                "opacity": "0.3"
+            })
+        });
+        $("#" + canvasId + " .zoomButton span").css({
+            "vertical-align": "middle"
+        });
+        $("#" + canvasId + " #upButton").css({
+            "display": "block",
+            "margin-left": "26px"
+        });
+        $("#" + canvasId + " #leftButton").css({
+            "float": "left"
+        });
+        $("#" + canvasId + " #rightButton").css({
+            "margin-left": "26px",
+            "float": "right"
+        });
+        $("#" + canvasId + " #downButton").css({
+            "display": "block",
+            "margin-left": "26px"
+        });
+    }
+
+    function prepareSizeControls(canvasId, baseTree) {
+        buildZoomButtons(canvasId);
+        buildZoomButtonsStyle(canvasId);
+
+        // set up function for buttons on left top corner
+        function actionUp() {
+            sizeVertical(baseTree.data, false);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionDown() {
+            sizeVertical(baseTree.data, true);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionLeft() {
+            sizeHorizontal(baseTree.data, false);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        function actionRight() {
+            sizeHorizontal(baseTree.data, true);
+            update(baseTree.root, baseTree.data, 0);
+        }
+
+        var timeoutIdUp = 0;
+        $("#" + canvasId + " #upButton").mousedown(function() {
+            actionUp();
+            timeoutIdUp = setInterval(actionUp, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdUp);
+        });
+
+        var timeoutIddown = 0;
+        $("#" + canvasId + " #downButton").mousedown(function() {
+            actionDown();
+            timeoutIddown = setInterval(actionDown, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIddown);
+        });
+
+        var timeoutIdleft = 0;
+        $("#" + canvasId + " #leftButton").mousedown(function() {
+            actionLeft();
+            timeoutIdleft = setInterval(actionLeft, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdleft);
+        });
+
+        var timeoutIdRight = 0;
+        $("#" + canvasId + " #rightButton").mousedown(function() {
+            actionRight();
+            timeoutIdRight = setInterval(actionRight, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdRight);
+        });
+    }
+
     /*---------------
      /
      /    Main function for setting up a d3 visualisation of a tree
@@ -3007,283 +3318,18 @@ var TreeCompare = function(){
         $("#" + canvasId + " #zoomButtons").remove();
 
         if (settings.enableSizeControls) {
-            $("#" + canvasId).append('<div id="zoomButtons"></div>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
-            $("#" + canvasId + " #zoomButtons").css({
-                "width": "78px",
-                "top": "50px",
-                "left": "10px",
-                "position": "absolute"
-            });
-            $("#" + canvasId + " .zoomButton").css({
-                "font-size": "10px",
-                "width": "26px",
-                "height": "26px",
-                "vertical-align": "top",
-                "opacity":"0.3"
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseover", function() {
-                $(this).css({
-                    "opacity": "1"
-                })
-            });
-            $("#" + canvasId + " .zoomButton").on("mouseout", function() {
-                $(this).css({
-                    "opacity": "0.3"
-                })
-            });
-            $("#" + canvasId + " .zoomButton span").css({
-                "vertical-align": "middle"
-            });
-            $("#" + canvasId + " #upButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-            $("#" + canvasId + " #leftButton").css({
-                "float": "left"
-            });
-            $("#" + canvasId + " #rightButton").css({
-                "margin-left": "26px",
-                "float": "right"
-            });
-            $("#" + canvasId + " #downButton").css({
-                "display": "block",
-                "margin-left": "26px",
-            });
-
-            // set up function for buttons on left top corner
-            function actionUp() {
-                sizeVertical(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionDown() {
-                sizeVertical(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionLeft() {
-                sizeHorizontal(baseTree.data, false);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            function actionRight() {
-                sizeHorizontal(baseTree.data, true);
-                update(baseTree.root, baseTree.data, 0);
-            }
-
-            var timeoutIdUp = 0;
-            $("#" + canvasId + " #upButton").mousedown(function() {
-                actionUp();
-                timeoutIdUp = setInterval(actionUp, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdUp);
-            });
-
-            var timeoutIddown = 0;
-            $("#" + canvasId + " #downButton").mousedown(function() {
-                actionDown();
-                timeoutIddown = setInterval(actionDown, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIddown);
-            });
-
-            var timeoutIdleft = 0;
-            $("#" + canvasId + " #leftButton").mousedown(function() {
-                actionLeft();
-                timeoutIdleft = setInterval(actionLeft, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdleft);
-            });
-
-            var timeoutIdRight = 0;
-            $("#" + canvasId + " #rightButton").mousedown(function() {
-                actionRight();
-                timeoutIdRight = setInterval(actionRight, 150);
-            }).bind('mouseup mouseleave', function() {
-                clearTimeout(timeoutIdRight);
-            });
+            prepareSizeControls(canvasId, baseTree);
         }
 
         if (settings.enableSearch) {
+            prepareSearchBar(canvasId, baseTree);
+        } //end if settings.enableSearch
 
-            $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
-            $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
-            $("#searchBox" + canvasId).css({
-                "max-width": "250px",
-                "min-height": "45px",
-                "padding": "5px",
-                "right": "5px",
-                "top": "5px",
-                "position": "absolute",
-                "background-color": "gray",
-                "-webkit-border-radius": "5px",
-                "-moz-border-radius": "5px",
-                "border-radius": "5px"
-
-            });
-            $("#searchInput" + canvasId).css({
-                "float": "right",
-                "width": "0px",
-                "margin-left": "0px",
-                "margin-top": "5px",
-                "display": "none"
-
-            });
-            $("#searchButton" + canvasId).css({
-                "width": "50px",
-                "float": "right"
-
-            });
-            $("#resultsBox" + canvasId).css({
-                "width": "200px",
-                "position": "absolute",
-                "margin-right": "10px",
-                "max-height": "200px",
-                "overflow": "scroll",
-                "margin-top": "40px",
-                "background-color": "#efefef",
-                "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-                "display": "none",
-                "padding-top": "10px"
-
-            });
-
-            function hideSearchBar() {
-                visible = false;
-                $("#resultsList" + canvasId).empty();
-                $("#resultsBox" + canvasId).slideUp(300, function() {
-                    $("#resultsBox" + canvasId).css({
-                        "display": "none"
-                    });
-                });
-                $("#searchInput" + canvasId).animate({
-                    width: "0px"
-                }, 600, function() {
-                    $("#searchInput" + canvasId).css({
-                        "display": "none"
-                    });
-                    $("#searchInput" + canvasId).val("");
-                });
-            }
-
-            var visible = false;
-            $('#searchButton' + canvasId).click(function() {
-                if (!visible) {
-                    visible = true;
-                    postorderTraverse(baseTree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(baseTree.root,baseTree.data);
-                    $("#searchInput" + canvasId).css({
-                        "display": "inline"
-                    });
-                    $("#searchInput" + canvasId).animate({
-                        width: "150px"
-                    }, 600, function() {
-                        $("#searchInput" + canvasId).focus();
-                    });
-
-                } else { //if search unselected then remove orange highlight from branches
-                    postorderTraverse(baseTree.data.root, function(d) {
-                        d.searchHighlight =false;
-                    });
-                    update(baseTree.root,baseTree.data);
-                    hideSearchBar();
-                }
-            });
-            // variable i is set to the number of leaves
-            var leafObjs = [];
-            for (var i = 0; i < baseTree.root.leaves.length; i++) {
-                leafObjs.push(baseTree.root.leaves[i]);
-            }
-
-            $("#" + canvasId + " svg").click(function() {
-                hideSearchBar();
-            });
-
-            //main event handler, performs search every time a char is typed so can get realtime results
-            $("#searchInput" + canvasId).bind("paste keyup", function() {
-                $("#resultsList" + canvasId).empty();
-                var text = $(this).val();
-                var results = _.filter(leafObjs, function(leaf) {
-                    return stringSearch(leaf.name.toLowerCase(), text.toLowerCase());
-                });
-                var results_name = [];
-                var i;
-                for (i = 0; i < results.length; i++){
-                    results_name.push(results[i].name)
-                }
-                postorderTraverse(baseTree.data.root,function(d){
-                    expandPathToLeaf(d,true,false);
-                });
-                update(baseTree.root,baseTree.data);
-
-                if (typeof results_name !== "undefined" && results_name !== null && results_name.length > 0) {
-                    $("#resultsBox" + canvasId).slideDown(200);
-                    $("#resultsList" + canvasId).empty();
-
-                    postorderTraverse(baseTree.data.root,function(d){
-                        if(results_name.indexOf(d.name)>-1){
-                            expandPathToLeaf(d,false,false);
-                        }
-                    });
-                    update(baseTree.root,baseTree.data);
-
-                    for (i = 0; i < results.length; i++) {
-                        $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
-                        $("#resultsList" + canvasId + " li").css({
-                            "margin-left": "-25px",
-                            "list-style-type": "none",
-                            "cursor": "pointer"
-                        });
-                        var indices = [];
-                        $("#resultsList" + canvasId + " ." + i).on("click", function() {
-                            var index = $(this).attr("class");
-                            indices.push(parseInt(index));
-
-                            var j;
-
-                            for (j = 0; j<results.length; j++){
-                                if (indices.indexOf(j)<0){
-                                    expandPathToLeaf(results[j],true,false);
-                                }
-                            }
-                            if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
-                                for (j = 0; j<indices.length; j++){
-                                    expandPathToLeaf(results[indices[j]],false);
-                                }
-                            } else {
-                                for (j = 0; j<indices.length-1; j++){ // allows only to select one entry
-                                    expandPathToLeaf(results[indices[j]],true,false);
-                                }
-                                expandPathToLeaf(results[indices[indices.length-1]],false);
-                            }
-                            update(baseTree, baseTree.data);
-                        });
-                    }
-                }
-                else {
-                    $("#resultsList" + canvasId).empty();
-                    $("#resultsBox" + canvasId).slideUp(200, function() {
-                        $("#resultsBox" + canvasId).css({
-                            "display": "none"
-                        });
-                    });
-                }
-            });
-        }
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();
         scaleId = "#" + scaleId;
-        //set up the d3 vis
-        i = 0;
 
+        //set up the d3 vis
         var width = $("#" + canvasId).width();
         var height = $("#" + canvasId).height();
 
@@ -3352,7 +3398,7 @@ var TreeCompare = function(){
             root: root,
             tree: tree,
             svg: svg,
-            i: i,
+            i: 0,
             id: findTreeIndex(name),
             zoomBehaviour: zoomBehaviour,
             zoomBehaviourSemantic: zoomBehaviourSemantic,
@@ -3427,6 +3473,7 @@ var TreeCompare = function(){
 
         d3.select(self.frameElement).style("height", "500px");
 
+
         function semanticZoom() {
             var scale = d3.event.scale;
             var prev = baseTree.data.prevSemanticScale;
@@ -3449,31 +3496,10 @@ var TreeCompare = function(){
                 } else {
                     zoomBehaviourSemantic.translate([0, 0]);
                 }} else if (prev === scale) {
-                var zoomPadding = 100;
-                var wcanvas = $("#" + canvasId + " svg").width();
-                var hcanvas = $("#" + canvasId + " svg").height();
-                var h = d3.select("#" + canvasId + " svg g").node().getBBox().height;
-                var w = d3.select("#" + canvasId + " svg g").node().getBBox().width;
-                var translation = d3.event.translate;
-                var tbound = -(h - hcanvas) - (zoomPadding * scale);
-                var bbound = zoomPadding;
-                var lbound = -(w - wcanvas) - (zoomPadding * scale);
-                var rbound = zoomPadding;
-                applyScaleText(scaleText, scale, root);
-                // limit translation to thresholds
-                if (h < (hcanvas - (zoomPadding * 2))) {
-                    bbound = tbound - zoomPadding;
-                    tbound = zoomPadding;
-                }
-                if (w < (wcanvas - (zoomPadding * 2))) {
-                    rbound = lbound - zoomPadding;
-                    lbound = zoomPadding;
-                }
-                translation = [
-                    Math.max(Math.min(translation[0], rbound), lbound),
-                    Math.max(Math.min(translation[1], bbound), tbound)
-                ];
+
+                var translation = getTranslation(canvasId, false);
                 zoomBehaviourSemantic.translate(translation);
+                applyScaleText(scaleText, scale, root);
                 baseTree.data.prevTransform = translation;
                 d3.select("#" + canvasId + " svg g")
                     .attr("transform", "translate(" + translation + ")");
@@ -3483,34 +3509,11 @@ var TreeCompare = function(){
         }
 
         function zoom() {
-            var zoomPadding = 100;
-            var wcanvas = $("#" + canvasId + " svg").width();
-            var hcanvas = $("#" + canvasId + " svg").height();
             var scale = d3.event.scale;
-            var h = d3.select("#" + canvasId + " svg g").node().getBBox().height * scale;
-            var w = d3.select("#" + canvasId + " svg g").node().getBBox().width * scale;
-            var translation = d3.event.translate;
-            var tbound = -(h - hcanvas) - (zoomPadding * scale);
-            var bbound = zoomPadding;
-            var lbound = -(w - wcanvas) - (zoomPadding * scale);
-            var rbound = zoomPadding;
-            applyScaleText(scaleText, scale, root);
-            // limit translation to thresholds
-            if (h < (hcanvas - (zoomPadding * 2))) {
-                bbound = tbound - zoomPadding;
-                tbound = zoomPadding;
-            }
-            if (w < (wcanvas - (zoomPadding * 2))) {
-                rbound = lbound - zoomPadding;
-                lbound = zoomPadding;
-            }
-
-            translation = [
-                Math.max(Math.min(translation[0], rbound), lbound),
-                Math.max(Math.min(translation[1], bbound), tbound)
-            ];
+            var translation = getTranslation(canvasId, true);
             zoomBehaviour.translate(translation);
             zoomBehaviour.scale(scale);
+            applyScaleText(scaleText, scale, root);
             if (settings.enableZoomSliders) {
                 $("#zoomSlider" + baseTree.data.id).val(scale);
             }
@@ -3520,7 +3523,41 @@ var TreeCompare = function(){
         }
     }
 
+    function getTranslation(canvasId, zoom) {
+        var zoomPadding = 100;
+        var scale = d3.event.scale;
+        var wcanvas = $("#" + canvasId + " svg").width();
+        var hcanvas = $("#" + canvasId + " svg").height();
 
+        var h = d3.select("#" + canvasId + " svg g").node().getBBox().height;
+        var w = d3.select("#" + canvasId + " svg g").node().getBBox().width;
+        if (zoom) {
+            h = h * scale;
+            w = w * scale;
+        }
+
+        var translation = d3.event.translate;
+        var tbound = -(h - hcanvas) - (zoomPadding * scale);
+        var bbound = zoomPadding;
+        var lbound = -(w - wcanvas) - (zoomPadding * scale);
+        var rbound = zoomPadding;
+
+        // limit translation to thresholds
+        if (h < (hcanvas - (zoomPadding * 2))) {
+            bbound = tbound - zoomPadding;
+            tbound = zoomPadding;
+        }
+        if (w < (wcanvas - (zoomPadding * 2))) {
+            rbound = lbound - zoomPadding;
+            lbound = zoomPadding;
+        }
+
+        translation = [
+            Math.max(Math.min(translation[0], rbound), lbound),
+            Math.max(Math.min(translation[1], bbound), tbound)
+        ];
+        return translation;
+    }
 
     /*---------------
      /
