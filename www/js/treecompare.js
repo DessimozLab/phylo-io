@@ -750,33 +750,25 @@ var TreeCompare = function(){
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
                 idCounter++;
             });
-            var fullTree;
-            if (newicks.length > 1){
-                fullTree = {
-                    root: tree,
-                    name: name,
-                    mode: mode,
-                    multiple: true,
-                    display: true,
-                    part: i, // index part of the collection of trees
-                    last: (num+newicks.length-1), // index of last tree
-                    total: newicks.length, // number of all trees in collection
-                    data: {}
-                };
-            } else {
-                fullTree = {
-                    root: tree,
-                    name: name,
-                    mode: mode,
-                    display: true,
-                    part: i,
-                    last: (num+newicks.length-1),
-                    total: 1,
-                    data: {}
-                };
-            }
 
+            var fullTree = {
+                root: tree,
+                name: name,
+                mode: mode,
+                display: true,
+                part: i, // index part of the collection of trees
+                last: (num+newicks.length-1), // index of last tree
+                data: {}
+            };
+
+            if (newicks.length > 1){
+                fullTree.multiple = true;
+                fullTree.total = newicks.length;
+            } else {
+                fullTree.total = 1;
+            }
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
+
             trees.push(fullTree);
         }
         return trees[(trees.length - newicks.length)];
