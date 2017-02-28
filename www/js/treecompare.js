@@ -2683,7 +2683,7 @@ var TreeCompare = function(){
             .style("position","absolute")
             .style("font-size", "10px")
             .style("text-align", "left")
-            .text((numTrees-1)+"/"+(numTrees-1));
+            .text(numTrees + "/" + numTrees);
 
         // define placement of text that tells which tree is currently used
         var textWidth = parseFloat(d3.select("#" + canvas + " #dropDownToggleButtonText").style("width"));
@@ -2695,7 +2695,8 @@ var TreeCompare = function(){
         dropdownToggleButtonText.style("top",parseInt(topAlign)+ "px")
             .style("left",parseInt(leftAlign)+  "px");
 
-        dropdownToggleButtonText.text(trees[index].part+"/"+(numTrees-1));
+        var toggleStart = trees[index].part + 1;
+        dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
 
         downloadButton.append("ul")
             .attr("class", "dropdown-menu")
@@ -2744,7 +2745,7 @@ var TreeCompare = function(){
                 setTimeout(function() {
                     preprocessTrees(toggledTree, oppositeTree);
                 }, 5);
-                dropdownToggleButtonText.text(toggledTree.part+"/"+(numTrees-1));
+
             } else { // view mode
                 settings.loadingCallback();
                 setTimeout(function() {
@@ -2756,8 +2757,9 @@ var TreeCompare = function(){
 
                     settings.loadedCallback();
                 }, 2);
-                dropdownToggleButtonText.text(toggledTree.part+"/"+(numTrees-1));
             }
+            var toggleStart = toggledTree.part + 1;
+            dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
         }
 
     }
@@ -2847,25 +2849,35 @@ var TreeCompare = function(){
 
         function actionLeft(oldName, oppositeTreeName) {
             var index1 = findTreeIndex(oldName);
-            var num_trees = trees[index1].last;
-            trees[index1].display = false;
-            var toggledTree;
-            if (trees[index1].part === 0){
-                toggledTree = trees[num_trees];
-            }else {
-                toggledTree = trees[index1-1];
+            if (trees[index1] !== undefined) {
+                var num_trees = trees[index1].last;
+                trees[index1].display = false;
+                var toggledTree;
+                if (trees[index1].part === 0) {
+                    toggledTree = trees[num_trees];
+                } else {
+                    toggledTree = trees[index1 - 1];
+                }
+                toggledTree.display = true;
+                var new_name = toggledTree.name;
+                buildToggledTree(oppositeTreeName, toggledTree, new_name, canvas, scale, canvasOpposite, scaleOpposite);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggleStart + "/" + toggleEnd);
             }
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-            buildToggledTree(oppositeTreeName, toggledTree, new_name, canvas, scale, canvasOpposite, scaleOpposite);
-            d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part + "/" + (toggledTree.total - 1));
         }
 
         function actionRight(oldName, oppositeTreeName) {
+
             var index1 = findTreeIndex(oldName);
-            var sub_index = trees[index1].part;
-            var num_trees = trees[index1].last;
-            trees[index1].display = false;
+            var sub_index = 0;
+            var num_trees = 0;
+            if (trees[index1] !== undefined) {
+                sub_index = trees[index1].part;
+                num_trees = trees[index1].last;
+                trees[index1].display = false;
+            }
+
             var toggledTree;
             // main function to assure cycling when toggle action is called
             if (index1 === (num_trees)){
@@ -2873,11 +2885,14 @@ var TreeCompare = function(){
             }else {
                 toggledTree = trees[index1+1];
             }
-
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-            buildToggledTree(oppositeTreeName, toggledTree, new_name, canvas, scale, canvasOpposite, scaleOpposite);
-            d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggledTree.part + "/" + (toggledTree.total - 1));
+            if (toggledTree !== undefined) {
+                toggledTree.display = true;
+                var new_name = toggledTree.name;
+                buildToggledTree(oppositeTreeName, toggledTree, new_name, canvas, scale, canvasOpposite, scaleOpposite);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleButtonText").text(toggleStart + "/" + toggleEnd);
+            }
         }
 
         var timeoutIdleft = 0;
