@@ -2406,11 +2406,12 @@ var TreeCompare = function(){
 
         prepareDownloadButton(canvasId);
 
-        var svgString = getSVGString(svg.node());
-
-        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "png"));
-        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "svg", 'data:image/svg+xml;base64,' + btoa(svgString)));
-        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "nwk", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root))));
+        if (svg.node()) {
+            var svgString = getSVGString(svg.node());
+            document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "png"));
+            document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "svg", 'data:image/svg+xml;base64,' + btoa(svgString)));
+            document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "nwk", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root))));
+        }
 
         d3.select('#savepng' + canvasId).on('click', function () {
             svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
@@ -2424,7 +2425,6 @@ var TreeCompare = function(){
         // getSVGString (svgNode ) and svgString2Image( svgString, width, height, format, callback )
         function getSVGString( svgNode ) {
             svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-
             var serializer = new XMLSerializer();
             var svgString = serializer.serializeToString(svgNode);
             svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink=') // Fix root xlink without namespace
