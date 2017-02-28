@@ -2411,15 +2411,16 @@ var TreeCompare = function(){
             document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "png"));
             document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "svg", 'data:image/svg+xml;base64,' + btoa(svgString)));
             document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "nwk", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root))));
+
+
+            d3.select('#savepng' + canvasId).on('click', function () {
+                svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
+
+                function save(dataBlob) {
+                    saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
+                }
+            });
         }
-
-        d3.select('#savepng' + canvasId).on('click', function () {
-            svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
-
-            function save(dataBlob) {
-                saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
-            }
-        });
 
         // Below are the function that handle actual exporting:
         // getSVGString (svgNode ) and svgString2Image( svgString, width, height, format, callback )
