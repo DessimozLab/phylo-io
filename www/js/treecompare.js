@@ -2367,6 +2367,30 @@ var TreeCompare = function(){
             .attr("id", "exportList" + canvasId);
     }
 
+
+    function buildDownloadLink (canvasId, format, href) {
+
+        var item = document.createElement("li");
+        item.setAttribute("id", "save" + format + canvasId);
+
+        var svgLink = document.createElement("a");
+        if (href) {
+            svgLink.setAttribute("href", href);
+            svgLink.setAttribute("download", "phylo.io." + format);
+        }
+
+        var formatStr = format.toUpperCase();
+        if (formatStr === 'NWK') {
+            formatStr = 'Newick';
+        }
+
+        var text = document.createTextNode(formatStr);
+        svgLink.appendChild(text);
+        item.appendChild(svgLink);
+
+        return item;
+    }
+
     /*
      Update the content of the SVG download link
      */
@@ -2380,43 +2404,18 @@ var TreeCompare = function(){
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg");
 
-        prepareDownloadButton(canvasId)
+        prepareDownloadButton(canvasId);
 
-        var item, text;
         var svgString = getSVGString(svg.node());
 
-        item = document.createElement("li");
-        item.setAttribute("id", "savePng" + canvasId);
-        var svgLink = document.createElement("a");
-        text = document.createTextNode("PNG");
-        svgLink.appendChild(text);
-        item.appendChild(svgLink);
-        document.getElementById("exportList" + canvasId).appendChild(item);
+        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "png"));
+        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "svg", 'data:image/svg+xml;base64,' + btoa(svgString)));
+        document.getElementById("exportList" + canvasId).appendChild(buildDownloadLink(canvasId, "nwk", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root))));
 
-        item = document.createElement("li");
-        item.setAttribute("id", "saveSvg" + canvasId);
-        svgLink = document.createElement("a");
-        svgLink.setAttribute("href", 'data:image/svg+xml;base64,' + btoa(svgString));
-        svgLink.setAttribute("download", "phylo.io.svg");
-        text = document.createTextNode("SVG");
-        svgLink.appendChild(text);
-        item.appendChild(svgLink);
-        document.getElementById("exportList" + canvasId).appendChild(item);
-
-        item = document.createElement("li");
-        item.setAttribute("id", "saveNwk" + canvasId);
-        svgLink = document.createElement("a");
-        svgLink.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(tree2Newick(tree.root)));
-        svgLink.setAttribute("download", "phylo.io.nwk");
-        text = document.createTextNode("Newick");
-        svgLink.appendChild(text);
-        item.appendChild(svgLink);
-        document.getElementById("exportList" + canvasId).appendChild(item);
-
-        d3.select('#savePng' + canvasId).on('click', function () {
+        d3.select('#savepng' + canvasId).on('click', function () {
             svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
 
-            function save(dataBlob, filesize) {
+            function save(dataBlob) {
                 saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
             }
         });
@@ -2454,13 +2453,14 @@ var TreeCompare = function(){
                 context.drawImage(image, 0, 0, width, height);
 
                 canvas.toBlob( function(blob) {
-                    var filesize = Math.round( blob.length/1024 ) + ' KB';
-                    if ( callback ) callback( blob, filesize );
+                    if ( callback ) {
+                        callback( blob );
+                    }
                 });
             };
             image.src = imgsrc;
         }
-        // TODO so at the moment, it works if you hover over the tree to cause the update funciton to work otherwise it saves it as 'download';
+        // TODO so at the moment, it works if you hover over the tree to cause the update function to work otherwise it saves it as 'download';
         // TODO it also does not work for the single view tree, as it uses the name from the last tree
     }
 
@@ -4455,7 +4455,6 @@ var TreeCompare = function(){
                             leaves = d.leaves;
                             otherTree = comparedTree.root;
                             otherTreeData = comparedTree.data;
-                            var otherTreeLeaves = otherTreeData.leaves;
 
                             for (i = 0; i < leaves.length; i++) {
                                 if(leaves[i].correspondingLeaf !== undefined) {
