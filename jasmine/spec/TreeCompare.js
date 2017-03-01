@@ -16,8 +16,8 @@ describe("TreeCompare", function() {
 
             var newick = '(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);';
 
-            var myTree = TreeCompare().addTree(newick, 'myTestTree');
-            expect(myTree.name).toEqual('myTestTree');
+            var myTree = TreeCompare().addTree(newick, 'Tree_0');
+            expect(myTree.name).toEqual('Tree_0');
 
             var root = myTree.root;
             expect(root.ID).toContain('node_');

@@ -665,11 +665,12 @@
             svgExport.setAttribute('hreflang', 'image/svg+xml');
             svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
 
+            // only for compare mode afaIk...
             isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1));
             if (isCompared) {
-                download_fn = document.getElementById("newickIn1Label").value +
-                        "-with-" +
-                        document.getElementById("newickIn2Label").value;
+                var label1 = document.getElementById("newickIn1Label").value !== '' ? document.getElementById("newickIn1Label").value : 'tree1';
+                var label2 = document.getElementById("newickIn2Label").value !== '' ? document.getElementById("newickIn2Label").value : 'tree2';
+                download_fn = label1.replace(/\./g, '_') + "-with-" + label2.replace(/\./g, '_');
             } else {
                 download_fn = document.getElementById("newickInSingleLabel").value;
             }
