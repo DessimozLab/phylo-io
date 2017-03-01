@@ -12,6 +12,7 @@ var TreeCompare = function(){
     var scaleLinePadding = 10;
     var compareMode = false;
 
+
     /*
      colors for the color scale for comparing nodes to best common node
 
@@ -849,8 +850,7 @@ var TreeCompare = function(){
     }
 
     /*
-    Function to scale values based on maximum value
-    Bootstrap can be between:
+    Function to find maxBranchSupport in order to scale branchSupport values between 0 and 1
     1) [0,1]
     2) [0,100]
     3) [0,1000] swisstree only
@@ -862,17 +862,17 @@ var TreeCompare = function(){
                 branchSupport.push(d["branchSupport"])
             }
         });
-        var maxBranchSupport = Math.max.apply(Math,branchSupport);
+        var tmpMaxBranchSupport = Math.max.apply(Math,branchSupport);
 
-        if (maxBranchSupport <= 1){
-            return 1
-        } else if (maxBranchSupport <= 100){
-            return 100
-        } else if (maxBranchSupport <= 1000) {
-            return 1000
+        if (tmpMaxBranchSupport <= 1){
+            maxBranchSupport = 1
+        } else if (tmpMaxBranchSupport <= 100){
+            maxBranchSupport = 100
+        } else if (tmpMaxBranchSupport <= 1000) {
+            maxBranchSupport = 1000
         }
         else {
-            return undefined
+            maxBranchSupport = undefined
         }
 
     }
@@ -2079,7 +2079,7 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
                         if (e["branchSupport"]){
-                            return colorScaleRest(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                            return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                         } else {
                             return defaultLineColor;
                         }
@@ -2143,7 +2143,7 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
                         if (e["branchSupport"]){
-                            return colorScaleRest(parseFloat(e["branchSupport"])/e["maxBranchSupport"])
+                            return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                         } else {
                             return defaultLineColor;
                         }
@@ -3346,6 +3346,8 @@ var TreeCompare = function(){
             .attr("height", height)
             .attr("id", name)
             .append("g");
+
+        // defines the zoom behaviour
         var zoomBehaviour = d3.behavior.zoom()
             .scaleExtent([settings.scaleMin, settings.scaleMax])
             .on("zoom", zoom);
@@ -3524,6 +3526,19 @@ var TreeCompare = function(){
             }
             d3.select("#" + canvasId + " svg g")
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
+            d3.selectAll(".tooltipElem").remove();
+
+            var tooltips = $("[id$=tooltipElem]	");
+            for (var i = 0; i < tooltips.length; i++) {
+                var tooltip = tooltips[i];
+                if (scrolling) {
+                    tooltip.parentNode.removeChild(tooltip)
+                } else {
+                    tooltipTransMat = $('#' + tooltip.id).css("-webkit-transform").match(/(-?[0-9\.]+)/g);
+                    tooltip.style['-webkit-transform'] = "translate(" + (parseFloat(tooltipTransMat[4]) + dx) + "px," + (parseFloat(tooltipTransMat[5]) + dy) + "px)"
+                }
+            }
+
             updateDownloadLinkContent(canvasId, baseTree.data);
         }
     }
@@ -3951,7 +3966,7 @@ var TreeCompare = function(){
     }
 
     function initialiseTree(tree, autocollapse) {
-        var maxBranchSupport = findScaleValueBranchSupport(tree);
+        findScaleValueBranchSupport(tree);
         uncollapseAll(tree); // use postorderTraverse, does not call update function
         stripPreprocessing(tree); // use postorderTraverse, reset all existing settings
         getDepths(tree); // get all the children and set their level in the hierarchy
@@ -3962,9 +3977,6 @@ var TreeCompare = function(){
                 d._children = d.children;
                 d.collapsed = true;
                 d.children = null;
-            }
-            if (d["branchSupport"]){
-                d.maxBranchSupport = maxBranchSupport;
             }
         });
 
@@ -4164,7 +4176,6 @@ var TreeCompare = function(){
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
-            console.log(svg);
 
             if (!d.children && !d._children && d.searchHighlight === true) {
                 expandPathToLeaf(d, true);
@@ -4178,23 +4189,44 @@ var TreeCompare = function(){
             var rectWidth = 150;
             var rectHeight = 90;
 
-            // get coordinates of mouse click event
-            var coordinates = d3.mouse(this);
+            var rpad = 10;
+            var tpad = 20;
+            var textDone = 0;
+            var textInc = 20;
+
+
+            // ensures that operations on branches and nodes are displayed on top of links and nodes
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function() {
+                    this.parentNode.appendChild(this);
+                });
+            };
+
+            d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
+            var coordinates = d3.mouse(this.parentNode.parentNode);
             var x = coordinates[0];
             var y = coordinates[1];
 
 
+
             //draw the little triangle
-            d3.select(this.parentNode).append("path")
+            var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
                 .attr("class", "tooltipElem")
-                .style("fill", "gray")
+                .attr("position","absolute")
+                .attr("top", x)
+                .attr("left",y)
+                .attr("width", rectWidth)
+                .attr("height", triHeight+rectHeight)
+                .moveToFront();
+
+
+            tooltipContainer.append("path")
                 .attr("d", function() {
                     return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
-                })
-                .style("fill", "gray");
+                });
 
-            d3.select(this.parentNode).append("rect")
-                .attr("class", "tooltipElem")
+            tooltipContainer.append("rect")
+                .style("fill", "black")
                 .attr("x", function(){
                     return x-(rectWidth / 2);
                 })
@@ -4204,13 +4236,9 @@ var TreeCompare = function(){
                 .attr("width", rectWidth)
                 .attr("height", rectHeight)
                 .attr("rx", 10)
-                .attr("ry", 10)
-                .style("fill", "gray");
+                .attr("ry", 10);
 
 
-            var rpad = 10;
-            var tpad = 20;
-            var textDone = 0;
 
             function add_menu_item(selector, text_f, act_f) {
                 // get coordinates of mouse click event
@@ -4220,8 +4248,6 @@ var TreeCompare = function(){
                     .attr("y", (y-rectHeight - triHeight + tpad + textDone))
                     .attr("x", (x+(-rectWidth / 2) + rpad))
                     .attr("id", text_f)
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
                     .text(function(d) {
                         text = text_f(d);
                         if (text) {
@@ -4232,11 +4258,11 @@ var TreeCompare = function(){
                     .on("click", act_f);
             };
 
-            add_menu_item(this.parentNode,
-                function(d){
+            add_menu_item(".tooltipElem",
+                function(){
                     return 'reroot'
                 },
-                function(d){
+                function(){
                     // This is to reroot
                     d = e.target;
                     postorderTraverse(d, function(e) {
@@ -4266,9 +4292,9 @@ var TreeCompare = function(){
                 }
             });
 
-            d3.select(this.parentNode).selectAll(".tooltipElemText").each(function(d) {
+            d3.select(this.parentNode.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "black");
+                    d3.select(this).transition().duration(50).style("fill", "green").style("cursor", "pointer");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
@@ -4572,53 +4598,66 @@ var TreeCompare = function(){
                 }
             }
 
-            //render the tooltip on click
-            //user then chooses which function above to call
             var triWidth = 10;
             var triHeight = 15;
             var rectWidth = 150;
             var rectHeight = 110;
 
-
-            // this is defining the path of the tooltip
-            // start of menu box container
-            d3.select(this).append("path")
-                .attr("class", "tooltipElem")
-                .attr("d", function(d) {
-                    return "M" + 0 + "," + 0 + "L" + (-triWidth) + "," + (-triHeight) + "L" + (triWidth) + "," + (-triHeight);
-                })
-                .style("fill", "gray");
-
-            // this is defining the tooltip
-            d3.select(this).append("rect")
-                .attr("class", "tooltipElem")
-                .attr("x", function(d) {
-                    return -(rectWidth / 2);
-                })
-                .attr("y", function(d) {
-                    return -triHeight - rectHeight + 1;
-                })
-                .attr("width", rectWidth)
-                .attr("height", rectHeight)
-                .attr("rx", 10)
-                .attr("ry", 10)
-                .style("fill", "gray");
-
             var rpad = 10;
             var tpad = 20;
             var textDone = 0;
             var textInc = 20;
-            //end of menu box container
-            // start of menu buttons
+
+            // ensures that operations on branches and nodes are displayed on top of links and nodes
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function() {
+                    this.parentNode.appendChild(this);
+                });
+            };
+
+            d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
+            var coordinates = d3.mouse(this.parentNode.parentNode);
+            var x = coordinates[0]; //TODO: why the hell is this??????
+            var y = coordinates[1];
+
+
+
+
+            //draw the little triangle
+            var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
+                .attr("class", "tooltipElem")
+                .attr("top", x)
+                .attr("left",y)
+                .attr("width", rectWidth)
+                .attr("height", triHeight+rectHeight)
+                .moveToFront();
+
+
+            tooltipContainer.append("path")
+                .attr("d", function() {
+                    return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
+                });
+
+            tooltipContainer.append("rect")
+                .style("fill", "black")
+                .attr("x", function(){
+                    return x-(rectWidth / 2);
+                })
+                .attr("y", function() {
+                    return y-triHeight - rectHeight + 1;
+                })
+                .attr("width", rectWidth)
+                .attr("height", rectHeight)
+                .attr("rx", 10)
+                .attr("ry", 10);
+
 
             function add_menu_item(selector, text_f, act_f) {
                 d3.select(selector).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
-                    .attr("y", (-rectHeight - triHeight + tpad + textDone))
-                    .attr("x", ((-rectWidth / 2) + rpad))
+                    .attr("y", (y-rectHeight - triHeight + tpad + textDone))
+                    .attr("x", (x+(-rectWidth / 2) + rpad))
                     .attr("id", text_f)
-                    .style("fill", "white")
-                    .style("font-weight", "bold")
                     .text(function(d) {
                         var text = text_f(d);
                         if (text) {
@@ -4630,40 +4669,40 @@ var TreeCompare = function(){
             };
 
             if (!d.children && !d._children) {
-                add_menu_item(this,
-                    function (d) { // text function
+                add_menu_item(".tooltipElem",
+                    function () { // text function
                         return 'edit label >'
                     },
-                    function (d) { // action function
+                    function () { // action function
                         edit_label(d);
                         d.mouseoverHighlight = false;
                     });
             }
             if (d.parent && (d._children || d.children)) {
-                add_menu_item(this,
-                    function (d) { // text function
-                        if (d._children) { // children invisible
+                add_menu_item(".tooltipElem",
+                    function () { // text function
+                        if (d._children !== undefined) { // children invisible
                             return "expand >";
                         } else if (d.children) { //children visible
                             return "collapse >";
                         }
                     },
-                    function (d) { // action function
+                    function () { // action function
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
                         collapse(d);
                     });
 
-                add_menu_item(this,
-                    function (d) {
+                add_menu_item(".tooltipElem",
+                    function () {
                         if (d._children) {
                             return "expand all >";
                         } else if (d.children) {
                             return "collapse all >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4673,8 +4712,8 @@ var TreeCompare = function(){
 
             //TODO: this has to be changed that also the subtree can be all expanded
             if (d.children || d._children) {
-                add_menu_item (this,
-                    function(d) {
+                add_menu_item(".tooltipElem",
+                    function() {
                         // If d has *any* descendant that is collapsed, show label.
                         var found = false;
 
@@ -4690,7 +4729,7 @@ var TreeCompare = function(){
                             return "expand all >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4700,11 +4739,11 @@ var TreeCompare = function(){
 
             // swap subtree menu option
             if (d.children) {
-                add_menu_item (this,
-                    function(d) {
+                add_menu_item(".tooltipElem",
+                    function() {
                         return "swap subtrees >";
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4715,15 +4754,15 @@ var TreeCompare = function(){
 
 
             if (d.parent && d.elementBCN) {
-                add_menu_item (this,
-                    function (d) {
+                add_menu_item(".tooltipElem",
+                    function () {
                         if (d.clickedHighlight) {
                             return "unhighlight >";
                         } else {
                             return "highlight >";
                         }
                     },
-                    function (d) {
+                    function () {
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4731,16 +4770,9 @@ var TreeCompare = function(){
                     });
             }
 
-            // end of menu buttons
-            d3.selection.prototype.moveToFront = function() {
-                return this.each(function() {
-                    this.parentNode.appendChild(this);
-                });
-            };
-            d3.select(this).moveToFront();
-            d3.select(this).selectAll(".tooltipElemText").each(function(d) {
+            d3.select(this.parentNode.parentNode).selectAll(".tooltipElemText").each(function(d) {
                 d3.select(this).on("mouseover", function(d) {
-                    d3.select(this).transition().duration(50).style("fill", "black");
+                    d3.select(this).transition().duration(50).style("fill", "green").style("cursor", "pointer");
                 });
                 d3.select(this).on("mouseout", function(d) {
                     d3.select(this).transition().duration(50).style("fill", "white");
