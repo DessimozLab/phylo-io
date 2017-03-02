@@ -1092,7 +1092,7 @@ var TreeCompare = function(){
         var root = tree.root;
         if(node.parent !== root){
 
-            if(manualReroot===false) {//ensure that always the lengths of branches are conserved!
+            if(manualReroot==false) {//ensure that always the lengths of branches are conserved!
                 backupRoot=root;
                 manualReroot=true;
             } else {
@@ -1102,9 +1102,7 @@ var TreeCompare = function(){
             var i, d, tmp;
             var btmp, bd;
             var p, q, r, s, new_root;
-            if (node === root) {
-                return root;
-            }
+            if (node == root) return root;
             var dist = node.length/2;
             tmp = node.length;
             btmp = node.branchSupport;
@@ -1115,16 +1113,17 @@ var TreeCompare = function(){
              * d: previous distance p->d
              */
             q = new_root = new_node(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+            //q.ID =makeId("node_");
             q.children[0] = node; //new root
+            //q.children[0].ID = node.ID;
             q.children[0].length = dist;
             q.children[0].branchSupport = btmp;
             p = node.parent;
             q.children[0].parent = q;
             for (i = 0; i < p.children.length; ++i)
-                if (p.children[i] === node) {
-                    break;
-                }
+                if (p.children[i] == node) break;
             q.children[1] = p;
+            //q.children[1].ID =  makeId("node_");
             d = p.length;
             bd = p.branchSupport;
             p.length = tmp - dist;
@@ -1132,51 +1131,40 @@ var TreeCompare = function(){
             r = p.parent;
             p.parent = q;
 
-            while (r !== null) {
+
+            while (r != null) {
                 s = r.parent; /* store r's parent */
                 p.children[i] = r; /* change r to p's children */
                 for (i = 0; i < r.children.length; ++i) /* update i */
-                    if (r.children[i] === p) {
-                        break;
-                    }
-                /* update r's parent */
-                r.parent = p;
-                tmp = r.length;
-                /* swap r->d and d, i.e. update r->d */
-                r.length = d;
-                d = tmp;
-                btmp = r.branchSupport;
-                r.branchSupport = bd;
-                bd = btmp;
-                /* update p, q and r */
-                q = p;
-                p = r;
-                r = s;
+                    if (r.children[i] == p) break;
+                r.parent = p; /* update r's parent */
+                tmp = r.length; r.length = d; d = tmp; /* swap r->d and d, i.e. update r->d */
+                btmp = r.branchSupport; r.branchSupport = bd; bd = btmp;
+                q = p; p = r; r = s; /* update p, q and r */
             }
 
+
             /* now p is the root node */
-            if (p.children.length === 2) { /* remove p and link the other child of p to q */
+            if (p.children.length == 2) { /* remove p and link the other child of p to q */
                 r = p.children[1 - i]; /* get the other child */
                 for (i = 0; i < q.children.length; ++i) /* the position of p in q */
-                    if (q.children[i] === p) {
-                        break;
-                    }
+                    if (q.children[i] == p) break;
                 r.length += p.length;
                 r.parent = q;
                 q.children[i] = r; /* link r to q */
             } else { /* remove one child in p */
-                var j, k;
                 for (j = k = 0; j < p.children.length; ++j) {
                     p.children[k] = p.children[j];
-                    if (j !== i) {
-                        ++k;
-                    }
+                    if (j != i) ++k;
                 }
                 --p.children.length;
             }
 
             postorderTraverse(new_root, function(d) {
-                d.ID = name+"_node_"+idCounter;
+                //d.bcnhighlight = null;
+                //d.highlight = 0;
+                //d.clickedHighlight = null;
+                //d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
                 idCounter++;
             },false);
@@ -1186,10 +1174,8 @@ var TreeCompare = function(){
             return tree;
         } else {
             return tree;
-
         }
     }
-
     function getTreeFromCanvasId(id) {
         var name = d3.select("#" + id + " svg").attr("id");
         return trees[findTreeIndex(name)];
@@ -1574,6 +1560,7 @@ var TreeCompare = function(){
 
         var newHeight;
         //calculate treeHeight if we are squashing tree into visible space
+
         if (settings.fitTree === "scale") {
             newHeight = renderHeight / (leavesVisible + leavesHidden);
             if (leavesVisible === 0) {
@@ -1616,7 +1603,6 @@ var TreeCompare = function(){
         function getCollapsedParams(e) {
             var collapsedHeightInner = 0;
             var leavesHiddenInner = 0;
-            var amendedLeafHeight = 0;
 
             function getCollapsedHeight(d) {
                 if (d._children) {
@@ -1977,7 +1963,11 @@ var TreeCompare = function(){
                 });
                 var avg = total / d.leaves.length;
                 var offset = leafHeight / triangleHeightDivisor * d.leaves.length / 2;
+                var canvasWidth = document.getElementById(treeData.canvasId).scrollWidth;
                 var xlength = (avg - (getLength(d) * (lengthMult / maxLength))); //length of triangle
+                if (xlength > canvasWidth){ // ensures that triangle doesn't go out of visible space
+                    xlength = canvasWidth-400;
+                }
                 var ylength = offset; //height of half of the triangle
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
@@ -2032,6 +2022,9 @@ var TreeCompare = function(){
                     })
                     .attr("x", function(d) {
                         var xpos = (avg - (getLength(d) * (lengthMult / maxLength))) + 5;
+                        if (xpos > canvasWidth){ // ensures that triangle doesn't go out of visible space
+                            xpos = xlength+5;
+                        }
                         return xpos;
                     });
             }
