@@ -134,7 +134,6 @@ var TreeCompare = function(){
     */
     $("#undoBtn").click(function(e) {
 
-
         console.log("undobtn clicked");
         undoIndex = $("#undoBtn").data('undoIdx');
 
@@ -144,6 +143,7 @@ var TreeCompare = function(){
         var undoActionFunc = undoAction[currentUndoIndex];
         console.log("restoring to "+undoActionFunc);
 
+        $('#undoBtn').val('Undo '+currentUndoIndex+' '+undoActionFunc, currentUndoIndex);
         // unset to skip storing the treedata in update
         undoActionFunc = null;
 
@@ -152,9 +152,17 @@ var TreeCompare = function(){
 
         undoIndex = currentUndoIndex;
         $('#undoBtn').data('undoIdx', currentUndoIndex);
-        console.log("updating undoIdx to "+currentUndoIndex);
 
+        console.log("updating undoIdx to "+currentUndoIndex);
+        console.log(trees);
+
+        // this is for deepcopied treedata, which does not work
         update(undoSourceParam, undoTreeParam);
+        //renderTree(undoTreeParam, )
+
+        // this is for the raw svg file trick (no manipulting of the tree after)
+        //$('#vis-container1 svg').html(undoTreeParam);
+        //$("#vis-container1").html($("#vis-container1").html());
 
     });
 
@@ -1521,21 +1529,29 @@ var TreeCompare = function(){
 
         if(undoActionFunc){
 
+            //use raw svg data, makes manipulating it after undo impossible
+            // undoTreeData[undoIndex] = $("#vis-container1 svg").html();
+
+
             /* save to undo stack with function to call */
             undoIndex = undoIndex+1;
-            undoTreeData[undoIndex] = clone(treeData);
-            undoSource[undoIndex] = clone(source);
+
+            // event listeners don't work
+            undoTreeData[undoIndex] = deepCopy(treeData);
+            undoSource[undoIndex] = deepCopy(source);
             undoAction[undoIndex] = undoActionFunc;
 
             $('#undoBtn').data('undoIdx', undoIndex);
 
             console.log("undoIndex "+undoIndex+" saved in update used func "+undoActionFunc);
             console.log(undoSource[undoIndex]);
+            console.log(undoTreeData[undoIndex]);
+
+            // update undo button text with the current event
+            $('#undoBtn').html('Undo '+undoIndex+' '+undoActionFunc);
             undoActionFunc = null;
 
-
         }
-
 
         //time taken for animations in ms
         if (duration === undefined) {
@@ -1721,7 +1737,6 @@ var TreeCompare = function(){
                 return d.id || (d.id = ++treeData.i);
 
             });
-
         // Enter any new nodes at the parent's previous position.
         // Perform the actual drawing
         var nodeEnter = node.enter().append("g")
@@ -3033,8 +3048,8 @@ var TreeCompare = function(){
                 })
                 .attr("stroke-width", 1)
                 .attr("stroke", settings.scaleColor);
-             var scaleText = d3.select("#" + canvasId + " svg").append("text")
-                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
+            var scaleText = d3.select("#" + canvasId + " svg").append("text")
+                .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
                 .attr("y", 35)
                 .attr("font-family", "sans-serif")
@@ -3059,6 +3074,9 @@ var TreeCompare = function(){
             zoomBehaviourSemantic: zoomBehaviourSemantic,
             scaleId: scaleId
         });
+
+        console.log("svg in update");
+        console.log(svg);
 
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
@@ -3128,6 +3146,7 @@ var TreeCompare = function(){
 
         //handle all the fisheye zoom stuff
         // TODO is not working correctly and should be depracted
+        /*
         d3.select("#" + canvasId).on("mousemove", function() {
             if (settings.enableFisheyeZoom) {
                 var link = svg.selectAll("path.link");
@@ -3253,7 +3272,7 @@ var TreeCompare = function(){
                 });
             }
         });// End of fisheye zoom stuff
-
+*/
         d3.select(self.frameElement).style("height", "500px");
 
         function semanticZoom() {
@@ -3350,6 +3369,10 @@ var TreeCompare = function(){
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             updateDownloadLinkContent(canvasId, baseTree.data);
         }
+
+        console.log("svg in 3366");
+        console.log(svg);
+
     }
 
 
@@ -4182,6 +4205,9 @@ var TreeCompare = function(){
 
                     undoActionFunc = "collapse";
 
+                    console.log("tree.data before collapse update");
+                    console.log(tree.data);
+
                     update(d, tree.data);
                 }, 2);
 
@@ -4646,6 +4672,47 @@ var TreeCompare = function(){
 
         return ret;
     };
+
+    function deepCopy(object) {
+        const cache = new WeakMap(); // Map of old - new references
+
+        function copy(obj) {
+            if (typeof obj !== 'object' ||
+                obj === null ||
+                obj instanceof HTMLElement
+            )
+                return obj; // primitive value or HTMLElement
+
+            if (obj instanceof Date)
+                return new Date().setTime(obj.getTime());
+
+            if (obj instanceof RegExp)
+                return new RegExp(obj.source, obj.flags);
+
+            if (cache.has(obj))
+                return cache.get(obj);
+
+            const result = obj instanceof Array ? [] : {};
+
+            cache.set(obj, result); // store reference to object before the recursive starts
+
+            if (obj instanceof Array) {
+                for(const o of obj) {
+                    result.push(copy(o));
+                }
+                return result;
+            }
+
+            const keys = Object.keys(obj);
+
+            for (const key of keys)
+                result[key] = copy(obj[key]);
+
+            return result;
+        }
+
+        return copy(object);
+    }
 
     //return all the externalised functions
     return {
