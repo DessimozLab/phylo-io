@@ -2064,25 +2064,37 @@ var TreeCompare = function(){
                 .style("stroke", function(d) {
                     var e = d.target;
                     var f = d.source;
-                    if (e.mouseoverLinkHighlight){//color branch for re-rooting
-                        return "green";
-                    } else if (e.searchHighlight) {
-                        return "orange";
-                    } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
-                        return colorScale(f[currentS])
-                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
+                    if (e.searchHighlight) {
+                        return "orange"; //changed from red
+                    }
+                    if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
+                            return colorScale(f[currentS])
+                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
                         if (e["branchSupport"]){
                             return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight) {
-                            return "green";
-                            //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                    } else {
-                        return defaultLineColor; //changed from defaultLineColor;
-
                     }
+                    // if (e.mouseoverLinkHighlight){//color branch for re-rooting
+                    //     return "green";
+                    // } else if (e.searchHighlight) {
+                    //     return "orange";
+                    // } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
+                    //     return colorScale(f[currentS])
+                    // } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight)) {
+                    //     if (e["branchSupport"]){
+                    //         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
+                    //     } else {
+                    //         return defaultLineColor;
+                    //     }
+                    // } else if (f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight) {
+                    //         return "green";
+                    //         //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                    // } else {
+                    //     return defaultLineColor; //changed from defaultLineColor;
+                    //
+                    // }
 
                 });
 
@@ -2128,30 +2140,42 @@ var TreeCompare = function(){
                 .style("stroke", function(d) {
                     var e = d.target;
                     var f = d.source;
-                    if (e.mouseoverLinkHighlight){ //color branch between two nodes in green for re-rooting
-                        return "green";
-                    } else if (e.searchHighlight) {
+                    if (e.searchHighlight) {
                         return "orange"; //changed from red
-                    } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    }
+                    if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || d.correspondingHighlight ) ) {
                         return colorScale(f[currentS])
-                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
                         if (e["branchSupport"]){
                             return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                         } else {
                             return defaultLineColor;
                         }
-                    } else if (f.clickedParentHighlight || f.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || f.clickedHighlight) {
-                        return "green";
-                        //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
-                    } else {
-                        return defaultLineColor; //changed from defaultLineColor;
-
                     }
+                    // if (e.mouseoverLinkHighlight){ //color branch between two nodes in green for re-rooting
+                    //     return "green";
+                    // } else if (e.searchHighlight) {
+                    //     return "orange"; //changed from red
+                    // } else if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || d.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    //     return colorScale(f[currentS])
+                    // } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight || f.mouseoverHighlight || e.mouseoverLinkHighlight)) {
+                    //     if (e["branchSupport"]){
+                    //         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
+                    //     } else {
+                    //         return defaultLineColor;
+                    //     }
+                    // } else if (f.clickedParentHighlight || f.correspondingHighlight || d.mouseoverHighlight || e.mouseoverLinkHighlight || f.clickedHighlight) {
+                    //     return "green";
+                    //     //TODO: insert some code about checking whether parent is highlighted, then update all children as highlighted
+                    // } else {
+                    //     return defaultLineColor; //changed from defaultLineColor;
+                    //
+                    // }
 
                 })
                 .style("cursor", "pointer")
-                .on("mouseover",linkMouseover)
-                .on("mouseout",linkMouseout)
+                //.on("mouseover",linkMouseover)
+                //.on("mouseout",linkMouseout)
                 .on("click", treeData.clickEventLink);
 
             link.select("rect")
@@ -3640,6 +3664,9 @@ var TreeCompare = function(){
                 }
             }
             else {
+                console.log(leaf);
+                var pathId = "#"+leaf.id+":"+leaf.parent.id;
+                d3.select(pathId).attr("class","search");
                 leaf.searchHighlight = false;
             }
             expandPathToLeaf(leaf.parent, unhighlight, uncollapse);

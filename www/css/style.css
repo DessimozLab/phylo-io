@@ -393,6 +393,18 @@ input.treename::-webkit-input-placeholder{
     font-weight: bold;
 }
 
+path.link {
+    stroke: grey
+}
+
+path.link:hover{
+    stroke: green !important;
+}
+
+path.link.search{
+    stroke: orange;
+}
+
 /*this following code makes the treename hide on focus*/
 /*
 .treename::-webkit-input-placeholder  {
