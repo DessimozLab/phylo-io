@@ -1908,7 +1908,7 @@ var TreeCompare = function(){
                             return 'N';
                         }
 
-                        
+
                     } else if (settings.internalLabels === "duplication") {
                         if (d.duplication === 'Y') {
                             return 'duplication';
@@ -2064,9 +2064,9 @@ var TreeCompare = function(){
                 .style("stroke", function(d) {
                     var e = d.target;
                     var f = d.source;
-                    if (e.searchHighlight) {
-                        return "orange"; //changed from red
-                    }
+                    // if (e.searchHighlight) {
+                    //     return "orange"; //changed from red
+                    // }
                     if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
                             return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
@@ -2127,7 +2127,7 @@ var TreeCompare = function(){
                     return output;
                 })
                 .attr("id", function(d) { //adds source.id of node
-                    return d.source.ID+':'+ d.target.ID;
+                    return d.source.ID+'_'+ d.target.ID;
                 })
                 .style("fill", "none")
                 .style("stroke-width", function() {
@@ -2140,9 +2140,9 @@ var TreeCompare = function(){
                 .style("stroke", function(d) {
                     var e = d.target;
                     var f = d.source;
-                    if (e.searchHighlight) {
-                        return "orange"; //changed from red
-                    }
+                    // if (e.searchHighlight) {
+                    //     return "orange"; //changed from red
+                    // }
                     if (f[currentS] && (settings.internalLabels === "none") && !(f.clickedParentHighlight || d.correspondingHighlight ) ) {
                         return colorScale(f[currentS])
                     } else if ((settings.internalLabels === "name") && !(f.clickedParentHighlight || f.correspondingHighlight)) {
@@ -3141,6 +3141,9 @@ var TreeCompare = function(){
 
             postorderTraverse(baseTree.data.root, function(d) {
                 d.searchHighlight =false;
+                if(d.parent){
+                    d3.select("#"+d.parent.ID+"_"+d.ID).attr("class", "link")
+                }
             });
             update(baseTree.root,baseTree.data);
 
@@ -3658,15 +3661,16 @@ var TreeCompare = function(){
         if (leaf.parent) {
             if (!unhighlight) {
                 leaf.searchHighlight = true;
+                d3.select("#"+leaf.parent.ID+"_"+leaf.ID).attr("class", "link search");
                 if (uncollapse && leaf.parent._children) {
                     leaf.parent.children = leaf.parent._children;
                     leaf.parent._children = null;
                 }
             }
             else {
-                console.log(leaf);
-                var pathId = "#"+leaf.id+":"+leaf.parent.id;
-                d3.select(pathId).attr("class","search");
+                //console.log(leaf)
+                //console.log("#"+leaf.parent.ID+":"+leaf.ID);
+                d3.select("#"+leaf.parent.ID+"_"+leaf.ID).attr("class", "link");
                 leaf.searchHighlight = false;
             }
             expandPathToLeaf(leaf.parent, unhighlight, uncollapse);
