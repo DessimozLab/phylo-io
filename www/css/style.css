@@ -402,7 +402,59 @@ path.link:hover{
 }
 
 path.link.search{
-    stroke: orange;
+    stroke: orange !important;
+}
+
+path.link.search:hover{
+    stroke: green !important;
+}
+
+g.node{
+    fill: black;
+    cursor: pointer;
+}
+
+g.node.select{
+    fill: green !important;;
+}
+
+circle.node {
+    fill: black;
+}
+
+circle.node.select{
+    fill: green !important;
+}
+
+text.node{
+    fill: black;
+    font-family: sans-serif;
+}
+
+text.node.select{
+    fill: green !important;
+    font-weight: bold;
+}
+
+text.triangleText {
+    font-family: sans-serif;
+    opacity: 1;
+    fill: black;
+}
+
+text.triangleText.select {
+    fill: green;
+    font-weight: bold;
+}
+
+path.triangle.select{
+    fill: green !important;
+}
+
+rect.node {
+    fill: magenta;
+    stroke-width: 2px;
+    stroke: black;
 }
 
 /*this following code makes the treename hide on focus*/
