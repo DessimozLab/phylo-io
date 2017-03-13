@@ -11,6 +11,8 @@
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/circular-json.js"></script>
+    <!-- <script type="text/javascript" src="js/jquery.svg.min.js"></script> -->
+    <!-- <script type="text/javascript" src="js/jquery.svgdom.js"></script> -->
     <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
     <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
 
@@ -18,14 +20,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-105586-10', 'auto');
-      ga('send', 'pageview');
-    </script>
+
     <style>
         .extraMargin + span:after {
             content:"\000A";
@@ -135,7 +130,7 @@
                         <div id="colorScale"></div>
                     </li>
 
-                    <li><button id="undoBtn" data-undoIdx="0">undo</button></li>
+                    <li><button id="undoBtn" data-undoIdx="0">Undo</button></li>
 
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
@@ -233,9 +228,6 @@
         var totalTrees = 0;
         var addingTree = false;
 
-
-
-
         var spinnerOpts = {
             lines: 13 // The number of lines to draw
             ,
@@ -303,6 +295,8 @@
             clickAction: $("input[name=clickAction]:checked").val(),
             autoCollapse: $("#collapseAmount").html()
         });
+
+        var undoIndex = 0;
 
         /* Download name */
         var update_download_fn = function(canvasId, labelId) {
@@ -572,9 +566,13 @@
                     }
                 }
             } else if (mode === "view-btn") {
+
+                // init & enable undo
+                $("#undoBtn").data('undoIdx', undoIndex);
+
                 try {
                     //
-                    var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined);
+                    var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined);
                     treecomp.changeSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
@@ -687,6 +685,8 @@
             $(v).each(function(i){
                 ($(this).hide().next().hide())
             });
+
+            $("#undoBtn").hide();
 
         }
 

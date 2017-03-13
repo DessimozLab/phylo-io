@@ -134,35 +134,34 @@ var TreeCompare = function(){
     */
     $("#undoBtn").click(function(e) {
 
-        console.log("undobtn clicked");
-        undoIndex = $("#undoBtn").data('undoIdx');
+        console.log("undobtn "+undoIndex+" clicked");
+        undoIndex = $("#undoBtn").data('undoIdx') - 1;
+        console.log("going to use undoIndex "+undoIndex);
 
-        currentUndoIndex = undoIndex-1;
-        var undoTreeParam = undoTreeData[currentUndoIndex];
-        var undoSourceParam = undoSource[currentUndoIndex];
-        var undoActionFunc = undoAction[currentUndoIndex];
-        console.log("restoring to "+undoActionFunc);
+        if(undoIndex < 1) {
+            console.log("undo is 0 or less, just re-render");
+            //reset undo and click render
+            undoIndex = 0;
+            $("#undoBtn").data('undoIdx', undoIndex);
+            $('#renderButton').click();
 
-        $('#undoBtn').val('Undo '+currentUndoIndex+' '+undoActionFunc, currentUndoIndex);
-        // unset to skip storing the treedata in update
-        undoActionFunc = null;
+        } else if(undoIndex < undoTreeData.length){
 
-        console.log(undoTreeParam);
-        console.log(undoSourceParam);
+            // update undoBtn
+            $("#undoBtn").data('undoIdx', undoIndex);
 
-        undoIndex = currentUndoIndex;
-        $('#undoBtn').data('undoIdx', currentUndoIndex);
+            console.log("getting undoTreeData "+undoIndex)
+            console.log(undoTreeData);
+            // get the tree from stack
+            undoTreeParam = undoTreeData.pop();
+            trees[0] = deepCopy(undoTreeParam);
 
-        console.log("updating undoIdx to "+currentUndoIndex);
-        console.log(trees);
+            trees[0].data.clickEvent = getClickEventListenerNode(0, false, {});
+            trees[0].data.clickEventLink = getClickEventListenerLink(trees[0], false, {});
 
-        // this is for deepcopied treedata, which does not work
-        update(undoSourceParam, undoTreeParam);
-        //renderTree(undoTreeParam, )
+            renderTree("Tree 0", "vis-container1", "vis-scale1");
 
-        // this is for the raw svg file trick (no manipulting of the tree after)
-        //$('#vis-container1 svg').html(undoTreeParam);
-        //$("#vis-container1").html($("#vis-container1").html());
+        }
 
     });
 
@@ -1529,23 +1528,17 @@ var TreeCompare = function(){
 
         if(undoActionFunc){
 
-            //use raw svg data, makes manipulating it after undo impossible
-            // undoTreeData[undoIndex] = $("#vis-container1 svg").html();
-
-
             /* save to undo stack with function to call */
             undoIndex = undoIndex+1;
 
-            // event listeners don't work
-            undoTreeData[undoIndex] = deepCopy(treeData);
-            undoSource[undoIndex] = deepCopy(source);
+            if(undoIndex == 1){
+                $("#undoBtn").show();
+            }
+
             undoAction[undoIndex] = undoActionFunc;
 
             $('#undoBtn').data('undoIdx', undoIndex);
-
-            console.log("undoIndex "+undoIndex+" saved in update used func "+undoActionFunc);
-            console.log(undoSource[undoIndex]);
-            console.log(undoTreeData[undoIndex]);
+            console.log("update undobtn undoIdx to "+undoIndex)
 
             // update undo button text with the current event
             $('#undoBtn').html('Undo '+undoIndex+' '+undoActionFunc);
@@ -3075,9 +3068,6 @@ var TreeCompare = function(){
             scaleId: scaleId
         });
 
-        console.log("svg in update");
-        console.log(svg);
-
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
             //d.clickedParentHighlight = false;
@@ -3128,12 +3118,6 @@ var TreeCompare = function(){
             }
             baseTree.data.treeWidth = newWidth;
             baseTree.data.treeHeight = newHeight;
-        }
-
-
-        if(undoIndex == 0){
-
-            undoActionFunc = "init";
         }
 
         update(baseTree.root, baseTree.data);
@@ -3369,9 +3353,6 @@ var TreeCompare = function(){
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             updateDownloadLinkContent(canvasId, baseTree.data);
         }
-
-        console.log("svg in 3366");
-        console.log(svg);
 
     }
 
@@ -3795,10 +3776,12 @@ var TreeCompare = function(){
      /
      ---------------*/
     function viewTree(name, canvasId, scaleId) {
+
         renderedTrees = [];
         var index = findTreeIndex(name);
         settings.loadingCallback();
         setTimeout(function() {
+
             uncollapseAll(trees[index].root);
             stripPreprocessing(trees[index].root);
             getDepths(trees[index].root);
@@ -3819,10 +3802,22 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(index, false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
 
+            if(undoIndex == 0) {
+
+                console.log("viewTree deepCopy");
+                console.log(trees);
+                console.log(undoTreeData);
+
+                undoTreeData[undoIndex] = deepCopy(trees);
+                console.log(undoTreeData[undoIndex]);
+
+            }
+
             renderTree(name, canvasId, scaleId);
             renderedTrees.push(trees[index]);
 
             settings.loadedCallback();
+
         }, 2);
 
     }
@@ -3853,7 +3848,7 @@ var TreeCompare = function(){
         postorderTraverse(root, uncollapseNode);
         if (tree !== undefined) {
 
-            undoActionFunc = "uncollapseAll";
+            //undoActionFunc = "uncollapseAll";
             update(root, tree.data);
 
         }
@@ -4164,6 +4159,8 @@ var TreeCompare = function(){
 
                     undoActionFunc = "rotate";
 
+                    updateUndo();
+
                     update(d, tree.data);
                 }, 2);
 
@@ -4204,9 +4201,7 @@ var TreeCompare = function(){
                     }
 
                     undoActionFunc = "collapse";
-
-                    console.log("tree.data before collapse update");
-                    console.log(tree.data);
+                    updateUndo();
 
                     update(d, tree.data);
                 }, 2);
@@ -4254,6 +4249,7 @@ var TreeCompare = function(){
                     }
 
                     undoActionFunc = "collapseAll";
+                    updateUndo();
 
                     update(d, tree.data);
                 }, 2)
@@ -4712,6 +4708,14 @@ var TreeCompare = function(){
         }
 
         return copy(object);
+    }
+
+    function updateUndo(){
+
+        undoTreeData[undoIndex] = deepCopy(trees[0]);
+        console.log("undoTreeData in updateUndo");
+        console.log(undoTreeData);
+
     }
 
     //return all the externalised functions
