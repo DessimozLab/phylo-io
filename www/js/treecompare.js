@@ -2915,14 +2915,33 @@ var TreeCompare = function(){
 
 
     function buildSearchBox(canvasId) {
-        $("#" + canvasId).append('<div id="searchBox"><a class="btn btn-default" id="searchButton"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput" autofocus></input></div>');
-        $("#searchBox").append('<div id="resultsBox"><ul id="resultsList"></ul></div>');
+        var searchDiv = d3.select("#" + canvasId).append("div")
+            .attr("class", "searchBox");
+
+        var searchDivA = searchDiv.append("a")
+            .attr("class", "btn btn-default searchButton");
+
+        searchDivA.append("span")
+            .attr("class", "glyphicon glyphicon-search")
+            .attr("aria-hidden","true");
+
+        searchDiv.append("input")
+            .attr("class", "searchInput")
+            .attr("type", "text")
+            .attr("placeholder", "search")
+            .attr("autofocus");
+
+        var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
+            .attr("class", "resultsBox")
+            .append("ul")
+            .attr("class", "resultsList");
+
     }
 
 
     function displaySearchResults(results, canvasId, baseTree) {
         for (var i = 0; i < results.length; i++) {
-            var resultsList = d3.select("#"+canvasId).select("#resultsList");
+            var resultsList = d3.select("#"+canvasId).select(".resultsList");
             resultsList.append("li")
                 .append("a")
                 .attr("class", i)
@@ -2931,7 +2950,7 @@ var TreeCompare = function(){
                 .text(results[i].name);
 
             var indices = [];
-            d3.select("#"+results[i].name).on("click", function() {
+            d3.select("#"+canvasId).select("#"+results[i].name).on("click", function() {
                 var index = $(this).attr("class");
                 //var index = i;
                 console.log(index);
@@ -2962,31 +2981,26 @@ var TreeCompare = function(){
     }
 
     function showSearchBar(canvasId) {
-        $("#searchInput").css({
-            "display": "inline"
-        });
-        $("#searchInput").animate({
-            width: "150px"
-        }, 600, function() {
-            $("#searchInput").focus();
-        });
+        d3.select("#"+canvasId).select(".searchInput")
+            .style("display", "inline")
+            .transition().duration(600)
+            .style("width", "150px").node().focus();
+
     }
 
     function hideSearchBar(canvasId) {
-        $("#resultsList").empty();
-        $("#resultsBox").slideUp(300, function() {
-            $("#resultsBox").css({
-                "display": "none"
-            });
-        });
-        $("#searchInput").animate({
-            width: "0px"
-        }, 600, function() {
-            $("#searchInput").css({
-                "display": "none"
-            });
-            $("#searchInput").val("");
-        });
+        d3.select("#"+canvasId).select(".resultsList")
+            .empty();
+
+        d3.select("#"+canvasId).select(".resultsBox")
+            .transition().duration(600)
+            .style("display","none");
+
+        d3.select("#"+canvasId).select(".searchInput")
+            .transition().duration(600)
+            .style("width", "0px")
+            .style("display", "none")
+            .text("");
     }
 
     function prepareSearchBar(canvasId, baseTree) {
@@ -2994,7 +3008,7 @@ var TreeCompare = function(){
         buildSearchBox(canvasId);
 
         var visible = false;
-        d3.select("#"+canvasId).select("#searchButton").on("click",function() {
+        d3.select("#"+canvasId).select(".searchButton").on("click",function() {
 
             postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
                 //d.searchHighlight =false;
@@ -3018,13 +3032,11 @@ var TreeCompare = function(){
         for (var i = 0; i < baseTree.root.leaves.length; i++) {
             leafObjs.push(baseTree.root.leaves[i]);
         }
-        $("#" + canvasId + " svg").click(function() {
-            hideSearchBar(canvasId);
-        });
+
 
         //main event handler, performs search every time a char is typed so can get realtime results
-        $("#searchInput").bind("paste keyup", function() {
-            $("#resultsList").empty();
+        $("#"+canvasId+" .searchInput").bind("paste keyup", function() {
+            $("#"+canvasId+" .resultsList").empty();
             var text = $(this).val();
 
             // results is a list of leaves
@@ -3045,8 +3057,8 @@ var TreeCompare = function(){
             update(baseTree.root,baseTree.data);
 
             if (typeof results_name !== "undefined" && results_name !== null && results_name.length > 0) {
-                $("#resultsBox").slideDown(200);
-                $("#resultsList").empty();
+                $("#"+canvasId+" .resultsBox").slideDown(200);
+                $("#"+canvasId+" .resultsList").empty();
 
                 postorderTraverse(baseTree.data.root,function(d){
                     if(results_name.indexOf(d.name)>-1){
@@ -3056,16 +3068,19 @@ var TreeCompare = function(){
                 update(baseTree.root,baseTree.data);
 
                 displaySearchResults(results, canvasId, baseTree);
-                //d3.selectAll(".search").on("click", baseTree.data.clickEventLink)
             }
             else {
-                $("#resultsList").empty();
-                $("#resultsBox").slideUp(200, function() {
-                    $("#resultsBox").css({
+                $("#"+canvasId+" .resultsList").empty();
+                $("#"+canvasId+" .resultsBox").slideUp(200, function() {
+                    $("#"+canvasId+" .resultsBox").css({
                         "display": "none"
                     });
                 });
             }
+        });
+
+        d3.selectAll("svg").on("click",function() {
+            hideSearchBar(canvasId);
         });
     }
 

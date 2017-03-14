@@ -457,7 +457,7 @@ rect.node {
     stroke: black;
 }
 
-#searchBox {
+.searchBox {
     max-width: 250px;
     min-height: 45px;
     padding: 5px;
@@ -470,7 +470,7 @@ rect.node {
     border-radius: 5px;
 }
 
-#searchInput {
+.searchInput {
     float: right;
     width: 0px;
     margin-left: 0px;
@@ -478,12 +478,12 @@ rect.node {
     display: none;
 }
 
-#searchButton {
+.searchButton {
     width: 50px;
     float: right;
 }
 
-#resultsBox {
+.resultsBox {
     width: 200px;
     position: absolute;
     margin-right: 10px;
@@ -498,7 +498,7 @@ rect.node {
     padding-top: 10px;
 }
 
-#resultsList li {
+.resultsList li {
     margin-left: -25px;
     list-style-type: none;
     cursor: pointer;
