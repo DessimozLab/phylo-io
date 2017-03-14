@@ -4372,6 +4372,7 @@ var TreeCompare = function(){
 
             function highlight(d) {
                 var bcnColors = d3.scale.category20();
+
                 if (isCompared) {
                     function colorLinkNodeOver(n, hl) {
                         if (n.children) {
