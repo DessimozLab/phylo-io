@@ -2915,71 +2915,26 @@ var TreeCompare = function(){
 
 
     function buildSearchBox(canvasId) {
-        $("#" + canvasId).append('<div id="searchBox' + canvasId + '"><a class="btn btn-default" id="searchButton' + canvasId + '"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput' + canvasId + '" autofocus></input></div>');
-        $('#searchBox' + canvasId).append('<div id="resultsBox' + canvasId + '"><ul id="resultsList' + canvasId + '"></ul></div>');
+        $("#" + canvasId).append('<div id="searchBox"><a class="btn btn-default" id="searchButton"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a><input type="text" placeholder="search" id="searchInput" autofocus></input></div>');
+        $("#searchBox").append('<div id="resultsBox"><ul id="resultsList"></ul></div>');
     }
 
-    function buildSearchBoxStyle(canvasId) {
-        $("#searchBox" + canvasId).css({
-            "max-width": "250px",
-            "min-height": "45px",
-            "padding": "5px",
-            "right": "5px",
-            "top": "5px",
-            "position": "absolute",
-            "background-color": "gray",
-            "-webkit-border-radius": "5px",
-            "-moz-border-radius": "5px",
-            "border-radius": "5px"
-        });
-    }
-
-    function buildSearchInputStyle(canvasId) {
-        $("#searchInput" + canvasId).css({
-            "float": "right",
-            "width": "0px",
-            "margin-left": "0px",
-            "margin-top": "5px",
-            "display": "none"
-        });
-    }
-
-    function buildSearchButtonStyle(canvasId) {
-        $("#searchButton" + canvasId).css({
-            "width": "50px",
-            "float": "right"
-
-        });
-    }
-
-    function buildResultsBoxStyle(canvasId) {
-        $("#resultsBox" + canvasId).css({
-            "width": "200px",
-            "position": "absolute",
-            "margin-right": "10px",
-            "max-height": "200px",
-            "overflow": "scroll",
-            "margin-top": "40px",
-            "background-color": "#efefef",
-            "-webkit-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-            "-moz-box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-            "box-shadow": "0px 0px 2px 1px rgba(0,0,0,0.75)",
-            "display": "none",
-            "padding-top": "10px"
-        });
-    }
 
     function displaySearchResults(results, canvasId, baseTree) {
         for (var i = 0; i < results.length; i++) {
-            $("#resultsList" + canvasId).append('<li class="' + i + '"><a id="' + results[i].name + '" href="#">' + results[i].name + '</a></li>');
-            $("#resultsList" + canvasId + " li").css({
-                "margin-left": "-25px",
-                "list-style-type": "none",
-                "cursor": "pointer"
-            });
+            var resultsList = d3.select("#"+canvasId).select("#resultsList");
+            resultsList.append("li")
+                .append("a")
+                .attr("class", i)
+                .attr("id", results[i].name)
+                .attr("href", "#")
+                .text(results[i].name);
+
             var indices = [];
-            $("#resultsList" + canvasId + " ." + i).on("click", function() {
+            d3.select("#"+results[i].name).on("click", function() {
                 var index = $(this).attr("class");
+                //var index = i;
+                console.log(index);
                 indices.push(parseInt(index));
 
                 var j;
@@ -3007,43 +2962,39 @@ var TreeCompare = function(){
     }
 
     function showSearchBar(canvasId) {
-        $("#searchInput" + canvasId).css({
+        $("#searchInput").css({
             "display": "inline"
         });
-        $("#searchInput" + canvasId).animate({
+        $("#searchInput").animate({
             width: "150px"
         }, 600, function() {
-            $("#searchInput" + canvasId).focus();
+            $("#searchInput").focus();
         });
     }
 
     function hideSearchBar(canvasId) {
-        $("#resultsList" + canvasId).empty();
-        $("#resultsBox" + canvasId).slideUp(300, function() {
-            $("#resultsBox" + canvasId).css({
+        $("#resultsList").empty();
+        $("#resultsBox").slideUp(300, function() {
+            $("#resultsBox").css({
                 "display": "none"
             });
         });
-        $("#searchInput" + canvasId).animate({
+        $("#searchInput").animate({
             width: "0px"
         }, 600, function() {
-            $("#searchInput" + canvasId).css({
+            $("#searchInput").css({
                 "display": "none"
             });
-            $("#searchInput" + canvasId).val("");
+            $("#searchInput").val("");
         });
     }
 
     function prepareSearchBar(canvasId, baseTree) {
 
         buildSearchBox(canvasId);
-        buildSearchBoxStyle(canvasId);
-        buildSearchInputStyle(canvasId);
-        buildSearchButtonStyle(canvasId);
-        buildResultsBoxStyle(canvasId);
 
         var visible = false;
-        $('#searchButton' + canvasId).click(function() {
+        d3.select("#"+canvasId).select("#searchButton").on("click",function() {
 
             postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
                 //d.searchHighlight =false;
@@ -3072,8 +3023,8 @@ var TreeCompare = function(){
         });
 
         //main event handler, performs search every time a char is typed so can get realtime results
-        $("#searchInput" + canvasId).bind("paste keyup", function() {
-            $("#resultsList" + canvasId).empty();
+        $("#searchInput").bind("paste keyup", function() {
+            $("#resultsList").empty();
             var text = $(this).val();
 
             // results is a list of leaves
@@ -3088,14 +3039,14 @@ var TreeCompare = function(){
             for (i = 0; i < results.length; i++){
                 results_name.push(results[i].name)
             }
-            // postorderTraverse(baseTree.data.root,function(d){
-            //     expandPathToLeaf(d,true,false);
-            // });
-            // update(baseTree.root,baseTree.data);
+            postorderTraverse(baseTree.data.root,function(d){
+                expandPathToLeaf(d,true,false);
+            });
+            update(baseTree.root,baseTree.data);
 
             if (typeof results_name !== "undefined" && results_name !== null && results_name.length > 0) {
-                $("#resultsBox" + canvasId).slideDown(200);
-                $("#resultsList" + canvasId).empty();
+                $("#resultsBox").slideDown(200);
+                $("#resultsList").empty();
 
                 postorderTraverse(baseTree.data.root,function(d){
                     if(results_name.indexOf(d.name)>-1){
@@ -3108,9 +3059,9 @@ var TreeCompare = function(){
                 //d3.selectAll(".search").on("click", baseTree.data.clickEventLink)
             }
             else {
-                $("#resultsList" + canvasId).empty();
-                $("#resultsBox" + canvasId).slideUp(200, function() {
-                    $("#resultsBox" + canvasId).css({
+                $("#resultsList").empty();
+                $("#resultsBox").slideUp(200, function() {
+                    $("#resultsBox").css({
                         "display": "none"
                     });
                 });
