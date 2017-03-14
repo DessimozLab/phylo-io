@@ -4110,6 +4110,8 @@ var TreeCompare = function(){
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
                         } else {
+                            undoActionFunc = "reroot";
+                            updateUndo();
                             update(tree.root, rerootedTree.data);
                         }
                     }, 2);
