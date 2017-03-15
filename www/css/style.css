@@ -81,7 +81,8 @@ html {
 }
 
 .vis-container {
-    height: calc(100% - 60px);
+    /*height: calc(100% - 60px);*/
+    height: 100%;
     padding: 0px;
     position: absolute;
     width: 100%;
@@ -110,7 +111,7 @@ html {
 
 .vis-container-2 {
     position: absolute;
-    width: 50%;
+    /*width: 50%;*/
     float: right;
     height: 100%;
     padding: 0px;
@@ -119,7 +120,7 @@ html {
     border-style: solid;
     border-right-width: 2px;
     border-color: black;
-    height: calc(100% - 60px);
+    /*height: calc(100% - 60px);*/
 }
 
 #vis-container2 {
@@ -166,21 +167,112 @@ label {
 }
 
 #exportButton {
-    margin-left: 20px;
+    margin-left: 0px;
 }
+
 .alert {
     width: 200px;
     margin-left: 20px;
     line-height: 1.2;
 }
 
-.btn:focus,
-.btn:active:focus,
-.btn.active:focus {
-    outline: none;
-    !important;
-    outline-style: none;
+.btn {
+    border: 0 none;
 }
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn {
+    border: 0 none;
+}
+
+.btn.sharp {
+    border-radius:0;
+}
+
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn-primary {
+    background: #0099cc;
+    color: #ffffff;
+}
+
+.btn-sm {
+    background: #9d9d9d;
+    color: #ffffff;
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 0px;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    background: #33a6cc;
+}
+
+.btn-primary:active, .btn-primary.active {
+    background: #007299;
+    box-shadow: none;
+}
+
+.button {
+    background-color: black; /* Green */
+    opacity: 0.9;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: white; /* Green */
+    color: black;
+}
+
+
+.dropbtn{
+   background-color: #2b542c;
+   border: none;
+   cursor: pointer;
+}
+.dropbtn:hover,
+.dropbtn:focus {
+     background-color: #999;
+ }
+
+.dropdown {
+    position: absolute;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 60px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a{
+    color: black;
+    padding: 6px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 10pt;
+}
+
+.dropdown-content a:hover{
+    background-color: orange;
+}
+
 
 #settingsPanel {
     display: none;
@@ -201,7 +293,6 @@ label {
 .sizeAdjust {
     width: 200px !important;
 }
-
 
 #settingsPanel [type="checkbox"],
 b {
@@ -322,7 +413,7 @@ input[type="checkbox"] {
     opacity:  0.6;
     font-style: italic;
 }
-::-moz-placeholder { /* Mozilla Firefox 19+ */
+::-moz-placeholder { /* Mozilla Firefox 19 */
     color:    rgba(37, 36, 45, 0.57);
     opacity:  0.6;
     font-style: italic;
@@ -394,7 +485,9 @@ input.treename::-webkit-input-placeholder{
 }
 
 path.link {
-    stroke: grey
+    stroke: grey;
+    fill: none;
+    cursor: pointer;
 }
 
 path.link:hover{
@@ -534,7 +627,7 @@ rect.node {
 
 /*this following code makes the treename hide on focus*/
 .treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome, Opera, Safari */
-.treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19   + */
+.treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19    */
 .treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
-.treename:-ms-input-placeholder    {color:transparent;} /* IE 10+*/
+.treename:-ms-input-placeholder    {color:transparent;} /* IE 10*/
 
