@@ -77,8 +77,8 @@ var TreeCompare = function(){
 
     var undoIndex = 0;
     var undoTreeData = [];
-    var undoSource = [];
     var undoAction = [];
+    var undoTreeDataIndex = [];
     var undoActionFunc = null;
 
     //Add a work helper function to the jQuery object
@@ -156,15 +156,35 @@ var TreeCompare = function(){
             console.log("getting undoTreeData "+undoIndex)
             console.log(undoTreeData);
             // get the tree from stack
+            var stuff = undoTreeData.pop();
             undoTreeParam = undoTreeData.pop();
             console.log(undoTreeParam);
             console.log(undoTreeData);
-            trees[0] = deepCopy(undoTreeParam[0]);
+            //trees[0] = deepCopy(undoTreeParam[0]);
+            undoTreeIdx = undoTreeDataIndex.pop();
+            console.log("undoTreeIdx/canvasid: "+undoTreeIdx);
+            //trees[0] = deepCopy(undoTreeParam[0]);
+            //trees[1] = deepCopy(undoTreeParam[1]);
+            trees[undoTreeIdx] = deepCopy(undoTreeParam[undoTreeIdx]);
 
-            trees[0].data.clickEvent = getClickEventListenerNode(0, false, {});
-            trees[0].data.clickEventLink = getClickEventListenerLink(trees[0], false, {});
+            //console.log("trees[0]");
+            //console.log(trees[0]);
 
-            renderTree("Tree 0", "vis-container1", "vis-scale1");
+            trees[undoTreeIdx].data.clickEvent = getClickEventListenerNode(undoTreeIdx, false, {});
+            //trees[0].data.clickEvent = getClickEventListenerNode(0, false, {});
+            //trees[1].data.clickEvent = getClickEventListenerNode(1, false, {});
+            trees[undoTreeIdx].data.clickEventLink = getClickEventListenerLink(trees[undoTreeIdx], false, {});
+            //trees[0].data.clickEventLink = getClickEventListenerLink(trees[0], false, {});
+            //trees[1].data.clickEventLink = getClickEventListenerLink(trees[1], false, {});
+
+            var treeName = trees[undoTreeIdx].name;
+            var canvasId = trees[undoTreeIdx].data.canvasId;
+            var scaleId = trees[undoTreeIdx].data.scaleId.substr(1);
+
+            console.log(treeName+" - "+canvasId+" - "+scaleId);
+
+            //renderTree("Tree 0", "vis-container1", "vis-scale1");
+            renderTree(treeName, canvasId, scaleId);
 
         }
 
@@ -3809,19 +3829,6 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(index, false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
 
-            /*
-            if(undoIndex == 0) {
-
-                console.log("viewTree deepCopy");
-                console.log(trees);
-                console.log(undoTreeData);
-
-                undoTreeData[undoIndex] = deepCopy(trees);
-                console.log(undoTreeData[undoIndex]);
-
-            }
-            */
-
             renderTree(name, canvasId, scaleId);
             renderedTrees.push(trees[index]);
 
@@ -4034,8 +4041,6 @@ var TreeCompare = function(){
             var d = e.target;
             var svg = tree.data.svg;
 
-
-
             if (!d.children && !d._children && d.searchHighlight === true) {
                 expandPathToLeaf(d, true);
                 update(tree.root, tree.data);
@@ -4111,7 +4116,7 @@ var TreeCompare = function(){
                             update(comparedTree.root, comparedTree.data);
                         } else {
                             undoActionFunc = "reroot";
-                            updateUndo();
+                            updateUndo(treeIndex);
                             update(tree.root, rerootedTree.data);
                         }
                     }, 2);
@@ -4170,7 +4175,7 @@ var TreeCompare = function(){
 
                     undoActionFunc = "rotate";
 
-                    updateUndo();
+                    updateUndo(treeIndex);
 
                     update(d, tree.data);
                 }, 2);
@@ -4178,6 +4183,9 @@ var TreeCompare = function(){
             }
 
             function collapse(d) {
+
+
+                console.log("clicked treeindex: "+treeIndex);
 
                 /* Called on collapse AND uncollapse / expand. */
                 var load = false;
@@ -4212,7 +4220,7 @@ var TreeCompare = function(){
                     }
 
                     undoActionFunc = "collapse";
-                    updateUndo();
+                    updateUndo(treeIndex);
 
                     update(d, tree.data);
                 }, 2);
@@ -4260,7 +4268,7 @@ var TreeCompare = function(){
                     }
 
                     undoActionFunc = "collapseAll";
-                    updateUndo();
+                    updateUndo(treeIndex);
 
                     update(d, tree.data);
                 }, 2)
@@ -4721,12 +4729,14 @@ var TreeCompare = function(){
         return copy(object);
     }
 
-    function updateUndo(){
+    function updateUndo(treeIndex){
 
+        console.log(trees);
         //undoTreeData[undoIndex] = deepCopy(trees[0]);
         var tmpTree = deepCopy(trees);
         undoTreeData.push(tmpTree);
-        console.log(undoActionFunc+" undoTreeData in updateUndo");
+        undoTreeDataIndex.push(treeIndex);
+        console.log(undoActionFunc+" was changed for tree "+treeIndex+" in updateUndo");
         console.log(undoTreeData);
 
     }
