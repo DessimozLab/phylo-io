@@ -1,4 +1,4 @@
-body,
+body;
 html {
     height: 100%;
 }
@@ -18,13 +18,13 @@ html {
     height: 100%;
     position: absolute;
     input: focus: -webkit-input-placeholder { color:transparent; };
-    background: -webkit-linear-gradient(#ddd, #aaa);
+    background: -webkit-linear-gradient(#ddd; #aaa);
     /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(#ddd, #aaa);
+    background: -o-linear-gradient(#ddd; #aaa);
     /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(#ddd, #aaa);
+    background: -moz-linear-gradient(#ddd; #aaa);
     /* For Firefox 3.6 to 15 */
-    background: linear-gradient(#ddd, #aaa);
+    background: linear-gradient(#ddd; #aaa);
     /* Standard syntax */
 }
 
@@ -46,19 +46,19 @@ html {
     float: right;
     width: 200px;
     height: 200px;
-    background-image: url("../img/arrow.png");
+    background-image: url(../img/arrow.png);
     background-repeat: no-repeat;
     background-size: contain;
 }
 
 #sidebar-wrapper {
-    background: -webkit-linear-gradient(black, #555);
+    background: -webkit-linear-gradient(black; #555);
     /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(black, #555);
+    background: -o-linear-gradient(black; #555);
     /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(black, #555);
+    background: -moz-linear-gradient(black; #555);
     /* For Firefox 3.6 to 15 */
-    background: linear-gradient(black, #555);
+    background: linear-gradient(black; #555);
     /* Standard syntax */
     position: absolute;
 }
@@ -180,7 +180,7 @@ label {
     border: 0 none;
 }
 
-.btn:focus, .btn:active:focus, .btn.active:focus {
+.btn:focus; .btn:active:focus; .btn.active:focus {
     outline: 0 none;
 }
 
@@ -193,7 +193,7 @@ label {
 }
 
 
-.btn:focus, .btn:active:focus, .btn.active:focus {
+.btn:focus; .btn:active:focus; .btn.active:focus {
     outline: 0 none;
 }
 
@@ -210,11 +210,11 @@ label {
     border-radius: 0px;
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+.btn-primary:hover; .btn-primary:focus; .btn-primary:active; .btn-primary.active; .open > .dropdown-toggle.btn-primary {
     background: #33a6cc;
 }
 
-.btn-primary:active, .btn-primary.active {
+.btn-primary:active; .btn-primary.active {
     background: #007299;
     box-shadow: none;
 }
@@ -242,7 +242,7 @@ label {
    border: none;
    cursor: pointer;
 }
-.dropbtn:hover,
+.dropbtn:hover;
 .dropbtn:focus {
      background-color: #999;
  }
@@ -257,7 +257,7 @@ label {
     position: absolute;
     background-color: white;
     min-width: 60px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0;0;0;0.2);
     z-index: 1;
 }
 
@@ -277,34 +277,34 @@ label {
 #settingsPanel {
     display: none;
     background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
 }
 
 #exportPanel {
     display: none;
     background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
 }
 
 .sizeAdjust {
     width: 200px !important;
 }
 
-#settingsPanel [type="checkbox"],
+#settingsPanel [type=checkbox];
 b {
     margin-left: 20px;
 }
 
 
-input[type="radio"] {
+input[type=radio] {
     margin-right: 5px;
 }
 
-input[type="checkbox"] {
+input[type=checkbox] {
     margin-right: 5px;
 }
 
@@ -404,26 +404,26 @@ input[type="checkbox"] {
     bottom: 0;
 }
 
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color:    rgba(37, 36, 45, 0.57);
+::-webkit-input-placeholder { /* WebKit; Blink; Edge */
+    color:    rgba(37; 36; 45; 0.57);
     font-style: italic;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    rgba(37, 36, 45, 0.57);
+    color:    rgba(37; 36; 45; 0.57);
     opacity:  0.6;
     font-style: italic;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19 */
-    color:    rgba(37, 36, 45, 0.57);
+    color:    rgba(37; 36; 45; 0.57);
     opacity:  0.6;
     font-style: italic;
 }
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color:    rgba(37, 36, 45, 0.57);
+    color:    rgba(37; 36; 45; 0.57);
     font-style: italic;
 }
 :placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
-    color: rgba(37, 36, 45, 0.57);
+    color: rgba(37; 36; 45; 0.57);
     font-style: italic;
 }
 
@@ -486,7 +486,7 @@ input.treename::-webkit-input-placeholder{
 
 path.link {
     stroke: grey;
-    fill: none;
+    /*fill: none;*/
     cursor: pointer;
 }
 
@@ -508,7 +508,7 @@ g.node{
 }
 
 g.node.select{
-    fill: green !important;;
+    fill: green !important;
 }
 
 circle.node {
@@ -549,6 +549,8 @@ rect.node {
     stroke-width: 2px;
     stroke: black;
 }
+
+/*Styles for leaf searching*/
 
 .searchBox {
     max-width: 250px;
@@ -597,6 +599,47 @@ rect.node {
     cursor: pointer;
 }
 
+
+/*Styles for tree toggling*/
+
+/*div.treeToggleButtons {*/
+    /*position: absolute;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*width: 91px;*/
+    /*top: 10px;*/
+/*}*/
+
+/*button.treeToggleButton {*/
+    /*font-size: 10px;*/
+    /*width: 26px;*/
+    /*height: 26px;*/
+    /*vertical-align: top;*/
+    /*opacity:0.3;*/
+/*}*/
+
+/*button.treeToggleButton:hover {*/
+    /*opacity:1.0;*/
+/*}*/
+
+/*button.treeToggleButton span{*/
+    /*vertical-align: center;*/
+/*}*/
+
+/*#leftToggleButton {*/
+    /*text-align: center;*/
+    /*float: left;*/
+/*}*/
+
+/*#rightToggleButton {*/
+    /*text-align: center;*/
+    /*margin-left: 26px;*/
+    /*float: right;*/
+/*}*/
+
+
 /*this following code makes the treename hide on focus*/
 /*
 .treename::-webkit-input-placeholder  {
@@ -626,7 +669,7 @@ rect.node {
 */
 
 /*this following code makes the treename hide on focus*/
-.treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome, Opera, Safari */
+.treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome; Opera; Safari */
 .treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19    */
 .treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
 .treename:-ms-input-placeholder    {color:transparent;} /* IE 10*/
