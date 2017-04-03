@@ -1,4 +1,4 @@
-body;
+body,
 html {
     height: 100%;
 }
@@ -111,7 +111,6 @@ html {
 
 .vis-container-2 {
     position: absolute;
-    /*width: 50%;*/
     float: right;
     height: 100%;
     padding: 0px;
@@ -486,7 +485,7 @@ input.treename::-webkit-input-placeholder{
 
 path.link {
     stroke: grey;
-    /*fill: none;*/
+    fill: none;
     cursor: pointer;
 }
 

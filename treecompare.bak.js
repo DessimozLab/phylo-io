@@ -1046,6 +1046,7 @@ var TreeCompare = function(){
                 }
                 return max;
             } else {
+
                 var maxLength = d.length > d.triangleLength ? d.length : d.triangleLength;
                 //var maxLength = d.length;
                 return (maxLength ? Math.max(maxLength, max) : max)
@@ -1078,7 +1079,7 @@ var TreeCompare = function(){
 
         postorderTraverse(node, function(d){
             sum += d.length;
-        }, true);
+        });
 
         return sum;
     }
@@ -1173,6 +1174,8 @@ var TreeCompare = function(){
              * d: previous distance p->d
              */
             q = new_root = newNode(node.parent); //node.parent ensures the correct coulering of the branches when rerooting
+            //console.log(tree);
+            //console.log(getTotalChildNodes(tree.root));
             q.children[0] = node; //new root
             //q.children[0].ID = node.ID;
             q.children[0].length = dist;
@@ -1241,8 +1244,6 @@ var TreeCompare = function(){
             return tree;
         }
     }
-
-
     function getTreeFromCanvasId(id) {
         var name = d3.select("#" + id + " svg").attr("id");
         return trees[findTreeIndex(name)];
@@ -1591,7 +1592,7 @@ var TreeCompare = function(){
         var leaves = treeData.root.leaves.length;
         var leavesVisible = getVisibleLeaves(treeData.root);
 
-        var height = $(".vis-container").height();
+        var height = $("#" + treeData.canvasId).height();
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
@@ -1605,23 +1606,14 @@ var TreeCompare = function(){
         var newHeight;
 
         //calculate treeHeight if we are squashing tree into visible space
-        if (settings.fitTree === "scale" && treeData.prevNoLeavesVisible) {
-            var newHeight = 1;
-            if (leavesVisible > 0) {
-                newHeight = renderHeight / (leavesVisible + leavesHidden);
-                treeData.treeHeight = newHeight;
-            }
-        }
-        if (settings.fitTree === "scale" && leavesVisible === 0 && !treeData.prevNoLeavesVisible) {
+        if (settings.fitTree === "scale") {
             newHeight = renderHeight / (leavesVisible + leavesHidden);
-            newHeight = (newHeight * triangleHeightDivisor);
-            newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
-            treeData.treeHeight = newHeight;
-        }
-        if (leavesVisible > 0) {
-            treeData.prevNoLeavesVisible = false;
-        } else {
-            treeData.prevNoLeavesVisible = true;
+            if (leavesVisible === 0) {
+                newHeight = (newHeight * triangleHeightDivisor);
+                newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
+            }
+            // Breaks the vertical re-sizing
+            //treeData.treeHeight = newHeight;
         }
 
         // False if visible leaves, true otherwise
@@ -1629,7 +1621,6 @@ var TreeCompare = function(){
         treeData.prevNoLeavesVisible = !(leavesVisible > 0);
 
         var leafHeight = treeData.treeHeight;
-
         height = leaves * leafHeight/2;
         var trianglePadding = leafHeight;
 
@@ -1707,7 +1698,6 @@ var TreeCompare = function(){
             } else { // defines the vertical position of the leaves only
                 d.x = upperBound + (amendedLeafHeight/2);
             }
-            d.x = d.x;
         }
 
         /*
@@ -1727,6 +1717,8 @@ var TreeCompare = function(){
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
         var lengthMult = treeData.treeWidth;
+
+
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
             if (settings.useLengths) { //setting selected by user
@@ -3314,14 +3306,13 @@ var TreeCompare = function(){
         //set up the d3 vis
         var width = $("#" + canvasId).width();
         var height = $("#" + canvasId).height();
+
         var tree = d3.layout.tree()
             .size([height, width]);
 
         var svg = d3.select("#" + canvasId).append("svg")
             .attr("width", width)
-            .attr("height", "1000")
-            .attr("version", "1.1")
-            .attr("xmlns", "http://www.w3.org/2000/svg")
+            .attr("height", height)
             .attr("id", name)
             .append("g");
 
@@ -3393,9 +3384,7 @@ var TreeCompare = function(){
         postorderTraverse(baseTree.data.root, function(d) {
             d.leaves = getChildLeaves(d);
             d.mouseoverHighlight = false;
-            if (d.children || d._children){
-                d.triangleLength = getCollapsedTriangleLength(d);
-            }
+            d.triangleLength = getCollapsedTriangleLength(d);
         });
 
         applyEventListeners(baseTree.data);
@@ -3435,8 +3424,7 @@ var TreeCompare = function(){
                     longest = l;
                 }
             });
-            // var maxLength = getMaxLengthVisible(baseTree.data.root);
-            var maxLength = longest;
+            var maxLength = getMaxLengthVisible(baseTree.data.root);
             var newWidth = (width / longest) * maxLength - paddingHorizontal * 2;
             if (newWidth < 0) {
                 newWidth = (width / longest) * maxLength;
@@ -4060,7 +4048,7 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            //renderDownloadButton(canvasId);
+            renderDownloadButton(canvasId);
 
         }
     }
