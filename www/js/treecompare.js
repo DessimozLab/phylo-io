@@ -2282,40 +2282,54 @@ var TreeCompare = function(){
         }
     }
 
+    function buildDownloadButton(canvasId){
+
+        var svg = d3.select("#" + canvasId + " svg")
+            .attr("version", 1.1)
+            .attr("xmlns", "http://www.w3.org/2000/svg");
+
+
+        var downloadButton = d3.select("#" + canvasId).append("div")
+            .attr("class", "dropup");
+
+        downloadButton.append("button")
+            .attr("id", "exportButton")
+            .attr("class", "btn btn-sm sharp dropdown-toggle")
+            .attr("type", "button")
+            .attr("data-toggle", "dropdown")
+            .text("Export ")
+            .on('click', function(){
+                document.getElementById(canvasId + "_exportList").classList.toggle("show");
+            })
+            .append("span")
+            .attr("class", "caret");
+
+
+        // position adjustment in compare mode
+        if (canvasId.search("1")!=-1){
+            downloadButton.style("left", "10px")
+                .style("bottom", "10px")
+                .style("position", "absolute");
+
+        } else if(canvasId.search("2")!=-1){
+            downloadButton.style("right", "10px")
+                .style("bottom", "10px")
+                .style("position", "absolute");
+
+        }
+
+    }
+
     // function to render the download buttons
     function renderDownloadButton(canvasId){
-
-        // draws link to download svg
+        var width = 300, height = 300;
+        // draws download buttons
         if (settings.enableDownloadButtons) {
 
-            var width = 300, height = 300;
-            var svg = d3.select("#" + canvasId + " svg")
-                .attr("version", 1.1)
-                .attr("xmlns", "http://www.w3.org/2000/svg");
+            // draw button
+            buildDownloadButton(canvasId);
 
-
-            var downloadButton = d3.select("#" + canvasId).append("div")
-                .attr("class", "dropup")
-                .attr("id", "downloadButtons")
-                .style("opacity", "0.3");
-
-            downloadButton.append("button")
-                .attr("id", "exportButton")
-                .attr("class", "btn btn-sm sharp dropdown-toggle")
-                .attr("type", "button")
-                .attr("data-toggle", "dropdown")
-                .text("Export ")
-                .on('click', function(){
-                    document.getElementById(canvasId + "_exportList").classList.toggle("show");
-                })
-                .on("mouseover", function(){
-                    downloadButton.style("opacity","1");
-                })
-                .on("mouseout", function(){
-                    downloadButton.style("opacity","0.3");
-                })
-                .append("span")
-                .attr("class", "caret");
+            var downloadButton = d3.select(".dropup");
 
             var exportList = downloadButton.append("ul")
                 .attr("class", "dropdown-menu")
@@ -2363,18 +2377,6 @@ var TreeCompare = function(){
                     saveAs(blob, "phylo.io.nwk");
                 });
 
-
-            if (canvasId.search("1")!=-1){
-                downloadButton.style("left", "10px")
-                    .style("bottom", "10px")
-                    .style("position", "absolute");
-
-            } else if(canvasId.search("2")!=-1){
-                downloadButton.style("right", "10px")
-                    .style("bottom", "10px")
-                    .style("position", "absolute");
-
-            }
 
             // Below are the functions that handle actual exporting:
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
@@ -2641,315 +2643,315 @@ var TreeCompare = function(){
         });
     }
 
-    // /*----------------------
-    // |
-    // | Function that renders the drop down menu once multiple trees are loaded
-    // |
-    //  ----------------------*/
-    // function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
-    //     var index = findTreeIndex(name);
-    //     var numTrees = trees[index].total;
-    //     var indexStartTree = index;
-    //     var indexLastTree = trees[index].last;
-    //
-    //
-    //     var treeToggleDropDown = d3.select("#" + canvas + " .treeToggleButtons").append("div")
-    //         .attr("class","dropdown")
-    //         .style("position","absolute")
-    //         .style("margin-left","auto")
-    //         .style("margin-right","auto")
-    //         .style("left","26px")
-    //         .style("right","26px")
-    //         .style("width", "39px")
-    //         .style("height", "26px");
-    //
-    //     var treeToggleButtons = treeToggleDropDown.append("button")
-    //         .attr("id", "dropDownToggleButton")
-    //         .attr("class", "btn btn-sm sharp dropdown-toggle")
-    //         .style("width", "39px")
-    //         .style("height", "26px")
-    //         .on('click', function(){
-    //             document.getElementById("dropDownList" + canvas).classList.toggle("show");
-    //         });
-    //
-    //     ///span element is added in order to easier display and place the tree numbers on the dropDown menu
-    //     var dropdownToggleButtonText = treeToggleButtons.append("span")
-    //         .attr("id", "dropDownToggleText")
-    //         .attr("class", "text-center")
-    //         .style("text-align","center")
-    //         .style("font-size", "10px")
-    //         .text("1/"+(numTrees));
-    //
-    //
-    //     var treeToggleOptions = treeToggleButtons.append("div")
-    //         .attr("class", "dropdown-content")
-    //         .attr("id", "dropDownList" + canvas)
-    //         .style("margin-top", "5px");
-    //
-    //     for(var i=indexStartTree; i<=indexLastTree; i++){
-    //         treeToggleOptions.append("a")
-    //             .attr("id", canvas + "_tree_" + i)
-    //             .text(trees[i].part)
-    //             .on('click', function(){
-    //                 var splitId = d3.select(this).attr("id").split("_");
-    //                 var ind = parseInt(splitId[splitId.length-1]);
-    //                 dropDownAction(ind)
-    //             });
-    //     }
-    //
-    //     function dropDownAction(ind){
-    //         d3.select("#" + canvas + " svg").remove();
-    //         var toggledTree = trees[ind];
-    //         var newName = toggledTree.name;
-    //         if(oppositeCanvas !== undefined){ // compare mode
-    //             var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
-    //             d3.select("#" + oppositeCanvas + " svg").remove();
-    //             var index2 = findTreeIndex(oppositeName);
-    //             var oppositeTree = trees[index2];
-    //             initialiseTree(toggledTree.root, settings.autoCollapse);
-    //             initialiseTree(oppositeTree.root, settings.autoCollapse);
-    //
-    //             // render tress (workers) -> once done, run comprison (workers)
-    //             toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-    //             toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-    //             renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
-    //
-    //             oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-    //             oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-    //             renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
-    //
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //                 preprocessTrees(toggledTree, oppositeTree);
-    //             }, 5);
-    //
-    //         } else { // view mode
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //
-    //                 initialiseTree(toggledTree.root, settings.autoCollapse);
-    //                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-    //                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-    //                 renderTree(toggledTree,newName,canvas,scale,undefined, true);
-    //
-    //                 settings.loadedCallback();
-    //             }, 2);
-    //         }
-    //         var toggleStart = toggledTree.part + 1;
-    //         dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
-    //     }
-    //
-    // }
-    //
-    //
-    //
-    // function renderTreeToggleButtons(canvas, scale, canvasOpposite, scaleOpposite){
-    //
-    //     var treeToggleButtons = d3.select("#" + canvas).append("div")
-    //         .attr("class", "treeToggleButtons");
-    //
-    //     treeToggleButtons.append("button")
-    //         .attr("type", "button")
-    //         .attr("class", "btn btn-sm sharp treeToggleButton")
-    //         .attr("id", "leftToggleButton")
-    //         .append("span")
-    //         .attr("class", "glyphicon glyphicon-arrow-left")
-    //         .attr("aria-hidden", "true");
-    //
-    //     treeToggleButtons.append("button")
-    //         .attr("type", "button")
-    //         .attr("class", "btn btn-sm sharp treeToggleButton")
-    //         .attr("id", "rightToggleButton")
-    //         .append("span")
-    //         .attr("class", "glyphicon glyphicon-arrow-right")
-    //         .attr("aria-hidden", "true");
-    //
-    //     // $("#" + canvas).append('<div id="treeToggleButtons"></div>');
-    //     // $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-sm sharp treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-    //     // $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="rightToggleButton" class="btn btn-sm sharp treeToggleButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-    //     // $("#" + canvas + " #treeToggleButtons").css({
-    //     //     "position": "absolute",
-    //     //     "margin-left": "auto",
-    //     //     "margin-right": "auto",
-    //     //     "left": "0",
-    //     //     "right": "0",
-    //     //     "width": "91px",
-    //     //     "top": "10px"
-    //     // });
-    //     //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
-    //     // $("#" + canvas + " .treeToggleButton").css({
-    //     //     "font-size": "10px",
-    //     //     "width": "26px",
-    //     //     "height": "26px",
-    //     //     "vertical-align": "top",
-    //     //     "opacity":"0.3"
-    //     // });
-    //     // $("#" + canvas + " .treeToggleButton").on("mouseover", function() {
-    //     //     $(this).css({
-    //     //         "opacity": "1"
-    //     //     })
-    //     // });
-    //     // $("#" + canvas + " .treeToggleButton").on("mouseout", function() {
-    //     //     $(this).css({
-    //     //         "opacity": "0.3"
-    //     //     })
-    //     // });
-    //     // $("#" + canvas + " .treeToggleButton span").css({
-    //     //     "vertical-align": "middle"
-    //     // });
-    //     // $("#" + canvas + " #leftToggleButton").css({
-    //     //     "text-align": "center",
-    //     //     "float": "left"
-    //     // });
-    //     // $("#" + canvas + " #rightToggleButton").css({
-    //     //     "text-align": "center",
-    //     //     "margin-left": "26px",
-    //     //     "float": "right"
-    //     // });
-    //
-    //     function actionLeft(oldName, oppositeTreeName) {
-    //         var index1 = findTreeIndex(oldName);
-    //         var num_trees = trees[index1].last;
-    //         trees[index1].display = false;
-    //         if (trees[index1].part === 0){
-    //             var toggledTree = trees[num_trees];
-    //         }else {
-    //             var toggledTree = trees[index1-1];
-    //         }
-    //         toggledTree.display = true;
-    //         var new_name = toggledTree.name;
-    //
-    //         if(oppositeTreeName !== undefined){ // compare mode
-    //             var index2 = findTreeIndex(oppositeTreeName);
-    //             var oppositeTree = trees[index2];
-    //             initialiseTree(toggledTree.root, settings.autoCollapse);
-    //             initialiseTree(oppositeTree.root, settings.autoCollapse);
-    //
-    //             // render tress (workers) -> once done, run comprison (workers)
-    //             toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-    //             toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-    //             renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
-    //
-    //             oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-    //             oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-    //             renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
-    //
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //                 preprocessTrees(toggledTree, oppositeTree);
-    //             }, 5);
-    //             var toggleStart = toggledTree.part + 1;
-    //             var toggleEnd = toggledTree.total;
-    //             d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
-    //         } else{ // view mode
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //                 initialiseTree(toggledTree.root, settings.autoCollapse);
-    //                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-    //                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-    //                 renderTree(toggledTree, new_name, canvas, scale, undefined, true);
-    //                 settings.loadedCallback();
-    //             }, 2);
-    //             var toggleStart = toggledTree.part + 1;
-    //             var toggleEnd = toggledTree.total;
-    //             d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
-    //         }
-    //
-    //
-    //     }
-    //
-    //     function actionRight(oldName, oppositeTreeName) {
-    //         var index1 = findTreeIndex(oldName);
-    //         var sub_index = trees[index1].part;
-    //         var num_trees = trees[index1].last;
-    //         trees[index1].display = false;
-    //
-    //         // main function to assure cycling when toggle action is called
-    //         if (index1 === (num_trees)){
-    //             var toggledTree = trees[num_trees-sub_index];
-    //         }else {
-    //             var toggledTree = trees[index1+1];
-    //         }
-    //
-    //         toggledTree.display = true;
-    //         var new_name = toggledTree.name;
-    //
-    //         if (oppositeTreeName !== undefined){
-    //             var index2 = findTreeIndex(oppositeTreeName);
-    //             var oppositeTree = trees[index2];
-    //             initialiseTree(toggledTree.root, settings.autoCollapse);
-    //             initialiseTree(oppositeTree.root, settings.autoCollapse);
-    //
-    //             toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-    //             toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-    //             renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
-    //
-    //             oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-    //             oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-    //             renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
-    //
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //                 preprocessTrees(toggledTree, oppositeTree);
-    //             }, 5);
-    //             var toggleStart = toggledTree.part + 1;
-    //             var toggleEnd = toggledTree.total;
-    //             d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
-    //         }else {
-    //             settings.loadingCallback();
-    //             setTimeout(function() {
-    //
-    //                 initialiseTree(toggledTree.root, settings.autoCollapse);
-    //                 toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-    //                 toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-    //                 //clear the canvas of any previous visualisation
-    //                 renderTree(toggledTree, new_name, canvas, scale, undefined, true);
-    //                 settings.loadedCallback();
-    //             }, 2);
-    //             var toggleStart = toggledTree.part + 1;
-    //             var toggleEnd = toggledTree.total;
-    //             d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
-    //         }
-    //
-    //
-    //     }
-    //
-    //     var timeoutIdleft = 0;
-    //     $("#" + canvas + " #leftToggleButton").mousedown(function() {
-    //         var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-    //         d3.select("#" + canvas + " svg").remove();
-    //
-    //         if(canvasOpposite !== undefined){ // compare mode
-    //             var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-    //             d3.select("#" + canvasOpposite + " svg").remove();
-    //             actionLeft(oldName, oppositeTreeName);
-    //         } else { // view mode
-    //             actionLeft(oldName);
-    //         }
-    //
-    //         timeoutIdleft = setInterval(actionLeft, 150);
-    //     }).bind('mouseup mouseleave', function() {
-    //         clearTimeout(timeoutIdleft);
-    //     });
-    //
-    //     var timeoutIdRight = 0;
-    //     $("#" + canvas + " #rightToggleButton").mousedown(function() {
-    //         var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-    //         d3.select("#" + canvas + " svg").remove();
-    //
-    //         if(canvasOpposite !== undefined){ // compare mode
-    //             var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-    //             d3.select("#" + canvasOpposite + " svg").remove();
-    //             actionRight(oldName, oppositeTreeName);
-    //         } else { // view mode
-    //             actionRight(oldName);
-    //         }
-    //
-    //         timeoutIdRight = setInterval(actionRight, 150);
-    //     }).bind('mouseup mouseleave', function() {
-    //         clearTimeout(timeoutIdRight);
-    //     });
-    // }
+    /*----------------------
+    |
+    | Function that renders the drop down menu once multiple trees are loaded
+    |
+     ----------------------*/
+    function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
+        var index = findTreeIndex(name);
+        var numTrees = trees[index].total;
+        var indexStartTree = index;
+        var indexLastTree = trees[index].last;
+
+
+        var treeToggleDropDown = d3.select("#" + canvas + " .treeToggleButtons").append("div")
+            .attr("class","dropdown")
+            .style("position","absolute")
+            .style("margin-left","auto")
+            .style("margin-right","auto")
+            .style("left","26px")
+            .style("right","26px")
+            .style("width", "39px")
+            .style("height", "26px");
+
+        var treeToggleButtons = treeToggleDropDown.append("button")
+            .attr("id", "dropDownToggleButton")
+            .attr("class", "btn btn-sm sharp dropdown-toggle")
+            .style("width", "39px")
+            .style("height", "26px")
+            .on('click', function(){
+                document.getElementById("dropDownList" + canvas).classList.toggle("show");
+            });
+
+        ///span element is added in order to easier display and place the tree numbers on the dropDown menu
+        var dropdownToggleButtonText = treeToggleButtons.append("span")
+            .attr("id", "dropDownToggleText")
+            .attr("class", "text-center")
+            .style("text-align","center")
+            .style("font-size", "10px")
+            .text("1/"+(numTrees));
+
+
+        var treeToggleOptions = treeToggleButtons.append("div")
+            .attr("class", "dropdown-content")
+            .attr("id", "dropDownList" + canvas)
+            .style("margin-top", "5px");
+
+        for(var i=indexStartTree; i<=indexLastTree; i++){
+            treeToggleOptions.append("a")
+                .attr("id", canvas + "_tree_" + i)
+                .text(trees[i].part)
+                .on('click', function(){
+                    var splitId = d3.select(this).attr("id").split("_");
+                    var ind = parseInt(splitId[splitId.length-1]);
+                    dropDownAction(ind)
+                });
+        }
+
+        function dropDownAction(ind){
+            d3.select("#" + canvas + " svg").remove();
+            var toggledTree = trees[ind];
+            var newName = toggledTree.name;
+            if(oppositeCanvas !== undefined){ // compare mode
+                var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
+                d3.select("#" + oppositeCanvas + " svg").remove();
+                var index2 = findTreeIndex(oppositeName);
+                var oppositeTree = trees[index2];
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
+
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
+
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+
+            } else { // view mode
+                settings.loadingCallback();
+                setTimeout(function() {
+
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    renderTree(toggledTree,newName,canvas,scale,undefined, true);
+
+                    settings.loadedCallback();
+                }, 2);
+            }
+            var toggleStart = toggledTree.part + 1;
+            dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
+        }
+
+    }
+
+
+
+    function renderTreeToggleButtons(canvas, scale, canvasOpposite, scaleOpposite){
+
+        var treeToggleButtons = d3.select("#" + canvas).append("div")
+            .attr("class", "treeToggleButtons");
+
+        treeToggleButtons.append("button")
+            .attr("type", "button")
+            .attr("class", "btn btn-sm sharp treeToggleButton")
+            .attr("id", "leftToggleButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-left")
+            .attr("aria-hidden", "true");
+
+        treeToggleButtons.append("button")
+            .attr("type", "button")
+            .attr("class", "btn btn-sm sharp treeToggleButton")
+            .attr("id", "rightToggleButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-right")
+            .attr("aria-hidden", "true");
+
+        // $("#" + canvas).append('<div id="treeToggleButtons"></div>');
+        // $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="leftToggleButton" class="btn btn-sm sharp treeToggleButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
+        // $("#" + canvas + " #treeToggleButtons").append('<button type="button" id="rightToggleButton" class="btn btn-sm sharp treeToggleButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
+        // $("#" + canvas + " #treeToggleButtons").css({
+        //     "position": "absolute",
+        //     "margin-left": "auto",
+        //     "margin-right": "auto",
+        //     "left": "0",
+        //     "right": "0",
+        //     "width": "91px",
+        //     "top": "10px"
+        // });
+        //$("#" + canvasId + " #treeToggleButtons").style.textAlign = "center";
+        // $("#" + canvas + " .treeToggleButton").css({
+        //     "font-size": "10px",
+        //     "width": "26px",
+        //     "height": "26px",
+        //     "vertical-align": "top",
+        //     "opacity":"0.3"
+        // });
+        // $("#" + canvas + " .treeToggleButton").on("mouseover", function() {
+        //     $(this).css({
+        //         "opacity": "1"
+        //     })
+        // });
+        // $("#" + canvas + " .treeToggleButton").on("mouseout", function() {
+        //     $(this).css({
+        //         "opacity": "0.3"
+        //     })
+        // });
+        // $("#" + canvas + " .treeToggleButton span").css({
+        //     "vertical-align": "middle"
+        // });
+        // $("#" + canvas + " #leftToggleButton").css({
+        //     "text-align": "center",
+        //     "float": "left"
+        // });
+        // $("#" + canvas + " #rightToggleButton").css({
+        //     "text-align": "center",
+        //     "margin-left": "26px",
+        //     "float": "right"
+        // });
+
+        function actionLeft(oldName, oppositeTreeName) {
+            var index1 = findTreeIndex(oldName);
+            var num_trees = trees[index1].last;
+            trees[index1].display = false;
+            if (trees[index1].part === 0){
+                var toggledTree = trees[num_trees];
+            }else {
+                var toggledTree = trees[index1-1];
+            }
+            toggledTree.display = true;
+            var new_name = toggledTree.name;
+
+            if(oppositeTreeName !== undefined){ // compare mode
+                var index2 = findTreeIndex(oppositeTreeName);
+                var oppositeTree = trees[index2];
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                // render tress (workers) -> once done, run comprison (workers)
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
+
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
+
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
+            } else{ // view mode
+                settings.loadingCallback();
+                setTimeout(function() {
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
+                    settings.loadedCallback();
+                }, 2);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
+            }
+
+
+        }
+
+        function actionRight(oldName, oppositeTreeName) {
+            var index1 = findTreeIndex(oldName);
+            var sub_index = trees[index1].part;
+            var num_trees = trees[index1].last;
+            trees[index1].display = false;
+
+            // main function to assure cycling when toggle action is called
+            if (index1 === (num_trees)){
+                var toggledTree = trees[num_trees-sub_index];
+            }else {
+                var toggledTree = trees[index1+1];
+            }
+
+            toggledTree.display = true;
+            var new_name = toggledTree.name;
+
+            if (oppositeTreeName !== undefined){
+                var index2 = findTreeIndex(oppositeTreeName);
+                var oppositeTree = trees[index2];
+                initialiseTree(toggledTree.root, settings.autoCollapse);
+                initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
+
+                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
+
+                settings.loadingCallback();
+                setTimeout(function() {
+                    preprocessTrees(toggledTree, oppositeTree);
+                }, 5);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
+            }else {
+                settings.loadingCallback();
+                setTimeout(function() {
+
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                    //clear the canvas of any previous visualisation
+                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
+                    settings.loadedCallback();
+                }, 2);
+                var toggleStart = toggledTree.part + 1;
+                var toggleEnd = toggledTree.total;
+                d3.select("#" + canvas + " #dropDownToggleText").text(toggleStart + "/" + toggleEnd);
+            }
+
+
+        }
+
+        var timeoutIdleft = 0;
+        $("#" + canvas + " #leftToggleButton").mousedown(function() {
+            var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            d3.select("#" + canvas + " svg").remove();
+
+            if(canvasOpposite !== undefined){ // compare mode
+                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
+                d3.select("#" + canvasOpposite + " svg").remove();
+                actionLeft(oldName, oppositeTreeName);
+            } else { // view mode
+                actionLeft(oldName);
+            }
+
+            timeoutIdleft = setInterval(actionLeft, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdleft);
+        });
+
+        var timeoutIdRight = 0;
+        $("#" + canvas + " #rightToggleButton").mousedown(function() {
+            var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+            d3.select("#" + canvas + " svg").remove();
+
+            if(canvasOpposite !== undefined){ // compare mode
+                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
+                d3.select("#" + canvasOpposite + " svg").remove();
+                actionRight(oldName, oppositeTreeName);
+            } else { // view mode
+                actionRight(oldName);
+            }
+
+            timeoutIdRight = setInterval(actionRight, 150);
+        }).bind('mouseup mouseleave', function() {
+            clearTimeout(timeoutIdRight);
+        });
+    }
 
 
     // helper function to set up canvas to place the tree inside
@@ -3004,7 +3006,7 @@ var TreeCompare = function(){
             .attr("class", "searchBox");
 
         var searchDivA = searchDiv.append("a")
-            .attr("class", "btn btn-default searchButton");
+            .attr("class", "btn btn-sm sharp searchButton");
 
         searchDivA.append("span")
             .attr("class", "glyphicon glyphicon-search")
@@ -3094,7 +3096,7 @@ var TreeCompare = function(){
         var visible = false;
         d3.select("#"+canvasId).select(".searchButton").on("click",function() {
 
-            postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
+            postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
                 //d.searchHighlight =false;
                 if(d.parent){
                     d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
@@ -3169,61 +3171,48 @@ var TreeCompare = function(){
     }
 
 
-    function buildZoomButtons(canvasId) {
-        $("#" + canvasId).append('<div id="zoomButtons"></div>');
-        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="upButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>');
-        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="leftButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>');
-        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="rightButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button>');
-        $("#" + canvasId + " #zoomButtons").append('<button type="button" id="downButton" class="btn btn-primary zoomButton"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>');
+    function buildRescaleButtons(canvasId) {
+
+        var rescaleDiv = d3.select("#" + canvasId).append("div")
+            .attr("class", "rescaleButtons");
+
+        //up button
+        rescaleDiv.append("button")
+            .attr("class", "btn btn-sm sharp rescaleButton")
+            .attr("id", "upButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-up")
+            .attr("aria-hidden", "true");
+
+        //left button
+        rescaleDiv.append("button")
+            .attr("class", "btn btn-sm sharp rescaleButton")
+            .attr("id", "leftButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-left")
+            .attr("aria-hidden", "true");
+
+        //right button
+        rescaleDiv.append("button")
+            .attr("class", "btn btn-sm sharp rescaleButton")
+            .attr("id", "rightButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-right")
+            .attr("aria-hidden", "true");
+
+        //down button
+        rescaleDiv.append("button")
+            .attr("class", "btn btn-sm sharp rescaleButton")
+            .attr("id", "downButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-arrow-down")
+            .attr("aria-hidden", "true");
     }
 
-    function buildZoomButtonsStyle(canvasId) {
-        $("#" + canvasId + " #zoomButtons").css({
-            "width": "78px",
-            "top": "50px",
-            "left": "10px",
-            "position": "absolute"
-        });
-        $("#" + canvasId + " .zoomButton").css({
-            "font-size": "10px",
-            "width": "26px",
-            "height": "26px",
-            "vertical-align": "top",
-            "opacity": "0.3"
-        });
-        $("#" + canvasId + " .zoomButton").on("mouseover", function () {
-            $(this).css({
-                "opacity": "1"
-            })
-        });
-        $("#" + canvasId + " .zoomButton").on("mouseout", function () {
-            $(this).css({
-                "opacity": "0.3"
-            })
-        });
-        $("#" + canvasId + " .zoomButton span").css({
-            "vertical-align": "middle"
-        });
-        $("#" + canvasId + " #upButton").css({
-            "display": "block",
-            "margin-left": "26px"
-        });
-        $("#" + canvasId + " #leftButton").css({
-            "float": "left"
-        });
-        $("#" + canvasId + " #rightButton").css({
-            "margin-left": "26px",
-            "float": "right"
-        });
-        $("#" + canvasId + " #downButton").css({
-            "display": "block",
-            "margin-left": "26px"
-        });
-    }
 
     function prepareSizeControls(canvasId, baseTree) {
-        buildZoomButtons(canvasId);
-        buildZoomButtonsStyle(canvasId);
+        buildRescaleButtons(canvasId);
+        //buildRescaleButtonsStyle(canvasId);
 
         // set up function for buttons on left top corner
         function actionUp() {
@@ -4011,20 +4000,20 @@ var TreeCompare = function(){
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
 
-            //renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
-            //renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
-            //renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
-            //renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
+            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
+            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
 
         }else if (trees[index1].hasOwnProperty("multiple") && !trees[index2].hasOwnProperty("multiple")) {
 
-            //renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
-            //renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
+            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
+            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
 
         }else if (!trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")) {
 
-            //renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
-            //renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
+            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
+            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
         }
         renderDownloadButton(canvas1);
         renderDownloadButton(canvas2);
@@ -4050,9 +4039,9 @@ var TreeCompare = function(){
             firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
             renderTree(firstTree,newName,canvasId,scaleId);
 
-            //renderTreeToggleButtons(canvasId, scaleId);
-            //renderTreeToggleDropDown(name, canvasId, scaleId);
-            //renderDownloadButton(canvasId);
+            renderTreeToggleButtons(canvasId, scaleId);
+            renderTreeToggleDropDown(name, canvasId, scaleId);
+            renderDownloadButton(canvasId);
 
         } else{
 
@@ -4060,7 +4049,7 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            //renderDownloadButton(canvasId);
+            renderDownloadButton(canvasId);
 
         }
     }

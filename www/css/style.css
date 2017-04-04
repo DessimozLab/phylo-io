@@ -169,6 +169,12 @@ label {
     margin-left: 0px;
 }
 
+#exportButton:hover{
+    opacity: 1.0;
+}
+
+
+
 .alert {
     width: 200px;
     margin-left: 20px;
@@ -601,43 +607,86 @@ rect.node {
 
 /*Styles for tree toggling*/
 
-/*div.treeToggleButtons {*/
-    /*position: absolute;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*left: 0;*/
-    /*right: 0;*/
-    /*width: 91px;*/
-    /*top: 10px;*/
-/*}*/
+div.treeToggleButtons {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 91px;
+    top: 10px;
+}
 
-/*button.treeToggleButton {*/
-    /*font-size: 10px;*/
-    /*width: 26px;*/
-    /*height: 26px;*/
-    /*vertical-align: top;*/
-    /*opacity:0.3;*/
-/*}*/
+button.treeToggleButton {
+    font-size: 10px;
+    width: 26px;
+    height: 26px;
+    vertical-align: top;
+    opacity:0.3;
+}
 
-/*button.treeToggleButton:hover {*/
-    /*opacity:1.0;*/
-/*}*/
+button.treeToggleButton:hover {
+    opacity:1.0;
+}
 
-/*button.treeToggleButton span{*/
-    /*vertical-align: center;*/
-/*}*/
+button.treeToggleButton span{
+    vertical-align: center;
+}
 
-/*#leftToggleButton {*/
-    /*text-align: center;*/
-    /*float: left;*/
-/*}*/
+#leftToggleButton {
+    text-align: center;
+    float: left;
+}
 
-/*#rightToggleButton {*/
-    /*text-align: center;*/
-    /*margin-left: 26px;*/
-    /*float: right;*/
-/*}*/
+#rightToggleButton {
+    text-align: center;
+    margin-left: 26px;
+    float: right;
+}
 
+/*Styles for rescaling buttons*/
+
+div.rescaleButtons {
+    width: 78px;
+    top: 50px;
+    left: 10px;
+    position: absolute;
+}
+
+button.rescaleButton {
+    font-size: 10px;
+    width: 26px;
+    height: 26px;
+    vertical-align: top;
+    opacity: 0.3;
+}
+
+button.rescaleButton.span{
+    vertical-align: middle;
+}
+
+button.rescaleButton:hover{
+    opacity: 1.0;
+}
+
+#upButton{
+    display: block;
+    margin-left: 26px;
+}
+
+#leftButton{
+    float: left;
+}
+
+#rightButton{
+    margin-left: 26px;
+    float: right;
+}
+
+#downButton{
+    display: block;
+    margin-left: 26px;
+}
 
 /*this following code makes the treename hide on focus*/
 /*

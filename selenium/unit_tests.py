@@ -8,11 +8,13 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+binary = FirefoxBinary('/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox')
 
 class PythonOrgSearch(unittest.TestCase):
     
     def setUp(self):
-        self.driver = webdriver.SafariDriver()
+        self.driver = webdriver.Firefox(firefox_binary=binary)
 
     def check_exists(self, docID):
         driver = self.driver
@@ -41,9 +43,9 @@ class PythonOrgSearch(unittest.TestCase):
         driver.find_element_by_id("renderButton").click()
         for i in range(0,3):
             driver.find_element_by_id("collapseInc").click()
-        assert self.check_exists("Tree_1_node_24")
-        assert driver.find_element_by_id("collapseAmount").text == "2"
-        #driver.quit()
+        assert(self.check_exists("Tree_1_node_24"))
+        print(driver.find_element_by_id("collapseAmount").text == "2")
+        driver.quit()
 
     def test_tree_toggle_compare(self):
         with open(os.getcwd()+"/test.nwk", 'r') as content_file:
