@@ -17,14 +17,14 @@ html {
     width: 100%;
     height: 100%;
     position: absolute;
-    input: focus: -webkit-input-placeholder { color:transparent; };
-    background: -webkit-linear-gradient(#ddd; #aaa);
+    /*input: focus: -webkit-input-placeholder { color:transparent; };*/
+    background: -webkit-linear-gradient(#ddd, #aaa);
     /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(#ddd; #aaa);
+    background: -o-linear-gradient(#ddd, #aaa);
     /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(#ddd; #aaa);
+    background: -moz-linear-gradient(#ddd, #aaa);
     /* For Firefox 3.6 to 15 */
-    background: linear-gradient(#ddd; #aaa);
+    background: linear-gradient(#ddd, #aaa);
     /* Standard syntax */
 }
 
@@ -52,13 +52,13 @@ html {
 }
 
 #sidebar-wrapper {
-    background: -webkit-linear-gradient(black; #555);
+    background: -webkit-linear-gradient(black, #555);
     /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(black; #555);
+    background: -o-linear-gradient(black, #555);
     /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(black; #555);
+    background: -moz-linear-gradient(black, #555);
     /* For Firefox 3.6 to 15 */
-    background: linear-gradient(black; #555);
+    background: linear-gradient(black, #555);
     /* Standard syntax */
     position: absolute;
 }
@@ -148,7 +148,7 @@ html {
 #mode-buttons {
     width: 200px;
     margin-left: 20px;
-    display: hidden;
+    /*display: hidden;*/
 }
 
 #renderButton {
@@ -185,7 +185,7 @@ label {
     border: 0 none;
 }
 
-.btn:focus; .btn:active:focus; .btn.active:focus {
+.btn:focus, .btn:active:focus, .btn.active:focus {
     outline: 0 none;
 }
 
@@ -198,7 +198,7 @@ label {
 }
 
 
-.btn:focus; .btn:active:focus; .btn.active:focus {
+.btn:focus, .btn:active:focus, .btn.active:focus {
     outline: 0 none;
 }
 
@@ -215,11 +215,11 @@ label {
     border-radius: 0px;
 }
 
-.btn-primary:hover; .btn-primary:focus; .btn-primary:active; .btn-primary.active; .open > .dropdown-toggle.btn-primary {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
     background: #33a6cc;
 }
 
-.btn-primary:active; .btn-primary.active {
+.btn-primary:active, .btn-primary.active {
     background: #007299;
     box-shadow: none;
 }
@@ -247,34 +247,61 @@ label {
    border: none;
    cursor: pointer;
 }
-.dropbtn:hover;
-.dropbtn:focus {
+.dropbtn:hover, .dropbtn:focus {
      background-color: #999;
  }
 
-.dropdown {
+.treeToggleDropdown {
     position: absolute;
     display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 26px;
+    right: 26px;
+    width: 39px;
+    height: 26px;
 }
 
-.dropdown-content {
+#treeToggleDropdownButton {
+    width: 39px;
+    height: 26px;
+}
+
+#treeToggleDropdownText {
+    text-align: center;
+    font-size: 10px;
+}
+
+.treeToggleDropdown-content {
+    text-align: center;
     display: none;
     position: absolute;
     background-color: white;
-    min-width: 60px;
-    box-shadow: 0px 8px 16px 0px rgba(0;0;0;0.2);
-    z-index: 1;
+    min-width: 39px;
+    /*margin-top: 5px;*/
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    /*z-index: -1;*/
 }
 
-.dropdown-content a{
+.treeToggleDropdown-content a{
     color: black;
-    padding: 6px 16px;
+    padding: 3px;
+    text-decoration: none;
+    display: block;
+    font-size: 8pt;
+    cursor: pointer;
+}
+
+.treeToggleDropdown-content li{
+    color: black;
+    /*padding: 6px 16px;*/
     text-decoration: none;
     display: block;
     font-size: 10pt;
+    cursor: pointer;
 }
 
-.dropdown-content a:hover{
+.treeToggleDropdown-content a:hover{
     background-color: orange;
 }
 
@@ -282,25 +309,24 @@ label {
 #settingsPanel {
     display: none;
     background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
 #exportPanel {
     display: none;
     background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0; 0; 0; 0.74);
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
 .sizeAdjust {
     width: 200px !important;
 }
 
-#settingsPanel [type=checkbox];
-b {
+#settingsPanel [type=checkbox], b {
     margin-left: 20px;
 }
 
@@ -410,25 +436,25 @@ input[type=checkbox] {
 }
 
 ::-webkit-input-placeholder { /* WebKit; Blink; Edge */
-    color:    rgba(37; 36; 45; 0.57);
+    color:    rgba(37, 36, 45, 0.57);
     font-style: italic;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    rgba(37; 36; 45; 0.57);
+    color:    rgba(37, 36, 45, 0.57);
     opacity:  0.6;
     font-style: italic;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19 */
-    color:    rgba(37; 36; 45; 0.57);
+    color:    rgba(37, 36, 45, 0.57);
     opacity:  0.6;
     font-style: italic;
 }
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color:    rgba(37; 36; 45; 0.57);
+    color:    rgba(37, 36, 45, 0.57);
     font-style: italic;
 }
 :placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
-    color: rgba(37; 36; 45; 0.57);
+    color: rgba(37, 36, 45, 0.57);
     font-style: italic;
 }
 
@@ -586,9 +612,9 @@ rect.node {
     overflow: scroll;
     margin-top: 30px;
     background-color: #efefef;
-    -webkit-box-shadow: 0px 0px 2px 1px rgba(0;0;0;0.75);
-    -moz-box-shadow: 0px 0px 2px 1px rgba(0;0;0;0.75);
-    box-shadow: 0px 0px 2px 1px rgba(0;0;0;0.75);
+    -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
     display: none;
     padding-top: 10px;
 }
