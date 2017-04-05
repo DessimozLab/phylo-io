@@ -3085,31 +3085,30 @@ var TreeCompare = function(){
         d3.select("#"+canvasId).select(".searchInput")
             .transition().duration(600)
             .style("width", "0px")
-            .style("display", "none")
-            .text("");
+            .style("display", "none");
+
+        $("#"+canvasId+" .searchInput").val("");
     }
 
     function prepareSearchBar(canvasId, baseTree) {
 
         buildSearchBox(canvasId);
 
-        var visible = false;
         d3.select("#"+canvasId).select(".searchButton").on("click",function() {
 
-            postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
-                //d.searchHighlight =false;
-                if(d.parent){
-                    d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
-                }
-            });
-            update(baseTree.root,baseTree.data);
+            if ($('.searchInput').is(":visible")) {
 
-            if (!visible) {
-                visible = true;
-                showSearchBar(canvasId);
-            } else { //if search unselected then remove orange highlight from branches
-                visible = false;
+                postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
+                    if(d.parent){
+                        d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
+                    }
+                });
+                update(baseTree.root,baseTree.data);
+
                 hideSearchBar(canvasId);
+
+            } else { //if search unselected then remove orange highlight from branches
+                showSearchBar(canvasId);
             }
         });
 
@@ -3165,8 +3164,18 @@ var TreeCompare = function(){
             }
         });
 
-        d3.selectAll("svg").on("click",function() {
-            hideSearchBar(canvasId);
+        // ensures that searchbar is removed when clicking on canvas
+        $(document).click(function(event) {
+            if(!$(event.target).closest('.searchBox').length && $('.searchInput').is(":visible")) {
+                postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
+                    if(d.parent){
+                        d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
+                    }
+                });
+                update(baseTree.root,baseTree.data);
+
+                hideSearchBar(canvasId);
+            }
         });
     }
 
