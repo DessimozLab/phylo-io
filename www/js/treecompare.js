@@ -2329,12 +2329,11 @@ var TreeCompare = function(){
             // draw button
             buildDownloadButton(canvasId);
 
-            var downloadButton = d3.select(".dropup");
+            var downloadButton = d3.select("#"+canvasId+" .dropup");
 
             var exportList = downloadButton.append("ul")
                 .attr("class", "dropdown-menu")
-                .attr("id", canvasId + "_exportList")
-                .style("max-width", "60px");
+                .attr("id", canvasId + "_exportList");
 
             // PNG
             exportList.append("li")
@@ -3256,8 +3255,8 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
-        $(".searchBox").remove();
-        $(".rescaleButtons").remove();
+        $("#"+canvasId+" .searchBox").remove();
+        $("#"+canvasId+" .rescaleButtons").remove();
 
         if (settings.enableSizeControls) {
             renderSizeControls(canvasId, baseTree);

@@ -165,6 +165,8 @@ label {
     font-size: 12px;
 }
 
+/*styles for export functionality*/
+
 #exportButton {
     margin-left: 0px;
 }
@@ -173,7 +175,18 @@ label {
     opacity: 1.0;
 }
 
+.dropdown-menu {
+    min-width: 60px;
+    font-size: 11px;
+    margin: 1px 0px 1px 0px;
+    text-align: center;
+}
 
+.dropdown-menu li a{
+    padding: 1px 0px 1px 0px;
+}
+
+/*end styles for export functionality*/
 
 .alert {
     width: 200px;
