@@ -1288,7 +1288,7 @@ var TreeCompare = function(){
                 var index1 = findTreeIndex(tree.name);
                 var index2 = findTreeIndex(fixedTree.name);
                 preprocessTrees(trees[index1], trees[index2]);
-                settings.loadedCallback();
+                //settings.loadedCallback();
 
                 if (rerootedTree !== undefined) {
                     update(tree.root, rerootedTree.data);
@@ -1999,9 +1999,7 @@ var TreeCompare = function(){
                     })
                     .style("fill", function(d) {
                         if (d[currentS]) {
-                            if (!d.clickedParentHighlight) {
-                                return colorScale(d[currentS]); // changes colour of the collapsed triangle shape
-                            }
+                            return colorScale(d[currentS]); // changes colour of the collapsed triangle shape
                         }
 
                     });
@@ -2185,10 +2183,11 @@ var TreeCompare = function(){
         //event listeners for nodes to handle mouseover highlighting, important because all children nodes have to be highlighted
         //input d is currently selected node....
         function nodeMouseover(d) {
-            //function to color all downstream branches of a selected node in green
+            //function to color subtree downstream of a selected node in green
             function colorLinkNodeOver(n) {
                 if (n.children) {
                     for (var i = 0; i < n.children.length; i++) {
+                        d3.select("#"+n.ID+"_"+n.children[i].ID).classed("select", true);
                         colorLinkNodeOver(n.children[i]);
                     }
                 }
@@ -2208,6 +2207,7 @@ var TreeCompare = function(){
             function colorLinkNodeOver(n) {
                 if (n.children) {
                     for (var i = 0; i < n.children.length; i++) {
+                        d3.select("#"+n.ID+"_"+n.children[i].ID).classed("select", false);
                         colorLinkNodeOver(n.children[i]);
                     }
                 }
@@ -2620,13 +2620,9 @@ var TreeCompare = function(){
         var timeoutIdReroot = 0;
         // action when clicking on reroot button in the center of the compare mode
         $("#" + "rerootButton" + canvasId).mousedown(function() {
-            var load = true;
             settings.loadingCallback();
             setTimeout(function() {
                 findBestCorrespondingTree(canvasId);
-                if (load) {
-                    settings.loadedCallback();
-                }
             },2);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
@@ -2634,13 +2630,9 @@ var TreeCompare = function(){
 
         // action when clicking on swap button in the center of the compare mode
         $("#" + "swapButton" + canvasId).mousedown(function() {
-            var load = true;
             settings.loadingCallback();
             setTimeout(function() {
                 findBestCorrespondingLeafOrder(canvasId);
-                if (load) {
-                    settings.loadedCallback();
-                }
             },2);
         }).bind('mouseup mouseleave', function() {
             clearTimeout(timeoutIdReroot);
@@ -4214,9 +4206,9 @@ var TreeCompare = function(){
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
+                    var rerootedTree = reroot(tree, d);
                     settings.loadingCallback();
                     setTimeout(function() {
-                        var rerootedTree = reroot(tree, d);
                         if (isCompared){
                             var index1 = findTreeIndex(tree.name);
                             var index2 = findTreeIndex(comparedTree.name);
@@ -4227,7 +4219,7 @@ var TreeCompare = function(){
                         } else {
                             update(tree.root, rerootedTree.data);
                         }
-                        settings.loadedCallback();
+                        //settings.loadedCallback();
                     }, 2);
                     manualReroot = true;
                 });

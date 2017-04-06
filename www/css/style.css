@@ -482,6 +482,10 @@ path.link {
     cursor: pointer;
 }
 
+path.link.select{
+    stroke: green !important;
+}
+
 path.link:hover{
     stroke: green !important;
 }
