@@ -14,7 +14,9 @@ binary = FirefoxBinary('/Applications/FirefoxDeveloperEdition.app/Contents/MacOS
 class PythonOrgSearch(unittest.TestCase):
     
     def setUp(self):
-        self.driver = webdriver.Firefox(firefox_binary=binary)
+       #self.driver = webdriver.Firefox(firefox_binary=binary)
+        self.driver = webdriver.Firefox()
+        #self.driver = webdriver.Chrome()
 
     def check_exists(self, docID):
         driver = self.driver
@@ -34,6 +36,7 @@ class PythonOrgSearch(unittest.TestCase):
         driver.find_element_by_link_text("Large Example Tree").click()
         driver.find_element_by_id("renderButton").click()
         driver.find_element_by_id("settings").click()
+        time.sleep(2)
         driver.find_element_by_id("collapseInc").click()
         driver.find_element_by_id("collapseInc").click()
         driver.find_element_by_id("collapseInc").click()
@@ -44,7 +47,6 @@ class PythonOrgSearch(unittest.TestCase):
         for i in range(0,3):
             driver.find_element_by_id("collapseInc").click()
         assert(self.check_exists("Tree_1_node_24"))
-        print(driver.find_element_by_id("collapseAmount").text == "2")
         driver.quit()
 
     def test_tree_toggle_compare(self):
@@ -53,14 +55,16 @@ class PythonOrgSearch(unittest.TestCase):
         driver = self.driver
         driver.get("file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/index.html")
         driver.find_element_by_id("compare-btn").click()
+        driver.find_element_by_id("newickIn1").clear()
         driver.find_element_by_id("newickIn1").send_keys(content)
+        driver.find_element_by_id("newickIn2").clear()
         driver.find_element_by_id("newickIn2").send_keys(content)
         driver.find_element_by_id("renderButton").click()
         wait = WebDriverWait(driver, 5)
-        driver.find_element_by_xpath("//div[@id='vis-container1']//button[@id='dropDownToggleButton']").click()
+        driver.find_element_by_xpath("//div[@id='vis-container1']//button[@id='treeToggleDropdownButton']").click()
         driver.find_element_by_id("vis-container1_tree_8").click()
         assert(self.check_exists("Tree_8_node_222"))
-        driver.find_element_by_xpath("//div[@id='vis-container2']//button[@id='dropDownToggleButton']").click()
+        driver.find_element_by_xpath("//div[@id='vis-container2']//button[@id='treeToggleDropdownButton']").click()
         driver.find_element_by_id("vis-container2_tree_16").click()
         assert(self.check_exists("Tree_16_node_134"))
     
@@ -70,17 +74,18 @@ class PythonOrgSearch(unittest.TestCase):
         driver.find_element_by_id("compare-btn").click()
         driver.find_element_by_link_text("Large Example Trees").click()
         driver.find_element_by_id("renderButton").click()
-        time.sleep(15)
-        driver.find_element_by_id("searchButtonvis-container1").click()
-        driver.find_element_by_id("searchInputvis-container1").send_keys("manes2")
+        time.sleep(10)
+        driver.find_element_by_xpath("//div[@id='vis-container1']//a[contains(@class, 'searchButton')]").click()
+        driver.find_element_by_xpath("//div[@id='vis-container1']//input[contains(@class, 'searchInput')]").send_keys(Keys.DELETE)
+        driver.find_element_by_xpath("//div[@id='vis-container1']//input[contains(@class, 'searchInput')]").send_keys("manes2")
         wait = WebDriverWait(driver,10);
         wait.until(EC.element_to_be_clickable((By.ID, 'MANES21353'))).click()
         assert(self.check_exists("Tree_0_node_226"))
 
 
     def tearDown(self):
-        self.driver.close()
-        #self.driver.quit()
+        #self.driver.close()
+        self.driver.quit()
 
 if __name__ == "__main__":
     unittest.main()

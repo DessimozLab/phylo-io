@@ -181,3 +181,1428 @@ See /usr/include/servers/bootstrap_defs.h for the error codes.
 2017-04-03 10:28:34.808 plugin-container[7331:658913] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
 1491208142129	Marionette	INFO	Ceased listening
 1491208143868	Marionette	INFO	Ceased listening
+1491466513593	geckodriver	INFO	Listening on 127.0.0.1:55190
+1491466515027	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.udlY1IYdnvVW
+1491466515028	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466515030	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55199
+1491466515494	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466516922	Marionette	INFO	Listening on port 55199
+1491466516996	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:15:17.316 plugin-container[4239:357669] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0xa63b, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:17.318 plugin-container[4239:357669] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0xa827, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:17.318 plugin-container[4239:357669] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1992: TypeError: document.getElementById(...) is null
+1491466519557	Marionette	INFO	New connections will no longer be accepted
+1491466519623	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 4239] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491466519886	geckodriver	INFO	Listening on 127.0.0.1:55291
+1491466520950	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.JSfggTJJxuZq
+1491466520951	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466520955	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55300
+1491466521384	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466522762	Marionette	INFO	Listening on port 55300
+1491466522819	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:15:23.333 plugin-container[4243:358080] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:23.334 plugin-container[4243:358080] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x510b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:23.334 plugin-container[4243:358080] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491466538943	geckodriver	INFO	Listening on 127.0.0.1:55381
+1491466540011	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.hN70sSqCMVp2
+1491466540011	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466540016	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55390
+1491466540450	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466541861	Marionette	INFO	Listening on port 55390
+1491466541915	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:15:42.418 plugin-container[4255:358914] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:42.419 plugin-container[4255:358914] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5317, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:15:42.419 plugin-container[4255:358914] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491466590368	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491466590694	Marionette	INFO	Ceased listening
+1491466591433	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491466591720	Marionette	INFO	Ceased listening
+1491466593964	geckodriver	INFO	Listening on 127.0.0.1:55469
+1491466595041	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Hv8x0lq4BRtO
+1491466595041	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466595043	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55494
+1491466595476	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466596850	Marionette	INFO	Listening on port 55494
+1491466596909	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:16:37.368 plugin-container[4330:362484] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x983f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:16:37.370 plugin-container[4330:362484] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4a2f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:16:37.370 plugin-container[4330:362484] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491466599499	Marionette	INFO	New connections will no longer be accepted
+1491466599531	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 4330] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491466599682	geckodriver	INFO	Listening on 127.0.0.1:55587
+1491466600752	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.KA3vtBa95Z4x
+1491466600753	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466600757	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55596
+1491466601196	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466602560	Marionette	INFO	Listening on port 55596
+1491466602631	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:16:43.104 plugin-container[4334:363089] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:16:43.104 plugin-container[4334:363089] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x511b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:16:43.104 plugin-container[4334:363089] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491466618635	geckodriver	INFO	Listening on 127.0.0.1:55677
+1491466619704	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.EPHOPrg9jC1m
+1491466619705	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491466619710	geckodriver::marionette	INFO	Connecting to Marionette on localhost:55686
+1491466620149	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491466621538	Marionette	INFO	Listening on port 55686
+1491466621592	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 10:17:02.094 plugin-container[4337:363485] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:17:02.094 plugin-container[4337:363485] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 10:17:02.094 plugin-container[4337:363485] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491466642328	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491466642655	Marionette	INFO	Ceased listening
+1491466643165	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491466643490	Marionette	INFO	Ceased listening
+1491479022097	geckodriver	INFO	Listening on 127.0.0.1:58570
+1491479023191	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.2TidRokwzARa
+1491479023191	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479023194	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58579
+1491479023660	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479025080	Marionette	INFO	Listening on port 58579
+1491479025168	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:43:45.643 plugin-container[5145:517686] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:43:45.647 plugin-container[5145:517686] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c27, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:43:45.647 plugin-container[5145:517686] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479026144	Marionette	INFO	New connections will no longer be accepted
+1491479026177	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 5145] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491479026325	geckodriver	INFO	Listening on 127.0.0.1:58644
+1491479027393	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.XT4Fa0djB9iM
+1491479027394	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479027396	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58654
+1491479027819	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479029184	Marionette	INFO	Listening on port 58654
+1491479029277	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:43:49.691 plugin-container[5149:518389] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:43:49.692 plugin-container[5149:518389] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:43:49.692 plugin-container[5149:518389] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479045283	Marionette	INFO	New connections will no longer be accepted
+1491479045298	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479045405	geckodriver	INFO	Listening on 127.0.0.1:58723
+1491479046481	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Ek65MUgHScGg
+1491479046482	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479046484	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58732
+1491479046980	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479048352	Marionette	INFO	Listening on port 58732
+1491479048460	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:44:08.853 plugin-container[5152:519272] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:44:08.853 plugin-container[5152:519272] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4b53, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:44:08.853 plugin-container[5152:519272] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479049053	Marionette	INFO	New connections will no longer be accepted
+1491479049067	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479124482	geckodriver	INFO	Listening on 127.0.0.1:58796
+1491479125556	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.NucL6XuUhh7u
+1491479125557	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479125561	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58805
+1491479125983	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479127340	Marionette	INFO	Listening on port 58805
+1491479127439	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:45:27.839 plugin-container[5262:522465] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:27.841 plugin-container[5262:522465] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0xa02b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:27.841 plugin-container[5262:522465] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479130092	Marionette	INFO	New connections will no longer be accepted
+1491479130146	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 5262] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491479130297	geckodriver	INFO	Listening on 127.0.0.1:58898
+1491479131365	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.HFUriR680t89
+1491479131366	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479131371	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58907
+1491479131811	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479133201	Marionette	INFO	Listening on port 58907
+1491479133266	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:45:33.715 plugin-container[5267:523243] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:33.715 plugin-container[5267:523243] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c47, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:33.715 plugin-container[5267:523243] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479149276	Marionette	INFO	New connections will no longer be accepted
+1491479149292	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479149421	geckodriver	INFO	Listening on 127.0.0.1:58978
+1491479150490	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.le0vuCtzlggF
+1491479150491	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479150496	geckodriver::marionette	INFO	Connecting to Marionette on localhost:58987
+1491479150933	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479152320	Marionette	INFO	Listening on port 58987
+1491479152374	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:45:52.840 plugin-container[5273:524652] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:52.840 plugin-container[5273:524652] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:45:52.840 plugin-container[5273:524652] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479153038	Marionette	INFO	New connections will no longer be accepted
+1491479153052	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479199092	geckodriver	INFO	Listening on 127.0.0.1:59047
+1491479200163	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.uGXh97xFbCUl
+1491479200164	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479200168	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59056
+1491479200603	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479201952	Marionette	INFO	Listening on port 59056
+1491479202042	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:46:42.510 plugin-container[5384:527129] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:46:42.512 plugin-container[5384:527129] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x531b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:46:42.512 plugin-container[5384:527129] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1992: TypeError: document.getElementById(...) is null
+1491479204526	Marionette	INFO	New connections will no longer be accepted
+1491479204639	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479204753	geckodriver	INFO	Listening on 127.0.0.1:59144
+1491479205823	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Cy9cxyLqYbRb
+1491479205824	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479205826	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59153
+1491479206273	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479207668	Marionette	INFO	Listening on port 59153
+1491479207718	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:46:48.178 plugin-container[5388:527780] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:46:48.179 plugin-container[5388:527780] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e13, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:46:48.179 plugin-container[5388:527780] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479223752	Marionette	INFO	New connections will no longer be accepted
+1491479223768	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479223882	geckodriver	INFO	Listening on 127.0.0.1:59223
+1491479224950	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Ay9qRCOCSuh2
+1491479224950	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479224953	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59232
+1491479225377	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479226705	Marionette	INFO	Listening on port 59232
+1491479226757	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:47:07.246 plugin-container[5392:528860] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:47:07.247 plugin-container[5392:528860] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4d1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:47:07.247 plugin-container[5392:528860] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479227399	Marionette	INFO	New connections will no longer be accepted
+1491479227415	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479317444	geckodriver	INFO	Listening on 127.0.0.1:59299
+1491479318518	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.m4Jg1C56Q6GH
+1491479318519	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479318521	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59308
+1491479318953	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479320361	Marionette	INFO	Listening on port 59308
+1491479320415	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:48:40.888 plugin-container[5501:532646] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:48:40.890 plugin-container[5501:532646] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x531b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:48:40.890 plugin-container[5501:532646] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479323837	Marionette	INFO	New connections will no longer be accepted
+1491479323853	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479323960	geckodriver	INFO	Listening on 127.0.0.1:59385
+1491479325025	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.SlEYBE3bUXjt
+1491479325026	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479325031	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59394
+1491479325468	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479326821	Marionette	INFO	Listening on port 59394
+1491479326906	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:48:47.363 plugin-container[5505:533361] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:48:47.363 plugin-container[5505:533361] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4f1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:48:47.363 plugin-container[5505:533361] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479342892	Marionette	INFO	New connections will no longer be accepted
+1491479342909	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479343029	geckodriver	INFO	Listening on 127.0.0.1:59486
+1491479344109	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.dehlKsSJ6I7w
+1491479344110	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479344112	geckodriver::marionette	INFO	Connecting to Marionette on localhost:59497
+1491479344598	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479346467	Marionette	INFO	Listening on port 59497
+1491479346534	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:49:07.286 plugin-container[5521:535230] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:49:07.286 plugin-container[5521:535230] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e27, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:49:07.286 plugin-container[5521:535230] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479347517	Marionette	INFO	New connections will no longer be accepted
+1491479347550	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479660557	geckodriver	INFO	Listening on 127.0.0.1:60741
+1491479661631	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.qPaYb8wE6uS2
+1491479661632	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479661634	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60750
+1491479662119	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479663532	Marionette	INFO	Listening on port 60750
+1491479663644	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:54:24.071 plugin-container[5649:623722] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3b, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:24.072 plugin-container[5649:623722] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5107, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:24.072 plugin-container[5649:623722] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479666463	Marionette	INFO	New connections will no longer be accepted
+1491479666527	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 5649] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491479666679	geckodriver	INFO	Listening on 127.0.0.1:60840
+1491479667745	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.C22JSrjeIwrI
+1491479667746	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479667748	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60849
+1491479668198	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479669575	Marionette	INFO	Listening on port 60849
+1491479669646	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:54:30.103 plugin-container[5653:625628] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:30.104 plugin-container[5653:625628] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:30.104 plugin-container[5653:625628] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479685735	Marionette	INFO	New connections will no longer be accepted
+1491479685753	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479685863	geckodriver	INFO	Listening on 127.0.0.1:60919
+1491479686932	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.4BPGCVPnSbKP
+1491479686933	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479686938	geckodriver::marionette	INFO	Connecting to Marionette on localhost:60928
+1491479687388	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479688758	Marionette	INFO	Listening on port 60928
+1491479688828	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:54:49.275 plugin-container[5656:630096] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:49.275 plugin-container[5656:630096] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:54:49.275 plugin-container[5656:630096] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479689479	Marionette	INFO	New connections will no longer be accepted
+1491479689493	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479806809	geckodriver	INFO	Listening on 127.0.0.1:61007
+1491479807884	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.9KNQkgc5uc4u
+1491479807885	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479807889	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61016
+1491479808341	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479809737	Marionette	INFO	Listening on port 61016
+1491479809793	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:56:50.275 plugin-container[5772:657224] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:56:50.275 plugin-container[5772:657224] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:56:50.276 plugin-container[5772:657224] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479813617	Marionette	INFO	New connections will no longer be accepted
+1491479813641	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479813748	geckodriver	INFO	Listening on 127.0.0.1:61092
+1491479814813	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.AS6Z6iLQbjIh
+1491479814814	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479814818	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61101
+1491479815304	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479816711	Marionette	INFO	Listening on port 61101
+1491479816812	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:56:57.239 plugin-container[5776:659297] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:56:57.240 plugin-container[5776:659297] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:56:57.240 plugin-container[5776:659297] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479832882	Marionette	INFO	New connections will no longer be accepted
+1491479832906	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491479833024	geckodriver	INFO	Listening on 127.0.0.1:61175
+1491479834096	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.FFDnYEk2y6nt
+1491479834097	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491479834099	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61184
+1491479834601	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491479836002	Marionette	INFO	Listening on port 61184
+1491479836103	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 13:57:16.593 plugin-container[5779:663881] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:57:16.593 plugin-container[5779:663881] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9f23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 13:57:16.593 plugin-container[5779:663881] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491479836742	Marionette	INFO	New connections will no longer be accepted
+1491479836756	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480316639	geckodriver	INFO	Listening on 127.0.0.1:61384
+1491480317713	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.33KtD3tRIeY5
+1491480317714	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480317716	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61393
+1491480318159	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480319598	Marionette	INFO	Listening on port 61393
+1491480319702	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:05:20.177 plugin-container[5943:776344] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:20.177 plugin-container[5943:776344] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5117, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:20.177 plugin-container[5943:776344] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480322488	Marionette	INFO	New connections will no longer be accepted
+1491480322529	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 5943] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491480322670	geckodriver	INFO	Listening on 127.0.0.1:61483
+1491480323734	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.Uz3jAlrpHutQ
+1491480323735	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480323739	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61492
+1491480324207	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480325557	Marionette	INFO	Listening on port 61492
+1491480325614	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:05:26.130 plugin-container[5947:778260] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:26.130 plugin-container[5947:778260] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c27, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:26.130 plugin-container[5947:778260] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480341708	Marionette	INFO	New connections will no longer be accepted
+1491480341725	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480341840	geckodriver	INFO	Listening on 127.0.0.1:61580
+1491480342901	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.PfJQxbOCKZYr
+1491480342902	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480342904	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61589
+1491480343371	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480344786	Marionette	INFO	Listening on port 61589
+1491480344882	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:05:45.350 plugin-container[5958:783052] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:45.350 plugin-container[5958:783052] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5013, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:05:45.350 plugin-container[5958:783052] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480345507	Marionette	INFO	New connections will no longer be accepted
+1491480345523	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480426483	geckodriver	INFO	Listening on 127.0.0.1:61659
+1491480427567	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.uZfmyOre6YL4
+1491480427568	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480427573	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61668
+1491480428008	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480429383	Marionette	INFO	Listening on port 61668
+1491480429693	geckodriver	INFO	Listening on 127.0.0.1:61716
+2017-04-06 14:07:09.741 plugin-container[6619:801069] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:09.742 plugin-container[6619:801069] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a27, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:09.742 plugin-container[6619:801069] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480430767	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.uO7T7Xj1WHT7
+1491480430768	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480430770	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61729
+1491480431227	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480432644	Marionette	INFO	Listening on port 61729
+1491480432964	geckodriver	INFO	Listening on 127.0.0.1:61786
+2017-04-06 14:07:13.012 plugin-container[6622:801876] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:13.013 plugin-container[6622:801876] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e1b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:13.013 plugin-container[6622:801876] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480434034	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.haIUveGkakEl
+1491480434035	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480434039	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61795
+1491480434498	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480435893	Marionette	INFO	Listening on port 61795
+2017-04-06 14:07:16.295 plugin-container[6625:802682] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:16.296 plugin-container[6625:802682] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x510f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:16.296 plugin-container[6625:802682] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480451657	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491480451987	Marionette	INFO	Ceased listening
+1491480455773	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491480456097	Marionette	INFO	Ceased listening
+1491480456706	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < goQuitApplication@globalOverlay.js:65:3 < oncommand@hiddenWindow.xul:1:1
+1491480457030	Marionette	INFO	Ceased listening
+1491480474524	geckodriver	INFO	Listening on 127.0.0.1:61861
+1491480475599	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.gXvY1rNEh9oi
+1491480475601	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480475603	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61870
+1491480476066	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480477510	Marionette	INFO	Listening on port 61870
+1491480477581	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:07:58.077 plugin-container[6814:812943] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:58.078 plugin-container[6814:812943] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:07:58.078 plugin-container[6814:812943] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+JavaScript error: file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/js/treecompare.js, line 1992: TypeError: document.getElementById(...) is null
+1491480480177	Marionette	INFO	New connections will no longer be accepted
+1491480480214	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 6814] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491480480363	geckodriver	INFO	Listening on 127.0.0.1:61964
+1491480481429	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.6xlXo7jn5OWf
+1491480481430	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480481434	geckodriver::marionette	INFO	Connecting to Marionette on localhost:61973
+1491480481874	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480483283	Marionette	INFO	Listening on port 61973
+1491480483331	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:08:03.844 plugin-container[6818:814771] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:03.844 plugin-container[6818:814771] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5317, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:03.844 plugin-container[6818:814771] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480499462	Marionette	INFO	New connections will no longer be accepted
+1491480499479	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480499591	geckodriver	INFO	Listening on 127.0.0.1:62044
+1491480500660	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.5NQylyEvxiCU
+1491480500661	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480500665	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62053
+1491480501125	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480502467	Marionette	INFO	Listening on port 62053
+1491480502552	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:08:23.002 plugin-container[6822:819408] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:23.003 plugin-container[6822:819408] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b47, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:23.003 plugin-container[6822:819408] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480503191	Marionette	INFO	New connections will no longer be accepted
+1491480503209	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480525429	geckodriver	INFO	Listening on 127.0.0.1:62116
+1491480526505	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.9zIPxe8JnT19
+1491480526506	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480526510	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62125
+1491480526965	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480528354	Marionette	INFO	Listening on port 62125
+1491480528426	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:08:48.948 plugin-container[6931:825382] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:48.948 plugin-container[6931:825382] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:48.948 plugin-container[6931:825382] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480531205	Marionette	INFO	New connections will no longer be accepted
+1491480531236	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: ValidateTile failed
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 6931] WARNING: pipe error: Broken pipe: file /builds/slave/m-aurora-m64-ntly-000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 702
+** Unknown exception behavior: -2147483647
+1491480531383	geckodriver	INFO	Listening on 127.0.0.1:62213
+1491480532453	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.MKKXrNl8yfHN
+1491480532454	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480532457	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62222
+1491480532897	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480534260	Marionette	INFO	Listening on port 62222
+1491480534347	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:08:54.820 plugin-container[6934:827230] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:54.820 plugin-container[6934:827230] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e17, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:08:54.820 plugin-container[6934:827230] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480552395	Marionette	INFO	New connections will no longer be accepted
+1491480552411	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480552526	geckodriver	INFO	Listening on 127.0.0.1:62293
+1491480553591	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.2IdWWUtzzOXv
+1491480553592	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480553597	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62302
+1491480554042	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480555448	Marionette	INFO	Listening on port 62302
+1491480555508	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:09:16.018 plugin-container[6938:832376] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:09:16.019 plugin-container[6938:832376] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9e13, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:09:16.019 plugin-container[6938:832376] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480556179	Marionette	INFO	New connections will no longer be accepted
+1491480556194	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480628896	geckodriver	INFO	Listening on 127.0.0.1:62367
+1491480629974	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.1gcyerlrMLUe
+1491480629975	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480629980	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62381
+1491480630437	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480631845	Marionette	INFO	Listening on port 62381
+1491480631908	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:10:32.424 plugin-container[7049:850374] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:32.425 plugin-container[7049:850374] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5207, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:32.425 plugin-container[7049:850374] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480634479	Marionette	INFO	New connections will no longer be accepted
+1491480634506	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+** Unknown exception behavior: -2147483647
+1491480634641	geckodriver	INFO	Listening on 127.0.0.1:62471
+1491480635710	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.J8aSCMv6bR83
+1491480635711	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480635713	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62480
+1491480636169	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480637584	Marionette	INFO	Listening on port 62480
+1491480637688	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:10:38.170 plugin-container[7057:852295] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:38.170 plugin-container[7057:852295] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5307, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:38.170 plugin-container[7057:852295] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480655733	Marionette	INFO	New connections will no longer be accepted
+1491480655749	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480655861	geckodriver	INFO	Listening on 127.0.0.1:62553
+1491480656931	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.htH1JU6hZoGu
+1491480656932	geckodriver::marionette	INFO	Starting browser /Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox with args []
+1491480656936	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62562
+1491480657383	Marionette	WARN	Deprecated preference marionette.defaultPrefs.enabled detected, please use marionette.enabled
+1491480658778	Marionette	INFO	Listening on port 62562
+1491480658834	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:10:59.346 plugin-container[7060:857318] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:59.347 plugin-container[7060:857318] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x501b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:10:59.347 plugin-container[7060:857318] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480659547	Marionette	INFO	New connections will no longer be accepted
+1491480659562	addons.xpi	WARN	Exception running bootstrap method shutdown on shield-recipe-client@mozilla.org: TypeError: log is null (resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@mozilla.org.xpi!/bootstrap.js:96:5) JS Stack trace: this.shutdown@resource://gre/modules/addons/XPIProvider.jsm -> jar:file:///Applications/FirefoxDeveloperEdition.app/Contents/Resources/browser/features/shield-recipe-client@bootstrap.js:96:5 < callBootstrapMethod@XPIProvider.jsm:4954:11 < observe@XPIProvider.jsm:2917:15 < GeckoDriver.prototype.quit@driver.js:2775:3 < TaskImpl_run@Task.jsm:319:42 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < TaskImpl_handleResultValue@Task.jsm:389:16 < TaskImpl_run@Task.jsm:327:15 < TaskImpl@Task.jsm:277:3 < asyncFunction@Task.jsm:252:14 < Task_spawn@Task.jsm:166:12 < execute@server.js:498:15 < onPacket@server.js:469:7 < _onJSONObjectReady/<@transport.js:483:11 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14 < exports.makeInfallible/<@ThreadSafeDevToolsUtils.js:101:14
+** Unknown exception behavior: -2147483647
+1491480989522	geckodriver	INFO	Listening on 127.0.0.1:62971
+1491480990584	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.ftqEusEfFUVi
+1491480990585	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491480990598	geckodriver::marionette	INFO	Connecting to Marionette on localhost:62980
+1491480991285	Marionette	INFO	Listening on port 62980
+1491480991592	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:16:33.025 plugin-container[7345:940652] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:16:33.025 plugin-container[7345:940652] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x501f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:16:33.025 plugin-container[7345:940652] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491480993549	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7345] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7345] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7345] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7345] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491480993607	geckodriver	INFO	Listening on 127.0.0.1:63018
+1491480994672	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.2MWN0SQOfWOZ
+1491480994673	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491480994675	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63028
+1491480995323	Marionette	INFO	Listening on port 63028
+1491480995618	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:16:36.941 plugin-container[7349:942327] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x983b, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:16:36.942 plugin-container[7349:942327] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a17, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:16:36.942 plugin-container[7349:942327] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481024937	Marionette	INFO	New connections will no longer be accepted
+[Child 7349] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7349] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481025003	geckodriver	INFO	Listening on 127.0.0.1:63093
+1491481026064	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.zhrsBEavCs7M
+1491481026065	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481026069	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63102
+1491481026714	Marionette	INFO	Listening on port 63102
+1491481027009	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:17:08.381 plugin-container[7355:949382] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:17:08.381 plugin-container[7355:949382] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4f1b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:17:08.381 plugin-container[7355:949382] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481046609	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7355] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7355] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7355] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7355] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481127244	geckodriver	INFO	Listening on 127.0.0.1:63186
+1491481128314	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.3Do26cfaK1UR
+1491481128315	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481128317	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63196
+1491481129006	Marionette	INFO	Listening on port 63196
+1491481129314	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:18:50.718 plugin-container[7470:974081] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x983f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:18:50.718 plugin-container[7470:974081] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x991b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:18:50.718 plugin-container[7470:974081] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481131838	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7470] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7470] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7470] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7470] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481131924	geckodriver	INFO	Listening on 127.0.0.1:63249
+1491481132990	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.ncwzke0nrt3i
+1491481132991	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481132993	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63261
+1491481133784	Marionette	INFO	Listening on port 63261
+1491481134080	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:18:55.426 plugin-container[7475:975814] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:18:55.426 plugin-container[7475:975814] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:18:55.426 plugin-container[7475:975814] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481153009	Marionette	INFO	New connections will no longer be accepted
+[Child 7475] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7475] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481153082	geckodriver	INFO	Listening on 127.0.0.1:63309
+1491481154143	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.hydHxgSovStp
+1491481154143	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481154147	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63319
+1491481154769	Marionette	INFO	Listening on port 63319
+1491481155054	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:19:16.430 plugin-container[7479:980828] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:19:16.431 plugin-container[7479:980828] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x4f17, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:19:16.431 plugin-container[7479:980828] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481173397	Marionette	INFO	New connections will no longer be accepted
+[Child 7479] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7479] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481253638	geckodriver	INFO	Listening on 127.0.0.1:63394
+1491481254701	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.ljvaUlmqFeUp
+1491481254702	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481254706	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63403
+1491481255376	Marionette	INFO	Listening on port 63403
+1491481255682	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:20:57.049 plugin-container[7600:1004078] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:20:57.049 plugin-container[7600:1004078] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b27, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:20:57.049 plugin-container[7600:1004078] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481257574	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7600] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7600] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7600] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7600] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481257638	geckodriver	INFO	Listening on 127.0.0.1:63443
+1491481258704	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.RQDpnxrdPDKA
+1491481258705	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481258707	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63452
+1491481259352	Marionette	INFO	Listening on port 63452
+1491481259629	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:21:01.032 plugin-container[7604:1005523] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:21:01.033 plugin-container[7604:1005523] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5107, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:21:01.033 plugin-container[7604:1005523] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481289008	Marionette	INFO	New connections will no longer be accepted
+[Child 7604] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7604] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481289075	geckodriver	INFO	Listening on 127.0.0.1:63517
+1491481290136	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.gLpg8bTxn8w2
+1491481290137	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481290141	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63526
+1491481290791	Marionette	INFO	Listening on port 63526
+1491481291085	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:21:32.432 plugin-container[7609:1012489] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:21:32.432 plugin-container[7609:1012489] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5207, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:21:32.432 plugin-container[7609:1012489] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481310250	Marionette	INFO	New connections will no longer be accepted
+[Child 7609] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7609] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481365009	geckodriver	INFO	Listening on 127.0.0.1:63578
+1491481366079	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.4zfZXL5Ox2QC
+1491481366080	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481366082	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63587
+1491481366765	Marionette	INFO	Listening on port 63587
+1491481367071	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:22:48.416 plugin-container[7722:1029530] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3b, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:22:48.416 plugin-container[7722:1029530] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:22:48.417 plugin-container[7722:1029530] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481369437	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7722] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7722] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7722] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7722] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481369501	geckodriver	INFO	Listening on 127.0.0.1:63629
+1491481370566	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.W2E3rsnZe4WB
+1491481370567	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481370572	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63638
+1491481371220	Marionette	INFO	Listening on port 63638
+1491481371509	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:22:52.875 plugin-container[7726:1031060] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:22:52.876 plugin-container[7726:1031060] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d17, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:22:52.876 plugin-container[7726:1031060] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481398904	Marionette	INFO	New connections will no longer be accepted
+[Child 7726] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7726] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481398971	geckodriver	INFO	Listening on 127.0.0.1:63704
+1491481400034	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.8mDKZBxIKfiq
+1491481400034	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481400040	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63713
+1491481400710	Marionette	INFO	Listening on port 63713
+1491481400987	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:23:22.361 plugin-container[7729:1037577] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:23:22.361 plugin-container[7729:1037577] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:23:22.361 plugin-container[7729:1037577] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481419338	Marionette	INFO	New connections will no longer be accepted
+[Child 7729] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7729] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481579995	geckodriver	INFO	Listening on 127.0.0.1:63837
+1491481581055	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.wNXTRLYuzRIJ
+1491481581056	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481581060	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63846
+1491481581698	Marionette	INFO	Listening on port 63846
+1491481581997	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:26:23.367 plugin-container[7850:1079004] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:23.367 plugin-container[7850:1079004] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c0b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:23.367 plugin-container[7850:1079004] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481583846	Marionette	INFO	New connections will no longer be accepted
+[Child 7850] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7850] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481583908	geckodriver	INFO	Listening on 127.0.0.1:63884
+1491481584982	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.mKmXbHK4rdHL
+1491481584983	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481584986	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63893
+1491481585629	Marionette	INFO	Listening on port 63893
+1491481585910	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:26:27.267 plugin-container[7854:1080446] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:27.268 plugin-container[7854:1080446] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x5307, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:27.268 plugin-container[7854:1080446] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481600112	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7854] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7854] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7854] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481600195	geckodriver	INFO	Listening on 127.0.0.1:63944
+1491481601276	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.GC91Q6T1GkJy
+1491481601277	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481601279	geckodriver::marionette	INFO	Connecting to Marionette on localhost:63953
+1491481601954	Marionette	INFO	Listening on port 63953
+1491481602257	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:26:43.624 plugin-container[7860:1084311] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:43.624 plugin-container[7860:1084311] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x511b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:26:43.624 plugin-container[7860:1084311] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481621406	Marionette	INFO	New connections will no longer be accepted
+[Child 7860] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7860] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481692532	geckodriver	INFO	Listening on 127.0.0.1:64001
+1491481693608	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.SDQsuokm8Sqt
+1491481693609	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481693611	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64010
+1491481694286	Marionette	INFO	Listening on port 64010
+1491481694568	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:28:15.931 plugin-container[7971:1104332] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:15.931 plugin-container[7971:1104332] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b13, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:15.931 plugin-container[7971:1104332] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481699709	Marionette	INFO	New connections will no longer be accepted
+[Child 7971] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7971] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481699785	geckodriver	INFO	Listening on 127.0.0.1:64070
+1491481700848	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.akPxUqHnazVJ
+1491481700849	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481700853	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64079
+1491481701513	Marionette	INFO	Listening on port 64079
+1491481701811	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:28:23.175 plugin-container[7975:1106504] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:23.175 plugin-container[7975:1106504] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9b17, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:23.175 plugin-container[7975:1106504] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481716061	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 7975] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 7975] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7975] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481716139	geckodriver	INFO	Listening on 127.0.0.1:64130
+1491481717199	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.CI4Xp8zeHhqh
+1491481717200	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481717204	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64139
+1491481717846	Marionette	INFO	Listening on port 64139
+1491481718137	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:28:39.593 plugin-container[7978:1110428] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:39.594 plugin-container[7978:1110428] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x521b, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:28:39.594 plugin-container[7978:1110428] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481736806	Marionette	INFO	New connections will no longer be accepted
+[Child 7978] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 7978] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481864834	geckodriver	INFO	Listening on 127.0.0.1:64207
+1491481865895	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.esNbNuVVhC89
+1491481865895	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481865897	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64218
+1491481866544	Marionette	INFO	Listening on port 64218
+1491481866832	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:31:08.206 plugin-container[8135:1147935] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9c3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:08.206 plugin-container[8135:1147935] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d23, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:08.206 plugin-container[8135:1147935] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481871854	Marionette	INFO	New connections will no longer be accepted
+[Child 8135] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 8135] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481871927	geckodriver	INFO	Listening on 127.0.0.1:64278
+1491481872990	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.wtbMI66eM9H2
+1491481872990	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481872995	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64287
+1491481873655	Marionette	INFO	Listening on port 64287
+1491481873930	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:31:15.324 plugin-container[8141:1150029] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9a3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:15.324 plugin-container[8141:1150029] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9d13, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:15.324 plugin-container[8141:1150029] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481888066	Marionette	INFO	New connections will no longer be accepted
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[GFX1]: [Tiling:Client] Failed to allocate a TextureClient
+[Child 8141] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 8141] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 8141] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 8141] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+1491481888142	geckodriver	INFO	Listening on 127.0.0.1:64337
+1491481889206	mozprofile::profile	INFO	Using profile path /var/folders/gf/zvswn1bd7lv89bs06x_332z00000gn/T/rust_mozprofile.T2JnGOgc59lR
+1491481889207	geckodriver::marionette	INFO	Starting browser /Applications/Firefox.app/Contents/MacOS/firefox-bin with args []
+1491481889212	geckodriver::marionette	INFO	Connecting to Marionette on localhost:64346
+1491481889865	Marionette	INFO	Listening on port 64346
+1491481890139	Marionette	WARN	TLS certificate errors will be ignored for this session
+2017-04-06 14:31:31.475 plugin-container[8144:1153938] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x993f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:31.476 plugin-container[8144:1153938] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x9f1f, name = 'com.apple.CFPasteboardClient'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2017-04-06 14:31:31.476 plugin-container[8144:1153938] void __CFPasteboardSetup() : Failed to allocate communication port for com.apple.CFPasteboardClient; this is likely due to sandbox restrictions
+1491481909094	Marionette	INFO	New connections will no longer be accepted
+[Child 8144] WARNING: pipe error: Broken pipe: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 685
+[Child 8144] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143
+[Child 8144] ###!!! ABORT: Aborting on channel error.: file /builds/slave/m-rel-m64-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2143

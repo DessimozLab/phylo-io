@@ -180,6 +180,8 @@ label {
     font-size: 11px;
     margin: 1px 0px 1px 0px;
     text-align: center;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    background-color: white;
 }
 
 .dropdown-menu li a{
@@ -263,60 +265,6 @@ label {
 .dropbtn:hover, .dropbtn:focus {
      background-color: #999;
  }
-
-.treeToggleDropdown {
-    position: absolute;
-    display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
-    left: 26px;
-    right: 26px;
-    width: 39px;
-    height: 26px;
-}
-
-#treeToggleDropdownButton {
-    width: 39px;
-    height: 26px;
-}
-
-#treeToggleDropdownText {
-    text-align: center;
-    font-size: 10px;
-}
-
-.treeToggleDropdown-content {
-    text-align: center;
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 39px;
-    /*margin-top: 5px;*/
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    /*z-index: -1;*/
-}
-
-.treeToggleDropdown-content a{
-    color: black;
-    padding: 3px;
-    text-decoration: none;
-    display: block;
-    font-size: 8pt;
-    cursor: pointer;
-}
-
-.treeToggleDropdown-content li{
-    color: black;
-    /*padding: 6px 16px;*/
-    text-decoration: none;
-    display: block;
-    font-size: 10pt;
-    cursor: pointer;
-}
-
-.treeToggleDropdown-content a:hover{
-    background-color: orange;
-}
 
 
 #settingsPanel {
@@ -620,22 +568,28 @@ rect.node {
 .resultsBox {
     width: 150px;
     position: absolute;
-    margin-right: 10px;
+    /*margin-right: 10px;*/
     max-height: 200px;
     overflow: scroll;
     margin-top: 30px;
-    background-color: #efefef;
-    -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    /*-webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
+    /*-moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
+    /*box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
     display: none;
     padding-top: 10px;
+    text-algin: left;
 }
 
 .resultsList li {
-    margin-left: -25px;
+    margin-left: -35px;
     list-style-type: none;
     cursor: pointer;
+}
+
+.resultsList li:hover {
+    background-color: orange;
 }
 
 
@@ -676,6 +630,60 @@ button.treeToggleButton span{
     text-align: center;
     margin-left: 26px;
     float: right;
+}
+
+.treeToggleDropdown {
+    position: absolute;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 26px;
+    right: 26px;
+    width: 39px;
+    height: 26px;
+}
+
+#treeToggleDropdownButton {
+    width: 39px;
+    height: 26px;
+}
+
+#treeToggleDropdownText {
+    text-align: center;
+    font-size: 10px;
+}
+
+.treeToggleDropdown-content {
+    text-align: center;
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 39px;
+    /*margin-top: 5px;*/
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    /*z-index: -1;*/
+}
+
+.treeToggleDropdown-content a{
+    color: black;
+    padding: 3px;
+    text-decoration: none;
+    display: block;
+    font-size: 8pt;
+    cursor: pointer;
+}
+
+.treeToggleDropdown-content li{
+    color: black;
+    /*padding: 6px 16px;*/
+    text-decoration: none;
+    display: block;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.treeToggleDropdown-content a:hover{
+    background-color: orange;
 }
 
 /*Styles for rescaling buttons*/
