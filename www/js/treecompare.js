@@ -361,7 +361,7 @@ var TreeCompare = function(){
 
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/); //already splits the NHX format as well
 
-        var nhx_tags = [':B', ':S', ':D', ':T', ':E', ':O', ':SO', ':L' , ':Sw', ':CO'];
+        var nhx_tags = [':B', ':S', ':D', ':T', ':E', ':O', ':SO', ':L' , ':Sw', ':CO', ':C'];
 
         // the following part keeps the NHX datastructure
         var square_bracket_start = getIdxToken(tokens,"[");
@@ -483,6 +483,10 @@ var TreeCompare = function(){
                                     case ':Co':
                                         settingsLbls.push('collapseThis');
                                         tree.collapseThis = nhxtag_value;
+                                        break;
+                                    case ':C':
+                                        settingsLbls.push('color');
+                                        tree.specifiedBranchColor = nhxtag_value;
                                         break;
                                     default:
                                         break;
@@ -1557,6 +1561,23 @@ var TreeCompare = function(){
 
     }
 
+    function rgb2hex(rgbString){
+
+        var rgb = rgbString.split(".");
+
+        var R = parseInt(rgb[0]);
+        var G = parseInt(rgb[1]);
+        var B = parseInt(rgb[2]);
+
+        function componentToHex(c){
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+        return "#"+componentToHex(R) + componentToHex(G) + componentToHex(B);
+
+    }
+
+
 
     /*---------------
      /
@@ -1901,6 +1922,8 @@ var TreeCompare = function(){
                         return "";
                     } else if (settings.internalLabels === "name") { //print bootstrap values
                         return d.branchSupport
+                    } else if (settings.internalLabels === "color") { //print bootstrap values
+                        return d.branchSupport
                     } else if (settings.internalLabels === "species") { //print species values
                         return d.species
                     } else if (settings.internalLabels === "taxonomyID") { //print taxonomy values
@@ -2061,8 +2084,10 @@ var TreeCompare = function(){
                     var f = d.source;
                     if (f[currentS] && (settings.internalLabels === "none")) {
                         return colorScale(f[currentS])
-                    } else if (e["branchSupport"] && (settings.internalLabels === "name")) {
+                    } else if (e["branchSupport"] && (settings.internalLabels === "name")) { // color branch according to branch support
                         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
+                    } else if (e["specifiedBranchColor"] && (settings.internalLabels === "color")) { // color branch according to prespecified rgb values in the nhx file
+                        return rgb2hex(e["specifiedBranchColor"])
                     }
                 });
 
@@ -2111,6 +2136,8 @@ var TreeCompare = function(){
                         return colorScale(f[currentS])
                     } else if (e["branchSupport"] && (settings.internalLabels === "name")) {
                         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
+                    }else if (e["specifiedBranchColor"] && (settings.internalLabels === "color")) { // color branch according to prespecified rgb values in the nhx file
+                        return rgb2hex(e["specifiedBranchColor"])
                     }
                 })
                 .on("click", treeData.clickEventLink);
