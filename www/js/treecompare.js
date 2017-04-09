@@ -3051,7 +3051,7 @@ var TreeCompare = function(){
 
             if ($('.searchInput').is(":visible")) {
 
-                postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
+                postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
                     if(d.parent){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
                     }
@@ -3125,7 +3125,6 @@ var TreeCompare = function(){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
                     }
                 });
-                update(baseTree.root,baseTree.data);
 
                 hideSearchBar(canvasId);
             }
