@@ -17,7 +17,7 @@ html {
     width: 100%;
     height: 100%;
     position: absolute;
-    input: focus: -webkit-input-placeholder { color:transparent; };
+    /*input: focus: -webkit-input-placeholder { color:transparent; };*/
     background: -webkit-linear-gradient(#ddd, #aaa);
     /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(#ddd, #aaa);
@@ -46,7 +46,7 @@ html {
     float: right;
     width: 200px;
     height: 200px;
-    background-image: url("../img/arrow.png");
+    background-image: url(../img/arrow.png);
     background-repeat: no-repeat;
     background-size: contain;
 }
@@ -81,7 +81,8 @@ html {
 }
 
 .vis-container {
-    height: calc(100% - 60px);
+    /*height: calc(100% - 60px);*/
+    height: 100%;
     padding: 0px;
     position: absolute;
     width: 100%;
@@ -110,7 +111,6 @@ html {
 
 .vis-container-2 {
     position: absolute;
-    width: 50%;
     float: right;
     height: 100%;
     padding: 0px;
@@ -119,7 +119,7 @@ html {
     border-style: solid;
     border-right-width: 2px;
     border-color: black;
-    height: calc(100% - 60px);
+    /*height: calc(100% - 60px);*/
 }
 
 #vis-container2 {
@@ -148,7 +148,7 @@ html {
 #mode-buttons {
     width: 200px;
     margin-left: 20px;
-    display: hidden;
+    /*display: hidden;*/
 }
 
 #renderButton {
@@ -165,22 +165,107 @@ label {
     font-size: 12px;
 }
 
+/*styles for export functionality*/
+
 #exportButton {
-    margin-left: 20px;
+    margin-left: 0px;
 }
+
+#exportButton:hover{
+    opacity: 1.0;
+}
+
+.dropdown-menu {
+    min-width: 60px;
+    font-size: 11px;
+    margin: 1px 0px 1px 0px;
+    text-align: center;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
+.dropdown-menu li a{
+    padding: 1px 0px 1px 0px;
+}
+
+/*end styles for export functionality*/
+
 .alert {
     width: 200px;
     margin-left: 20px;
     line-height: 1.2;
 }
 
-.btn:focus,
-.btn:active:focus,
-.btn.active:focus {
-    outline: none;
-    !important;
-    outline-style: none;
+.btn {
+    border: 0 none;
 }
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn {
+    border: 0 none;
+}
+
+.btn.sharp {
+    border-radius:0;
+}
+
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn-primary {
+    background: #0099cc;
+    color: #ffffff;
+}
+
+.btn-sm {
+    background: #9d9d9d;
+    color: #ffffff;
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 0px;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    background: #33a6cc;
+}
+
+.btn-primary:active, .btn-primary.active {
+    background: #007299;
+    box-shadow: none;
+}
+
+.button {
+    background-color: black; /* Green */
+    opacity: 0.9;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: white; /* Green */
+    color: black;
+}
+
+
+.dropbtn{
+   background-color: #2b542c;
+   border: none;
+   cursor: pointer;
+}
+.dropbtn:hover, .dropbtn:focus {
+     background-color: #999;
+ }
+
 
 #settingsPanel {
     display: none;
@@ -202,18 +287,16 @@ label {
     width: 200px !important;
 }
 
-
-#settingsPanel [type="checkbox"],
-b {
+#settingsPanel [type=checkbox], b {
     margin-left: 20px;
 }
 
 
-input[type="radio"] {
+input[type=radio] {
     margin-right: 5px;
 }
 
-input[type="checkbox"] {
+input[type=checkbox] {
     margin-right: 5px;
 }
 
@@ -313,7 +396,7 @@ input[type="checkbox"] {
     bottom: 0;
 }
 
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+::-webkit-input-placeholder { /* WebKit; Blink; Edge */
     color:    rgba(37, 36, 45, 0.57);
     font-style: italic;
 }
@@ -322,7 +405,7 @@ input[type="checkbox"] {
     opacity:  0.6;
     font-style: italic;
 }
-::-moz-placeholder { /* Mozilla Firefox 19+ */
+::-moz-placeholder { /* Mozilla Firefox 19 */
     color:    rgba(37, 36, 45, 0.57);
     opacity:  0.6;
     font-style: italic;
@@ -393,6 +476,264 @@ input.treename::-webkit-input-placeholder{
     font-weight: bold;
 }
 
+path.link {
+    stroke: grey;
+    fill: none;
+    cursor: pointer;
+}
+
+path.link.select{
+    stroke: green !important;
+}
+
+path.link:hover{
+    stroke: green !important;
+}
+
+path.link.search{
+    stroke: orange !important;
+}
+
+path.link.search:hover{
+    stroke: green !important;
+}
+
+g.node{
+    fill: black;
+    cursor: pointer;
+}
+
+g.node.select{
+    fill: green !important;
+}
+
+circle.node {
+    fill: black;
+}
+
+circle.node.select{
+    fill: green !important;
+}
+
+text.node{
+    fill: black;
+    font-family: sans-serif;
+}
+
+text.node.select{
+    fill: green !important;
+    font-weight: bold;
+}
+
+text.triangleText {
+    font-family: sans-serif;
+    opacity: 1;
+    fill: black;
+}
+
+text.triangleText.select {
+    fill: green;
+    font-weight: bold;
+}
+
+path.triangle.select{
+    fill: green !important;
+}
+
+rect.node {
+    fill: magenta;
+    stroke-width: 2px;
+    stroke: black;
+}
+
+/*Styles for leaf searching*/
+
+.searchBox {
+    max-width: 250px;
+    min-height: 45px;
+    padding: 5px;
+    right: 5px;
+    top: 5px;
+    position: absolute;
+}
+
+.searchInput {
+    float: right;
+    width: 0px;
+    margin-left: 0px;
+    display: none;
+}
+
+.searchButton {
+    width: 26px;
+    float: right;
+}
+
+.resultsBox {
+    width: 150px;
+    position: absolute;
+    /*margin-right: 10px;*/
+    max-height: 200px;
+    overflow: scroll;
+    margin-top: 30px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    /*-webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
+    /*-moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
+    /*box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
+    display: none;
+    padding-top: 10px;
+    text-algin: left;
+}
+
+.resultsList li {
+    margin-left: -35px;
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.resultsList li:hover {
+    background-color: orange;
+}
+
+
+/*Styles for tree toggling*/
+
+div.treeToggleButtons {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 91px;
+    top: 10px;
+}
+
+button.treeToggleButton {
+    font-size: 10px;
+    width: 26px;
+    height: 26px;
+    vertical-align: top;
+    opacity:0.3;
+}
+
+button.treeToggleButton:hover {
+    opacity:1.0;
+}
+
+button.treeToggleButton span{
+    vertical-align: center;
+}
+
+#leftToggleButton {
+    text-align: center;
+    float: left;
+}
+
+#rightToggleButton {
+    text-align: center;
+    margin-left: 26px;
+    float: right;
+}
+
+.treeToggleDropdown {
+    position: absolute;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 26px;
+    right: 26px;
+    width: 39px;
+    height: 26px;
+}
+
+#treeToggleDropdownButton {
+    width: 39px;
+    height: 26px;
+}
+
+#treeToggleDropdownText {
+    text-align: center;
+    font-size: 10px;
+}
+
+.treeToggleDropdown-content {
+    text-align: center;
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 39px;
+    /*margin-top: 5px;*/
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    /*z-index: -1;*/
+}
+
+.treeToggleDropdown-content a{
+    color: black;
+    padding: 3px;
+    text-decoration: none;
+    display: block;
+    font-size: 8pt;
+    cursor: pointer;
+}
+
+.treeToggleDropdown-content li{
+    color: black;
+    /*padding: 6px 16px;*/
+    text-decoration: none;
+    display: block;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.treeToggleDropdown-content a:hover{
+    background-color: orange;
+}
+
+/*Styles for rescaling buttons*/
+
+div.rescaleButtons {
+    width: 78px;
+    top: 50px;
+    left: 10px;
+    position: absolute;
+}
+
+button.rescaleButton {
+    font-size: 10px;
+    width: 26px;
+    height: 26px;
+    vertical-align: top;
+    opacity: 0.3;
+}
+
+button.rescaleButton.span{
+    vertical-align: middle;
+}
+
+button.rescaleButton:hover{
+    opacity: 1.0;
+}
+
+#upButton{
+    display: block;
+    margin-left: 26px;
+}
+
+#leftButton{
+    float: left;
+}
+
+#rightButton{
+    margin-left: 26px;
+    float: right;
+}
+
+#downButton{
+    display: block;
+    margin-left: 26px;
+}
+
 /*this following code makes the treename hide on focus*/
 /*
 .treename::-webkit-input-placeholder  {
@@ -422,8 +763,8 @@ input.treename::-webkit-input-placeholder{
 */
 
 /*this following code makes the treename hide on focus*/
-.treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome, Opera, Safari */
-.treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19   + */
+.treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome; Opera; Safari */
+.treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19    */
 .treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
-.treename:-ms-input-placeholder    {color:transparent;} /* IE 10+*/
+.treename:-ms-input-placeholder    {color:transparent;} /* IE 10*/
 

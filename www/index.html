@@ -9,15 +9,16 @@
     <script type="text/javascript" src="js/underscore.min.js"></script>
     <script type="text/javascript" src="js/spin.min.js"></script>
     <script type="text/javascript" src="js/d3.min.js"></script>
-    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/circular-json.js"></script>
-    <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
-    <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
+    <script type="text/javascript" src="js/canvas-toBlob.js"></script>
+    <script type="text/javascript" src="js/FileSaver.min.js"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/ol.css">
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -135,7 +136,7 @@
                         <div id="colorScale"></div>
                     </li>
 
-                    <li><button id="undoBtn" data-undoIdx="0">undo</button></li>
+                    <!--<li><button id="undoBtn" data-undoIdx="0">undo</button></li>-->
 
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
@@ -429,7 +430,7 @@
             });
             $("#renderErrorMessage").empty();
 
-            treecomp.changeSettings({
+            treecomp.changeCanvasSettings({
                 enableFixedButtons: false
             })
         });
@@ -461,7 +462,7 @@
             $("#best_corresponding_tree").show();
             $("#renderErrorMessage").empty();
 
-            treecomp.changeSettings({
+            treecomp.changeCanvasSettings({
                 enableFixedButtons: true
             })
         });
@@ -553,15 +554,17 @@
                     $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
                     var tree1 = treecomp.addTree($("#newickIn1").val(),undefined,"left");
                     var tree2 = treecomp.addTree($("#newickIn2").val(),undefined,"right");
-                    treecomp.changeSettings({
+                    treecomp.changeCanvasSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
                     $("#collapseAmount").html(collapseText);
                     //TODO: change this
+
                     treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");
+
                 } catch (e) {
                     if(e==="TooLittle)"){
                         $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
@@ -577,7 +580,7 @@
                 try {
                     //
                     var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined,"single");
-                    treecomp.changeSettings({
+                    treecomp.changeCanvasSettings({
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
@@ -711,7 +714,7 @@
 
 
         $(".sizeAdjust").change(function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 lineThickness: $("#lineThickness").val(),
                 nodeSize: $("#nodeSize").val(),
                 fontSize: $("#fontSize").val()
@@ -720,31 +723,31 @@
         });
 
         $("#useLengths").on("click", function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 useLengths: $("#useLengths").is(":checked")
             });
         });
         $("input[name=comparisonMetric]:radio").on("change", function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 comparisonMetric: $("input[name=comparisonMetric]:checked").val()
             })
         });
 
         $("#moveOnMouseOver").on("click", function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 moveOnClick: $("#moveOnMouseOver").is(":checked")
             })
         });
 
         $("#selectMultipleSearch").on("click", function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 selectMultipleSearch: $("#selectMultipleSearch").is(":checked")
             })
         });
 
 
         $("input[name=internalLabels]:radio").on("change", function() {
-            treecomp.changeSettings({
+            treecomp.changeTreeSettings({
                 internalLabels: $("input[name=internalLabels]:checked").val()
             });
         });
