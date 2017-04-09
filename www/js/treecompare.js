@@ -3171,7 +3171,7 @@ var TreeCompare = function(){
     }
 
 
-    function renderSizeControls(canvasId, baseTree) {
+    function renderRescaleButtons(canvasId, baseTree) {
         buildRescaleButtons(canvasId);
         //buildRescaleButtonsStyle(canvasId);
 
@@ -3250,7 +3250,7 @@ var TreeCompare = function(){
         $("#"+canvasId+" .rescaleButtons").remove();
 
         if (settings.enableSizeControls) {
-            renderSizeControls(canvasId, baseTree);
+            renderRescaleButtons(canvasId, baseTree);
         }
 
         if (settings.enableSearch) {
@@ -4217,8 +4217,8 @@ var TreeCompare = function(){
                             update(comparedTree.root, comparedTree.data);
                         } else {
                             update(tree.root, rerootedTree.data);
+                            settings.loadedCallback();
                         }
-                        //settings.loadedCallback();
                     }, 2);
                     manualReroot = true;
                 });
