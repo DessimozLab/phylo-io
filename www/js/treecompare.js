@@ -2385,7 +2385,6 @@ var TreeCompare = function(){
 
         var downloadButton = d3.select("#" + canvasId).append("div")
             .attr("class", "dropup");
-
         downloadButton.append("button")
             .attr("id", "exportButton")
             .attr("class", "btn btn-sm sharp dropdown-toggle")
@@ -4216,7 +4215,7 @@ var TreeCompare = function(){
      get relevant event listener for clicking on a link depending on what mode is selected
      */
     function getClickEventListenerLink(tree, isCompared, comparedTree) {
-
+        var treeIndex = findTreeIndex(tree.name);
         function linkClick(e) {
             var d = e.target;
             var svg = tree.data.svg;
@@ -4346,7 +4345,7 @@ var TreeCompare = function(){
      get relevant event listener for clicking on a node depending on what mode is selected
      */
     function getClickEventListenerNode(tree, isCompared, comparedTree) {
-
+        var treeIndex = findTreeIndex(tree.name);
         function nodeClick(d) {
 
             var svg = tree.data.svg;
