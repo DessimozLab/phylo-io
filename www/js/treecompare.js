@@ -73,6 +73,7 @@ var TreeCompare = function(){
 
     var undoIndex = 0;
     var undoTreeData = [];
+    var undoSource = [];
     var undoAction = [];
     var undoTreeDataIndex = [];
     var undoActionFunc = null;
@@ -166,8 +167,9 @@ var TreeCompare = function(){
 
             //console.log("trees[0]");
             //console.log(trees[0]);
+            initialiseTree(trees[undoTreeIdx].root, settings.autoCollapse);
 
-            trees[undoTreeIdx].data.clickEvent = getClickEventListenerNode(undoTreeIdx, false, {});
+            trees[undoTreeIdx].data.clickEvent = getClickEventListenerNode(trees[undoTreeIdx], false, {});
             //trees[0].data.clickEvent = getClickEventListenerNode(0, false, {});
             //trees[1].data.clickEvent = getClickEventListenerNode(1, false, {});
             trees[undoTreeIdx].data.clickEventLink = getClickEventListenerLink(trees[undoTreeIdx], false, {});
@@ -181,7 +183,9 @@ var TreeCompare = function(){
             console.log(treeName+" - "+canvasId+" - "+scaleId);
 
             //renderTree("Tree 0", "vis-container1", "vis-scale1");
-            renderTree(treeName, canvasId, scaleId);
+            renderTree(trees[undoTreeIdx], treeName, canvasId, scaleId);
+            renderDownloadButton(canvasId);
+
 
         }
 
@@ -3349,6 +3353,8 @@ var TreeCompare = function(){
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
 
+        $("#vis-container1").html("")
+
         if (settings.enableSizeControls) {
             renderRescaleButtons(canvasId, baseTree);
         }
@@ -3502,6 +3508,7 @@ var TreeCompare = function(){
 
         if(undoIndex === 0){
             // save treedata to undo
+
             undoTreeData[undoIndex] = _.clone(baseTree.data);
             undoSource[undoIndex] = _.clone(baseTree.root);
             // update latest undo idx to the button -> 0
