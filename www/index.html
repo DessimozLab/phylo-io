@@ -27,6 +27,7 @@
       ga('create', 'UA-105586-10', 'auto');
       ga('send', 'pageview');
     </script>
+
     <style>
         .extraMargin + span:after {
             content:"\000A";
@@ -136,7 +137,9 @@
                         <div id="colorScale"></div>
                     </li>
 
-                    <!--<li><button id="undoBtn" data-undoIdx="0">undo</button></li>-->
+                    <li>
+                        <button id="undoBtn" data-undoIdx="0">Undo</button>
+                    </li>
 
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
@@ -237,9 +240,6 @@
         var totalTrees = 0;
         var addingTree = false;
 
-
-
-
         var spinnerOpts = {
             lines: 13 // The number of lines to draw
             ,
@@ -307,6 +307,8 @@
                 clickAction: $("input[name=clickAction]:checked").val(),
                 autoCollapse: $("#collapseAmount").html()
             });
+
+        var undoIndex = 0;
 
         /* Download name */
         var update_download_fn = function(canvasId, labelId) {
@@ -579,10 +581,15 @@
                     }
                 }
             } else if (mode === "view-btn") {
+
+                // init & enable undo
+                $("#undoBtn").data('undoIdx', undoIndex);
+
                 try {
                     //
                     var tree1 = treecomp.addTree($("#newickInSingle").val(),undefined,"single");
                     treecomp.changeCanvasSettings({
+
                         autoCollapse: tree1.data.autoCollapseDepth
                     })
                     var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
@@ -694,6 +701,8 @@
             $(v).each(function(i){
                 ($(this).hide().next().hide())
             });
+
+            $("#undoBtn").hide();
 
         }
 
