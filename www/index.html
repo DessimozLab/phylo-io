@@ -129,6 +129,7 @@
                         <div class="btn-group" role="group" aria-label="Basic example">
 
                             <button type="button" id="renderButton" class="btn btn-primary">Render <span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+                            <button type="button" id="undoBtn" class="btn btn-primary icon-flipped"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></button>
                             <button type="button" id="clearButton" class="btn btn-primary">Clear</button>
                         </div>
 
@@ -137,9 +138,6 @@
                         <div id="colorScale"></div>
                     </li>
 
-                    <li>
-                        <button id="undoBtn" data-undoIdx="0">Undo</button>
-                    </li>
 
                     <li>
                         <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
@@ -332,7 +330,7 @@
         // hide optional settings by default
         //$('.opt').parent().hide();
 
-        hideOptionalSettings();
+        //hideOptionalSettings();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "view-btn"){
@@ -549,7 +547,7 @@
         ------*/
         $("#renderButton").click(function(e) {
             $("#renderErrorMessage").empty();
-            hideOptionalSettings();
+            //hideOptionalSettings();
 
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
@@ -583,7 +581,8 @@
             } else if (mode === "view-btn") {
 
                 // init & enable undo
-                $("#undoBtn").data('undoIdx', undoIndex);
+                //$("#undoBtn").data('undoIdx', undoIndex);
+                treecomp.undo("undoBtn")
 
                 try {
                     //

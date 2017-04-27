@@ -12,6 +12,15 @@ var TreeCompare = function(){
     var scaleLinePadding = 10;
     var compareMode = false;
 
+    // global variables for undo functionality
+    var undoIndex = 0;
+    //var undoSource = [];
+    //var undoAction = [];
+
+    var undoTreeData = [];
+    var undoTreeDataIndex = [];
+    var undoActionFunc = null;
+
 
     /*
      colors for the color scale for comparing nodes to best common node
@@ -71,13 +80,6 @@ var TreeCompare = function(){
         autoCollapse: null
     };
 
-    var undoIndex = 0;
-    var undoTreeData = [];
-    var undoSource = [];
-    var undoAction = [];
-    var undoTreeDataIndex = [];
-    var undoActionFunc = null;
-
     //Add a work helper function to the jQuery object
     $.work = function(args) {
         var def = $.Deferred(function(dfd) {
@@ -126,72 +128,6 @@ var TreeCompare = function(){
 
     window.onresize = resize;
 
-    /*
-    * undo button
-    */
-
-    $("#undoBtn").click(function() {
-
-        console.log("undobtn "+undoIndex+" clicked");
-        undoIndex = undoTreeData.length - 1;
-        console.log("going to use undoIndex "+undoIndex);
-
-        if(undoIndex < 1) {
-            console.log("undo is 0 or less, just re-render");
-            //reset undo and click render
-            undoIndex = 0;
-            undoTreeData.length = 0;
-            undoAction.length = 0;
-            console.log(undoTreeData);
-            $("#undoBtn").data('undoIdx', undoIndex);
-            $('#renderButton').click();
-
-        } else {
-
-            // update undoBtn
-            $("#undoBtn").data('undoIdx', undoIndex);
-
-            console.log("getting undoTreeData "+undoIndex)
-            console.log(undoTreeData);
-            // get the tree from stack
-            var stuff = undoTreeData.pop();
-            undoTreeParam = undoTreeData.pop();
-            console.log(undoTreeParam);
-            console.log(undoTreeData);
-            //trees[0] = deepCopy(undoTreeParam[0]);
-            undoTreeIdx = undoTreeDataIndex.pop();
-            console.log("undoTreeIdx/canvasid: "+undoTreeIdx);
-            //trees[0] = deepCopy(undoTreeParam[0]);
-            //trees[1] = deepCopy(undoTreeParam[1]);
-            trees[undoTreeIdx] = deepCopy(undoTreeParam[undoTreeIdx]);
-
-            //console.log("trees[0]");
-            //console.log(trees[0]);
-            initialiseTree(trees[undoTreeIdx].root, settings.autoCollapse);
-
-            trees[undoTreeIdx].data.clickEvent = getClickEventListenerNode(trees[undoTreeIdx], false, {});
-            //trees[0].data.clickEvent = getClickEventListenerNode(0, false, {});
-            //trees[1].data.clickEvent = getClickEventListenerNode(1, false, {});
-            trees[undoTreeIdx].data.clickEventLink = getClickEventListenerLink(trees[undoTreeIdx], false, {});
-            //trees[0].data.clickEventLink = getClickEventListenerLink(trees[0], false, {});
-            //trees[1].data.clickEventLink = getClickEventListenerLink(trees[1], false, {});
-
-            var treeName = trees[undoTreeIdx].name;
-            var canvasId = trees[undoTreeIdx].data.canvasId;
-            var scaleId = trees[undoTreeIdx].data.scaleId.substr(1);
-
-            console.log(treeName+" - "+canvasId+" - "+scaleId);
-
-            //renderTree("Tree 0", "vis-container1", "vis-scale1");
-            renderTree(trees[undoTreeIdx], treeName, canvasId, scaleId);
-            renderDownloadButton(canvasId);
-
-
-        }
-
-        $('#undoBtn').html('Undo '+undoIndex+' '+undoAction.pop());
-
-    });
 
     /*
      create ID with random number generator
@@ -1646,21 +1582,8 @@ var TreeCompare = function(){
     function update(source, treeData, duration, treeToggle) {
 
         if(undoActionFunc){
-
             /* save to undo stack with function to call */
             undoIndex = undoIndex+1;
-
-            if(undoIndex == 1){
-                $("#undoBtn").show();
-            }
-
-            undoAction[undoIndex] = undoActionFunc;
-
-            $('#undoBtn').data('undoIdx', undoIndex);
-            console.log("update undobtn undoIdx to "+undoIndex)
-
-            // update undo button text with the current event
-            $('#undoBtn').html('Undo '+undoIndex+' '+undoActionFunc);
             undoActionFunc = null;
 
         }
@@ -3506,15 +3429,15 @@ var TreeCompare = function(){
 
 
 
-        if(undoIndex === 0){
-            // save treedata to undo
-
-            undoTreeData[undoIndex] = _.clone(baseTree.data);
-            undoSource[undoIndex] = _.clone(baseTree.root);
-            // update latest undo idx to the button -> 0
-            $('#undoBtn').data('undoIdx', undoIndex);
-        }
-
+        // if(undoIndex === 0){
+        //     // save treedata to undo
+        //
+        //     undoTreeData[undoIndex] = _.clone(baseTree.data);
+        //     undoSource[undoIndex] = _.clone(baseTree.root);
+        //     // update latest undo idx to the button -> 0
+        //     //$('#undoBtn').data('undoIdx', undoIndex);
+        // }
+        // updateUndo(0);
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);
@@ -4114,7 +4037,7 @@ var TreeCompare = function(){
             renderDownloadButton(canvasId);
 
         } else{
-
+            //updateUndo(index);
             initialiseTree(trees[index].root, settings.autoCollapse);
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
@@ -4151,13 +4074,13 @@ var TreeCompare = function(){
         if (tree !== undefined) {
 
             // save treedata to undo
-            undoTreeData[undoIndex] = tree.data;
-            undoSource[undoIndex] = root;
+            // undoTreeData[undoIndex] = tree.data;
+            // undoSource[undoIndex] = root;
             // update latest undo idx to the button
-            $('#undoBtn').data('undoIdx', undoIndex);
+            // $('#undoBtn').data('undoIdx', undoIndex);
 
             // update global
-            undoIndex = undoIndex+1
+            // undoIndex = undoIndex+1
 
             update(root, tree.data);
 
@@ -4310,6 +4233,8 @@ var TreeCompare = function(){
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
+                    undoActionFunc = "reroot";
+                    updateUndo(treeIndex);
                     var rerootedTree = reroot(tree, d);
                     settings.loadingCallback();
                     setTimeout(function() {
@@ -4321,8 +4246,6 @@ var TreeCompare = function(){
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
                         } else {
-                            undoActionFunc = "reroot";
-                            updateUndo(treeIndex);
                             update(tree.root, rerootedTree.data);
                             settings.loadedCallback();
                         }
@@ -4374,10 +4297,6 @@ var TreeCompare = function(){
                     d.children[0] = second;
                     d.children[1] = first;
 
-                    undoActionFunc = "rotate";
-
-                    updateUndo(treeIndex);
-
                     update(d, tree.data);
                 }, 2);
 
@@ -4419,9 +4338,6 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback(); // stops the spinning wheels
                     }
-
-                    undoActionFunc = "collapse";
-                    updateUndo(treeIndex);
                     update(d, tree.data);
                 }, 2);
 
@@ -4466,9 +4382,6 @@ var TreeCompare = function(){
                     if (load) {
                         settings.loadedCallback();
                     }
-
-                    undoActionFunc = "collapseAll";
-                    updateUndo(treeIndex);
 
                     update(d, tree.data);
                 }, 2)
@@ -4707,6 +4620,8 @@ var TreeCompare = function(){
                         return 'edit label >'
                     },
                     function () { // action function
+                        undoActionFunc = "edit";
+                        updateUndo(treeIndex);
                         edit_label(d);
                         d.mouseoverHighlight = false;
                     });
@@ -4721,6 +4636,8 @@ var TreeCompare = function(){
                         }
                     },
                     function () { // action function
+                        undoActionFunc = "collapse";
+                        updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4736,6 +4653,8 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
+                        undoActionFunc = "collapse all >";
+                        updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4763,6 +4682,8 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
+                        undoActionFunc = "uncollapseAll";
+                        updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4777,6 +4698,8 @@ var TreeCompare = function(){
                         return "swap subtrees >";
                     },
                     function () {
+                        undoActionFunc = "rotate";
+                        updateUndo(treeIndex);
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4796,6 +4719,8 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
+                        undoActionFunc = "highlight";
+                        updateUndo(treeIndex);
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4922,21 +4847,78 @@ var TreeCompare = function(){
         return copy(object);
     }
 
+    /*-----------------------------------
+     * Update the undo global lists:
+     *   undoTreeData
+     *   undoTreeDataIndex
+     * input:
+     *   treeIndex: the current tree part of the global list of trees
+     */
     function updateUndo(treeIndex){
 
-        console.log(trees);
-        //undoTreeData[undoIndex] = deepCopy(trees[0]);
-        var tmpTree = deepCopy(trees);
+        var tmpTree = deepCopy(trees[treeIndex].data);
         undoTreeData.push(tmpTree);
-        undoTreeDataIndex.push(treeIndex);
-        console.log(undoActionFunc+" was changed for tree "+treeIndex+" in updateUndo");
-        console.log(undoTreeData);
+        undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
+        // console.log("updateUndo trees: "+checkForHiddenChildren(trees[treeIndex].data));
+        // console.log(undoTreeData);
 
+    }
+
+    function checkForHiddenChildren(tree){
+        var underscoreChildre = false;
+        postorderTraverse(tree.root, function(d){
+            if (d._children){
+               underscoreChildre = true;
+            }
+        },true)
+
+        if (underscoreChildre){
+            return "collapsed"
+        } else {
+            return "all uncollapsed"
+        }
+    }
+
+    /*
+     * External function that allows to add an undo functionality on tree operations
+     */
+    function undo(buttonId){
+        $("#"+buttonId).click(function() {
+
+            //console.log("undobtn "+undoIndex+" clicked");
+            var tmpIndex = undoIndex;
+            //console.log("going to use undoIndex "+undoIndex);
+            //console.log(undoTreeData);
+
+            if(tmpIndex > 0){
+                undoIndex = undoIndex - 1;
+                //console.log("undo trees: "+checkForHiddenChildren(trees[0]));
+                //console.log("getting undoTreeData "+undoIndex);
+                // for(var i=0; i<undoTreeData.length; i++) {
+                //     console.log("undoTreeData: " + checkForHiddenChildren(undoTreeData[i]));
+                // }
+                var undoTreeParam = undoTreeData.pop();
+                var undoTreeIdx = undoTreeDataIndex.pop();
+                console.log(undoTreeIdx);
+                trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
+                trees[undoTreeIdx].root = deepCopy(undoTreeParam.root);
+                update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+                if (tmpIndex === 1){
+                    //console.log("fuck")
+                    //console.log(undoTreeData)
+                    undoTreeData = [];
+                    undoTreeDataIndex = [];
+                    //updateUndo(0);
+                }
+            }
+
+        });
     }
 
     //return all the externalised functions
     return {
         init: init,
+        undo: undo,
         inputTreeFile: inputTreeFile,
         viewTree: viewTree,
         renderColorScale: renderColorScale,

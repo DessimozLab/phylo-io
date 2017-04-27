@@ -3,6 +3,13 @@ html {
     height: 100%;
 }
 
+.icon-flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
 #colorScale {
     margin-top: 20px;
     margin-left: 20px;
@@ -767,4 +774,3 @@ button.rescaleButton:hover{
 .treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19    */
 .treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
 .treename:-ms-input-placeholder    {color:transparent;} /* IE 10*/
-
