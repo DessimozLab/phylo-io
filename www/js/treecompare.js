@@ -3276,7 +3276,6 @@ var TreeCompare = function(){
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
 
-        $("#vis-container1").html("")
 
         if (settings.enableSizeControls) {
             renderRescaleButtons(canvasId, baseTree);
@@ -4859,56 +4858,30 @@ var TreeCompare = function(){
         var tmpTree = deepCopy(trees[treeIndex].data);
         undoTreeData.push(tmpTree);
         undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
-        // console.log("updateUndo trees: "+checkForHiddenChildren(trees[treeIndex].data));
-        // console.log(undoTreeData);
 
-    }
-
-    function checkForHiddenChildren(tree){
-        var underscoreChildre = false;
-        postorderTraverse(tree.root, function(d){
-            if (d._children){
-               underscoreChildre = true;
-            }
-        },true)
-
-        if (underscoreChildre){
-            return "collapsed"
-        } else {
-            return "all uncollapsed"
-        }
     }
 
     /*
      * External function that allows to add an undo functionality on tree operations
      */
     function undo(buttonId){
-        $("#"+buttonId).click(function() {
+        $("#"+buttonId).unbind().click(function() {
 
-            //console.log("undobtn "+undoIndex+" clicked");
+
             var tmpIndex = undoIndex;
-            //console.log("going to use undoIndex "+undoIndex);
-            //console.log(undoTreeData);
 
             if(tmpIndex > 0){
                 undoIndex = undoIndex - 1;
-                //console.log("undo trees: "+checkForHiddenChildren(trees[0]));
-                //console.log("getting undoTreeData "+undoIndex);
-                // for(var i=0; i<undoTreeData.length; i++) {
-                //     console.log("undoTreeData: " + checkForHiddenChildren(undoTreeData[i]));
-                // }
+
                 var undoTreeParam = undoTreeData.pop();
                 var undoTreeIdx = undoTreeDataIndex.pop();
-                console.log(undoTreeIdx);
+
                 trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
-                trees[undoTreeIdx].root = deepCopy(undoTreeParam.root);
                 update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+
                 if (tmpIndex === 1){
-                    //console.log("fuck")
-                    //console.log(undoTreeData)
                     undoTreeData = [];
                     undoTreeDataIndex = [];
-                    //updateUndo(0);
                 }
             }
 
