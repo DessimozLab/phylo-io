@@ -1399,6 +1399,7 @@ var TreeCompare = function(){
         },true);
 
         update(tree.root, tree.data);
+        settings.loadedCallback();
     }
 
 
@@ -4387,6 +4388,8 @@ var TreeCompare = function(){
 
             }
 
+
+
             function highlight(d) {
                 var bcnColors = d3.scale.category20();
 
@@ -4463,7 +4466,7 @@ var TreeCompare = function(){
                                 colorLinkNodeOver(d, true);
                                 update(d, tree.data);
                                 update(otherTreeData.root, otherTreeData);
-                                if (settings.moveOnClick) {
+                                if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
                                     var currentScale = otherTreeData.zoomBehaviour.scale();
 
                                     var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);

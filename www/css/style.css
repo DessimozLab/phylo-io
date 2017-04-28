@@ -176,6 +176,7 @@ label {
 
 #exportButton {
     margin-left: 0px;
+    opacity: 0.3;
 }
 
 #exportButton:hover{
@@ -574,6 +575,11 @@ rect.node {
 .searchButton {
     width: 26px;
     float: right;
+    opacity: 0.3;
+}
+
+.searchButton:hover {
+    opacity: 1;
 }
 
 .resultsBox {
