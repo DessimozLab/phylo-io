@@ -2547,13 +2547,7 @@ var TreeCompare = function(){
         var name = tree.name;
         //renders the manual zoom slider if turned on
         if (settings.enableZoomSliders) {
-            $("#" + canvasId).append('<div class="zoomSliderContainer">Zoom: <input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
-            $(".zoomSliderContainer").css({
-                "position": "absolute",
-                "color": "black",
-                "margin-left": "5px",
-                "margin-top": "5px",
-            });
+            $("#" + canvasId).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
         }
     }
 
