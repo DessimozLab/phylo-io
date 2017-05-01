@@ -1464,8 +1464,6 @@ var TreeCompare = function(){
             writeJSONtoGist(tree2, function(data){
                 gistID2 = data.id;
             });
-            console.log(gistID1);
-            console.log(gistID2);
 
             outURL += encodeURIComponent(gistID1 + "-" + gistID2);
 
@@ -1489,7 +1487,6 @@ var TreeCompare = function(){
      /
      ---------------*/
     function addTreeGistURL(gistID, name){
-        console.log(gistID)
 
         var newTree;
 
