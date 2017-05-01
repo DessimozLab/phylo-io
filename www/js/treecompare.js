@@ -1464,8 +1464,10 @@ var TreeCompare = function(){
             writeJSONtoGist(tree2, function(data){
                 gistID2 = data.id;
             });
+            console.log(gistID1);
+            console.log(gistID2);
 
-            outURL += encodeURIComponent(gistID1 + "#" + gistID2);
+            outURL += encodeURIComponent(gistID1 + "-" + gistID2);
 
         }else {
             tree1 = trees[trees.length-1];
@@ -1487,48 +1489,26 @@ var TreeCompare = function(){
      /
      ---------------*/
     function addTreeGistURL(gistID, name){
+        console.log(gistID)
 
+        var newTree;
+
+        var request = new XMLHttpRequest();
+        request.open('GET', 'https://api.github.com/gists/'+gistID, false);
+        request.send(null);
+
+        if (request.status === 200) {
+            newTree = JSON.parse(request.responseText).files['file1.json'].content;
+        }
+
+        var idCounter = 0;
         settings.autoCollapse = null;
         if (name === undefined) {
             var num = trees.length;
             name = "Tree " + num;
         }
 
-        /*
-         Function to obtain json tree structure from gist
-         */
-        function gistToJSON(id, callback) {
-
-            var objects = [];
-            $.ajax({
-                async: false,
-                url: 'https://api.github.com/gists/'+id,
-                type: 'GET',
-                dataType: 'json'
-            }).success( function(gistdata) {
-                // This can be less complicated if you know the gist file name
-                for (var file in gistdata.files) {
-                    if (gistdata.files.hasOwnProperty(file)) {
-                        var o = gistdata.files[file].content;
-                        if (o) {
-                            objects.push(o);
-                        }
-                    }
-                }
-                if (objects.length > 0) {
-                    return callback(objects[0]);
-                }
-            }).error( function(e) {
-                // ajax error
-            });
-        }
-
-        var newTree;
-        gistToJSON(gistID, function(data){
-            newTree = data;
-            return newTree;
-        });
-
+        console.log(newTree);
         var parsedNwk = newTree.split("$$");
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
@@ -1537,10 +1517,11 @@ var TreeCompare = function(){
         }
 
         postorderTraverse(collapsedInfoTree, function(d) {
-            d.ID = makeId("node_");
+            d.ID = name+"_node_"+idCounter;
             d.leaves = getChildLeaves(d);
             d.mouseoverHighlight = false; //when mouse is over node
             d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
+            idCounter++;
         });
 
         var fullTree = {
@@ -1553,7 +1534,9 @@ var TreeCompare = function(){
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
 
         trees.push(fullTree);
-        return fullTree;
+
+
+        return fullTree
 
     }
 
@@ -4802,6 +4785,12 @@ var TreeCompare = function(){
         return ret;
     };
 
+
+    /*-----------------------------------
+     * Perfom deep copy of JSON object that stores the tree, import for undo functionality
+     * input:
+     *  object: JSON object with tree
+     */
     function deepCopy(object) {
         const cache = new WeakMap(); // Map of old - new references
 
@@ -4858,8 +4847,10 @@ var TreeCompare = function(){
 
     }
 
-    /*
+    /*-----------------------------------
      * External function that allows to add an undo functionality on tree operations
+     * input:
+     *  buttonId: id element of the button that will perfom the und functionality
      */
     function undo(buttonId){
         $("#"+buttonId).unbind().click(function() {
