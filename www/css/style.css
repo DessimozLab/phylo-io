@@ -176,6 +176,7 @@ label {
 
 #exportButton {
     margin-left: 0px;
+    opacity: 0.3;
 }
 
 #exportButton:hover{
@@ -574,6 +575,11 @@ rect.node {
 .searchButton {
     width: 26px;
     float: right;
+    opacity: 0.3;
+}
+
+.searchButton:hover {
+    opacity: 1;
 }
 
 .resultsBox {
@@ -701,7 +707,7 @@ button.treeToggleButton span{
 
 div.rescaleButtons {
     width: 78px;
-    top: 50px;
+    top: 10px;
     left: 10px;
     position: absolute;
 }
@@ -739,6 +745,27 @@ button.rescaleButton:hover{
 #downButton{
     display: block;
     margin-left: 26px;
+}
+
+.zoomSliderContainer {
+    position: absolute;
+    color: black;
+    /*margin-left: -55px;*/
+    /*margin-top: 400px;*/
+    top: 50%;
+    bottom:0;
+    left: -55px;
+    /*right: 0;*/
+    margin: auto;
+    /*vertical-align: middle;*/
+
+}
+.zoomSlider {
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
 }
 
 /*this following code makes the treename hide on focus*/
