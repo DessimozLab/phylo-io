@@ -33,6 +33,18 @@
             content:"\000A";
             white-space: pre;
         }
+        .modal-container {
+            z-index: 3;
+            right: 50px;
+            top: 15px;
+            position: absolute;
+            padding: 5px 20px 15px 20px;
+            width: 180px;
+            height: 60px;
+            border-radius: 8px;
+            display: none;
+
+        }
     </style>
 </head>
 
@@ -43,7 +55,6 @@
             <div class="modal-body">
                 <a href="" id="exportURLInSingle" ></a>
             </div>
-        </div>
         </div>
         </div>
     </div>
@@ -206,6 +217,8 @@
         </div>
         <!-- /#sidebar-wrapper -->
         <!-- Page Content -->
+
+        <div class="modal-container" id="spinner-container" style=""><span style=" position: relative; margin: 20px 10px 0 0; float: right;">Calculating...</span></div>
         <div id="page-content-wrapper">
             <div id="placeholder">
                 <div id="arrow">
@@ -248,7 +261,7 @@
             ,
             radius: 42 // The radius of the inner circle
             ,
-            scale: 1 // Scales overall size of the spinner
+            scale: 0.20 // Scales overall size of the spinner
             ,
             corners: 1 // Corner roundness (0..1)
             ,
@@ -272,25 +285,28 @@
             ,
             top: '50%' // Top position relative to parent
             ,
-            left: '50%' // Left position relative to parent
+            left: '10%' // Left position relative to parent
             ,
             shadow: true // Whether to render a shadow
             ,
             hwaccel: true // Whether to use hardware acceleration
             ,
-            position: 'absolute' // Element positioning
+            position: 'relative' // Element positioning
         };
 
         var spinner = new Spinner(spinnerOpts);
-        var spinnerTarget = document.getElementById("page-content-wrapper");
+        //var spinnerTarget = document.getElementById("page-content-wrapper");
+        var spinnerTarget = document.getElementById("spinner-container");
 
         var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
             var treecomp = TreeCompare().init({
                 scaleColor: "black",
                 loadingCallback: function() {
+                    $('#spinner-container').show();
                     spinner.spin(spinnerTarget);
                 },
                 loadedCallback: function() {
+                    $('#spinner-container').hide();
                     spinner.stop();
                 },
                 enableRerootFixedButtons: $("#rerootFixedButtons").val(),
