@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -51,6 +52,7 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <div id="sidebar-wrapper-wrapper">
+
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
                         <a href="#">
@@ -199,8 +201,10 @@
                         <a href="manual.html"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
                     </li>
                 </ul>
-                <div class="footer" id="footer_div" style="text-align: center !important; background-color: #ddd; ">
-                    <a href="http://lab.dessimoz.org"><span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Dessimoz Lab</a>
+                <div class="footer" id="footer_div">
+                    <div class="pull-right" style="padding: 5px 10px 5px 15px" id="menu-toggle">
+                        <i class="fa fa-angle-double-left" id="collapse-sidebar-span" style="color: lightgrey; font-size: 1.5em;"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -403,7 +407,23 @@
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
+
+            var div_footer = $("#footer_div");
+            var newWidth = 250;
+
+            if ($( "#collapse-sidebar-span" ).hasClass( "fa fa-angle-double-left" )){
+                $("#collapse-sidebar-span").removeClass("fa fa-angle-double-left");
+                $("#collapse-sidebar-span").addClass("fa fa-angle-double-right");
+                newWidth = 30;
+
+            }
+            else {
+                $("#collapse-sidebar-span").removeClass("fa fa-angle-double-right");
+                $("#collapse-sidebar-span").addClass("fa fa-angle-double-left");
+            }
+            div_footer.width(newWidth);
         });
+
 
         /*
          /
