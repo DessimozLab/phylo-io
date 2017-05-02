@@ -103,7 +103,8 @@
     }
 
     #wrapper.toggled {
-        padding-left: 0;
+        padding-left: 30px;
+        background: linear-gradient(black, #555);
     }
 
     #sidebar-wrapper {
