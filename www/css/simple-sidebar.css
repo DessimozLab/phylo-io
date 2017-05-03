@@ -56,7 +56,7 @@
     top: 0;
     width: 250px;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 10px;
     list-style: none;
 }
 
@@ -104,7 +104,6 @@
 
     #wrapper.toggled {
         padding-left: 30px;
-        background: linear-gradient(black, #555);
     }
 
     #sidebar-wrapper {
@@ -112,7 +111,7 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        width: 0;
+        width: 30px;
     }
 
     #page-content-wrapper {
