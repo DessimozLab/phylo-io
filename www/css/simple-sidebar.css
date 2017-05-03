@@ -132,3 +132,9 @@
 .settingsCheckboxLabel {
     color: #333
 }
+
+.btn-default.active {
+    background: linear-gradient(#ddd, #aaa);
+    text-shadow: 0 1px 0 #c9c9c9;
+    border-color: #dbdbdb;
+}
