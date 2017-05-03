@@ -161,57 +161,57 @@
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="similarity" id="internalLabelsSimilarity">Similarity
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="similarity" id="internalLabelsSimilarity">Similarity
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="species" id="internalLabelsSpecies">Species
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="species" id="internalLabelsSpecies">Species
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="duplication" id="internalLabelsDuplication">Duplication/speciation
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="duplication" id="internalLabelsDuplication">Duplication/speciation
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="ECNumber" id="internalLabelsECNumber">EC Number
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="ECNumber" id="internalLabelsECNumber">EC Number
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="taxonomyID" id="internalLabelsTaxonomyID">NCBI Taxonomy ID
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="taxonomyID" id="internalLabelsTaxonomyID">NCBI Taxonomy ID
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="likelihood" id="internalLabelsLikelihood">Parent branch log value
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="likelihood" id="internalLabelsLikelihood">Parent branch log value
                                 </label>
                             </div><div class="radio">
-                            <label class="settingsCheckboxLabel">
-                                <input class="opt" type="radio" name="internalLabels" value="orthologous" id="internalLabelsOrthologous">Display orthology
+                            <label class="settingsCheckboxLabel opt">
+                                <input type="radio" name="internalLabels" value="orthologous" id="internalLabelsOrthologous">Display orthology
                             </label>
                         </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="superorthologous" id="internalLabelsSuperorthologous">Display super orthology
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="superorthologous" id="internalLabelsSuperorthologous">Display super orthology
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="subtree" id="internalLabelsSubtree">Subtree
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="subtree" id="internalLabelsSubtree">Subtree
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="collapseThis" id="internalLabelsCollapseThis">Collapsed nodes
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="collapseThis" id="internalLabelsCollapseThis">Collapsed nodes
                                 </label>
                             </div>
                             <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input class="opt" type="radio" name="internalLabels" value="color" id="internalLabelsColor">NHX colorscheme
+                                <label class="settingsCheckboxLabel opt">
+                                    <input type="radio" name="internalLabels" value="color" id="internalLabelsColor">NHX colorscheme
                                 </label>
                             </div>
                         </form>
@@ -822,14 +822,10 @@
          /
          ------*/
         function hideOptionalSettings(){
-
-            var v= $("input[type=radio].opt");
+            var v= $("label.opt");
             $(v).each(function(i){
                 ($(this).hide().next().hide())
             });
-
-            //$("#undoBtn").hide();
-
         }
 
 
