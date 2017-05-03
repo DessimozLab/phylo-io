@@ -59,27 +59,23 @@
     padding: 0 0 0 10px;
     list-style: none;
 }
-
 .sidebar-nav li {
-    text-indent: 20px;
-    line-height: 40px;
+    margin-left: 20px !important;
 }
 
 .sidebar-nav li a {
-    display: block;
-    text-decoration: none;
-    color: #999999;
+    text-decoration: underline;
+    color: lightgrey;
 }
 
 .sidebar-nav li a:hover {
-    text-decoration: none;
     color: #fff;
     background: rgba(255,255,255,0.2);
 }
 
 .sidebar-nav li a:active,
 .sidebar-nav li a:focus {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 .sidebar-nav > .sidebar-brand {
@@ -123,4 +119,16 @@
         position: relative;
         margin-right: 0;
     }
+}
+
+#mode-buttons {
+    padding: 20px 20px 50px 20px;
+}
+
+.settingsLabel {
+    color: #555
+}
+
+.settingsCheckboxLabel {
+    color: #333
 }

@@ -12,7 +12,6 @@ html {
 
 #colorScale {
     margin-top: 20px;
-    margin-left: 20px;
     color: white;
 }
 
@@ -76,11 +75,6 @@ html {
     overflow: hidden;
     margin-bottom: 30px;
 
-}
-
-.sidebar-nav li {
-    text-indent: 20px;
-    line-height: 40px;
 }
 
 #wrapper {
@@ -152,24 +146,13 @@ html {
     color: #999;
 }
 
-#mode-buttons {
-    width: 200px;
-    margin-left: 20px;
-    /*display: hidden;*/
-}
-
-#renderButton {
-    margin-left: 20px;
-}
-
 input[type=file]{
     color:transparent;
 }
 
 label {
     padding-top: -40px;
-    color: #999;
-    font-size: 12px;
+    color: lightgrey;
 }
 
 /*styles for export functionality*/
@@ -292,13 +275,8 @@ label {
 }
 
 .sizeAdjust {
-    width: 200px !important;
+    width: 190px !important;
 }
-
-#settingsPanel [type=checkbox], b {
-    margin-left: 20px;
-}
-
 
 input[type=radio] {
     margin-right: 5px;
@@ -317,20 +295,14 @@ input[type=checkbox] {
 }
 
 #autoCollapseButtons {
-    width: 200px;
-    height: 70px;
+    width: 190px;
+    height: 50px;
 }
 
 .collapseElem {
     float: left;
-    width: 40px;
-    height: 40px;
-    margin: 10px;
+    margin: 5px;
     text-align: center;
-}
-
-.singleIn {
-    margin-top: 4px;
 }
 
 .newickIn {
@@ -385,9 +357,8 @@ input[type=checkbox] {
 }
 
 .exampleBtn a {
-    color: #999;
-    font-size: 12px;
-    margin: 0px;
+    color: lightgrey;
+    font-size: 10px;
 }
 
 .smallText {
@@ -461,9 +432,7 @@ input {
 }
 
 input.treename {
-    background: transparent;
-    width: 125px;
-    border: none;
+    width: 123px;
 }
 
 input.treename::-webkit-input-placeholder{
