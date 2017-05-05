@@ -509,6 +509,7 @@
          /
          */
         $("#best_corresponding_tree").hide();
+
         $("#view-btn").click(function(e) {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickInSingle").val('');
@@ -545,7 +546,11 @@
 
             treecomp.changeCanvasSettings({
                 enableFixedButtons: false
-            })
+            });
+
+            if (settingsShown) {
+                showHideSettingsPanel("hide");
+            }
         });
 
         /*
@@ -574,7 +579,7 @@
             });
 
             $("#sidebar-wrapper").css({
-                "overflow-y": "scroll"
+                "overflow-y": "hidden"
             });
 
 
@@ -596,6 +601,10 @@
             treecomp.changeCanvasSettings({
                 enableFixedButtons: true
             })
+
+            if (settingsShown) {
+                showHideSettingsPanel("hide");
+            }
         });
 
 
@@ -843,19 +852,36 @@
         var settingsShown = false;
 
         $("#settings").click(function(e) {
-            if (!settingsShown) {
+            if (settingsShown) {
+                showHideSettingsPanel("hide");
+            }
+            else {
+                showHideSettingsPanel("show");
+            }
+        });
+
+        function showHideSettingsPanel(mode) {
+            if (mode == "show") {
                 $("#settingsPanel").slideDown(300);
                 settingsShown = true;
-            } else {
+                $("#sidebar-wrapper").css({
+                    "overflow-y": "scroll"
+                });
+            } else if (mode == "hide"){
                 $("#settingsPanel").slideUp(300, function() {
                     settingsShown = false;
                     $(this).css({
                         "display": "none"
                     });
-                });
-            }
-        });
 
+                    $("#sidebar-wrapper").css({
+                        "overflow-y": "hidden"
+                    });
+                });
+            } else {
+                console.log("You should not be able to see this!!!!");
+            }
+        }
 
         $(".sizeAdjust").change(function() {
             treecomp.changeTreeSettings({
