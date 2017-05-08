@@ -92,36 +92,34 @@
     background: none;
 }
 
-@media(min-width:768px) {
-    #wrapper {
-        padding-left: 250px;
-    }
+#wrapper {
+    padding-left: 250px;
+}
 
-    #wrapper.toggled {
-        padding-left: 30px;
-    }
+#wrapper.toggled {
+    padding-left: 30px;
+}
 
-    #sidebar-wrapper {
-        width: 250px;
-    }
+#sidebar-wrapper {
+    width: 250px;
+}
 
-    #wrapper.toggled #sidebar-wrapper {
-        width: 30px;
-    }
+#wrapper.toggled #sidebar-wrapper {
+    width: 30px;
+}
 
-    #page-content-wrapper {
-        padding: 20px;
-        position: relative;
-    }
+#page-content-wrapper {
+    padding: 20px;
+    position: relative;
+}
 
-    #wrapper.toggled #page-content-wrapper {
-        position: relative;
-        margin-right: 0;
-    }
+#wrapper.toggled #page-content-wrapper {
+    position: relative;
+    margin-right: 0;
 }
 
 #mode-buttons {
-    padding: 20px 20px 50px 20px;
+    padding: 65px 20px 50px 20px;
 }
 
 .settingsLabel {
