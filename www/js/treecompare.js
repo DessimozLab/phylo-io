@@ -4812,7 +4812,7 @@ var TreeCompare = function(){
             cache.set(obj, result); // store reference to object before the recursive starts
 
             if (obj instanceof Array) {
-                for(const o of obj) {
+                for(const o in obj) {
                     result.push(copy(o));
                 }
                 return result;
@@ -4820,7 +4820,7 @@ var TreeCompare = function(){
 
             const keys = Object.keys(obj);
 
-            for (const key of keys)
+            for (const key in keys)
                 result[key] = copy(obj[key]);
 
             return result;
