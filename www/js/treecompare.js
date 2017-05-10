@@ -4788,46 +4788,46 @@ var TreeCompare = function(){
      * input:
      *  object: JSON object with tree
      */
-    function deepCopy(object) {
-        const cache = new WeakMap(); // Map of old - new references
-
-        function copy(obj) {
-            if (typeof obj !== 'object' ||
-                obj === null ||
-                obj instanceof HTMLElement
-            )
-                return obj; // primitive value or HTMLElement
-
-            if (obj instanceof Date)
-                return new Date().setTime(obj.getTime());
-
-            if (obj instanceof RegExp)
-                return new RegExp(obj.source, obj.flags);
-
-            if (cache.has(obj))
-                return cache.get(obj);
-
-            const result = obj instanceof Array ? [] : {};
-
-            cache.set(obj, result); // store reference to object before the recursive starts
-
-            if (obj instanceof Array) {
-                for(const o of obj) {
-                    result.push(copy(o));
-                }
-                return result;
-            }
-
-            const keys = Object.keys(obj);
-
-            for (const key of keys)
-                result[key] = copy(obj[key]);
-
-            return result;
-        }
-
-        return copy(object);
-    }
+    // function deepCopy(object) {
+    //     const cache = new WeakMap(); // Map of old - new references
+    //
+    //     function copy(obj) {
+    //         if (typeof obj !== 'object' ||
+    //             obj === null ||
+    //             obj instanceof HTMLElement
+    //         )
+    //             return obj; // primitive value or HTMLElement
+    //
+    //         if (obj instanceof Date)
+    //             return new Date().setTime(obj.getTime());
+    //
+    //         if (obj instanceof RegExp)
+    //             return new RegExp(obj.source, obj.flags);
+    //
+    //         if (cache.has(obj))
+    //             return cache.get(obj);
+    //
+    //         const result = obj instanceof Array ? [] : {};
+    //
+    //         cache.set(obj, result); // store reference to object before the recursive starts
+    //
+    //         if (obj instanceof Array) {
+    //             for(const o of obj) {
+    //                 result.push(copy(o));
+    //             }
+    //             return result;
+    //         }
+    //
+    //         const keys = Object.keys(obj);
+    //
+    //         for (const key of keys)
+    //             result[key] = copy(obj[key]);
+    //
+    //         return result;
+    //     }
+    //
+    //     return copy(object);
+    // }
 
     /*-----------------------------------
      * Update the undo global lists:
