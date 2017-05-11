@@ -152,6 +152,7 @@ input[type=file]{
 label {
     padding-top: -40px;
     color: lightgrey;
+    font-weight: 400;
 }
 
 /*styles for export functionality*/

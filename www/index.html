@@ -163,7 +163,16 @@
                 </li>
 
                 <li>
-                    <a href="#" id="settings"><i class="fa fa-pencil-square-o" aria-hidden="true">&nbsp;</i>Settings</a>
+                    <div id="renderErrorMessage"></div>
+                    <!-- Centered btn + link group within the div -->
+                    <div style="padding-top: 40px; padding-bottom: 10px">
+                        <button type="button" id="renderButton" class="btn btn-info" style="margin:auto;">Render <i class="fa fa-cogs" aria-hidden="true"></i></button>
+                        <a id="clearButton">Clear</a>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="#" id="settings">Settings</a>&nbsp;<i class="fa fa-pencil-square-o" aria-hidden="true" style="color:lightgrey"></i>
                     <div id="settingsPanel" style="margin-top: 10px;padding-left: 5px;margin-right: 20px">
                         <label class="settingsLabel">Auto-Collapse Depth:</label>
                         <div id="autoCollapseButtons">
@@ -271,14 +280,6 @@
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="selectMultipleSearch">Select multiple search results</label>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    <div id="renderErrorMessage"></div>
-                    <!-- Centered btn + link group within the div -->
-                    <div style="padding-top: 30px; text-align:center; padding-bottom: 20px">
-                        <button type="button" id="renderButton" class="btn btn-info" style="margin:auto;">Render <i class="fa fa-cogs" aria-hidden="true"></i></button>
-                        <a id="clearButton">Clear</a>
                     </div>
                 </li>
             </ul>
