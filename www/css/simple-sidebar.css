@@ -56,26 +56,30 @@
     top: 0;
     width: 250px;
     margin: 0;
-    padding: 0 0 0 10px;
+    padding: 0;
     list-style: none;
 }
+
 .sidebar-nav li {
-    margin-left: 20px !important;
+    text-indent: 20px;
+    line-height: 40px;
 }
 
 .sidebar-nav li a {
-    text-decoration: underline;
-    color: lightgrey;
+    display: block;
+    text-decoration: none;
+    color: #999999;
 }
 
 .sidebar-nav li a:hover {
+    text-decoration: none;
     color: #fff;
     background: rgba(255,255,255,0.2);
 }
 
 .sidebar-nav li a:active,
 .sidebar-nav li a:focus {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .sidebar-nav > .sidebar-brand {
@@ -99,7 +103,7 @@
     }
 
     #wrapper.toggled {
-        padding-left: 30px;
+        padding-left: 0;
     }
 
     #sidebar-wrapper {
@@ -107,7 +111,7 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        width: 30px;
+        width: 0;
     }
 
     #page-content-wrapper {
@@ -119,16 +123,4 @@
         position: relative;
         margin-right: 0;
     }
-}
-
-#mode-buttons {
-    padding: 20px 20px 50px 20px;
-}
-
-.settingsLabel {
-    color: #555
-}
-
-.settingsCheckboxLabel {
-    color: #333
 }

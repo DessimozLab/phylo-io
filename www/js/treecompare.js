@@ -2931,9 +2931,9 @@ var TreeCompare = function(){
                 scaleId: scaleId
             });
             //render various buttons and search bars and sliders
-            renderZoomSlider(tree, canvasId);
+            //renderZoomSlider(tree, canvasId);
             //renderDownloadButton(canvasId);
-            renderMiddleButtonsCompareMode(canvasId);
+            //renderMiddleButtonsCompareMode(canvasId);
 
         }else{
             renderedTrees.push(baseTree);
@@ -2949,29 +2949,77 @@ var TreeCompare = function(){
             });
 
             //render various buttons and search bars and sliders
-            renderZoomSlider(baseTree, canvasId);
+            // renderZoomSlider(baseTree, canvasId);
             //renderDownloadButton(canvasId);
-            renderMiddleButtonsCompareMode(canvasId);
+            // renderMiddleButtonsCompareMode(canvasId);
         }
+    }
+
+    function buildTreeTools(canvasId) {
+        var tools = d3.select("#" + canvasId).append("div")
+            .attr("class", "tree-tools");
+
+        tools.append("span")
+            .attr("id", "tools")
+            .attr("class", "fa fa-wrench");
+
+        var toolsMenu = tools.append("div")
+            .attr("class","tree-tools-menu");
+
+        toolsMenu.append("li")
+            .attr("class", "rescale")
+            .append("div")
+            .attr("class","tree-tools-text")
+            .text("Rescale");
+
+        toolsMenu.append("li")
+            .attr("class", "zoom")
+            .append("div")
+            .attr("class","tree-tools-text")
+            .text("Zoom");
+
+        toolsMenu.append("li")
+            .attr("class", "export")
+            .append("div")
+            .attr("class","tree-tools-text")
+            .text("Export");
+
+        toolsMenu.append("li")
+            .attr("class", "search")
+            .append("div")
+            .attr("class","tree-tools-text")
+            .text("Search");
+    }
+
+    function renderTreeTools(canvasId){
+
+        buildTreeTools(canvasId);
+        renderSearchBar(canvasId);
+
+        $(document).ready(function(){
+            $("#tools").click(function(){
+                $(".tree-tools-menu").slideToggle(200);
+            });
+        });
     }
 
 
     function buildSearchBox(canvasId) {
-        var searchDiv = d3.select("#" + canvasId).append("div")
-            .attr("class", "searchBox");
-
-        var searchDivA = searchDiv.append("a")
-            .attr("class", "btn btn-sm sharp searchButton");
-
-        searchDivA.append("span")
-            .attr("class", "glyphicon glyphicon-search")
-            .attr("aria-hidden","true");
+        var searchDiv = d3.select("#" + canvasId).select(".search").append("div")
+            .attr("class", "input-group");
 
         searchDiv.append("input")
-            .attr("class", "searchInput")
+            .attr("class", "form-control")
             .attr("type", "text")
             .attr("placeholder", "search")
             .attr("autofocus");
+
+
+        searchDiv.append("button")
+            .attr("class", "btn btn-sm sharp searchButton")
+            .append("span")
+            .attr("class", "glyphicon glyphicon-search")
+            .attr("aria-hidden","true");
 
         var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
             .attr("class", "resultsBox")
@@ -3252,13 +3300,13 @@ var TreeCompare = function(){
         $("#"+canvasId+" .rescaleButtons").remove();
 
 
-        if (settings.enableSizeControls) {
-            renderRescaleButtons(canvasId, baseTree);
-        }
-
-        if (settings.enableSearch) {
-            renderSearchBar(canvasId, baseTree);
-        }
+        // if (settings.enableSizeControls) {
+        //     renderRescaleButtons(canvasId, baseTree);
+        // }
+        //
+        // if (settings.enableSearch) {
+        //     renderSearchBar(canvasId, baseTree);
+        // }
 
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();
@@ -4016,7 +4064,8 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            renderDownloadButton(canvasId);
+            renderTreeTools(canvasId)
+            //renderDownloadButton(canvasId);
 
         }
     }
@@ -4788,46 +4837,46 @@ var TreeCompare = function(){
      * input:
      *  object: JSON object with tree
      */
-    // function deepCopy(object) {
-    //     const cache = new WeakMap(); // Map of old - new references
-    //
-    //     function copy(obj) {
-    //         if (typeof obj !== 'object' ||
-    //             obj === null ||
-    //             obj instanceof HTMLElement
-    //         )
-    //             return obj; // primitive value or HTMLElement
-    //
-    //         if (obj instanceof Date)
-    //             return new Date().setTime(obj.getTime());
-    //
-    //         if (obj instanceof RegExp)
-    //             return new RegExp(obj.source, obj.flags);
-    //
-    //         if (cache.has(obj))
-    //             return cache.get(obj);
-    //
-    //         const result = obj instanceof Array ? [] : {};
-    //
-    //         cache.set(obj, result); // store reference to object before the recursive starts
-    //
-    //         if (obj instanceof Array) {
-    //             for(const o of obj) {
-    //                 result.push(copy(o));
-    //             }
-    //             return result;
-    //         }
-    //
-    //         const keys = Object.keys(obj);
-    //
-    //         for (const key of keys)
-    //             result[key] = copy(obj[key]);
-    //
-    //         return result;
-    //     }
-    //
-    //     return copy(object);
-    // }
+    function deepCopy(object) {
+        const cache = new WeakMap(); // Map of old - new references
+
+        function copy(obj) {
+            if (typeof obj !== 'object' ||
+                obj === null ||
+                obj instanceof HTMLElement
+            )
+                return obj; // primitive value or HTMLElement
+
+            if (obj instanceof Date)
+                return new Date().setTime(obj.getTime());
+
+            if (obj instanceof RegExp)
+                return new RegExp(obj.source, obj.flags);
+
+            if (cache.has(obj))
+                return cache.get(obj);
+
+            const result = obj instanceof Array ? [] : {};
+
+            cache.set(obj, result); // store reference to object before the recursive starts
+
+            if (obj instanceof Array) {
+                for(const o of obj) {
+                    result.push(copy(o));
+                }
+                return result;
+            }
+
+            const keys = Object.keys(obj);
+
+            for (const key of keys)
+                result[key] = copy(obj[key]);
+
+            return result;
+        }
+
+        return copy(object);
+    }
 
     /*-----------------------------------
      * Update the undo global lists:

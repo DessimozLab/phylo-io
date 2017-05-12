@@ -10,8 +10,38 @@ html {
     -ms-transform: scaleX(-1);
 }
 
+.tree-tools {
+    position: absolute;
+    text-align:center;
+    width: 122px;
+    top: 40px;
+    right: 50px;
+
+}
+
+.tree-tools-menu {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding-bottom: 2px;
+    display: none;
+}
+
+.tree-tools-menu li {
+    list-style:none;
+    border-bottom: 1px;
+    text-align: left;
+    font-size: 8pt;
+}
+
+.tree-tools-text {
+    padding-left: 2px;
+}
+
 #colorScale {
     margin-top: 20px;
+    margin-left: 20px;
     color: white;
 }
 
@@ -75,6 +105,11 @@ html {
     overflow: hidden;
     margin-bottom: 30px;
 
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
 }
 
 #wrapper {
@@ -146,19 +181,35 @@ html {
     color: #999;
 }
 
+#mode-buttons {
+    width: 200px;
+    margin-left: 20px;
+    /*display: hidden;*/
+}
+
+#renderButton {
+    margin-left: 20px;
+}
+
 input[type=file]{
     color:transparent;
 }
 
 label {
     padding-top: -40px;
-    color: lightgrey;
+    color: #999;
+    font-size: 12px;
 }
 
 /*styles for export functionality*/
 
+.export-group {
+    margin: 0 auto;
+}
+
 #exportButton {
-    margin-left: 0px;
+    width: 40px;
+    /*margin-left: 0px;*/
     opacity: 0.3;
 }
 
@@ -275,8 +326,13 @@ label {
 }
 
 .sizeAdjust {
-    width: 190px !important;
+    width: 200px !important;
 }
+
+#settingsPanel [type=checkbox], b {
+    margin-left: 20px;
+}
+
 
 input[type=radio] {
     margin-right: 5px;
@@ -295,14 +351,20 @@ input[type=checkbox] {
 }
 
 #autoCollapseButtons {
-    width: 190px;
-    height: 50px;
+    width: 200px;
+    height: 70px;
 }
 
 .collapseElem {
     float: left;
-    margin: 5px;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
     text-align: center;
+}
+
+.singleIn {
+    margin-top: 4px;
 }
 
 .newickIn {
@@ -357,8 +419,9 @@ input[type=checkbox] {
 }
 
 .exampleBtn a {
-    color: lightgrey;
-    font-size: 10px;
+    color: #999;
+    font-size: 12px;
+    margin: 0px;
 }
 
 .smallText {
@@ -432,7 +495,9 @@ input {
 }
 
 input.treename {
-    width: 123px;
+    background: transparent;
+    width: 125px;
+    border: none;
 }
 
 input.treename::-webkit-input-placeholder{
@@ -527,28 +592,37 @@ rect.node {
 
 .searchBox {
     max-width: 250px;
-    min-height: 45px;
-    padding: 5px;
-    right: 5px;
-    top: 5px;
-    position: absolute;
+    margin: 0 auto;
+    text-align: center;
+    /*min-height: 45px;*/
+    /*padding: 5px;*/
+    /*right: 5px;*/
+    /*top: 5px;*/
+    /*position: absolute;*/
 }
 
 .searchInput {
-    float: right;
-    width: 0px;
-    margin-left: 0px;
-    display: none;
+    /*float: right;*/
+    width: 80px;
+    height: 26px;
+    /*margin-left: 0px;*/
+    /*display: none;*/
 }
 
 .searchButton {
     width: 26px;
-    float: right;
+    height: 26px;
+    /*float: right;*/
     opacity: 0.3;
 }
 
 .searchButton:hover {
     opacity: 1;
+}
+
+.input-group .form-control {
+    width: 92px;
+    height: 26px;
 }
 
 .resultsBox {
@@ -676,9 +750,10 @@ button.treeToggleButton span{
 
 div.rescaleButtons {
     width: 78px;
-    top: 10px;
-    left: 10px;
-    position: absolute;
+    margin: 0 auto;
+    /*top: 10px;*/
+    /*left: 10px;*/
+    /*position: absolute;*/
 }
 
 button.rescaleButton {
@@ -689,9 +764,9 @@ button.rescaleButton {
     opacity: 0.3;
 }
 
-button.rescaleButton.span{
-    vertical-align: middle;
-}
+/*button.rescaleButton.span{*/
+    /*vertical-align: middle;*/
+/*}*/
 
 button.rescaleButton:hover{
     opacity: 1.0;
@@ -717,25 +792,27 @@ button.rescaleButton:hover{
 }
 
 .zoomSliderContainer {
-    position: absolute;
+    /*position: absolute;*/
+    margin: 0 auto;
     color: black;
+    width: 100px;
     /*margin-left: -55px;*/
     /*margin-top: 400px;*/
-    top: 50%;
-    bottom:0;
-    left: -55px;
+    /*top: 50%;*/
+    /*bottom:0;*/
+    left: 5px;
     /*right: 0;*/
-    margin: auto;
+    /*margin: auto;*/
     /*vertical-align: middle;*/
 
 }
-.zoomSlider {
-    -webkit-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    transform: rotate(90deg);
-}
+/*.zoomSlider {*/
+    /*-webkit-transform: rotate(90deg);*/
+    /*-ms-transform: rotate(90deg);*/
+    /*-moz-transform: rotate(90deg);*/
+    /*-o-transform: rotate(90deg);*/
+    /*transform: rotate(90deg);*/
+/*}*/
 
 /*this following code makes the treename hide on focus*/
 /*

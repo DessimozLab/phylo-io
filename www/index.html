@@ -13,13 +13,14 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script src="https://use.fontawesome.com/28dcb2432d.js"></script>
+
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
-    <link rel="stylesheet" type="text/css" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -34,245 +35,192 @@
             content:"\000A";
             white-space: pre;
         }
-        .modal-container {
-            z-index: 3;
-            right: 50px;
-            top: 15px;
-            position: absolute;
-            padding: 5px 20px 15px 20px;
-            width: 180px;
-            height: 60px;
-            border-radius: 8px;
-            display: none;
-
-        }
     </style>
 </head>
 
 <body>
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog"> <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h5 class="modal-title">Link to share tree visualisation</h5>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog"> <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h5 class="modal-title">Link to share tree visualisation</h5></div>
+            <div class="modal-body">
+                <a href="" id="exportURLInSingle" ></a>
+            </div>
         </div>
-        <div class="modal-body">
-            <a href="" id="exportURLInSingle" ></a>
+        </div>
         </div>
     </div>
-    </div>
-</div>
-
-<div id="wrapper">
-    <!-- Sidebar -->
-    <div id="sidebar-wrapper">
-        <div id="sidebar-wrapper-wrapper">
-            <ul class="sidebar-nav">
-                <div id="mode-buttons" class="btn-group btn-group-justified" role="group">
-                    <div class="btn-group" role="group">
-                        <button type="button" id="view-btn" class="btn btn-default btn-lg active">View</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <!-- Default left and right padding for btn-lg in BS is 16px:
-                        Decreased to 14 px to get the text align within the button -->
-                        <button type="button" id="compare-btn" class="btn btn-default btn-lg" style="padding: 10px 14px">Compare</button>
-                    </div>
-                </div>
-                <li>
-                    <div  id="view-tree-params">
-                        <div>
-                            <label>Tree name:&nbsp;</label>
-                            <input type="text" class="treename" for="newickInSingleFile" id="newickInSingleLabel" rows="1" placeholder="None">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div id="sidebar-wrapper-wrapper">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-brand">
+                        <a href="#">
+                            Phylo.io
+                        </a>
+                    </li>
+                    <li class="sidebar-version">
+                    <p>Version: <span id="git-tag"></span> (<span id="last-modif"></span>)</p>
+                    </li>
+                    <div id="mode-buttons" class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button type="button" id="view-btn" class="btn btn-default active">View</button>
                         </div>
-                        <div style="padding-top: 50px;">
-                            <label>Tree data:</label>
-                            <input class="fileIn" id="newickInSingleFile" type="file" style="display:none">
-                            <button class="btn btn-default btn-xs fileIn" id="newickInSingleButton" type="button" style="margin-right: 20px;float:right;">
-                                Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <div style="font-size: x-small; color: lightgrey; float: right; padding-right: 20px;"><label>Show:</label>
-                            <div class="exampleBtn singleIn" id="simpleSingle" style="display:inline-block;"><a href="#">Example1 </a></div>
-                            <div class="exampleBtn singleIn" id="bigSingle" style="display:inline-block;"><a href="#">Example2</a></div>
-                        </div>
-                        <div>
-                            <textarea class="newickIn singleIn" id="newickInSingle" rows="4" cols="50" placeholder="Newick, NHX formats"></textarea>
+                        <div class="btn-group" role="group">
+                            <button type="button" id="compare-btn" class="btn btn-default">Compare</button>
                         </div>
                     </div>
+                    <li>
+                        <div id="newickInputs" style="line-height: 20px;">
+                            <table class="fixed singleIn">
+                                <tr class="row1">
+                                    <td><b>Tree:</b></td>
+                                    <td class="sidebar-version" style="text-align:left;">
+                                        <input type="text" class="treename" for="newickInSingleFile" id="newickInSingleLabel" rows="1" placeholder="Untitled"></input>
+                                    </td>
+                                    <td align="right">
+                                        <input class="fileIn" id="newickInSingleFile" type="file" style="display:none">
+                                        <button class="btn btn-xs fileIn" id="newickInSingleButton" type="button">
+                                            <span class="glyphicon glyphicon-file"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <textarea class="newickIn singleIn extraMargin" id="newickInSingle" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
 
-                    <div id="cmp-trees-params">
-                        <div>
-                            <label>Left panel:</label>
-                            <input class="fileIn" id="newickIn1File" type="file" style="display:none">
-                            <button class="btn btn-default btn-xs fileIn" id="newickIn1Button" type="button" style="margin-right: 20px;float:right;">
-                                Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
-                            </button>
+                            <table class="fixed compareIn extraMargin">
+                                <tr class="row1">
+                                    <td><b>Tree 1:</b></td>
+                                    <td class="sidebar-version" style="text-align:left;">
+                                        <input type="text" class="treename" for="newickIn1File" id="newickIn1Label" rows="1" placeholder="Untitled"></input>
+                                    </td>
+                                    <td align="right">
+                                        <input class="fileIn" id="newickIn1File" type="file" style="display:none">
+                                        <button class="btn btn-xs fileIn" id="newickIn1Button" type="button">
+                                            <span class="glyphicon glyphicon-file"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn1" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
+
+                            <table class="fixed compareIn extraMargin">
+                                <tr class="row1">
+                                    <td><b>Tree 2:</b></td>
+                                    <td class="sidebar-version" style="text-align:left;">
+                                        <input type="text" class="treename" for="newickIn2File" id="newickIn2Label" rows="1" placeholder="Untitled"></input>
+                                    </td>
+                                    <td align="right">
+                                        <input class="fileIn" id="newickIn2File" type="file" style="display:none">
+                                        <button class="btn btn-xs fileIn" id="newickIn2Button" type="button">
+                                            <span class="glyphicon glyphicon-file"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <textarea class="newickIn compareIn extraMargin" id="newickIn2" rows="4" cols="50" placeholder="Paste your tree or drag and drop your tree file here"></textarea>
+
                         </div>
-                        <div style="font-size: x-small; color: lightgrey; float: right; padding-right: 20px;"><label>Show:</label>
-                            <div class="exampleBtn singleIn" id="simpleDouble" style="display:inline-block;"><a href="#">Example1 </a></div>
-                            <div class="exampleBtn singleIn" id="bigDouble" style="display:inline-block;"><a href="#">Example2</a></div>
-                        </div>
-                        <div>
-                            <textarea class="newickIn singleIn" id="newickIn1" rows="4" cols="50" placeholder="Newick, NHX formats with one or more trees"></textarea>
-                        </div>
+                    </li>
+                    <div class="exampleBtn singleIn extraMargin" id="simpleSingle"><a href="#">Small Example Tree</a></div>
+                    <div class="exampleBtn singleIn extraMargin" id="bigSingle"><a href="#">Large Example Tree</a></div>
+                    <div class="exampleBtn compareIn extraMargin" id="simpleDouble"><a href="#">Small Example Trees</a></div>
+                    <div class="exampleBtn compareIn extraMargin" id="bigDouble"><a href="#">Large Example Trees</a></div>
+                    <li>
+                        <div id="renderErrorMessage"></div>
+                        <div class="btn-group" role="group" aria-label="Basic example">
 
-                        <div style="padding-top: 40px;">
-                            <label>Right panel:</label>
-                            <input class="fileIn" id="newickIn2File" type="file" style="display:none">
-                            <button class="btn btn-default btn-xs fileIn" id="newickIn2Button" type="button" style="margin-right: 20px;float:right;">
-                                Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <div>
-                            <textarea class="newickIn singleIn" id="newickIn2" rows="4" cols="50" placeholder="Newick, NHX formats with one or more trees"></textarea>
-                        </div>
-                    </div>
-                </li>
-
-                <li>
-                    <a href="#" id="settings"><i class="fa fa-pencil-square-o" aria-hidden="true">&nbsp;</i>Settings</a>
-                    <div id="settingsPanel" style="margin-top: 10px;padding-left: 5px;margin-right: 20px">
-                        <label class="settingsLabel">Auto-Collapse Depth:</label>
-                        <div id="autoCollapseButtons">
-                            <button type="button" id="collapseDec" class="btn btn-default collapseElem collapseButton">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
-                            </button>
-                            <div id="collapseAmount" class="collapseElem" style="padding-top: 5px">3</div>
-                            <button type="button" id="collapseInc" class="btn btn-default collapseElem collapseButton">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </button>
-                        </div>
-
-                        <label class="settingsLabel">Internal Labels:</label>
-                        <form class="internalLabels" id="labelForm" style="padding-bottom: 10px">
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input type="radio" name="internalLabels" value="none" id="internalLabelsNone" checked>None
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input type="radio" name="internalLabels" value="internalLabelsName">Branch Labels/Support
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel">
-                                    <input type="radio" name="internalLabels" value="internalLabelsLength">Length
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="similarity" id="internalLabelsSimilarity">Similarity
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="species" id="internalLabelsSpecies">Species
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="duplication" id="internalLabelsDuplication">Duplication/speciation
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="ECNumber" id="internalLabelsECNumber">EC Number
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="taxonomyID" id="internalLabelsTaxonomyID">NCBI Taxonomy ID
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="likelihood" id="internalLabelsLikelihood">Parent branch log value
-                                </label>
-                            </div><div class="radio">
-                            <label class="settingsCheckboxLabel opt">
-                                <input type="radio" name="internalLabels" value="orthologous" id="internalLabelsOrthologous">Display orthology
-                            </label>
-                        </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="superorthologous" id="internalLabelsSuperorthologous">Display super orthology
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="subtree" id="internalLabelsSubtree">Subtree
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="collapseThis" id="internalLabelsCollapseThis">Collapsed nodes
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label class="settingsCheckboxLabel opt">
-                                    <input type="radio" name="internalLabels" value="color" id="internalLabelsColor">NHX colorscheme
-                                </label>
-                            </div>
-                        </form>
-
-                        <label class="settingsLabel">Adjust Tree Style:</label>
-
-                        <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Line Thickness</label>
-                        <input type="range" class="sizeAdjust" id="lineThickness" min="1" max="10" value="3">
-
-                        <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Node Size</label>
-                        <input type="range" class="sizeAdjust" id="nodeSize" min="0" max="10" value="3">
-
-                        <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Font Size</label>
-                        <input type="range" class="sizeAdjust" id="fontSize" min="5" max="40" value="14">
-
-                        <div class="checkbox">
-                            <label class="settingsCheckboxLabel"><input type="checkbox" id="useLengths" checked>Use Lengths</label>
+                            <button type="button" id="renderButton" class="btn btn-primary">Render <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></button>
+                            <button type="button" id="undoBtn" class="btn btn-primary icon-flipped"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></button>
+                            <button type="button" id="clearButton" class="btn btn-primary">Clear</button>
                         </div>
 
-                        <div class="checkbox">
-                            <label class="settingsCheckboxLabel"><input type="checkbox" id="moveOnMouseOver" checked>Move To Best Corresponding Node on Highlight Click</label>
-                        </div>
+                    </li>
+                    <li>
+                        <div id="colorScale"></div>
+                    </li>
 
-                        <div class="checkbox">
-                            <label class="settingsCheckboxLabel"><input type="checkbox" id="selectMultipleSearch">Select multiple search results</label>
+
+                    <li>
+                        <a href="#" id="settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a>
+                        <div id="settingsPanel">
+                            <b class="noExtraMargin">Auto-Collapse Depth:</b>
+                            <div class="extraMargin" id="autoCollapseButtons">
+                                <button type="button" id="collapseDec" class="btn btn-primary collapseElem collapseButton">-</button>
+                                <div id="collapseAmount" class="collapseElem">3</div>
+                                <button type="button" id="collapseInc" class="btn btn-primary collapseElem collapseButton">+</button>
+                            </div>
+                            <b>Internal Labels:</b>
+                            <form class="internalLabels" id="labelForm">
+
+                                <input type="radio" name="internalLabels" value="none" id="internalLabelsNone" checked><span>None</span><br>
+                                <input type="radio" class="extraMargin" name="internalLabels" value="name" value="internalLabelsName"><span>Branch Labels/Support</span>
+                                <input type="radio" class="extraMargin" name="internalLabels" value="length" value="internalLabelsLength"><span>Length</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="similarity" id="internalLabelsSimilarity"><span>Similarity</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="species" id="internalLabelsSpecies"><span>Species</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="duplication" id="internalLabelsDuplication"><span>Duplication/speciation</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="ECNumber" id="internalLabelsECNumber"><span>EC Number</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="taxonomyID" id="internalLabelsTaxonomyID"><span>NCBI Taxonomy ID</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="likelihood" id="internalLabelsLikelihood"><span>Parent branch log value</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="orthologous" id="internalLabelsOrthologous"><span>Display orthology</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="superorthologous" id="internalLabelsSuperorthologous"><span>Display super orthology</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="subtree" id="internalLabelsSubtree"><span>Subtree</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="collapseThis" id="internalLabelsCollapseThis"><span>Collapsed nodes</span>
+                                <input type="radio" class="extraMargin opt" name="internalLabels" value="color" id="internalLabelsColor"><span>NHX colorscheme</span>
+
+
+
+                            </form>
+                            <b>Adjust Tree Style:</b>
+                            <p>Line Thickness</p>
+                            <input type="range" class="sizeAdjust extraMargin" id="lineThickness" min="1" max="10" value="3"></input>
+                            <p>Node Size</p>
+                            <input type="range" class="sizeAdjust extraMargin" id="nodeSize" min="0" max="10" value="3"></input>
+                            <p>Font Size</p>
+                            <input type="range" class="sizeAdjust extraMargin" id="fontSize" min="5" max="40" value="14"></input>
+                            <br>
+                            <input type="checkbox" id="useLengths" checked>Use Lengths</input>
+                            <br>
+                            <input type="checkbox" id="moveOnMouseOver" checked>
+                            <div class="smallText">
+                                <p>
+                                    <br>Move To Best Corresponding Node on Highlight Click</p>
+                            </div>
+                            </input>
+                            <input type="checkbox" id="selectMultipleSearch">Select multiple search results</input>
+                            <br>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    <div id="renderErrorMessage"></div>
-                    <!-- Centered btn + link group within the div -->
-                    <div style="padding-top: 30px; text-align:center; padding-bottom: 20px">
-                        <button type="button" id="renderButton" class="btn btn-info btn-lg" style="margin:auto;">Render <i class="fa fa-cogs" aria-hidden="true"></i></button>
-                        <a id="clearButton">Clear</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="footer" id="footer_div">
-                <div class="pull-right" style="padding: 5px 10px 5px 15px; margin-right: -3px;" id="menu-toggle">
-                    <i class="fa fa-angle-double-left" id="collapse-sidebar-span" style="color: lightgrey; font-size: 1.5em;"></i>
+                    </li>
+                    <li>
+                        <a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a>
+                    </li>
+                    <li class="compareIn">
+                        <a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a>
+                    </li>
+                    <li>
+                        <a href="manual.html"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
+                    </li>
+                </ul>
+                <div class="footer" id="footer_div" style="text-align: center !important; background-color: #ddd; ">
+                    <a href="http://lab.dessimoz.org"><span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Dessimoz Lab</a>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- /#sidebar-wrapper -->
-    <!-- Page Content -->
-
-    <div class="modal-container" id="spinner-container" style=""><span style=" position: relative; margin: 20px 10px 0 0; float: right;">Calculating...</span></div>
-    <div id="page-content-wrapper">
-        <div id="placeholder">
-            <div id="arrow">
-            </div>
-            <div id="text">
-                <p>1. Choose view for a single tree, Compare for two trees</p>
-                <p>2. Add your trees into the text boxes in newick format</p>
-                <p>3. Click "Render"</p>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div id="placeholder">
+                <div id="arrow">
+                </div>
+                <div id="text">
+                    <p>1. Choose view for a single tree, Compare for two trees</p>
+                    <p>2. Add your trees into the text boxes in newick format</p>
+                    <p>3. Click "Render"</p>
+                </div>
             </div>
         </div>
+        <!-- /#page-content-wrapper -->
     </div>
-    <!-- /#page-content-wrapper -->
-</div>
     <!-- /#wrapper -->
 
 
@@ -302,7 +250,7 @@
             ,
             radius: 42 // The radius of the inner circle
             ,
-            scale: 0.20 // Scales overall size of the spinner
+            scale: 1 // Scales overall size of the spinner
             ,
             corners: 1 // Corner roundness (0..1)
             ,
@@ -326,28 +274,25 @@
             ,
             top: '50%' // Top position relative to parent
             ,
-            left: '10%' // Left position relative to parent
+            left: '50%' // Left position relative to parent
             ,
             shadow: true // Whether to render a shadow
             ,
             hwaccel: true // Whether to use hardware acceleration
             ,
-            position: 'relative' // Element positioning
+            position: 'absolute' // Element positioning
         };
 
         var spinner = new Spinner(spinnerOpts);
-        //var spinnerTarget = document.getElementById("page-content-wrapper");
-        var spinnerTarget = document.getElementById("spinner-container");
+        var spinnerTarget = document.getElementById("page-content-wrapper");
 
         var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
             var treecomp = TreeCompare().init({
                 scaleColor: "black",
                 loadingCallback: function() {
-                    $('#spinner-container').show();
                     spinner.spin(spinnerTarget);
                 },
                 loadedCallback: function() {
-                    $('#spinner-container').hide();
                     spinner.stop();
                 },
                 enableRerootFixedButtons: $("#rerootFixedButtons").val(),
@@ -374,20 +319,15 @@
         document.getElementById('newickInSingleLabel').addEventListener("change", function() {
             update_download_fn('vis-container1', 'newickInSingleLabel')
         });
-        /*
-        SD SD SD
         document.getElementById('newickIn1Label').addEventListener("change", function() {
             update_download_fn('vis-container1', 'newickIn1Label')
         });
         document.getElementById('newickIn2Label').addEventListener("change", function() {
             update_download_fn('vis-container2', 'newickIn2Label')
         });
-         treecomp.inputTreeFile("newickIn1");
-         treecomp.inputTreeFile("newickIn2");
-
-         */
-
         treecomp.inputTreeFile("newickInSingle");
+        treecomp.inputTreeFile("newickIn1");
+        treecomp.inputTreeFile("newickIn2");
 
         // hide optional settings by default
         //$('.opt').parent().hide();
@@ -405,17 +345,9 @@
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
-            $("#cmp-trees-params").css({
-                "display": "none"
-            });
-            $("#view-tree-params").css({
-                "display": "block"
-            });
-            /*
-            SD SD SD
             $(".singleIn").css({
                 "display": "block"
-            });*/
+            });
         }
         /*
         /
@@ -432,30 +364,23 @@
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
-            /*
-            SD SD SD
             $(".singleIn").css({
                 "display": "block"
-            });*/
+            });
             var tree1 = treecomp.addTreeGistURL(gistID[1]);
             $("#page-content-wrapper").empty();
             $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
             treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
-            /*
-            SD SD SD
             $("#colorScale").empty();
-            */
             $("#newickInSingle").val(tree1.nwk);
 
         } else if (gistID.length ===3) { //compare mode
 
             $("#view-btn").removeClass("active");
             $("#compare-btn").addClass("active");
-            /*
-            SD SD SD
             $(".singleIn").css({
                 "display": "none"
-            });*/
+            });
             $("#newickInputs").css({
                 "padding-bottom": "25px"
             });
@@ -469,11 +394,9 @@
 
             $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
             treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
-            /*
-            SD SD SD
-            $("#colorScale").html("<label>Similarity to most common node:</label>");
+            $("#colorScale").html("<b>Similarity to most common node:</b>");
             treecomp.renderColorScale("colorScale");
-            */
+
             $("#newickIn1").val(tree1.nwk);
             $("#newickIn2").val(tree2.nwk);
 
@@ -482,23 +405,7 @@
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
-
-            var div_footer = $("#footer_div");
-            var newWidth = 250;
-
-            if ($( "#collapse-sidebar-span" ).hasClass( "fa fa-angle-double-left" )){
-                $("#collapse-sidebar-span").removeClass("fa fa-angle-double-left");
-                $("#collapse-sidebar-span").addClass("fa fa-angle-double-right");
-                newWidth = 30;
-
-            }
-            else {
-                $("#collapse-sidebar-span").removeClass("fa fa-angle-double-right");
-                $("#collapse-sidebar-span").addClass("fa fa-angle-double-left");
-            }
-            div_footer.width(newWidth);
         });
-
 
         /*
          /
@@ -512,10 +419,7 @@
             $("#newickInSingleLabel").val('');
             //treecomp.inputTreeFile("newickInSingle");
 
-            /*
-            SD SD SD
             $("#colorScale").empty();
-            */
             $("#compare-btn").removeClass("active");
             $("#view-btn").addClass("active");
             $(".compareIn").css({
@@ -525,14 +429,7 @@
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
-            /* SD SD SD
             $(".singleIn").css({
-                "display": "block"
-            });*/
-            $("#cmp-trees-params").css({
-                "display": "none"
-            });
-            $("#view-tree-params").css({
                 "display": "block"
             });
             $("#renderErrorMessage").empty();
@@ -554,25 +451,12 @@
             $("#newickIn1Label").val('');
             $("#newickIn2Label").val('');
 
-            /*
-            SD SD SD
             $("#colorScale").empty();
-            */
             $("#view-btn").removeClass("active");
             $("#compare-btn").addClass("active");
-            $("#cmp-trees-params").css({
-                "display": "block"
-            });
-            $("#view-tree-params").css({
-                "display": "none"
-            });
-
-            /*
-            SD SD SD
             $(".singleIn").css({
                 "display": "none"
             });
-            */
             $("#newickInputs").css({
                 "padding-bottom": "0px"
             });
@@ -648,10 +532,7 @@
                 $("#newickIn2").val('');
                 $("#newickIn1Label").val('');
                 $("#newickIn2Label").val('');
-                /*
-                SD SD SD
                 $("#colorScale").empty();
-                */
             } else if (mode === "view-btn"){
                 $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
                 $("#newickInSingle").val('');
@@ -685,11 +566,8 @@
                     //TODO: change this
 
                     treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
-                    /*
-                    SD SD SD
                     $("#colorScale").html("<b>Similarity to most common node:</b>");
                     treecomp.renderColorScale("colorScale");
-                    */
                     treecomp.undo("undoBtn");
                 } catch (e) {
                     if(e==="TooLittle)"){
@@ -719,10 +597,7 @@
                     //$("#page-content-wrapper").empty();
                     $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div>');
                     treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
-                    /*
-                    SD SD SD
                     $("#colorScale").empty();
-                    */
                     treecomp.undo("undoBtn");
                 } catch (e) {
                     if(e==="TooLittle)"){
@@ -822,10 +697,14 @@
          /
          ------*/
         function hideOptionalSettings(){
-            var v= $("label.opt");
+
+            var v= $("input[type=radio].opt");
             $(v).each(function(i){
                 ($(this).hide().next().hide())
             });
+
+            //$("#undoBtn").hide();
+
         }
 
 
