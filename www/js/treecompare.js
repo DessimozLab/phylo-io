@@ -3304,9 +3304,9 @@ var TreeCompare = function(){
         //     renderRescaleButtons(canvasId, baseTree);
         // }
         //
-        // if (settings.enableSearch) {
-        //     renderSearchBar(canvasId, baseTree);
-        // }
+        if (settings.enableSearch) {
+            renderSearchBar(canvasId, baseTree);
+        }
 
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();
