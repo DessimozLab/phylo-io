@@ -2070,6 +2070,8 @@ var TreeCompare = function(){
                         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                     } else if (e["specifiedBranchColor"] && (settings.internalLabels === "color")) { // color branch according to prespecified rgb values in the nhx file
                         return rgb2hex(e["specifiedBranchColor"])
+                    } else { // return the standard color
+                        return "grey"
                     }
                 });
 
@@ -2085,6 +2087,9 @@ var TreeCompare = function(){
                     } else {
                         return "link";
                     }
+                })
+                .attr("id", function(d) { //adds source.id of node
+                    return d.source.ID+'_'+ d.target.ID;
                 })
                 .attr("d", function(d) {
 
@@ -2108,9 +2113,6 @@ var TreeCompare = function(){
                         return settings.lineThickness;
                     }
                 })
-                .attr("id", function(d) { //adds source.id of node
-                    return d.source.ID+'_'+ d.target.ID;
-                })
                 .style("stroke", function(d) {
                     var e = d.target;
                     var f = d.source;
@@ -2120,8 +2122,11 @@ var TreeCompare = function(){
                         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                     }else if (e["specifiedBranchColor"] && (settings.internalLabels === "color")) { // color branch according to prespecified rgb values in the nhx file
                         return rgb2hex(e["specifiedBranchColor"])
+                    } else {
+                        return "grey"
                     }
                 })
+                .style("fill","none") //this line is important for the export function
                 .on("click", treeData.clickEventLink);
 
             link.select("rect")
@@ -2390,8 +2395,8 @@ var TreeCompare = function(){
             // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
             function getSVGString( svgNode ) {
                 svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                var cssStyleText = getCSSStyles( svgNode );
-                appendCSS( cssStyleText, svgNode );
+                //var cssStyleText = getCSSStyles( svgNode );
+                // appendCSS( cssStyleText, svgNode );
 
                 var serializer = new XMLSerializer();
                 var svgString = serializer.serializeToString(svgNode);
@@ -2400,66 +2405,69 @@ var TreeCompare = function(){
 
                 return svgString;
 
-                function getCSSStyles( parentElement ) {
-                    var selectorTextArr = [];
-
-                    // Add Parent element Id and Classes to the list
-                    selectorTextArr.push( '#'+parentElement.id );
-                    for (var c = 0; c < parentElement.classList.length; c++)
-                        if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
-                            selectorTextArr.push( '.'+parentElement.classList[c] );
-
-                    // Add Children element Ids and Classes to the list
-                    var nodes = parentElement.getElementsByTagName("*");
-                    for (var i = 0; i < nodes.length; i++) {
-                        var id = nodes[i].id;
-                        if ( !contains('#'+id, selectorTextArr) )
-                            selectorTextArr.push( '#'+id );
-
-                        var classes = nodes[i].classList;
-                        for (var c = 0; c < classes.length; c++){
-                            if ( !contains('.'+classes[c], selectorTextArr) ){
-                                var tagName = document.getElementsByClassName(classes[c])[0].tagName;
-                                selectorTextArr.push(tagName+'.'+classes[c]);
-                            }
-                        }
-                    }
-
-                    // Extract CSS Rules
-                    var extractedCSSText = "";
-                    for (var i = 0; i < document.styleSheets.length; i++) {
-                        var s = document.styleSheets[i];
-
-                        try {
-                            if(!s.cssRules) continue;
-                        } catch( e ) {
-                            if(e.name !== 'SecurityError') throw e; // for Firefox
-                            continue;
-                        }
-
-                        var cssRules = s.cssRules;
-                        for (var r = 0; r < cssRules.length; r++) {
-                            if ( contains( cssRules[r].selectorText, selectorTextArr ) )
-                                extractedCSSText += cssRules[r].cssText;
-                        }
-                    }
-
-
-                    return extractedCSSText;
-
-                    function contains(str,arr) {
-                        return arr.indexOf( str ) === -1 ? false : true;
-                    }
-
-                }
-
-                function appendCSS( cssText, element ) {
-                    var styleElement = document.createElement("style");
-                    styleElement.setAttribute("type","text/css");
-                    styleElement.innerHTML = cssText;
-                    var refNode = element.hasChildNodes() ? element.children[0] : null;
-                    element.insertBefore( styleElement, refNode );
-                }
+                // -------
+                // by addition of the style fill:none to each path I can remove this whole part of the code.
+                //--------
+                // function getCSSStyles( parentElement ) {
+                //     var selectorTextArr = [];
+                //
+                //     // Add Parent element Id and Classes to the list
+                //     selectorTextArr.push( '#'+parentElement.id );
+                //     for (var c = 0; c < parentElement.classList.length; c++)
+                //         if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
+                //             selectorTextArr.push( '.'+parentElement.classList[c] );
+                //
+                //     // Add Children element Ids and Classes to the list
+                //     var nodes = parentElement.getElementsByTagName("*");
+                //     for (var i = 0; i < nodes.length; i++) {
+                //         var id = nodes[i].id;
+                //         if ( !contains('#'+id, selectorTextArr) )
+                //             selectorTextArr.push( '#'+id );
+                //
+                //         var classes = nodes[i].classList;
+                //         for (var c = 0; c < classes.length; c++){
+                //             if ( !contains('.'+classes[c], selectorTextArr) ){
+                //                 var tagName = document.getElementsByClassName(classes[c])[0].tagName;
+                //                 selectorTextArr.push(tagName+'.'+classes[c]);
+                //             }
+                //         }
+                //     }
+                //
+                //     // Extract CSS Rules
+                //     var extractedCSSText = "";
+                //     for (var i = 0; i < document.styleSheets.length; i++) {
+                //         var s = document.styleSheets[i];
+                //
+                //         try {
+                //             if(!s.cssRules) continue;
+                //         } catch( e ) {
+                //             if(e.name !== 'SecurityError') throw e; // for Firefox
+                //             continue;
+                //         }
+                //
+                //         var cssRules = s.cssRules;
+                //         for (var r = 0; r < cssRules.length; r++) {
+                //             if ( contains( cssRules[r].selectorText, selectorTextArr ) )
+                //                 extractedCSSText += cssRules[r].cssText;
+                //         }
+                //     }
+                //
+                //
+                //     return extractedCSSText;
+                //
+                //     function contains(str,arr) {
+                //         return arr.indexOf( str ) === -1 ? false : true;
+                //     }
+                //
+                // }
+                //
+                // function appendCSS( cssText, element ) {
+                //     var styleElement = document.createElement("style");
+                //     styleElement.setAttribute("type","text/css");
+                //     styleElement.innerHTML = cssText;
+                //     var refNode = element.hasChildNodes() ? element.children[0] : null;
+                //     element.insertBefore( styleElement, refNode );
+                // }
             }
 
             function svgString2Image( svgString, width, height, format, callback ) {
@@ -2931,9 +2939,9 @@ var TreeCompare = function(){
                 scaleId: scaleId
             });
             //render various buttons and search bars and sliders
-            //renderZoomSlider(tree, canvasId);
+            renderZoomSlider(tree, canvasId);
             //renderDownloadButton(canvasId);
-            //renderMiddleButtonsCompareMode(canvasId);
+            renderMiddleButtonsCompareMode(canvasId);
 
         }else{
             renderedTrees.push(baseTree);
@@ -2949,77 +2957,29 @@ var TreeCompare = function(){
             });
 
             //render various buttons and search bars and sliders
-            // renderZoomSlider(baseTree, canvasId);
+            renderZoomSlider(baseTree, canvasId);
             //renderDownloadButton(canvasId);
-            // renderMiddleButtonsCompareMode(canvasId);
+            renderMiddleButtonsCompareMode(canvasId);
         }
-    }
-
-    function buildTreeTools(canvasId) {
-        var tools = d3.select("#" + canvasId).append("div")
-            .attr("class", "tree-tools");
-
-        tools.append("span")
-            .attr("id", "tools")
-            .attr("class", "fa fa-wrench");
-
-        var toolsMenu = tools.append("div")
-            .attr("class","tree-tools-menu");
-
-        toolsMenu.append("li")
-            .attr("class", "rescale")
-            .append("div")
-            .attr("class","tree-tools-text")
-            .text("Rescale");
-
-        toolsMenu.append("li")
-            .attr("class", "zoom")
-            .append("div")
-            .attr("class","tree-tools-text")
-            .text("Zoom");
-
-        toolsMenu.append("li")
-            .attr("class", "export")
-            .append("div")
-            .attr("class","tree-tools-text")
-            .text("Export");
-
-        toolsMenu.append("li")
-            .attr("class", "search")
-            .append("div")
-            .attr("class","tree-tools-text")
-            .text("Search");
-    }
-
-    function renderTreeTools(canvasId){
-
-        buildTreeTools(canvasId);
-        renderSearchBar(canvasId);
-
-        $(document).ready(function(){
-            $("#tools").click(function(){
-                $(".tree-tools-menu").slideToggle(200);
-            });
-        });
     }
 
 
     function buildSearchBox(canvasId) {
-        var searchDiv = d3.select("#" + canvasId).select(".search").append("div")
-            .attr("class", "input-group");
+        var searchDiv = d3.select("#" + canvasId).append("div")
+            .attr("class", "searchBox");
+
+        var searchDivA = searchDiv.append("a")
+            .attr("class", "btn btn-sm sharp searchButton");
+
+        searchDivA.append("span")
+            .attr("class", "glyphicon glyphicon-search")
+            .attr("aria-hidden","true");
 
         searchDiv.append("input")
-            .attr("class", "form-control")
+            .attr("class", "searchInput")
             .attr("type", "text")
             .attr("placeholder", "search")
             .attr("autofocus");
-
-
-        searchDiv.append("button")
-            .attr("class", "btn btn-sm sharp searchButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-search")
-            .attr("aria-hidden","true");
 
         var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
             .attr("class", "resultsBox")
@@ -3300,10 +3260,10 @@ var TreeCompare = function(){
         $("#"+canvasId+" .rescaleButtons").remove();
 
 
-        // if (settings.enableSizeControls) {
-        //     renderRescaleButtons(canvasId, baseTree);
-        // }
-        //
+        if (settings.enableSizeControls) {
+            renderRescaleButtons(canvasId, baseTree);
+        }
+
         if (settings.enableSearch) {
             renderSearchBar(canvasId, baseTree);
         }
@@ -4064,8 +4024,7 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            renderTreeTools(canvasId)
-            //renderDownloadButton(canvasId);
+            renderDownloadButton(canvasId);
 
         }
     }
