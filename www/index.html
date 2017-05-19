@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -613,34 +614,7 @@
             }
         });
 
-        /*------
-         /
-         /    SHARE BUTTON
-         /
-         ------*/
-        $("#export").click(function(e) {
-            var mode = $("#mode-buttons .active").attr('id');
-            if (mode === "compare-btn") {
-                try {
-                    var exportURLGist = treecomp.exportTree(true);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
-                } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-                }
-            } else if (mode === "view-btn"){
-                try{
-                    var exportURLGist = treecomp.exportTree(false);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
-                } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-                }
 
-            }
-        });
 
         /*------
          /

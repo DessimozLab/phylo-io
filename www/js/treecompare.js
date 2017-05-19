@@ -2151,6 +2151,89 @@ var TreeCompare = function(){
         }
     }
 
+    function createShareButton(canvasId){
+
+        function buildShareButton(canvasId){
+            var shareTools = d3.select("#" + canvasId).append("div")
+                .attr("class", "share");
+
+            shareTools.append("a")
+                .attr("class", "btn btn-sm sharp shareButton")
+                .append("span")
+                .attr("class", "fa fa-cloud-upload")
+                .attr("aria-hidden","true");
+        }
+
+        buildShareButton(canvasId);
+
+        $(".shareButton").click(function(e) {
+            var mode = $("#mode-buttons .active").attr('id');
+            if (mode === "compare-btn") {
+                try {
+                    var exportURLGist = treecomp.exportTree(true);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
+                    $('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                }
+            } else if (mode === "view-btn"){
+                try{
+                    var exportURLGist = treecomp.exportTree(false);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
+                    $('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                }
+
+            }
+        });
+    }
+
+    function createToolbar(canvasId){
+
+        function buildToolbar(canvasId) {
+            var treeTools = d3.select("#" + canvasId).append("div")
+                .attr("class", "treeTools");
+
+            treeTools.append("a")
+                .attr("class", "btn btn-sm sharp treeToolsButton")
+                .append("span")
+                .attr("class", "fa fa-wrench")
+                .attr("aria-hidden","true");
+
+            var treeToolsMenu = treeTools.append("div")
+                .attr("class", "treeToolsMenu");
+
+            treeToolsMenu.append("li")
+                .attr("class", "rescale")
+                .append("div")
+                .attr("class", "treeToolsText")
+                .text("Rescale");
+
+            treeToolsMenu.append("li")
+                .attr("class", "zoom")
+                .append("div")
+                .attr("class", "treeToolsText")
+                .text("Zoom");
+
+            treeToolsMenu.append("li")
+                .attr("class", "export")
+                .append("div")
+                .attr("class", "treeToolsText")
+                .text("Export");
+        }
+
+        buildToolbar(canvasId);
+
+        $(document).ready(function(){
+            $(".treeToolsButton").click(function(){
+                $(".treeToolsMenu").slideToggle(200);
+            });
+        });
+    }
+
 
     function createOppositeTreeActions(canvasId) {
         /*---------------
@@ -3211,6 +3294,8 @@ var TreeCompare = function(){
 
         if (settings.enableSearch) {
             createLeafSearch(canvasId, baseTree);
+            createToolbar(canvasId);
+            createShareButton(canvasId);
             //renderSearchBar(canvasId, baseTree);
         }
 
@@ -4466,9 +4551,9 @@ var TreeCompare = function(){
             var rectHeight = 110;
 
             var rpad = 10;
-            var tpad = 20;
+            var tpad = 15;
             var textDone = 0;
-            var textInc = 20;
+            var textInc = 15;
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
             d3.selection.prototype.moveToFront = function() {

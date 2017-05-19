@@ -416,8 +416,8 @@ input.treename::-webkit-input-placeholder{
 
 .tooltipElemText{
     fill: white;
-    font-size: 10pt;
-    font-weight: bold;
+    font-size: 8pt;
+    /*font-weight: bold;*/
 }
 
 /*--end tooltipElem----------------------------------------------*/
@@ -496,14 +496,76 @@ rect.node {
 
 /*--end tree----------------------------------------------*/
 
+/*Styles for sharing*/
+
+.share {
+    padding: 5px;
+    right: 5px;
+    top: 5px;
+    position: absolute;
+}
+
+.shareButton {
+    width: 26px;
+    float: right;
+    opacity: 0.3
+}
+
+.shareButton:hover {
+    opacity: 1;
+}
+
+/*--end sharing----------------------------------------------*/
+
+/*Styles for toolbar*/
+
+.treeTools {
+    padding: 5px;
+    right: 31px;
+    top: 5px;
+    position: absolute;
+}
+
+.treeToolsButton {
+    width: 26px;
+    float: right;
+    opacity: 0.3;
+}
+
+.treeToolsButton:hover {
+    opacity: 1;
+}
+
+.treeToolsMenu {
+    position:absolute;
+    align: center;
+    top: 31px;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding-bottom: 2px;
+    display: none;
+}
+
+.treeToolsMenu li {
+    list-style:none;
+    border-bottom: 1px;
+    /*text-align: left;*/
+    font-size: 8pt;
+}
+
+.treeToolsText {
+    padding-left: 2px;
+}
+
+/*--end toolbar----------------------------------------------*/
 
 /*Styles for leaf searching*/
 
 .searchBox {
-    max-width: 250px;
-    min-height: 45px;
     padding: 5px;
-    right: 5px;
+    right: 57px;
     top: 5px;
     position: absolute;
 }
