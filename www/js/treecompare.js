@@ -3087,49 +3087,6 @@ var TreeCompare = function(){
 
     function createTreeDownload(canvasId){
 
-        // function buildDownloadButton(canvasId){
-        //
-        //     var svg = d3.select("#" + canvasId + " svg")
-        //         .attr("version", 1.1)
-        //         .attr("xmlns", "http://www.w3.org/2000/svg");
-        //
-        //
-        //     var downloadButton = d3.select("#" + canvasId).append("div")
-        //         .attr("class", "dropup");
-        //     downloadButton.append("button")
-        //         .attr("id", "exportButton")
-        //         .attr("class", "btn btn-sm sharp dropdown-toggle")
-        //         .attr("type", "button")
-        //         .attr("data-toggle", "dropdown")
-        //         .text("Export ")
-        //         .on('click', function(){
-        //             document.getElementById(canvasId + "_exportList").classList.toggle("visible");
-        //         })
-        //         .append("span")
-        //         .attr("class", "caret");
-        //
-        //
-        //     // position adjustment in compare mode
-        //     if (canvasId.search("1")!=-1){
-        //         downloadButton.style("left", "10px")
-        //             .style("bottom", "10px")
-        //             .style("position", "absolute");
-        //
-        //     } else if(canvasId.search("2")!=-1){
-        //         downloadButton.style("right", "10px")
-        //             .style("bottom", "10px")
-        //             .style("position", "absolute");
-        //
-        //     }
-        //
-        //     // ensures that exportList is removed when clicking on canvas
-        //     $(document).click(function(event) {
-        //         if(!$(event.target).closest('.dropup').length && $('#'+canvasId+'_exportList').is(":visible")) {
-        //             $('#'+canvasId+'_exportList').hide();
-        //         }
-        //     });
-        //
-        // }
 
         function buildDownloadButton(canvasId, downloadClass) {
 

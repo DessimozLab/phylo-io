@@ -561,13 +561,13 @@ rect.node {
     text-align: left;
     position: absolute;
     padding: 2px;
-    right: 23px;
+    right: 10px;
     top: 38px;
-    width: 100px;
+    width: 104px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
-    border-color: grey;
+    border-color: lightgray;
     padding-bottom: 2px;
     display: none;
 }
@@ -749,7 +749,7 @@ button.treeToggleButton span{
 }
 
 #exportButton {
-    width: 31px;
+    width: 32.5px;
     margin-left: 0px;
     opacity: 0.3;
 }
@@ -834,7 +834,7 @@ button.rescaleButton:hover{
     /*position: absolute;*/
     margin: 0 auto;
     color: black;
-    width: 70px;
+    width: 90px;
     /*margin-left: -55px;*/
     /*margin-top: 400px;*/
     /*top: 50%;*/
