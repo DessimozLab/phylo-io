@@ -561,9 +561,9 @@ rect.node {
     text-align: left;
     position: absolute;
     padding: 2px;
-    right: 35px;
-    top: 35px;
-    width: 78px;
+    right: 23px;
+    top: 38px;
+    width: 100px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
@@ -743,10 +743,17 @@ button.treeToggleButton span{
 
 /*styles for export functionality*/
 
+.export-group {
+    margin: 0 auto;
+    text-align: center;
+}
+
 #exportButton {
+    width: 31px;
     margin-left: 0px;
     opacity: 0.3;
 }
+
 
 #exportButton:hover{
     opacity: 1.0;
@@ -760,18 +767,18 @@ button.treeToggleButton span{
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
-.dropdown-menu {
-    min-width: 60px;
-    font-size: 11px;
-    margin: 1px 0px 1px 0px;
-    text-align: center;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    background-color: white;
-}
+/*.dropdown-menu {*/
+    /*min-width: 60px;*/
+    /*font-size: 11px;*/
+    /*margin: 1px 0px 1px 0px;*/
+    /*text-align: center;*/
+    /*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
+    /*background-color: white;*/
+/*}*/
 
-.dropdown-menu li a{
-    padding: 1px 0px 1px 0px;
-}
+/*.dropdown-menu li a{*/
+    /*padding: 1px 0px 1px 0px;*/
+/*}*/
 
 /*--end export----------------------------------------------*/
 

@@ -3087,89 +3087,84 @@ var TreeCompare = function(){
 
     function createTreeDownload(canvasId){
 
-        function buildDownloadButton(canvasId){
+        // function buildDownloadButton(canvasId){
+        //
+        //     var svg = d3.select("#" + canvasId + " svg")
+        //         .attr("version", 1.1)
+        //         .attr("xmlns", "http://www.w3.org/2000/svg");
+        //
+        //
+        //     var downloadButton = d3.select("#" + canvasId).append("div")
+        //         .attr("class", "dropup");
+        //     downloadButton.append("button")
+        //         .attr("id", "exportButton")
+        //         .attr("class", "btn btn-sm sharp dropdown-toggle")
+        //         .attr("type", "button")
+        //         .attr("data-toggle", "dropdown")
+        //         .text("Export ")
+        //         .on('click', function(){
+        //             document.getElementById(canvasId + "_exportList").classList.toggle("visible");
+        //         })
+        //         .append("span")
+        //         .attr("class", "caret");
+        //
+        //
+        //     // position adjustment in compare mode
+        //     if (canvasId.search("1")!=-1){
+        //         downloadButton.style("left", "10px")
+        //             .style("bottom", "10px")
+        //             .style("position", "absolute");
+        //
+        //     } else if(canvasId.search("2")!=-1){
+        //         downloadButton.style("right", "10px")
+        //             .style("bottom", "10px")
+        //             .style("position", "absolute");
+        //
+        //     }
+        //
+        //     // ensures that exportList is removed when clicking on canvas
+        //     $(document).click(function(event) {
+        //         if(!$(event.target).closest('.dropup').length && $('#'+canvasId+'_exportList').is(":visible")) {
+        //             $('#'+canvasId+'_exportList').hide();
+        //         }
+        //     });
+        //
+        // }
 
-            var svg = d3.select("#" + canvasId + " svg")
-                .attr("version", 1.1)
-                .attr("xmlns", "http://www.w3.org/2000/svg");
+        function buildDownloadButton(canvasId, downloadClass) {
 
-
-            var downloadButton = d3.select("#" + canvasId).append("div")
-                .attr("class", "dropup");
+            var downloadButton = d3.select("#"+canvasId).select("."+downloadClass).append("div")
+                .attr("class", "btn-group export-group");
             downloadButton.append("button")
                 .attr("id", "exportButton")
-                .attr("class", "btn btn-sm sharp dropdown-toggle")
+                .attr("class", "btn btn-sm sharp nwk")
                 .attr("type", "button")
-                .attr("data-toggle", "dropdown")
-                .text("Export ")
-                .on('click', function(){
-                    document.getElementById(canvasId + "_exportList").classList.toggle("visible");
-                })
                 .append("span")
-                .attr("class", "caret");
-
-
-            // position adjustment in compare mode
-            if (canvasId.search("1")!=-1){
-                downloadButton.style("left", "10px")
-                    .style("bottom", "10px")
-                    .style("position", "absolute");
-
-            } else if(canvasId.search("2")!=-1){
-                downloadButton.style("right", "10px")
-                    .style("bottom", "10px")
-                    .style("position", "absolute");
-
-            }
-
-            // ensures that exportList is removed when clicking on canvas
-            $(document).click(function(event) {
-                if(!$(event.target).closest('.dropup').length && $('#'+canvasId+'_exportList').is(":visible")) {
-                    $('#'+canvasId+'_exportList').hide();
-                }
-            });
-
+                .text("nwk");
+            downloadButton.append("button")
+                .attr("id", "exportButton")
+                .attr("class", "btn btn-sm sharp svg")
+                .attr("type", "button")
+                .append("span")
+                .text("svg");
+            downloadButton.append("button")
+                .attr("id", "exportButton")
+                .attr("class", "btn btn-sm sharp png")
+                .attr("type", "button")
+                .append("span")
+                .text("png");
         }
-
-        // function buildDownloadButton(downloadClass) {
-        //
-        //     var downloadButton = d3.select(".downloadClass").append("div")
-        //         .attr("class", "btn-group export-group");
-        //     downloadButton.append("button")
-        //         .attr("id", "exportButton")
-        //         .attr("class", "btn btn-sm sharp")
-        //         .attr("type", "button")
-        //         .text("nwk");
-        //     downloadButton.append("button")
-        //         .attr("id", "exportButton")
-        //         .attr("class", "btn btn-sm sharp")
-        //         .attr("type", "button")
-        //         .text("svg");
-        //     downloadButton.append("button")
-        //         .attr("id", "exportButton")
-        //         .attr("class", "btn btn-sm sharp")
-        //         .attr("type", "button")
-        //         .text("png");
-        // }
 
         var width = 300, height = 300;
         // draws download buttons
         if (settings.enableDownloadButtons) {
 
             // draw button
-            buildDownloadButton(canvasId);
+            buildDownloadButton(canvasId, "export");
 
-            var downloadButton = d3.select("#"+canvasId+" .dropup");
-
-            var exportList = downloadButton.append("ul")
-                .attr("class", "dropdown-menu")
-                .attr("id", canvasId + "_exportList");
 
             // PNG
-            exportList.append("li")
-                .append("a")
-                .attr("id", "savePng")
-                .text("PNG")
+            d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
                     var svg = d3.select("#" + canvasId + " svg");
                     var svgString = getSVGString(svg.node());
@@ -3180,10 +3175,7 @@ var TreeCompare = function(){
                 });
 
             // SVG
-            exportList.append("li")
-                .append("a")
-                .attr("id", "saveSvg")
-                .text("SVG")
+            d3.select("#"+canvasId).select(".svg")
                 .on("click", function (){
                     var svg = d3.select("#" + canvasId + " svg");
                     var name = svg.attr("id");
@@ -3193,11 +3185,7 @@ var TreeCompare = function(){
                 });
 
             // NWK
-            exportList.append("li")
-                .append("a")
-                .attr("id", "saveNwk")
-                .attr("download", "phylo.io.nwk")
-                .text("NWK")
+            d3.select("#"+canvasId).select(".nwk")
                 .on("click", function (){
                     var name = d3.select("#" + canvasId + " svg").attr("id");
                     var tree = trees[findTreeIndex(name)];
@@ -3269,8 +3257,6 @@ var TreeCompare = function(){
                 .attr("max", "5")
                 .attr("value", "1.00")
                 .attr("step", "0.01");
-            // $("." + toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
-            // $("."+toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
         }
     }
 
