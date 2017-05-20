@@ -785,16 +785,17 @@ button.treeToggleButton span{
 /*Styles for rescaling buttons*/
 
 div.rescaleButtons {
-    width: 78px;
-    top: 10px;
-    left: 10px;
-    position: absolute;
+    width: 66px;
+    margin: 0 auto;
+    /*top: 10px;*/
+    /*left: 10px;*/
+    /*position: absolute;*/
 }
 
 button.rescaleButton {
     font-size: 10px;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     vertical-align: top;
     opacity: 0.3;
 }
@@ -809,7 +810,7 @@ button.rescaleButton:hover{
 
 #upButton{
     display: block;
-    margin-left: 26px;
+    margin-left: 22px;
 }
 
 #leftButton{
@@ -817,13 +818,13 @@ button.rescaleButton:hover{
 }
 
 #rightButton{
-    margin-left: 26px;
+    margin-left: 22px;
     float: right;
 }
 
 #downButton{
     display: block;
-    margin-left: 26px;
+    margin-left: 22px;
 }
 
 /*--end rescale----------------------------------------------*/

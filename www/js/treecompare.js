@@ -2247,7 +2247,14 @@ var TreeCompare = function(){
         }
 
         buildToolbar(canvasId);
+
+        if (settings.enableSizeControls) {
+            createTreeRescale(canvasId, "rescale", baseTree);
+        }
+
         createZoomSlider(canvasId, "zoom", baseTree);
+        createTreeDownload(canvasId, "export");
+
 
         d3.select("#" + canvasId).select(".treeToolsButton")
             .on("click", function(){
@@ -2987,11 +2994,11 @@ var TreeCompare = function(){
 
     }
 
-    function createTreeRescale(canvasId, baseTree) {
+    function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
         function buildRescaleButtons(canvasId) {
 
-            var rescaleDiv = d3.select("#" + canvasId).append("div")
+            var rescaleDiv = d3.select("#" + canvasId).select("." + rescaleClass).append("div")
                 .attr("class", "rescaleButtons");
 
             //up button
@@ -3085,7 +3092,7 @@ var TreeCompare = function(){
         });
     }
 
-    function createTreeDownload(canvasId){
+    function createTreeDownload(canvasId, downloadClass){
 
 
         function buildDownloadButton(canvasId, downloadClass) {
@@ -3278,13 +3285,18 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
+        $("#"+canvasId+" .treeToolsMenu").remove();
+        $("#"+canvasId+" .treeToolsButton").remove();
+        $("#"+canvasId+" .shareButton").remove();
+        $("#"+canvasId+" .undoButton").remove();
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
+        $("#"+canvasId+" .zoomSlider").remove();
 
 
-        if (settings.enableSizeControls) {
-            createTreeRescale(canvasId, baseTree);
-        }
+        // if (settings.enableSizeControls) {
+        //     createTreeRescale(canvasId, baseTree);
+        // }
 
         if (settings.enableSearch) {
             createLeafSearch(canvasId, baseTree);
@@ -4002,8 +4014,6 @@ var TreeCompare = function(){
             createTreeToggle(name2, canvas2, scale2, canvas1, scale1);
 
         }
-        createTreeDownload(canvas1);
-        createTreeDownload(canvas2);
 
     }
 
@@ -4028,7 +4038,6 @@ var TreeCompare = function(){
             renderTree(firstTree,newName,canvasId,scaleId);
 
             createTreeToggle(name, canvasId, scaleId);
-            createTreeDownload(canvasId);
 
         } else{
             //updateUndo(index);
@@ -4036,7 +4045,6 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            createTreeDownload(canvasId);
 
         }
     }
