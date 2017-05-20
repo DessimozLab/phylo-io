@@ -2151,6 +2151,25 @@ var TreeCompare = function(){
         }
     }
 
+    function createUndoButton(canvasId){
+
+        function buildUndoButton(canvasId){
+            var undo = d3.select("#" + canvasId).append("div")
+                .attr("class", "undo");
+
+            undo.append("a")
+                .attr("class", "btn btn-sm sharp undoButton")
+                .attr("id","undobtn")
+                .append("span")
+                .attr("class", "fa fa-undo")
+                .attr("aria-hidden","true");
+        }
+
+        buildUndoButton(canvasId);
+
+        undo("undobtn");
+    }
+
     function createShareButton(canvasId){
 
         function buildShareButton(canvasId){
@@ -2191,7 +2210,7 @@ var TreeCompare = function(){
         });
     }
 
-    function createToolbar(canvasId){
+    function createToolbar(canvasId, baseTree){
 
         function buildToolbar(canvasId) {
             var treeTools = d3.select("#" + canvasId).append("div")
@@ -2203,35 +2222,37 @@ var TreeCompare = function(){
                 .attr("class", "fa fa-wrench")
                 .attr("aria-hidden","true");
 
-            var treeToolsMenu = treeTools.append("div")
+            var treeToolsMenu = d3.select("#" + canvasId).append("div")
                 .attr("class", "treeToolsMenu");
+                // .append("ul")
+                // .attr("class", "treeToolsMenuContent");
 
             treeToolsMenu.append("li")
-                .attr("class", "rescale")
-                .append("div")
                 .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "rescale")
                 .text("Rescale");
 
             treeToolsMenu.append("li")
-                .attr("class", "zoom")
-                .append("div")
                 .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "zoom")
                 .text("Zoom");
 
             treeToolsMenu.append("li")
-                .attr("class", "export")
-                .append("div")
                 .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "export")
                 .text("Export");
         }
 
         buildToolbar(canvasId);
+        createZoomSlider("zoom", baseTree);
 
-        $(document).ready(function(){
-            $(".treeToolsButton").click(function(){
+        d3.select("#" + canvasId).select(".treeToolsButton")
+            .on("click", function(){
                 $(".treeToolsMenu").slideToggle(200);
             });
-        });
     }
 
 
@@ -3213,11 +3234,12 @@ var TreeCompare = function(){
 
     }
 
-    function createZoomSlider(canvasId, baseTree){
+    function createZoomSlider(toolbarClass, baseTree){
         var name = baseTree.name;
         //renders the manual zoom slider if turned on
         if (settings.enableZoomSliders) {
-            $("#" + canvasId).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+            $("." + toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+            // $("."+toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
         }
     }
 
@@ -3243,7 +3265,6 @@ var TreeCompare = function(){
                 scaleId: scaleId
             });
             //render various buttons and search bars and sliders
-            createZoomSlider(canvasId, tree);
             //renderDownloadButton(canvasId);
             createOppositeTreeActions(canvasId);
 
@@ -3261,7 +3282,6 @@ var TreeCompare = function(){
             });
 
             //render various buttons and search bars and sliders
-            createZoomSlider(canvasId, baseTree);
             //renderDownloadButton(canvasId);
             createOppositeTreeActions(canvasId);
         }
@@ -3294,8 +3314,9 @@ var TreeCompare = function(){
 
         if (settings.enableSearch) {
             createLeafSearch(canvasId, baseTree);
-            createToolbar(canvasId);
+            createToolbar(canvasId, baseTree);
             createShareButton(canvasId);
+            createUndoButton(canvasId);
             //renderSearchBar(canvasId, baseTree);
         }
 
@@ -3441,16 +3462,6 @@ var TreeCompare = function(){
         }
 
 
-
-        // if(undoIndex === 0){
-        //     // save treedata to undo
-        //
-        //     undoTreeData[undoIndex] = _.clone(baseTree.data);
-        //     undoSource[undoIndex] = _.clone(baseTree.root);
-        //     // update latest undo idx to the button -> 0
-        //     //$('#undoBtn').data('undoIdx', undoIndex);
-        // }
-        // updateUndo(0);
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);

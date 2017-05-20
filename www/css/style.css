@@ -496,11 +496,32 @@ rect.node {
 
 /*--end tree----------------------------------------------*/
 
+/*Styles for undobutton*/
+
+.undo {
+    padding: 5px;
+    right: 5px;
+    top: 5px;
+    position: absolute;
+}
+
+.undoButton {
+    width: 26px;
+    float: right;
+    opacity: 0.3
+}
+
+.undoButton:hover {
+    opacity: 1;
+}
+
+/*--end undo----------------------------------------------*/
+
 /*Styles for sharing*/
 
 .share {
     padding: 5px;
-    right: 5px;
+    right: 31px;
     top: 5px;
     position: absolute;
 }
@@ -520,15 +541,15 @@ rect.node {
 /*Styles for toolbar*/
 
 .treeTools {
-    padding: 5px;
-    right: 31px;
-    top: 5px;
     position: absolute;
+    padding: 5px;
+    right: 57px;
+    top: 5px;
 }
 
 .treeToolsButton {
     width: 26px;
-    float: right;
+    /*float: right;*/
     opacity: 0.3;
 }
 
@@ -537,26 +558,34 @@ rect.node {
 }
 
 .treeToolsMenu {
-    position:absolute;
-    align: center;
-    top: 31px;
+    text-align: left;
+    position: absolute;
+    padding: 2px;
+    right: 35px;
+    top: 35px;
+    width: 78px;
     border-style: solid;
-    border-width: 2px;
-    border-radius: 5px;
+    border-width: 1px;
+    border-radius: 3px;
     border-color: grey;
     padding-bottom: 2px;
     display: none;
 }
 
+treeToolsMenuContent {
+    text-align: left;
+}
+
 .treeToolsMenu li {
     list-style:none;
-    border-bottom: 1px;
-    /*text-align: left;*/
+    /*border-bottom: 1px;*/
     font-size: 8pt;
+    text-align: left;
 }
 
 .treeToolsText {
-    padding-left: 2px;
+    margin: auto;
+    text-align: left;
 }
 
 /*--end toolbar----------------------------------------------*/
@@ -565,7 +594,7 @@ rect.node {
 
 .searchBox {
     padding: 5px;
-    right: 57px;
+    right: 83px;
     top: 5px;
     position: absolute;
 }
@@ -795,25 +824,27 @@ button.rescaleButton:hover{
 /*Styles for zooming buttons*/
 
 .zoomSliderContainer {
-    position: absolute;
+    /*position: absolute;*/
+    margin: 0 auto;
     color: black;
+    width: 70px;
     /*margin-left: -55px;*/
     /*margin-top: 400px;*/
-    top: 50%;
-    bottom:0;
-    left: -55px;
+    /*top: 50%;*/
+    /*bottom:0;*/
+    left: 5px;
     /*right: 0;*/
-    margin: auto;
+    /*margin: auto;*/
     /*vertical-align: middle;*/
 
 }
-.zoomSlider {
-    -webkit-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    transform: rotate(90deg);
-}
+/*.zoomSlider {*/
+    /*-webkit-transform: rotate(90deg);*/
+    /*-ms-transform: rotate(90deg);*/
+    /*-moz-transform: rotate(90deg);*/
+    /*-o-transform: rotate(90deg);*/
+    /*transform: rotate(90deg);*/
+/*}*/
 
 /*--end zoom----------------------------------------------*/
 
