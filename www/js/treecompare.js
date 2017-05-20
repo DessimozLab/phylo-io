@@ -2247,11 +2247,11 @@ var TreeCompare = function(){
         }
 
         buildToolbar(canvasId);
-        createZoomSlider("zoom", baseTree);
+        createZoomSlider(canvasId, "zoom", baseTree);
 
         d3.select("#" + canvasId).select(".treeToolsButton")
             .on("click", function(){
-                $(".treeToolsMenu").slideToggle(200);
+                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
             });
     }
 
@@ -3131,6 +3131,27 @@ var TreeCompare = function(){
 
         }
 
+        // function buildDownloadButton(downloadClass) {
+        //
+        //     var downloadButton = d3.select(".downloadClass").append("div")
+        //         .attr("class", "btn-group export-group");
+        //     downloadButton.append("button")
+        //         .attr("id", "exportButton")
+        //         .attr("class", "btn btn-sm sharp")
+        //         .attr("type", "button")
+        //         .text("nwk");
+        //     downloadButton.append("button")
+        //         .attr("id", "exportButton")
+        //         .attr("class", "btn btn-sm sharp")
+        //         .attr("type", "button")
+        //         .text("svg");
+        //     downloadButton.append("button")
+        //         .attr("id", "exportButton")
+        //         .attr("class", "btn btn-sm sharp")
+        //         .attr("type", "button")
+        //         .text("png");
+        // }
+
         var width = 300, height = 300;
         // draws download buttons
         if (settings.enableDownloadButtons) {
@@ -3234,11 +3255,21 @@ var TreeCompare = function(){
 
     }
 
-    function createZoomSlider(toolbarClass, baseTree){
+    function createZoomSlider(canvasId, zoomClass, baseTree){
         var name = baseTree.name;
         //renders the manual zoom slider if turned on
         if (settings.enableZoomSliders) {
-            $("." + toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+            d3.select("#"+canvasId).select("."+zoomClass).append("div")
+                .attr("class", "zoomSliderContainer")
+                .append("input")
+                .attr("type", "range")
+                .attr("class", "zoomSlider")
+                .attr("id", "zoomSlider" + findTreeIndex(name))
+                .attr("min", "0.05")
+                .attr("max", "5")
+                .attr("value", "1.00")
+                .attr("step", "0.01");
+            // $("." + toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
             // $("."+toolbarClass).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
         }
     }
