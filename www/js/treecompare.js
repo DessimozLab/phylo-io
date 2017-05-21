@@ -71,7 +71,7 @@ var TreeCompare = function(){
         loadedCallback: function() {},
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
-        enableRerootFixedButtons: false,
+        enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
         zoomMode: "traditional", //semantic, traditional
         fitTree: "scale", //none, scale
@@ -2262,10 +2262,17 @@ var TreeCompare = function(){
             createTreeRescale(canvasId, "rescale", baseTree);
         }
 
-        createZoomSlider(canvasId, "zoom", baseTree);
-        createTreeDownload(canvasId, "export");
-        createOppositeTreeActions(canvasId, "oppositeTreeAction");
+        if (settings.enableZoomSliders){
+            createZoomSlider(canvasId, "zoom", baseTree);
+        }
 
+        if (settings.enableDownloadButtons) {
+            createTreeDownload(canvasId, "export");
+        }
+
+        if (settings.enableOppositeTreeActions && compareMode) {
+            createOppositeTreeActions(canvasId, "oppositeTreeAction");
+        }
 
         d3.select("#" + canvasId).select(".treeToolsButton")
             .on("click", function(){
@@ -3233,6 +3240,7 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
+
         $("#"+canvasId+" .treeToolsMenu").remove();
         $("#"+canvasId+" .treeToolsButton").remove();
         $("#"+canvasId+" .shareButton").remove();
@@ -3240,19 +3248,13 @@ var TreeCompare = function(){
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
         $("#"+canvasId+" .zoomSlider").remove();
+        $("#"+canvasId+" .oppositeTreeAction").remove();
 
-
-        // if (settings.enableSizeControls) {
-        //     createTreeRescale(canvasId, baseTree);
-        // }
-
-        if (settings.enableSearch) {
-            createLeafSearch(canvasId, baseTree);
-            createToolbar(canvasId, baseTree, compareMode);
-            createShareButton(canvasId);
-            createUndoButton(canvasId);
-            //renderSearchBar(canvasId, baseTree);
-        }
+        createLeafSearch(canvasId, baseTree);
+        createToolbar(canvasId, baseTree, compareMode);
+        createShareButton(canvasId);
+        createUndoButton(canvasId);
+        //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();

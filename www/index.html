@@ -288,26 +288,25 @@
         var spinnerTarget = document.getElementById("page-content-wrapper");
 
         var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
-            var treecomp = TreeCompare().init({
-                scaleColor: "black",
-                loadingCallback: function() {
-                    spinner.spin(spinnerTarget);
-                },
-                loadedCallback: function() {
-                    spinner.stop();
-                },
-                enableRerootFixedButtons: $("#rerootFixedButtons").val(),
-                enableSwapFixedButtons: $("#swapFixedButtons").val(),
-                lineThickness: $("#lineThickness").val(),
-                nodeSize: $("#nodeSize").val(),
-                fontSize: $("#fontSize").val(),
-                useLengths: $("#useLengths").is(":checked"),
-                selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
-                comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
-                moveOnClick: $("#moveOnMouseOver").is(":checked"),
-                clickAction: $("input[name=clickAction]:checked").val(),
-                autoCollapse: $("#collapseAmount").html()
-            });
+        var treecomp = TreeCompare().init({
+            scaleColor: "black",
+            loadingCallback: function() {
+                spinner.spin(spinnerTarget);
+            },
+            loadedCallback: function() {
+                spinner.stop();
+            },
+            enableOppositeTreeActions: $("#rerootFixedButtons").val(),
+            lineThickness: $("#lineThickness").val(),
+            nodeSize: $("#nodeSize").val(),
+            fontSize: $("#fontSize").val(),
+            useLengths: $("#useLengths").is(":checked"),
+            selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
+            comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
+            moveOnClick: $("#moveOnMouseOver").is(":checked"),
+            clickAction: $("input[name=clickAction]:checked").val(),
+            autoCollapse: $("#collapseAmount").html()
+        });
 
         var undoIndex = 0;
 
