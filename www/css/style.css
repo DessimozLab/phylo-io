@@ -782,6 +782,48 @@ button.treeToggleButton span{
 
 /*--end export----------------------------------------------*/
 
+/*styles for opposite Tree action functionality*/
+
+.opTreeAcGroup {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#opTreeAcButton {
+    width: 49px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+
+#opTreeAcButton:hover{
+    opacity: 1.0;
+}
+
+#opTreeAcPanel {
+    display: none;
+    background-color: #999;
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+}
+
+/*.dropdown-menu {*/
+/*min-width: 60px;*/
+/*font-size: 11px;*/
+/*margin: 1px 0px 1px 0px;*/
+/*text-align: center;*/
+/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
+/*background-color: white;*/
+/*}*/
+
+/*.dropdown-menu li a{*/
+/*padding: 1px 0px 1px 0px;*/
+/*}*/
+
+/*--end export----------------------------------------------*/
+
+
 /*Styles for rescaling buttons*/
 
 div.rescaleButtons {

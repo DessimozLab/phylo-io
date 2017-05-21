@@ -415,7 +415,7 @@ var TreeCompare = function(){
                     ancestors[ancestors.length - 1].children.push(subtree);
                     tree = subtree;
                     break;
-                case '['://TODO: input NHX format
+                case '['://input NHX format
                     x = new_tokens[i + 1];
                     if (x.indexOf("&&NHX")!==-1){ //if NHX format
 
@@ -1576,17 +1576,19 @@ var TreeCompare = function(){
         // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
-        var lengthMult = treeData.treeWidth;
+        //TODO: the drag and drop of the tree doesn't work properly
+        var lengthMult = treeData.treeWidth + 90;
+
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
             if (settings.useLengths) { //setting selected by user
-                d.y = getLength(d) * (lengthMult / maxLength); //adjust position to screen size
+                d.y = getLength(d)* (lengthMult / maxLength); //adjust position to screen size
                 d.baseY = d.y;
             } else {
                 d.y = d.depth * lengthMult / 10;
                 d.baseY = d.y;
             }
-            d.y = d.y + padding;
+            d.y = d.y - 90;
         });
 
         setXPos(treeData.root, 0);
@@ -2210,7 +2212,7 @@ var TreeCompare = function(){
         });
     }
 
-    function createToolbar(canvasId, baseTree){
+    function createToolbar(canvasId, baseTree, compareMode){
 
         function buildToolbar(canvasId) {
             var treeTools = d3.select("#" + canvasId).append("div")
@@ -2244,6 +2246,14 @@ var TreeCompare = function(){
                 .append("div")
                 .attr("class", "export")
                 .text("Export");
+
+            if (compareMode) {
+                treeToolsMenu.append("li")
+                    .attr("class", "treeToolsText")
+                    .append("div")
+                    .attr("class", "oppositeTreeAction")
+                    .text("Equalize trees");
+            }
         }
 
         buildToolbar(canvasId);
@@ -2254,6 +2264,7 @@ var TreeCompare = function(){
 
         createZoomSlider(canvasId, "zoom", baseTree);
         createTreeDownload(canvasId, "export");
+        createOppositeTreeActions(canvasId, "oppositeTreeAction");
 
 
         d3.select("#" + canvasId).select(".treeToolsButton")
@@ -2263,7 +2274,7 @@ var TreeCompare = function(){
     }
 
 
-    function createOppositeTreeActions(canvasId) {
+    function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
          /
          /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
@@ -2418,80 +2429,21 @@ var TreeCompare = function(){
             settings.loadedCallback();
         }
 
-        function prepareMiddleButtonsTable(id, left) {
-            if(id === left){
-                $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
-                $("#fixedButtonsText"+id).css({
-                    "right": "30px",
-                    "background-color": "white",
-                    "bottom": "0px",
-                    "font-size": "14px",
-                    "color": "#999",
-                    "position": "absolute"
-
-                });
-                var row1 = d3.select("#fixedButtonsText"+id).append("tr");
-
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-left")
-                    .style("cursor","pointer")
-                    .attr("id","rerootButton"+id);
-
-                var row2 = d3.select("#fixedButtonsText"+id).append("tr");
-
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-left")
-                    .style("cursor","pointer")
-                    .attr("id","swapButton"+id);
-            } else {
-                $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
-
-                $("#fixedButtonsText"+id).css({
-                    "left": "-30px",
-                    "background-color": "white",
-                    "bottom": "0px",
-                    "font-size": "14px",
-                    "color": "#999",
-                    "position": "absolute"
-
-                });
-
-                row1 = d3.select("#fixedButtonsText"+id).append("tr");
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","60px")
-                    .text("reroot")
-                    .attr("title","find best rooting point according to opposite tree and reroot")
-                    .attr("id","reroot-text");
-                row1.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-right")
-                    .style("cursor","pointer")
-                    .attr("id","rerootButton"+id);
-
-                row2 = d3.select("#fixedButtonsText"+id).append("tr");
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","60px")
-                    .text("reorder")
-                    .attr("title","reorder leaves according to opposite tree")
-                    .attr("id","reorder-text");
-                row2.append("td")
-                    .attr("align","center")
-                    .attr("width","15px")
-                    .append("span")
-                    .attr("class","glyphicon glyphicon-circle-arrow-right")
-                    .style("cursor","pointer")
-                    .attr("id","swapButton"+id);
-            }
+        function buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass){
+            var oppositeTreeActionButton = d3.select("#"+canvasId).select("."+oppositeTreeActionsClass).append("div")
+                .attr("class", "btn-group opTreeAc-group");
+            oppositeTreeActionButton.append("button")
+                .attr("id", "opTreeAcButton")
+                .attr("class", "btn btn-sm sharp opTreeAcButtonReroot")
+                .attr("type", "button")
+                .append("span")
+                .text("reroot");
+            oppositeTreeActionButton.append("button")
+                .attr("id", "opTreeAcButton")
+                .attr("class", "btn btn-sm sharp opTreeAcButtonReorder")
+                .attr("type", "button")
+                .append("span")
+                .text("reorder");
         }
 
         /*----------------------
@@ -2501,29 +2453,25 @@ var TreeCompare = function(){
          ----------------------*/
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
-            prepareMiddleButtonsTable(canvasId, "vis-container1");
+            buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass);
         }
 
-        var timeoutIdReroot = 0;
-        // action when clicking on reroot button in the center of the compare mode
-        $("#" + "rerootButton" + canvasId).mousedown(function() {
-            settings.loadingCallback();
-            setTimeout(function() {
-                findBestCorrespondingTree(canvasId);
-            },2);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdReroot);
-        });
 
-        // action when clicking on swap button in the center of the compare mode
-        $("#" + "swapButton" + canvasId).mousedown(function() {
-            settings.loadingCallback();
-            setTimeout(function() {
-                findBestCorrespondingLeafOrder(canvasId);
-            },2);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdReroot);
-        });
+        d3.select("#"+canvasId).select(".opTreeAcButtonReroot")
+            .on("click", function(){
+                settings.loadingCallback();
+                setTimeout(function() {
+                    findBestCorrespondingTree(canvasId);
+                },2);
+            });
+
+        d3.select("#"+canvasId).select(".opTreeAcButtonReorder")
+            .on("click", function(){
+                settings.loadingCallback();
+                setTimeout(function() {
+                    findBestCorrespondingLeafOrder(canvasId);
+                },2);
+            });
 
     }
 
@@ -3300,7 +3248,7 @@ var TreeCompare = function(){
 
         if (settings.enableSearch) {
             createLeafSearch(canvasId, baseTree);
-            createToolbar(canvasId, baseTree);
+            createToolbar(canvasId, baseTree, compareMode);
             createShareButton(canvasId);
             createUndoButton(canvasId);
             //renderSearchBar(canvasId, baseTree);
@@ -3802,7 +3750,7 @@ var TreeCompare = function(){
         // use web workers only if trees are very large
         if(tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100){
             getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
-        } else { //TODO: can be removed
+        } else {
             getVisibleBCNs(tree1,tree2);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees1.name)].data);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees2.name)].data);
@@ -4557,7 +4505,7 @@ var TreeCompare = function(){
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
-            var x = coordinates[0]; //TODO: why the hell is this??????
+            var x = coordinates[0];
             var y = coordinates[1];
 
 
