@@ -13,11 +13,14 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script src="https://use.fontawesome.com/28dcb2432d.js"></script>
+
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -224,6 +227,7 @@
 
     <!-- Menu Toggle Script -->
     <script>
+        //new ui
 
         // Ensures that the acknowledgment footer is correctly placed in the sidebar
         (function () {
@@ -284,26 +288,25 @@
         var spinnerTarget = document.getElementById("page-content-wrapper");
 
         var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
-            var treecomp = TreeCompare().init({
-                scaleColor: "black",
-                loadingCallback: function() {
-                    spinner.spin(spinnerTarget);
-                },
-                loadedCallback: function() {
-                    spinner.stop();
-                },
-                enableRerootFixedButtons: $("#rerootFixedButtons").val(),
-                enableSwapFixedButtons: $("#swapFixedButtons").val(),
-                lineThickness: $("#lineThickness").val(),
-                nodeSize: $("#nodeSize").val(),
-                fontSize: $("#fontSize").val(),
-                useLengths: $("#useLengths").is(":checked"),
-                selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
-                comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
-                moveOnClick: $("#moveOnMouseOver").is(":checked"),
-                clickAction: $("input[name=clickAction]:checked").val(),
-                autoCollapse: $("#collapseAmount").html()
-            });
+        var treecomp = TreeCompare().init({
+            scaleColor: "black",
+            loadingCallback: function() {
+                spinner.spin(spinnerTarget);
+            },
+            loadedCallback: function() {
+                spinner.stop();
+            },
+            enableOppositeTreeActions: $("#rerootFixedButtons").val(),
+            lineThickness: $("#lineThickness").val(),
+            nodeSize: $("#nodeSize").val(),
+            fontSize: $("#fontSize").val(),
+            useLengths: $("#useLengths").is(":checked"),
+            selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
+            comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
+            moveOnClick: $("#moveOnMouseOver").is(":checked"),
+            clickAction: $("input[name=clickAction]:checked").val(),
+            autoCollapse: $("#collapseAmount").html()
+        });
 
         var undoIndex = 0;
 
@@ -610,34 +613,7 @@
             }
         });
 
-        /*------
-         /
-         /    SHARE BUTTON
-         /
-         ------*/
-        $("#export").click(function(e) {
-            var mode = $("#mode-buttons .active").attr('id');
-            if (mode === "compare-btn") {
-                try {
-                    var exportURLGist = treecomp.exportTree(true);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
-                } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-                }
-            } else if (mode === "view-btn"){
-                try{
-                    var exportURLGist = treecomp.exportTree(false);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
-                } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-                }
 
-            }
-        });
 
         /*------
          /
@@ -699,8 +675,6 @@
             $(v).each(function(i){
                 ($(this).hide().next().hide())
             });
-
-            //$("#undoBtn").hide();
 
         }
 

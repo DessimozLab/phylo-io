@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Phylo.io</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/treecompare.js"></script>
+    <script type="text/javascript" src="js/underscore.min.js"></script>
+    <script type="text/javascript" src="js/spin.min.js"></script>
+    <script type="text/javascript" src="js/d3.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/circular-json.js"></script>
+    <script type="text/javascript" src="js/canvas-toBlob.js"></script>
+    <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script src="https://use.fontawesome.com/28dcb2432d.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
+    <link rel="stylesheet" type="text/css" href="css/ol.css">
+    <link rel="stylesheet" type="text/css" href="css/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/style_toolbar.css">
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-105586-10', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+    <style>
+        .extraMargin + span:after {
+            content:"\000A";
+            white-space: pre;
+        }
+    </style>
+</head>
+
+<body>
+<div id="page-content-wrapper">
+    <div class="tree-tools">
+        <span id="tools" class="fa fa-wrench"></span>
+        <div class="tree-tools-menu">
+            <li class="rescale"><div class="tree-tools-text">Rescale</div></li>
+            <li class="zoom"><div class="tree-tools-text">Zoom</div></li>
+            <li class="export"><div class="tree-tools-text">Export</div></li>
+            <li class="search"><div class="tree-tools-text">Search</div></li>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    $(".zoom").append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+
+    var downloadButton = d3.select(".export").append("div")
+        .attr("class", "btn-group export-group");
+    downloadButton.append("button")
+        .attr("id", "exportButton")
+        .attr("class", "btn btn-sm sharp")
+        .attr("type", "button")
+        .text("nwk");
+    downloadButton.append("button")
+        .attr("id", "exportButton")
+        .attr("class", "btn btn-sm sharp")
+        .attr("type", "button")
+        .text("svg");
+    downloadButton.append("button")
+        .attr("id", "exportButton")
+        .attr("class", "btn btn-sm sharp")
+        .attr("type", "button")
+        .text("png");
+
+    var rescaleDiv = d3.select(".rescale").append("div")
+        .attr("class", "rescaleButtons");
+
+    //up button
+    rescaleDiv.append("button")
+        .attr("class", "btn btn-sm sharp rescaleButton")
+        .attr("id", "upButton")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-arrow-up")
+        .attr("aria-hidden", "true");
+
+    //left button
+    rescaleDiv.append("button")
+        .attr("class", "btn btn-sm sharp rescaleButton")
+        .attr("id", "leftButton")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-arrow-left")
+        .attr("aria-hidden", "true");
+
+    //right button
+    rescaleDiv.append("button")
+        .attr("class", "btn btn-sm sharp rescaleButton")
+        .attr("id", "rightButton")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-arrow-right")
+        .attr("aria-hidden", "true");
+
+    //down button
+    rescaleDiv.append("button")
+        .attr("class", "btn btn-sm sharp rescaleButton")
+        .attr("id", "downButton")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-arrow-down")
+        .attr("aria-hidden", "true");
+
+    var searchDiv = d3.select(".search").append("div")
+        .attr("class", "input-group");
+
+    searchDiv.append("input")
+        .attr("class", "form-control")
+        .attr("type", "text")
+        .attr("placeholder", "search")
+        .attr("autofocus");
+
+//    var searchDivA = searchDiv.append("button")
+//        .attr("class", "btn btn-sm sharp searchButton");
+
+
+    searchDiv.append("button")
+        .attr("class", "btn btn-sm sharp searchButton")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-search")
+        .attr("aria-hidden","true");
+
+
+    $(document).ready(function(){
+        $("#tools").click(function(){
+            $(".tree-tools-menu").slideToggle(200);
+        });
+    });
+
+
+</script>
+
+</html>

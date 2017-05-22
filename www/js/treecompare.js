@@ -71,7 +71,7 @@ var TreeCompare = function(){
         loadedCallback: function() {},
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
-        enableRerootFixedButtons: false,
+        enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
         zoomMode: "traditional", //semantic, traditional
         fitTree: "scale", //none, scale
@@ -415,7 +415,7 @@ var TreeCompare = function(){
                     ancestors[ancestors.length - 1].children.push(subtree);
                     tree = subtree;
                     break;
-                case '['://TODO: input NHX format
+                case '['://input NHX format
                     x = new_tokens[i + 1];
                     if (x.indexOf("&&NHX")!==-1){ //if NHX format
 
@@ -1233,7 +1233,7 @@ var TreeCompare = function(){
 
             // if searchbar shown hide it when rerooting and remove all search highlight
             d3.selectAll(".link").attr("class", "link");
-            hideSearchBar(tree.data.canvasId);
+            //hideSearchBar(tree.data.canvasId);
 
             return tree;
         } else {
@@ -1247,160 +1247,6 @@ var TreeCompare = function(){
         return trees[findTreeIndex(name)];
     }
 
-
-    /*---------------
-     /
-     /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
-     /      works only in "compare mode" and needs the canvasId to know which tree will
-     /      be manipulated
-     /
-     ---------------*/
-    function findBestCorrespondingTree(canvasId){
-        var isCompared = true;
-        var canvasLeft = "vis-container1";
-        var canvasRight = "vis-container2";
-        var tree;
-        var fixedTree;
-
-        if (canvasId === canvasLeft){ //ensures that the right tree is fixed
-            tree = getTreeFromCanvasId(canvasLeft);
-            fixedTree = getTreeFromCanvasId(canvasRight);
-        }else{
-            tree = getTreeFromCanvasId(canvasRight);
-            fixedTree = getTreeFromCanvasId(canvasLeft);
-        }
-
-        settings.loadingCallback();
-        setTimeout(function() {
-            //------
-            //
-            // Main part: reroot at the node that is most similar to fixed tree root
-            //
-            //------
-            var rerootedTree;
-            if (fixedTree.root.children[0].elementBCN.parent){
-                expandPathToNode(fixedTree.root.children[0].elementBCN);
-                rerootedTree = reroot(tree, fixedTree.root.children[0].elementBCN);
-            }
-
-            if (isCompared){
-                var index1 = findTreeIndex(tree.name);
-                var index2 = findTreeIndex(fixedTree.name);
-                preprocessTrees(trees[index1], trees[index2]);
-                //settings.loadedCallback();
-
-                if (rerootedTree !== undefined) {
-                    update(tree.root, rerootedTree.data);
-                }
-                update(fixedTree.root, fixedTree.data);
-            }
-        }, 2);
-    }
-
-    /*---------------
-     /
-     /  Function to swap on nodes to optimize the visualisation between two trees
-     /      works only in "compare mode" and needs the canvasId to know which tree will
-     /      be manipulated
-     /
-     ---------------*/
-    function findBestCorrespondingLeafOrder(canvasId){
-
-        var canvasLeft = "vis-container1";
-        var canvasRight = "vis-container2";
-        var tree;
-        var fixedTree;
-
-        if (canvasId === canvasLeft){ //ensures that the right tree is fixed
-            tree = getTreeFromCanvasId(canvasLeft);
-            fixedTree = getTreeFromCanvasId(canvasRight);
-        }else{
-            tree = getTreeFromCanvasId(canvasRight);
-            fixedTree = getTreeFromCanvasId(canvasLeft);
-        }
-
-        //------
-        // SWAP branches at a specific node
-        // input: node d with its children
-        //------
-        function rotate(d) {
-            var first;
-            var second;
-            if (d.children){
-                first = d.children[0];
-                second = d.children[1];
-                d.children[0] = second;
-                d.children[1] = first;
-            }else if(d._children){
-                first = d._children[0];
-                second = d._children[1];
-                d._children[0] = second;
-                d._children[1] = first;
-            }
-
-        }
-
-        //------
-        // GET the leafnames part of a specific node d
-        // input: node d with its children
-        //------
-        function getChildLeafNames(d){
-            var leafNames = [];
-            var leaves = getChildLeaves(d);
-            for (var i = 0; i < leaves.length; i++){
-                leafNames.push(leaves[i].name);
-            }
-            return leafNames;
-        }
-
-        //------
-        // GET the corresponding node based on best overlap of leaves between two trees
-        // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
-        //------
-        function getCorrespondingNode(treeLeaves, ifixedTree){
-
-            var bestCorrespondingFixTreeLeaves = "";
-            var bestCount = 0;
-            postorderTraverse(ifixedTree.root, function(d){
-                if (d.children || d._children){
-                    var fixedTreeLeaves = getChildLeafNames(d);
-                    var count = 0;
-
-                     for (var i = 0; i < fixedTreeLeaves.length; i++){
-                         if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
-                            count += 1;
-                        }
-                    }
-
-                    if (count > bestCount){
-                        bestCorrespondingFixTreeLeaves = fixedTreeLeaves;
-                        bestCount = count;
-                    }
-                }
-            },true);
-
-            return bestCorrespondingFixTreeLeaves;
-        }
-
-        //------
-        //
-        // Main part: traverses all nodes of tree and if different leaf order in fixedTree calls the rotate function
-        //
-        //------
-        postorderTraverse(tree.root,function(d){
-
-            if (d.children || d._children){
-                var leaves = getChildLeafNames(d);
-                var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
-                if (leaves[0]!==fixedLeaves[0] && leaves[leaves.length-1]!==fixedLeaves[fixedLeaves.length-1]){
-                    rotate(d);
-                }
-            }
-        },true);
-
-        update(tree.root, tree.data);
-        settings.loadedCallback();
-    }
 
 
     /*---------------
@@ -1730,17 +1576,19 @@ var TreeCompare = function(){
         // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
-        var lengthMult = treeData.treeWidth;
+        //TODO: the drag and drop of the tree doesn't work properly
+        var lengthMult = treeData.treeWidth + 90;
+
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
             if (settings.useLengths) { //setting selected by user
-                d.y = getLength(d) * (lengthMult / maxLength); //adjust position to screen size
+                d.y = getLength(d)* (lengthMult / maxLength); //adjust position to screen size
                 d.baseY = d.y;
             } else {
                 d.y = d.depth * lengthMult / 10;
                 d.baseY = d.y;
             }
-            d.y = d.y + padding;
+            d.y = d.y - 90;
         });
 
         setXPos(treeData.root, 0);
@@ -2289,232 +2137,6 @@ var TreeCompare = function(){
         }
     }
 
-    function buildDownloadButton(canvasId){
-
-        var svg = d3.select("#" + canvasId + " svg")
-            .attr("version", 1.1)
-            .attr("xmlns", "http://www.w3.org/2000/svg");
-
-
-        var downloadButton = d3.select("#" + canvasId).append("div")
-            .attr("class", "dropup");
-        downloadButton.append("button")
-            .attr("id", "exportButton")
-            .attr("class", "btn btn-sm sharp dropdown-toggle")
-            .attr("type", "button")
-            .attr("data-toggle", "dropdown")
-            .text("Export ")
-            .on('click', function(){
-                document.getElementById(canvasId + "_exportList").classList.toggle("visible");
-            })
-            .append("span")
-            .attr("class", "caret");
-
-
-        // position adjustment in compare mode
-        if (canvasId.search("1")!=-1){
-            downloadButton.style("left", "10px")
-                .style("bottom", "10px")
-                .style("position", "absolute");
-
-        } else if(canvasId.search("2")!=-1){
-            downloadButton.style("right", "10px")
-                .style("bottom", "10px")
-                .style("position", "absolute");
-
-        }
-
-        // ensures that exportList is removed when clicking on canvas
-        $(document).click(function(event) {
-            if(!$(event.target).closest('.dropup').length && $('#'+canvasId+'_exportList').is(":visible")) {
-                $('#'+canvasId+'_exportList').hide();
-            }
-        });
-
-    }
-
-    // function to render the download buttons
-    function renderDownloadButton(canvasId){
-        var width = 300, height = 300;
-        // draws download buttons
-        if (settings.enableDownloadButtons) {
-
-            // draw button
-            buildDownloadButton(canvasId);
-
-            var downloadButton = d3.select("#"+canvasId+" .dropup");
-
-            var exportList = downloadButton.append("ul")
-                .attr("class", "dropdown-menu")
-                .attr("id", canvasId + "_exportList");
-
-            // PNG
-            exportList.append("li")
-                .append("a")
-                .attr("id", "savePng")
-                .text("PNG")
-                .on('click', function () {
-                    var svg = d3.select("#" + canvasId + " svg");
-                    var svgString = getSVGString(svg.node());
-                    svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
-                    function save(dataBlob, filesize) {
-                        saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
-                    }
-                });
-
-            // SVG
-            exportList.append("li")
-                .append("a")
-                .attr("id", "saveSvg")
-                .text("SVG")
-                .on("click", function (){
-                    var svg = d3.select("#" + canvasId + " svg");
-                    var name = svg.attr("id");
-                    var svgString = getSVGString(svg.node());
-                    var blob = new Blob([svgString], {"type": "image/svg+xml;base64,"+ btoa(svgString)});
-                    saveAs(blob, name+".svg");
-                });
-
-            // NWK
-            exportList.append("li")
-                .append("a")
-                .attr("id", "saveNwk")
-                .attr("download", "phylo.io.nwk")
-                .text("NWK")
-                .on("click", function (){
-                    var name = d3.select("#" + canvasId + " svg").attr("id");
-                    var tree = trees[findTreeIndex(name)];
-                    var nwkString = tree2Newick(tree.root);
-                    var blob = new Blob([nwkString], {"type": "text/plain;charset=utf-8," + encodeURIComponent(nwkString)});
-                    saveAs(blob, "phylo.io.nwk");
-                });
-
-
-            // Below are the functions that handle actual exporting:
-            // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
-            // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
-            function getSVGString( svgNode ) {
-                svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                //var cssStyleText = getCSSStyles( svgNode );
-                // appendCSS( cssStyleText, svgNode );
-
-                var serializer = new XMLSerializer();
-                var svgString = serializer.serializeToString(svgNode);
-                svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-                svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
-
-                return svgString;
-
-                // -------
-                // by addition of the style fill:none to each path I can remove this whole part of the code.
-                //--------
-                // function getCSSStyles( parentElement ) {
-                //     var selectorTextArr = [];
-                //
-                //     // Add Parent element Id and Classes to the list
-                //     selectorTextArr.push( '#'+parentElement.id );
-                //     for (var c = 0; c < parentElement.classList.length; c++)
-                //         if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
-                //             selectorTextArr.push( '.'+parentElement.classList[c] );
-                //
-                //     // Add Children element Ids and Classes to the list
-                //     var nodes = parentElement.getElementsByTagName("*");
-                //     for (var i = 0; i < nodes.length; i++) {
-                //         var id = nodes[i].id;
-                //         if ( !contains('#'+id, selectorTextArr) )
-                //             selectorTextArr.push( '#'+id );
-                //
-                //         var classes = nodes[i].classList;
-                //         for (var c = 0; c < classes.length; c++){
-                //             if ( !contains('.'+classes[c], selectorTextArr) ){
-                //                 var tagName = document.getElementsByClassName(classes[c])[0].tagName;
-                //                 selectorTextArr.push(tagName+'.'+classes[c]);
-                //             }
-                //         }
-                //     }
-                //
-                //     // Extract CSS Rules
-                //     var extractedCSSText = "";
-                //     for (var i = 0; i < document.styleSheets.length; i++) {
-                //         var s = document.styleSheets[i];
-                //
-                //         try {
-                //             if(!s.cssRules) continue;
-                //         } catch( e ) {
-                //             if(e.name !== 'SecurityError') throw e; // for Firefox
-                //             continue;
-                //         }
-                //
-                //         var cssRules = s.cssRules;
-                //         for (var r = 0; r < cssRules.length; r++) {
-                //             if ( contains( cssRules[r].selectorText, selectorTextArr ) )
-                //                 extractedCSSText += cssRules[r].cssText;
-                //         }
-                //     }
-                //
-                //
-                //     return extractedCSSText;
-                //
-                //     function contains(str,arr) {
-                //         return arr.indexOf( str ) === -1 ? false : true;
-                //     }
-                //
-                // }
-                //
-                // function appendCSS( cssText, element ) {
-                //     var styleElement = document.createElement("style");
-                //     styleElement.setAttribute("type","text/css");
-                //     styleElement.innerHTML = cssText;
-                //     var refNode = element.hasChildNodes() ? element.children[0] : null;
-                //     element.insertBefore( styleElement, refNode );
-                // }
-            }
-
-            function svgString2Image( svgString, width, height, format, callback ) {
-                var format = format ? format : 'png';
-
-                var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to dataurl
-
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-
-                canvas.width = width;
-                canvas.height = height;
-
-                var image = new Image;
-                image.onload = function() {
-
-                    context.clearRect ( 0, 0, width, height );
-                    context.fillStyle = "#ffffff";
-                    context.fillRect(0, 0, width, height);
-                    context.drawImage(image, 0, 0, width, height);
-
-                    canvas.toBlob( function(blob) {
-                        var filesize = Math.round( blob.length/1024 ) + ' KB';
-                        if ( callback ) callback( blob, filesize );
-                    });
-                };
-                image.src = imgsrc;
-            }
-
-        }
-    }
-    /*
-     Helper function allows to search even partial strings
-     */
-    function stringSearch(string, start){
-        var does = true;
-        var n;
-        if(start !== ""){
-            n = string.search(start);
-        }else{
-            n = -1;
-        }
-        if (n===-1) {
-            does = false;
-        }
-        return does;
-    }
 
     /*
      Find the heighest collapsed node in the parents of a node
@@ -2531,529 +2153,443 @@ var TreeCompare = function(){
         }
     }
 
-    function renderZoomSlider(tree, canvasId){
-        var name = tree.name;
-        //renders the manual zoom slider if turned on
-        if (settings.enableZoomSliders) {
-            $("#" + canvasId).append('<div class="zoomSliderContainer"><input type="range" class="zoomSlider" id="zoomSlider' + findTreeIndex(name) + '" min="0.05" max="5" value="1.00" step="0.01"></input></div>');
+    function createUndoButton(canvasId){
+
+        function buildUndoButton(canvasId){
+            var undo = d3.select("#" + canvasId).append("div")
+                .attr("class", "undo");
+
+            undo.append("a")
+                .attr("class", "btn btn-sm sharp undoButton")
+                .attr("id","undobtn")
+                .append("span")
+                .attr("class", "fa fa-undo")
+                .attr("aria-hidden","true");
         }
+
+        buildUndoButton(canvasId);
+
+        undo(canvasId, "undobtn");
+    }
+
+    function createShareButton(canvasId){
+
+        function buildShareButton(canvasId){
+            var shareTools = d3.select("#" + canvasId).append("div")
+                .attr("class", "share");
+
+            shareTools.append("a")
+                .attr("class", "btn btn-sm sharp shareButton")
+                .append("span")
+                .attr("class", "fa fa-cloud-upload")
+                .attr("aria-hidden","true");
+        }
+
+        buildShareButton(canvasId);
+
+        $(".shareButton").click(function(e) {
+            var mode = $("#mode-buttons .active").attr('id');
+            if (mode === "compare-btn") {
+                try {
+                    var exportURLGist = treecomp.exportTree(true);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
+                    $('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                }
+            } else if (mode === "view-btn"){
+                try{
+                    var exportURLGist = treecomp.exportTree(false);
+                    $("#exportURLInSingle").attr('href', exportURLGist);
+                    $("#exportURLInSingle").html(exportURLGist);
+                    $('#myModal').modal('show');
+                } catch (e) {
+                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                }
+
+            }
+        });
+    }
+
+    function createToolbar(canvasId, baseTree, compareMode){
+
+        function buildToolbar(canvasId) {
+            var treeTools = d3.select("#" + canvasId).append("div")
+                .attr("class", "treeTools");
+
+            treeTools.append("a")
+                .attr("class", "btn btn-sm sharp treeToolsButton")
+                .append("span")
+                .attr("class", "fa fa-wrench")
+                .attr("aria-hidden","true");
+
+            var treeToolsMenu = d3.select("#" + canvasId).append("div")
+                .attr("class", "treeToolsMenu");
+                // .append("ul")
+                // .attr("class", "treeToolsMenuContent");
+
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "rescale")
+                .text("Rescale");
+
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "zoom")
+                .text("Zoom");
+
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "export")
+                .text("Export");
+
+            if (compareMode) {
+                treeToolsMenu.append("li")
+                    .attr("class", "treeToolsText")
+                    .append("div")
+                    .attr("class", "oppositeTreeAction")
+                    .text("Equalize trees");
+            }
+        }
+
+        buildToolbar(canvasId);
+
+        if (settings.enableSizeControls) {
+            createTreeRescale(canvasId, "rescale", baseTree);
+        }
+
+        if (settings.enableZoomSliders){
+            createZoomSlider(canvasId, "zoom", baseTree);
+        }
+
+        if (settings.enableDownloadButtons) {
+            createTreeDownload(canvasId, "export");
+        }
+
+        if (settings.enableOppositeTreeActions && compareMode) {
+            createOppositeTreeActions(canvasId, "oppositeTreeAction");
+        }
+
+        d3.select("#" + canvasId).select(".treeToolsButton")
+            .on("click", function(){
+                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+            });
     }
 
 
-    function prepareMiddleButtonsTable(id, left) {
-        if(id === left){
-            $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
-            $("#fixedButtonsText"+id).css({
-                "right": "30px",
-                "background-color": "white",
-                "bottom": "0px",
-                "font-size": "14px",
-                "color": "#999",
-                "position": "absolute"
 
-            });
-            var row1 = d3.select("#fixedButtonsText"+id).append("tr");
+    function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
+        /*---------------
+         /
+         /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
+         /      works only in "compare mode" and needs the canvasId to know which tree will
+         /      be manipulated
+         /
+         ---------------*/
+        function findBestCorrespondingTree(canvasId){
+            var isCompared = true;
+            var canvasLeft = "vis-container1";
+            var canvasRight = "vis-container2";
+            var tree;
+            var fixedTree;
 
-            row1.append("td")
-                .attr("align","center")
-                .attr("width","15px")
-                .append("span")
-                .attr("class","glyphicon glyphicon-circle-arrow-left")
-                .style("cursor","pointer")
-                .attr("id","rerootButton"+id);
+            if (canvasId === canvasLeft){ //ensures that the right tree is fixed
+                tree = getTreeFromCanvasId(canvasLeft);
+                fixedTree = getTreeFromCanvasId(canvasRight);
+            }else{
+                tree = getTreeFromCanvasId(canvasRight);
+                fixedTree = getTreeFromCanvasId(canvasLeft);
+            }
 
-            var row2 = d3.select("#fixedButtonsText"+id).append("tr");
+            settings.loadingCallback();
+            setTimeout(function() {
+                //------
+                //
+                // Main part: reroot at the node that is most similar to fixed tree root
+                //
+                //------
+                var rerootedTree;
+                if (fixedTree.root.children[0].elementBCN.parent){
+                    expandPathToNode(fixedTree.root.children[0].elementBCN);
+                    rerootedTree = reroot(tree, fixedTree.root.children[0].elementBCN);
+                }
 
-            row2.append("td")
-                .attr("align","center")
-                .attr("width","15px")
-                .append("span")
-                .attr("class","glyphicon glyphicon-circle-arrow-left")
-                .style("cursor","pointer")
-                .attr("id","swapButton"+id);
-        } else {
-            $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
+                if (isCompared){
+                    var index1 = findTreeIndex(tree.name);
+                    var index2 = findTreeIndex(fixedTree.name);
+                    preprocessTrees(trees[index1], trees[index2]);
+                    //settings.loadedCallback();
 
-            $("#fixedButtonsText"+id).css({
-                "left": "-30px",
-                "background-color": "white",
-                "bottom": "0px",
-                "font-size": "14px",
-                "color": "#999",
-                "position": "absolute"
+                    if (rerootedTree !== undefined) {
+                        update(tree.root, rerootedTree.data);
+                    }
+                    update(fixedTree.root, fixedTree.data);
+                }
+            }, 2);
+        };
 
-            });
+        /*---------------
+         /
+         /  Function to swap on nodes to optimize the visualisation between two trees
+         /      works only in "compare mode" and needs the canvasId to know which tree will
+         /      be manipulated
+         /
+         ---------------*/
+        function findBestCorrespondingLeafOrder(canvasId){
 
-            row1 = d3.select("#fixedButtonsText"+id).append("tr");
-            row1.append("td")
-                .attr("align","center")
-                .attr("width","60px")
-                .text("reroot")
-                .attr("title","find best rooting point according to opposite tree and reroot")
-                .attr("id","reroot-text");
-            row1.append("td")
-                .attr("align","center")
-                .attr("width","15px")
-                .append("span")
-                .attr("class","glyphicon glyphicon-circle-arrow-right")
-                .style("cursor","pointer")
-                .attr("id","rerootButton"+id);
+            var canvasLeft = "vis-container1";
+            var canvasRight = "vis-container2";
+            var tree;
+            var fixedTree;
 
-            row2 = d3.select("#fixedButtonsText"+id).append("tr");
-            row2.append("td")
-                .attr("align","center")
-                .attr("width","60px")
-                .text("reorder")
-                .attr("title","reorder leaves according to opposite tree")
-                .attr("id","reorder-text");
-            row2.append("td")
-                .attr("align","center")
-                .attr("width","15px")
-                .append("span")
-                .attr("class","glyphicon glyphicon-circle-arrow-right")
-                .style("cursor","pointer")
-                .attr("id","swapButton"+id);
+            if (canvasId === canvasLeft){ //ensures that the right tree is fixed
+                tree = getTreeFromCanvasId(canvasLeft);
+                fixedTree = getTreeFromCanvasId(canvasRight);
+            }else{
+                tree = getTreeFromCanvasId(canvasRight);
+                fixedTree = getTreeFromCanvasId(canvasLeft);
+            }
+
+            //------
+            // SWAP branches at a specific node
+            // input: node d with its children
+            //------
+            function rotate(d) {
+                var first;
+                var second;
+                if (d.children){
+                    first = d.children[0];
+                    second = d.children[1];
+                    d.children[0] = second;
+                    d.children[1] = first;
+                }else if(d._children){
+                    first = d._children[0];
+                    second = d._children[1];
+                    d._children[0] = second;
+                    d._children[1] = first;
+                }
+
+            }
+
+            //------
+            // GET the leafnames part of a specific node d
+            // input: node d with its children
+            //------
+            function getChildLeafNames(d){
+                var leafNames = [];
+                var leaves = getChildLeaves(d);
+                for (var i = 0; i < leaves.length; i++){
+                    leafNames.push(leaves[i].name);
+                }
+                return leafNames;
+            }
+
+            //------
+            // GET the corresponding node based on best overlap of leaves between two trees
+            // input: treeLeaves (getChildLeafNames) and ifixedTree the fixed tree as input
+            //------
+            function getCorrespondingNode(treeLeaves, ifixedTree){
+
+                var bestCorrespondingFixTreeLeaves = "";
+                var bestCount = 0;
+                postorderTraverse(ifixedTree.root, function(d){
+                    if (d.children || d._children){
+                        var fixedTreeLeaves = getChildLeafNames(d);
+                        var count = 0;
+
+                        for (var i = 0; i < fixedTreeLeaves.length; i++){
+                            if(treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1){
+                                count += 1;
+                            }
+                        }
+
+                        if (count > bestCount){
+                            bestCorrespondingFixTreeLeaves = fixedTreeLeaves;
+                            bestCount = count;
+                        }
+                    }
+                },true);
+
+                return bestCorrespondingFixTreeLeaves;
+            }
+
+            //------
+            //
+            // Main part: traverses all nodes of tree and if different leaf order in fixedTree calls the rotate function
+            //
+            //------
+            postorderTraverse(tree.root,function(d){
+
+                if (d.children || d._children){
+                    var leaves = getChildLeafNames(d);
+                    var fixedLeaves = getCorrespondingNode(leaves,fixedTree);
+                    if (leaves[0]!==fixedLeaves[0] && leaves[leaves.length-1]!==fixedLeaves[fixedLeaves.length-1]){
+                        rotate(d);
+                    }
+                }
+            },true);
+
+            update(tree.root, tree.data);
+            settings.loadedCallback();
         }
-    }
 
-    /*----------------------
-     |
-     | Function that renders middle buttons in compare mode for rerooting and resorting
-     |
-     ----------------------*/
-    function renderMiddleButtonsCompareMode(canvasId){
+        function buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass){
+            var oppositeTreeActionButton = d3.select("#"+canvasId).select("."+oppositeTreeActionsClass).append("div")
+                .attr("class", "btn-group opTreeAc-group");
+            oppositeTreeActionButton.append("button")
+                .attr("id", "opTreeAcButton")
+                .attr("class", "btn btn-sm sharp opTreeAcButtonReroot")
+                .attr("type", "button")
+                .append("span")
+                .text("reroot");
+            oppositeTreeActionButton.append("button")
+                .attr("id", "opTreeAcButton")
+                .attr("class", "btn btn-sm sharp opTreeAcButtonReorder")
+                .attr("type", "button")
+                .append("span")
+                .text("reorder");
+        }
+
+        /*----------------------
+         |
+         | Renders middle buttons in compare mode for rerooting and resorting
+         |
+         ----------------------*/
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
-            prepareMiddleButtonsTable(canvasId, "vis-container1");
+            buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass);
         }
 
-        var timeoutIdReroot = 0;
-        // action when clicking on reroot button in the center of the compare mode
-        $("#" + "rerootButton" + canvasId).mousedown(function() {
-            settings.loadingCallback();
-            setTimeout(function() {
-                findBestCorrespondingTree(canvasId);
-            },2);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdReroot);
-        });
 
-        // action when clicking on swap button in the center of the compare mode
-        $("#" + "swapButton" + canvasId).mousedown(function() {
-            settings.loadingCallback();
-            setTimeout(function() {
-                findBestCorrespondingLeafOrder(canvasId);
-            },2);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdReroot);
-        });
-    }
-
-    /*----------------------
-    |
-    | Function that renders the drop down menu once multiple trees are loaded
-    |
-     ----------------------*/
-    function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
-        var index = findTreeIndex(name);
-        var numTrees = trees[index].total;
-        var indexStartTree = index;
-        var indexLastTree = trees[index].last;
-
-
-        var treeToggleDropDown = d3.select("#" + canvas + " .treeToggleButtons").append("div")
-            .attr("class","treeToggleDropdown");
-
-        var treeToggleButtons = treeToggleDropDown.append("button")
-            .attr("id", "treeToggleDropdownButton")
-            .attr("class", "btn btn-sm sharp treeToggleDropdown-toggle")
-            .on('click', function(){
-                $("#dropDownList" + canvas).toggle();
+        d3.select("#"+canvasId).select(".opTreeAcButtonReroot")
+            .on("click", function(){
+                settings.loadingCallback();
+                setTimeout(function() {
+                    findBestCorrespondingTree(canvasId);
+                },2);
             });
 
-        ///span element is added in order to easier display and place the tree numbers on the dropDown menu
-        var dropdownToggleButtonText = treeToggleButtons.append("span")
-            .attr("id", "treeToggleDropdownText")
-            .attr("class", "text-center")
-            .text("1/"+(numTrees));
-
-        var treeToggleOptions = treeToggleDropDown.append("div")
-            .attr("class", "treeToggleDropdown-content")
-            .attr("id", "dropDownList" + canvas)
-            .append("ul").attr("class", "list-unstyled");
-
-        for(var i=indexStartTree; i<=indexLastTree; i++){
-            treeToggleOptions.append("li").append("a")
-                .attr("id", canvas + "_tree_" + i)
-                .text(trees[i].part+1)
-                .on('click', function(){
-                    var splitId = d3.select(this).attr("id").split("_");
-                    var ind = parseInt(splitId[splitId.length-1]);
-                    dropDownAction(ind)
-                });
-        }
-
-        function dropDownAction(ind){
-            d3.select("#" + canvas + " svg").remove();
-            var toggledTree = trees[ind];
-            var newName = toggledTree.name;
-            if(oppositeCanvas !== undefined){ // compare mode
-                var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
-                d3.select("#" + oppositeCanvas + " svg").remove();
-                var index2 = findTreeIndex(oppositeName);
-                var oppositeTree = trees[index2];
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                initialiseTree(oppositeTree.root, settings.autoCollapse);
-
-                // render tress (workers) -> once done, run comprison (workers)
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
-
-                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
-
+        d3.select("#"+canvasId).select(".opTreeAcButtonReorder")
+            .on("click", function(){
                 settings.loadingCallback();
                 setTimeout(function() {
-                    preprocessTrees(toggledTree, oppositeTree);
-                }, 5);
-
-            } else { // view mode
-                settings.loadingCallback();
-                setTimeout(function() {
-
-                    initialiseTree(toggledTree.root, settings.autoCollapse);
-                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree,newName,canvas,scale,undefined, true);
-
-                    settings.loadedCallback();
-                }, 2);
-            }
-            var toggleStart = toggledTree.part + 1;
-            dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
-        }
-
-        // ensures that searchbar is removed when clicking on canvas
-        $(document).click(function(event) {
-            if(!$(event.target).closest('.treeToggleDropdown').length && $('.treeToggleDropdown-content').is(":visible")) {
-                $("#dropDownList" + canvas).hide()
-            }
-        });
-
-    }
-
-
-    /*----------------------
-     |
-     | Function that renders tree toggle buttons allows to have multiple trees to be loaded
-     |
-     ----------------------*/
-    function renderTreeToggleButtons(canvas, scale, canvasOpposite, scaleOpposite){
-
-        var treeToggleButtons = d3.select("#" + canvas).append("div")
-            .attr("class", "treeToggleButtons");
-
-        treeToggleButtons.append("button")
-            .attr("type", "button")
-            .attr("class", "btn btn-sm sharp treeToggleButton")
-            .attr("id", "leftToggleButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-left")
-            .attr("aria-hidden", "true");
-
-        treeToggleButtons.append("button")
-            .attr("type", "button")
-            .attr("class", "btn btn-sm sharp treeToggleButton")
-            .attr("id", "rightToggleButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-right")
-            .attr("aria-hidden", "true");
-
-
-        function actionLeft(oldName, oppositeTreeName) {
-            var index1 = findTreeIndex(oldName);
-            var num_trees = trees[index1].last;
-            trees[index1].display = false;
-            if (trees[index1].part === 0){
-                var toggledTree = trees[num_trees];
-            }else {
-                var toggledTree = trees[index1-1];
-            }
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-
-            if(oppositeTreeName !== undefined){ // compare mode
-                var index2 = findTreeIndex(oppositeTreeName);
-                var oppositeTree = trees[index2];
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                initialiseTree(oppositeTree.root, settings.autoCollapse);
-
-                // render tress (workers) -> once done, run comprison (workers)
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
-
-                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
-
-                settings.loadingCallback();
-                setTimeout(function() {
-                    preprocessTrees(toggledTree, oppositeTree);
-                }, 5);
-                var toggleStart = toggledTree.part + 1;
-                var toggleEnd = toggledTree.total;
-                d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
-            } else{ // view mode
-                settings.loadingCallback();
-                setTimeout(function() {
-                    initialiseTree(toggledTree.root, settings.autoCollapse);
-                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
-                    settings.loadedCallback();
-                }, 2);
-                var toggleStart = toggledTree.part + 1;
-                var toggleEnd = toggledTree.total;
-                d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
-            }
-
-
-        }
-
-        function actionRight(oldName, oppositeTreeName) {
-            var index1 = findTreeIndex(oldName);
-            var sub_index = trees[index1].part;
-            var num_trees = trees[index1].last;
-            trees[index1].display = false;
-
-            // main function to assure cycling when toggle action is called
-            if (index1 === (num_trees)){
-                var toggledTree = trees[num_trees-sub_index];
-            }else {
-                var toggledTree = trees[index1+1];
-            }
-
-            toggledTree.display = true;
-            var new_name = toggledTree.name;
-
-            if (oppositeTreeName !== undefined){
-                var index2 = findTreeIndex(oppositeTreeName);
-                var oppositeTree = trees[index2];
-                initialiseTree(toggledTree.root, settings.autoCollapse);
-                initialiseTree(oppositeTree.root, settings.autoCollapse);
-
-                toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
-                toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
-                renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
-
-                oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
-                oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
-                renderTree(oppositeTree, oppositeTreeName, canvasOpposite, scaleOpposite, new_name, true);
-
-                settings.loadingCallback();
-                setTimeout(function() {
-                    preprocessTrees(toggledTree, oppositeTree);
-                }, 5);
-                var toggleStart = toggledTree.part + 1;
-                var toggleEnd = toggledTree.total;
-                d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
-            }else {
-                settings.loadingCallback();
-                setTimeout(function() {
-
-                    initialiseTree(toggledTree.root, settings.autoCollapse);
-                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
-                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
-                    //clear the canvas of any previous visualisation
-                    renderTree(toggledTree, new_name, canvas, scale, undefined, true);
-                    settings.loadedCallback();
-                }, 2);
-                var toggleStart = toggledTree.part + 1;
-                var toggleEnd = toggledTree.total;
-                d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
-            }
-
-
-        }
-
-        var timeoutIdleft = 0;
-        $("#" + canvas + " #leftToggleButton").mousedown(function() {
-            var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            d3.select("#" + canvas + " svg").remove();
-
-            if(canvasOpposite !== undefined){ // compare mode
-                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-                d3.select("#" + canvasOpposite + " svg").remove();
-                actionLeft(oldName, oppositeTreeName);
-            } else { // view mode
-                actionLeft(oldName);
-            }
-
-            timeoutIdleft = setInterval(actionLeft, 150);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdleft);
-        });
-
-        var timeoutIdRight = 0;
-        $("#" + canvas + " #rightToggleButton").mousedown(function() {
-            var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
-            d3.select("#" + canvas + " svg").remove();
-
-            if(canvasOpposite !== undefined){ // compare mode
-                var oppositeTreeName = d3.select("#" + canvasOpposite + " svg").attr("id");
-                d3.select("#" + canvasOpposite + " svg").remove();
-                actionRight(oldName, oppositeTreeName);
-            } else { // view mode
-                actionRight(oldName);
-            }
-
-            timeoutIdRight = setInterval(actionRight, 150);
-        }).bind('mouseup mouseleave', function() {
-            clearTimeout(timeoutIdRight);
-        });
-    }
-
-
-    // helper function to set up canvas to place the tree inside
-    function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
-
-        //get the trees by name
-        var baseTree = trees[findTreeIndex(name)];
-        if (otherTreeName !== undefined) {
-            compareMode = false;
-        }
-        if (baseTree.hasOwnProperty("multiple")){
-            var tree = baseTree;
-            renderedTrees.push(tree);
-
-            //clear the canvas of any previous visualisation
-            $("#" + canvasId).empty();
-            $("#" + scaleId).empty();
-
-            // variable i is set to the number of leaves (see above)
-            jQuery.extend(baseTree.data, {
-                canvasId: canvasId,
-                scaleId: scaleId
-            });
-            //render various buttons and search bars and sliders
-            renderZoomSlider(tree, canvasId);
-            //renderDownloadButton(canvasId);
-            renderMiddleButtonsCompareMode(canvasId);
-
-        }else{
-            renderedTrees.push(baseTree);
-
-            //clear the canvas of any previous visualisation
-            $("#" + canvasId).empty();
-            $("#" + scaleId).empty();
-
-            // variable i is set to the number of leaves (see above)
-            jQuery.extend(baseTree.data, {
-                canvasId: canvasId,
-                scaleId: scaleId
+                    findBestCorrespondingLeafOrder(canvasId);
+                },2);
             });
 
-            //render various buttons and search bars and sliders
-            renderZoomSlider(baseTree, canvasId);
-            //renderDownloadButton(canvasId);
-            renderMiddleButtonsCompareMode(canvasId);
+    }
+
+    function createLeafSearch(canvasId, baseTree){
+
+        /*
+         Helper function allows to search even partial strings
+         */
+        function stringSearch(string, start){
+            var does = true;
+            var n;
+            if(start !== ""){
+                n = string.search(start);
+            }else{
+                n = -1;
+            }
+            if (n===-1) {
+                does = false;
+            }
+            return does;
         }
-    }
+
+        function buildSearchBox(canvasId) {
+            var searchDiv = d3.select("#" + canvasId).append("div")
+                .attr("class", "searchBox");
+
+            var searchDivA = searchDiv.append("a")
+                .attr("class", "btn btn-sm sharp searchButton");
+
+            searchDivA.append("span")
+                .attr("class", "glyphicon glyphicon-search")
+                .attr("aria-hidden","true");
+
+            searchDiv.append("input")
+                .attr("class", "searchInput")
+                .attr("type", "text")
+                .attr("placeholder", "search")
+                .attr("autofocus");
+
+            var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
+                .attr("class", "searchResultsBox")
+                .append("ul")
+                .attr("class", "searchResultsList");
+
+        }
 
 
-    function buildSearchBox(canvasId) {
-        var searchDiv = d3.select("#" + canvasId).append("div")
-            .attr("class", "searchBox");
+        function displaySearchResults(results, canvasId, baseTree) {
+            for (var i = 0; i < results.length; i++) {
+                var resultsList = d3.select("#"+canvasId).select(".searchResultsList");
+                resultsList.append("li")
+                    .append("a")
+                    .attr("class", i)
+                    .attr("id", results[i].name)
+                    .attr("href", "#")
+                    .text(results[i].name);
 
-        var searchDivA = searchDiv.append("a")
-            .attr("class", "btn btn-sm sharp searchButton");
+                var indices = [];
+                d3.select("#"+canvasId).select("#"+results[i].name).on("click", function() {
+                    var index = $(this).attr("class");
+                    //var index = i;
+                    indices.push(parseInt(index));
 
-        searchDivA.append("span")
-            .attr("class", "glyphicon glyphicon-search")
-            .attr("aria-hidden","true");
+                    var j;
 
-        searchDiv.append("input")
-            .attr("class", "searchInput")
-            .attr("type", "text")
-            .attr("placeholder", "search")
-            .attr("autofocus");
-
-        var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
-            .attr("class", "resultsBox")
-            .append("ul")
-            .attr("class", "resultsList");
-
-    }
-
-
-    function displaySearchResults(results, canvasId, baseTree) {
-        for (var i = 0; i < results.length; i++) {
-            var resultsList = d3.select("#"+canvasId).select(".resultsList");
-            resultsList.append("li")
-                .append("a")
-                .attr("class", i)
-                .attr("id", results[i].name)
-                .attr("href", "#")
-                .text(results[i].name);
-
-            var indices = [];
-            d3.select("#"+canvasId).select("#"+results[i].name).on("click", function() {
-                var index = $(this).attr("class");
-                //var index = i;
-                indices.push(parseInt(index));
-
-                var j;
-
-                for (j = 0; j<results.length; j++){
-                    if (indices.indexOf(j)<0){
-                        expandPathToLeaf(results[j],true,false);
+                    for (j = 0; j<results.length; j++){
+                        if (indices.indexOf(j)<0){
+                            expandPathToLeaf(results[j],true,false);
+                        }
                     }
-                }
-                if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
-                    for (j = 0; j<indices.length; j++){
-                        expandPathToLeaf(results[indices[j]],false);
+                    if (settings.selectMultipleSearch) { // allows to select multiple entries containing the same letter
+                        for (j = 0; j<indices.length; j++){
+                            expandPathToLeaf(results[indices[j]],false);
+                        }
+                    } else {
+                        for (j = 0; j<indices.length-1; j++){ // allows only to select one entry
+                            expandPathToLeaf(results[indices[j]],true,false);
+                        }
+                        expandPathToLeaf(results[indices[indices.length-1]],false,true); // uncollapse the tree and set ids to paths
+                        update(baseTree, baseTree.data);
+                        expandPathToLeaf(results[indices[indices.length-1]],false,true); // set clicked link to class link search
                     }
-                } else {
-                    for (j = 0; j<indices.length-1; j++){ // allows only to select one entry
-                        expandPathToLeaf(results[indices[j]],true,false);
-                    }
-                    expandPathToLeaf(results[indices[indices.length-1]],false,true); // uncollapse the tree and set ids to paths
                     update(baseTree, baseTree.data);
-                    expandPathToLeaf(results[indices[indices.length-1]],false,true); // set clicked link to class link search
-                }
-                update(baseTree, baseTree.data);
-            });
+                });
+            }
         }
-    }
 
-    function showSearchBar(canvasId) {
-        d3.select("#"+canvasId).select(".searchInput")
-            .style("display", "inline")
-            .transition().duration(600)
-            .style("width", "150px").node().focus();
+        function showSearchBar(canvasId) {
+            d3.select("#"+canvasId).select(".searchInput")
+                .style("display", "inline")
+                .transition().duration(600)
+                .style("width", "150px").node().focus();
 
-    }
+        }
 
-    function hideSearchBar(canvasId) {
-        d3.select("#"+canvasId).select(".resultsList")
-            .empty();
+        function hideSearchBar(canvasId) {
+            d3.select("#"+canvasId).select(".searchResultsList")
+                .empty();
 
-        d3.select("#"+canvasId).select(".resultsBox")
-            .transition().duration(600)
-            .style("display","none");
+            d3.select("#"+canvasId).select(".searchResultsBox")
+                .transition().duration(600)
+                .style("display","none");
 
-        d3.select("#"+canvasId).select(".searchInput")
-            .transition().duration(600)
-            .style("width", "0px")
-            .style("display", "none");
+            d3.select("#"+canvasId).select(".searchInput")
+                .transition().duration(600)
+                .style("width", "0px")
+                .style("display", "none");
 
-        $("#"+canvasId+" .searchInput").val("");
-    }
-
-    function renderSearchBar(canvasId, baseTree) {
+            $("#"+canvasId+" .searchInput").val("");
+        }
 
         buildSearchBox(canvasId);
 
@@ -3084,7 +2620,7 @@ var TreeCompare = function(){
 
         //main event handler, performs search every time a char is typed so can get realtime results
         $("#"+canvasId+" .searchInput").bind("paste keyup", function() {
-            $("#"+canvasId+" .resultsList").empty();
+            $("#"+canvasId+" .searchResultsList").empty();
             var text = $(this).val();
 
             // results is a list of leaves
@@ -3105,8 +2641,8 @@ var TreeCompare = function(){
             update(baseTree.root,baseTree.data);
 
             if (typeof results_name !== "undefined" && results_name !== null && results_name.length > 0) {
-                $("#"+canvasId+" .resultsBox").slideDown(200);
-                $("#"+canvasId+" .resultsList").empty();
+                $("#"+canvasId+" .searchResultsBox").slideDown(200);
+                $("#"+canvasId+" .searchResultsList").empty();
 
                 postorderTraverse(baseTree.data.root,function(d){
                     if(results_name.indexOf(d.name)>-1){
@@ -3118,9 +2654,9 @@ var TreeCompare = function(){
                 displaySearchResults(results, canvasId, baseTree);
             }
             else {
-                $("#"+canvasId+" .resultsList").empty();
-                $("#"+canvasId+" .resultsBox").slideUp(200, function() {
-                    $("#"+canvasId+" .resultsBox").css({
+                $("#"+canvasId+" .searchResultsList").empty();
+                $("#"+canvasId+" .searchResultsBox").slideUp(200, function() {
+                    $("#"+canvasId+" .searchResultsBox").css({
                         "display": "none"
                     });
                 });
@@ -3141,47 +2677,320 @@ var TreeCompare = function(){
         });
     }
 
+    function createTreeToggle(name, canvas, scale, oppositeCanvas, oppositeScale){
+        /*----------------------
+         |
+         | Function that renders the drop down menu once multiple trees are loaded
+         |
+         ----------------------*/
+        function renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale){
+            var index = findTreeIndex(name);
+            var numTrees = trees[index].total;
+            var indexStartTree = index;
+            var indexLastTree = trees[index].last;
 
-    function buildRescaleButtons(canvasId) {
 
-        var rescaleDiv = d3.select("#" + canvasId).append("div")
-            .attr("class", "rescaleButtons");
+            var treeToggleDropDown = d3.select("#" + canvas + " .treeToggleButtons").append("div")
+                .attr("class","treeToggleDropdown");
 
-        //up button
-        rescaleDiv.append("button")
-            .attr("class", "btn btn-sm sharp rescaleButton")
-            .attr("id", "upButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-up")
-            .attr("aria-hidden", "true");
+            var treeToggleButtons = treeToggleDropDown.append("button")
+                .attr("id", "treeToggleDropdownButton")
+                .attr("class", "btn btn-sm sharp treeToggleDropdown-toggle")
+                .on('click', function(){
+                    $("#dropDownList" + canvas).toggle();
+                });
 
-        //left button
-        rescaleDiv.append("button")
-            .attr("class", "btn btn-sm sharp rescaleButton")
-            .attr("id", "leftButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-left")
-            .attr("aria-hidden", "true");
+            ///span element is added in order to easier display and place the tree numbers on the dropDown menu
+            var dropdownToggleButtonText = treeToggleButtons.append("span")
+                .attr("id", "treeToggleDropdownText")
+                .attr("class", "text-center")
+                .text("1/"+(numTrees));
 
-        //right button
-        rescaleDiv.append("button")
-            .attr("class", "btn btn-sm sharp rescaleButton")
-            .attr("id", "rightButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-right")
-            .attr("aria-hidden", "true");
+            var treeToggleOptions = treeToggleDropDown.append("div")
+                .attr("class", "treeToggleDropdown-content")
+                .attr("id", "dropDownList" + canvas)
+                .append("ul").attr("class", "list-unstyled");
 
-        //down button
-        rescaleDiv.append("button")
-            .attr("class", "btn btn-sm sharp rescaleButton")
-            .attr("id", "downButton")
-            .append("span")
-            .attr("class", "glyphicon glyphicon-arrow-down")
-            .attr("aria-hidden", "true");
+            for(var i=indexStartTree; i<=indexLastTree; i++){
+                treeToggleOptions.append("li").append("a")
+                    .attr("id", canvas + "_tree_" + i)
+                    .text(trees[i].part+1)
+                    .on('click', function(){
+                        var splitId = d3.select(this).attr("id").split("_");
+                        var ind = parseInt(splitId[splitId.length-1]);
+                        dropDownAction(ind)
+                    });
+            }
+
+            function dropDownAction(ind){
+                d3.select("#" + canvas + " svg").remove();
+                var toggledTree = trees[ind];
+                var newName = toggledTree.name;
+                if(oppositeCanvas !== undefined){ // compare mode
+                    var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
+                    d3.select("#" + oppositeCanvas + " svg").remove();
+                    var index2 = findTreeIndex(oppositeName);
+                    var oppositeTree = trees[index2];
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                    // render tress (workers) -> once done, run comprison (workers)
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                    renderTree(toggledTree, newName, canvas, scale, oppositeName, true);
+
+                    oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                    oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                    renderTree(oppositeTree, oppositeName, oppositeCanvas, oppositeScale, newName, true);
+
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        preprocessTrees(toggledTree, oppositeTree);
+                    }, 5);
+
+                } else { // view mode
+                    settings.loadingCallback();
+                    setTimeout(function() {
+
+                        initialiseTree(toggledTree.root, settings.autoCollapse);
+                        toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                        toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                        renderTree(toggledTree,newName,canvas,scale,undefined, true);
+
+                        settings.loadedCallback();
+                    }, 2);
+                }
+                var toggleStart = toggledTree.part + 1;
+                dropdownToggleButtonText.text(toggleStart + "/" + numTrees);
+            }
+
+            // ensures that searchbar is removed when clicking on canvas
+            $(document).click(function(event) {
+                if(!$(event.target).closest('.treeToggleDropdown').length && $('.treeToggleDropdown-content').is(":visible")) {
+                    $("#dropDownList" + canvas).hide()
+                }
+            });
+
+        }
+
+
+        /*----------------------
+         |
+         | Function that renders tree toggle buttons allows to have multiple trees to be loaded
+         |
+         ----------------------*/
+        function renderTreeToggleButtons(canvas, scale, oppositeCanvas, oppositeScale){
+
+            var treeToggleButtons = d3.select("#" + canvas).append("div")
+                .attr("class", "treeToggleButtons");
+
+            treeToggleButtons.append("button")
+                .attr("type", "button")
+                .attr("class", "btn btn-sm sharp treeToggleButton")
+                .attr("id", "leftToggleButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-left")
+                .attr("aria-hidden", "true");
+
+            treeToggleButtons.append("button")
+                .attr("type", "button")
+                .attr("class", "btn btn-sm sharp treeToggleButton")
+                .attr("id", "rightToggleButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-right")
+                .attr("aria-hidden", "true");
+
+
+            function actionLeft(oldName, oppositeTreeName) {
+                var index1 = findTreeIndex(oldName);
+                var num_trees = trees[index1].last;
+                trees[index1].display = false;
+                if (trees[index1].part === 0){
+                    var toggledTree = trees[num_trees];
+                }else {
+                    var toggledTree = trees[index1-1];
+                }
+                toggledTree.display = true;
+                var new_name = toggledTree.name;
+
+                if(oppositeTreeName !== undefined){ // compare mode
+                    var index2 = findTreeIndex(oppositeTreeName);
+                    var oppositeTree = trees[index2];
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                    // render tress (workers) -> once done, run comprison (workers)
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                    renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
+
+                    oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                    oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                    renderTree(oppositeTree, oppositeTreeName, oppositeCanvas, oppositeScale, new_name, true);
+
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        preprocessTrees(toggledTree, oppositeTree);
+                    }, 5);
+                    var toggleStart = toggledTree.part + 1;
+                    var toggleEnd = toggledTree.total;
+                    d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
+                } else{ // view mode
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        initialiseTree(toggledTree.root, settings.autoCollapse);
+                        toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                        toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                        renderTree(toggledTree, new_name, canvas, scale, undefined, true);
+                        settings.loadedCallback();
+                    }, 2);
+                    var toggleStart = toggledTree.part + 1;
+                    var toggleEnd = toggledTree.total;
+                    d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
+                }
+
+
+            }
+
+            function actionRight(oldName, oppositeTreeName) {
+                var index1 = findTreeIndex(oldName);
+                var sub_index = trees[index1].part;
+                var num_trees = trees[index1].last;
+                trees[index1].display = false;
+
+                // main function to assure cycling when toggle action is called
+                if (index1 === (num_trees)){
+                    var toggledTree = trees[num_trees-sub_index];
+                }else {
+                    var toggledTree = trees[index1+1];
+                }
+
+                toggledTree.display = true;
+                var new_name = toggledTree.name;
+
+                if (oppositeTreeName !== undefined){
+                    var index2 = findTreeIndex(oppositeTreeName);
+                    var oppositeTree = trees[index2];
+                    initialiseTree(toggledTree.root, settings.autoCollapse);
+                    initialiseTree(oppositeTree.root, settings.autoCollapse);
+
+                    toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, true, oppositeTree);
+                    toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, true, oppositeTree);
+                    renderTree(toggledTree, new_name, canvas, scale, oppositeTreeName, true);
+
+                    oppositeTree.data.clickEvent = getClickEventListenerNode(oppositeTree, true, toggledTree);
+                    oppositeTree.data.clickEventLink = getClickEventListenerLink(oppositeTree, true, toggledTree);
+                    renderTree(oppositeTree, oppositeTreeName, oppositeCanvas, oppositeScale, new_name, true);
+
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        preprocessTrees(toggledTree, oppositeTree);
+                    }, 5);
+                    var toggleStart = toggledTree.part + 1;
+                    var toggleEnd = toggledTree.total;
+                    d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
+                }else {
+                    settings.loadingCallback();
+                    setTimeout(function() {
+
+                        initialiseTree(toggledTree.root, settings.autoCollapse);
+                        toggledTree.data.clickEvent = getClickEventListenerNode(toggledTree, false, {});
+                        toggledTree.data.clickEventLink = getClickEventListenerLink(toggledTree, false, {});
+                        //clear the canvas of any previous visualisation
+                        renderTree(toggledTree, new_name, canvas, scale, undefined, true);
+                        settings.loadedCallback();
+                    }, 2);
+                    var toggleStart = toggledTree.part + 1;
+                    var toggleEnd = toggledTree.total;
+                    d3.select("#" + canvas + " #treeToggleDropdownText").text(toggleStart + "/" + toggleEnd);
+                }
+
+
+            }
+
+            var timeoutIdleft = 0;
+            $("#" + canvas + " #leftToggleButton").mousedown(function() {
+                var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+                d3.select("#" + canvas + " svg").remove();
+
+                if(oppositeCanvas !== undefined){ // compare mode
+                    var oppositeTreeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
+                    d3.select("#" + oppositeCanvas + " svg").remove();
+                    actionLeft(oldName, oppositeTreeName);
+                } else { // view mode
+                    actionLeft(oldName);
+                }
+
+                timeoutIdleft = setInterval(actionLeft, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIdleft);
+            });
+
+            var timeoutIdRight = 0;
+            $("#" + canvas + " #rightToggleButton").mousedown(function() {
+                var oldName = d3.select("#" + canvas + " svg").attr("id"); // get the old name of the tree as assigned by the render tree function
+                d3.select("#" + canvas + " svg").remove();
+
+                if(oppositeCanvas !== undefined){ // compare mode
+                    var oppositeTreeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
+                    d3.select("#" + oppositeCanvas + " svg").remove();
+                    actionRight(oldName, oppositeTreeName);
+                } else { // view mode
+                    actionRight(oldName);
+                }
+
+                timeoutIdRight = setInterval(actionRight, 150);
+            }).bind('mouseup mouseleave', function() {
+                clearTimeout(timeoutIdRight);
+            });
+        }
+
+        renderTreeToggleButtons(canvas, scale, oppositeCanvas, oppositeScale);
+        renderTreeToggleDropDown(name, canvas, scale, oppositeCanvas, oppositeScale);
+
     }
 
+    function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
-    function renderRescaleButtons(canvasId, baseTree) {
+        function buildRescaleButtons(canvasId) {
+
+            var rescaleDiv = d3.select("#" + canvasId).select("." + rescaleClass).append("div")
+                .attr("class", "rescaleButtons");
+
+            //up button
+            rescaleDiv.append("button")
+                .attr("class", "btn btn-sm sharp rescaleButton")
+                .attr("id", "upButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-up")
+                .attr("aria-hidden", "true");
+
+            //left button
+            rescaleDiv.append("button")
+                .attr("class", "btn btn-sm sharp rescaleButton")
+                .attr("id", "leftButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-left")
+                .attr("aria-hidden", "true");
+
+            //right button
+            rescaleDiv.append("button")
+                .attr("class", "btn btn-sm sharp rescaleButton")
+                .attr("id", "rightButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-right")
+                .attr("aria-hidden", "true");
+
+            //down button
+            rescaleDiv.append("button")
+                .attr("class", "btn btn-sm sharp rescaleButton")
+                .attr("id", "downButton")
+                .append("span")
+                .attr("class", "glyphicon glyphicon-arrow-down")
+                .attr("aria-hidden", "true");
+        }
+
+
         buildRescaleButtons(canvasId);
         //buildRescaleButtonsStyle(canvasId);
 
@@ -3239,6 +3048,182 @@ var TreeCompare = function(){
         });
     }
 
+    function createTreeDownload(canvasId, downloadClass){
+
+
+        function buildDownloadButton(canvasId, downloadClass) {
+
+            var downloadButton = d3.select("#"+canvasId).select("."+downloadClass).append("div")
+                .attr("class", "btn-group export-group");
+            downloadButton.append("button")
+                .attr("id", "exportButton")
+                .attr("class", "btn btn-sm sharp nwk")
+                .attr("type", "button")
+                .append("span")
+                .text("nwk");
+            downloadButton.append("button")
+                .attr("id", "exportButton")
+                .attr("class", "btn btn-sm sharp svg")
+                .attr("type", "button")
+                .append("span")
+                .text("svg");
+            downloadButton.append("button")
+                .attr("id", "exportButton")
+                .attr("class", "btn btn-sm sharp png")
+                .attr("type", "button")
+                .append("span")
+                .text("png");
+        }
+
+        var width = 300, height = 300;
+        // draws download buttons
+        if (settings.enableDownloadButtons) {
+
+            // draw button
+            buildDownloadButton(canvasId, "export");
+
+
+            // PNG
+            d3.select("#"+canvasId).select(".png")
+                .on('click', function () {
+                    var svg = d3.select("#" + canvasId + " svg");
+                    var svgString = getSVGString(svg.node());
+                    svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
+                    function save(dataBlob, filesize) {
+                        saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
+                    }
+                });
+
+            // SVG
+            d3.select("#"+canvasId).select(".svg")
+                .on("click", function (){
+                    var svg = d3.select("#" + canvasId + " svg");
+                    var name = svg.attr("id");
+                    var svgString = getSVGString(svg.node());
+                    var blob = new Blob([svgString], {"type": "image/svg+xml;base64,"+ btoa(svgString)});
+                    saveAs(blob, name+".svg");
+                });
+
+            // NWK
+            d3.select("#"+canvasId).select(".nwk")
+                .on("click", function (){
+                    var name = d3.select("#" + canvasId + " svg").attr("id");
+                    var tree = trees[findTreeIndex(name)];
+                    var nwkString = tree2Newick(tree.root);
+                    var blob = new Blob([nwkString], {"type": "text/plain;charset=utf-8," + encodeURIComponent(nwkString)});
+                    saveAs(blob, "phylo.io.nwk");
+                });
+
+
+            // Below are the functions that handle actual exporting:
+            // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
+            // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
+            function getSVGString( svgNode ) {
+                svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+                //var cssStyleText = getCSSStyles( svgNode );
+                // appendCSS( cssStyleText, svgNode );
+
+                var serializer = new XMLSerializer();
+                var svgString = serializer.serializeToString(svgNode);
+                svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+                svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+                return svgString;
+
+            }
+
+            function svgString2Image( svgString, width, height, format, callback ) {
+                var format = format ? format : 'png';
+
+                var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to dataurl
+
+                var canvas = document.createElement("canvas");
+                var context = canvas.getContext("2d");
+
+                canvas.width = width;
+                canvas.height = height;
+
+                var image = new Image;
+                image.onload = function() {
+
+                    context.clearRect ( 0, 0, width, height );
+                    context.fillStyle = "#ffffff";
+                    context.fillRect(0, 0, width, height);
+                    context.drawImage(image, 0, 0, width, height);
+
+                    canvas.toBlob( function(blob) {
+                        var filesize = Math.round( blob.length/1024 ) + ' KB';
+                        if ( callback ) callback( blob, filesize );
+                    });
+                };
+                image.src = imgsrc;
+            }
+
+        }
+
+    }
+
+    function createZoomSlider(canvasId, zoomClass, baseTree){
+        var name = baseTree.name;
+        //renders the manual zoom slider if turned on
+        if (settings.enableZoomSliders) {
+            d3.select("#"+canvasId).select("."+zoomClass).append("div")
+                .attr("class", "zoomSliderContainer")
+                .append("input")
+                .attr("type", "range")
+                .attr("class", "zoomSlider")
+                .attr("id", "zoomSlider" + findTreeIndex(name))
+                .attr("min", "0.05")
+                .attr("max", "5")
+                .attr("value", "1.00")
+                .attr("step", "0.01");
+        }
+    }
+
+    // helper function to set up canvas to place the tree inside
+    function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
+
+        //get the trees by name
+        var baseTree = trees[findTreeIndex(name)];
+        if (otherTreeName !== undefined) {
+            compareMode = false;
+        }
+        if (baseTree.hasOwnProperty("multiple")){
+            var tree = baseTree;
+            renderedTrees.push(tree);
+
+            //clear the canvas of any previous visualisation
+            $("#" + canvasId).empty();
+            $("#" + scaleId).empty();
+
+            // variable i is set to the number of leaves (see above)
+            jQuery.extend(baseTree.data, {
+                canvasId: canvasId,
+                scaleId: scaleId
+            });
+            //render various buttons and search bars and sliders
+            //renderDownloadButton(canvasId);
+            createOppositeTreeActions(canvasId);
+
+        }else{
+            renderedTrees.push(baseTree);
+
+            //clear the canvas of any previous visualisation
+            $("#" + canvasId).empty();
+            $("#" + scaleId).empty();
+
+            // variable i is set to the number of leaves (see above)
+            jQuery.extend(baseTree.data, {
+                canvasId: canvasId,
+                scaleId: scaleId
+            });
+
+            //render various buttons and search bars and sliders
+            //renderDownloadButton(canvasId);
+            createOppositeTreeActions(canvasId);
+        }
+    }
+
     /*---------------
      /
      /    Main function for setting up a d3 visualisation of a tree
@@ -3256,17 +3241,21 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
+
+        $("#"+canvasId+" .treeToolsMenu").remove();
+        $("#"+canvasId+" .treeToolsButton").remove();
+        $("#"+canvasId+" .shareButton").remove();
+        $("#"+canvasId+" .undoButton").remove();
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
+        $("#"+canvasId+" .zoomSlider").remove();
+        $("#"+canvasId+" .oppositeTreeAction").remove();
 
-
-        if (settings.enableSizeControls) {
-            renderRescaleButtons(canvasId, baseTree);
-        }
-
-        if (settings.enableSearch) {
-            renderSearchBar(canvasId, baseTree);
-        }
+        createLeafSearch(canvasId, baseTree);
+        createToolbar(canvasId, baseTree, compareMode);
+        createShareButton(canvasId);
+        createUndoButton(canvasId);
+        //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
         $("#" + scaleId).empty();
@@ -3410,16 +3399,6 @@ var TreeCompare = function(){
         }
 
 
-
-        // if(undoIndex === 0){
-        //     // save treedata to undo
-        //
-        //     undoTreeData[undoIndex] = _.clone(baseTree.data);
-        //     undoSource[undoIndex] = _.clone(baseTree.root);
-        //     // update latest undo idx to the button -> 0
-        //     //$('#undoBtn').data('undoIdx', undoIndex);
-        // }
-        // updateUndo(0);
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         baseTree.data.zoomBehaviour.translate([100, 100]);
@@ -3774,7 +3753,7 @@ var TreeCompare = function(){
         // use web workers only if trees are very large
         if(tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100){
             getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
-        } else { //TODO: can be removed
+        } else {
             getVisibleBCNs(tree1,tree2);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees1.name)].data);
             update(trees[findTreeIndex(trees1.name)],trees[findTreeIndex(trees2.name)].data);
@@ -3974,23 +3953,18 @@ var TreeCompare = function(){
         // 4 cases to check if left and right have multiple trees
         if (trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")){
 
-            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
-            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
-            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
-            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
+            createTreeToggle(name1, canvas1, scale1, canvas2, scale2);
+            createTreeToggle(name2, canvas2, scale2, canvas1, scale1);
 
         }else if (trees[index1].hasOwnProperty("multiple") && !trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtons(canvas1, scale1, canvas2, scale2);
-            renderTreeToggleDropDown(name1, canvas1, scale1, canvas2, scale2);
+            createTreeToggle(name1, canvas1, scale1, canvas2, scale2);
 
         }else if (!trees[index1].hasOwnProperty("multiple") && trees[index2].hasOwnProperty("multiple")) {
 
-            renderTreeToggleButtons(canvas2, scale2, canvas1, scale1);
-            renderTreeToggleDropDown(name2, canvas2, scale2, canvas1, scale1);
+            createTreeToggle(name2, canvas2, scale2, canvas1, scale1);
+
         }
-        renderDownloadButton(canvas1);
-        renderDownloadButton(canvas2);
 
     }
 
@@ -4014,9 +3988,7 @@ var TreeCompare = function(){
             firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
             renderTree(firstTree,newName,canvasId,scaleId);
 
-            renderTreeToggleButtons(canvasId, scaleId);
-            renderTreeToggleDropDown(name, canvasId, scaleId);
-            renderDownloadButton(canvasId);
+            createTreeToggle(name, canvasId, scaleId);
 
         } else{
             //updateUndo(index);
@@ -4024,7 +3996,6 @@ var TreeCompare = function(){
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
             renderTree(trees[index],name,canvasId,scaleId);
-            renderDownloadButton(canvasId);
 
         }
     }
@@ -4054,18 +4025,7 @@ var TreeCompare = function(){
     function uncollapseAll(root, tree) {
         postorderTraverse(root, uncollapseNode);
         if (tree !== undefined) {
-
-            // save treedata to undo
-            // undoTreeData[undoIndex] = tree.data;
-            // undoSource[undoIndex] = root;
-            // update latest undo idx to the button
-            // $('#undoBtn').data('undoIdx', undoIndex);
-
-            // update global
-            // undoIndex = undoIndex+1
-
             update(root, tree.data);
-
         }
     }
 
@@ -4122,6 +4082,7 @@ var TreeCompare = function(){
             svg.selectAll(".tooltipElem").remove();
         }
     }
+
 
     /*
      get relevant event listener for clicking on a link depending on what mode is selected
@@ -4534,9 +4495,9 @@ var TreeCompare = function(){
             var rectHeight = 110;
 
             var rpad = 10;
-            var tpad = 20;
+            var tpad = 15;
             var textDone = 0;
-            var textInc = 20;
+            var textInc = 15;
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
             d3.selection.prototype.moveToFront = function() {
@@ -4547,7 +4508,7 @@ var TreeCompare = function(){
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
-            var x = coordinates[0]; //TODO: why the hell is this??????
+            var x = coordinates[0];
             var y = coordinates[1];
 
 
@@ -4857,28 +4818,54 @@ var TreeCompare = function(){
      * input:
      *  buttonId: id element of the button that will perfom the und functionality
      */
-    function undo(buttonId){
-        $("#"+buttonId).unbind().click(function() {
+    function undo(canvasId, buttonId){
 
+        d3.select("#"+canvasId).select("#"+buttonId)
+            .on("click", function(){
+                if ($("#vis-container2").length !== 0){ // compare mode
 
-            var tmpIndex = undoIndex;
+                    var slice_index;
+                    for (var i = 0; i< undoTreeData.length; i++){
+                        if (undoTreeData[i].canvasId === canvasId){
+                            slice_index = i;
+                        }
+                    }
+                    var tmpIndex = undoIndex;
 
-            if(tmpIndex > 0){
-                undoIndex = undoIndex - 1;
+                    if(tmpIndex > 0){
+                        undoIndex = undoIndex - 1;
 
-                var undoTreeParam = undoTreeData.pop();
-                var undoTreeIdx = undoTreeDataIndex.pop();
+                        var undoTreeParam = undoTreeData.splice(slice_index,1)[0];
+                        var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
 
-                trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
-                update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+                        trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
+                        update(trees[undoTreeIdx], trees[undoTreeIdx].data);
 
-                if (tmpIndex === 1){
-                    undoTreeData = [];
-                    undoTreeDataIndex = [];
+                        if (tmpIndex === 1){
+                            undoTreeData = [];
+                            undoTreeDataIndex = [];
+                        }
+                    }
+                } else {
+                    var tmpIndex = undoIndex;
+
+                    if(tmpIndex > 0){
+                        undoIndex = undoIndex - 1;
+
+                        var undoTreeParam = undoTreeData.pop();
+                        var undoTreeIdx = undoTreeDataIndex.pop();
+
+                        trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
+                        update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+
+                        if (tmpIndex === 1){
+                            undoTreeData = [];
+                            undoTreeDataIndex = [];
+                        }
+                    }
                 }
-            }
 
-        });
+            })
     }
 
     //return all the externalised functions
