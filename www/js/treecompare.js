@@ -4830,13 +4830,15 @@ var TreeCompare = function(){
                             slice_index = i;
                         }
                     }
-                    var tmpIndex = undoIndex[slice_index];
+                    var tmpIndex = undoIndex;
 
                     if(tmpIndex > 0){
                         undoIndex = undoIndex - 1;
 
-                        var undoTreeParam = undoTreeData.pop();
-                        var undoTreeIdx = undoTreeDataIndex.pop();
+                        var undoTreeParam = undoTreeData.splice(slice_index,1)[0];
+                        var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
+                        console.log(undoTreeParam);
+                        console.log(undoTreeIdx);
 
                         trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
                         update(trees[undoTreeIdx], trees[undoTreeIdx].data);
