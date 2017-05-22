@@ -11,8 +11,10 @@ html {
 }
 
 #colorScale {
-    margin-top: 20px;
-    color: white;
+    position: fixed;
+    bottom: 0;
+    left: 55%;
+    padding-right: 10px;
 }
 
 #colorScale b {
@@ -118,8 +120,9 @@ html {
     border-width: 0px;
     border-style: solid;
     border-right-width: 2px;
-    border-color: black;
-    /*height: calc(100% - 60px);*/
+    border-color: #e7e7e7;
+    border-width: thin;
+    border-bottom: 0px;
 }
 
 #vis-container2 {

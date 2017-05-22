@@ -112,7 +112,7 @@
     <div id="sidebar-wrapper">
 
         <div id="menu-toggle">
-            <i class="fa fa-angle-double-left" id="collapse-sidebar-span" style="color: red; font-size: 1.5em;"></i>
+            <i class="fa fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;"></i>
         </div>
 
         <div id="sidebar-wrapper-wrapper">
@@ -389,6 +389,9 @@
         </div>
     </div>
     <!-- /#page-content-wrapper -->
+
+    <div id="colorScale"></div>
+
 </div>
 <!-- /#wrapper -->
 
@@ -536,6 +539,8 @@
         treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
         $("#newickInSingle").val(tree1.nwk);
 
+        $("#colorScale").empty();
+
     } else if (gistID.length === 3) { //compare mode
 
         $("#view-btn").removeClass("active");
@@ -556,6 +561,9 @@
         $("#newickIn1").val(tree1.nwk);
         $("#newickIn2").val(tree2.nwk);
 
+        $("#colorScale").html("<span style='text-align: center;'>Similarity to most common node</span><br>");
+        treecomp.renderColorScale("colorScale");
+
     } //end of gist id part
 
     $("#menu-toggle").click(function (e) {
@@ -565,15 +573,15 @@
         var div_footer = $("#footer_div");
         var newWidth = 420;
 
-        if ($("#collapse-sidebar-span").hasClass("fa fa-angle-double-left")) {
-            $("#collapse-sidebar-span").removeClass("fa fa-angle-double-left");
-            $("#collapse-sidebar-span").addClass("fa fa-angle-double-right");
+        if ($("#collapse-sidebar-span").hasClass("fa fa-2x fa-arrow-circle-left")) {
+            $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-left");
+            $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-right");
             newWidth = 30;
             $('#sidebar-nav').hide();
         }
         else {
-            $("#collapse-sidebar-span").removeClass("fa fa-angle-double-right");
-            $("#collapse-sidebar-span").addClass("fa fa-angle-double-left");
+            $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-right");
+            $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
             $('#sidebar-nav').show();
         }
         div_footer.width(newWidth);
@@ -594,6 +602,8 @@
                 "overflow-y": "scroll"
             });
         }
+
+        $("#colorScale").empty();
 
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickInSingle").val('');
@@ -636,6 +646,8 @@
                 "overflow-y": "scroll"
             });
         }
+
+        $("#colorScale").empty();
 
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickIn1").val('');
@@ -719,7 +731,10 @@
     });
 
     $("#clearButton").click(function (e) {
+
         $("#renderErrorMessage").empty();
+        $("#colorScale").empty();
+
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
             $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
@@ -758,6 +773,10 @@
 
                 treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                 treecomp.undo("undoBtn");
+
+                $("#colorScale").html("<span style='text-align: center;'>Similarity to most common node</span><br>");
+                treecomp.renderColorScale("colorScale");
+
             } catch (e) {
                 if (e === "TooLittle)") {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
@@ -787,6 +806,9 @@
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div>');
                 treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
                 treecomp.undo("undoBtn");
+
+                $("#colorScale").empty();
+
             } catch (e) {
                 if (e === "TooLittle)") {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);

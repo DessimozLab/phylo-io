@@ -900,7 +900,7 @@ var TreeCompare = function(){
         var width = 200;
         var steps = 100;
         var height = 30;
-        var svgHeight = height + 25;
+        var svgHeight = height + 5;
         var svg = d3.select("#" + scaleId).append("svg")
             .attr("width", width + "px")
             .attr("height", svgHeight + "px")
@@ -2532,7 +2532,7 @@ var TreeCompare = function(){
     }
 
 
-    function prepareMiddleButtonsTable(id, left) {
+    /*function prepareMiddleButtonsTable(id, left) {
         if(id === left){
             $("#" + id).append('<table id="fixedButtonsText' + id + '"></table>');
             $("#fixedButtonsText"+id).css({
@@ -2606,7 +2606,7 @@ var TreeCompare = function(){
                 .style("cursor","pointer")
                 .attr("id","swapButton"+id);
         }
-    }
+    }*/
 
     /*----------------------
      |
@@ -2615,9 +2615,9 @@ var TreeCompare = function(){
      ----------------------*/
     function renderMiddleButtonsCompareMode(canvasId){
         // draws buttons to swap one tree and not the other
-        if (settings.enableFixedButtons) {
+        /*if (settings.enableFixedButtons) {
             prepareMiddleButtonsTable(canvasId, "vis-container1");
-        }
+        }*/
 
         var timeoutIdReroot = 0;
         // action when clicking on reroot button in the center of the compare mode
@@ -3304,7 +3304,7 @@ var TreeCompare = function(){
         //render the scale if we have somewhere to put it
         if (scaleId) {
             var translatewidth = 100;
-            var translateheight = height - 50;
+            var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
                 .append("g")
