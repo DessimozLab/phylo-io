@@ -4809,7 +4809,6 @@ var TreeCompare = function(){
         var tmpTree = deepCopy(trees[treeIndex].data);
         undoTreeData.push(tmpTree);
         undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
-        console.log(undoTreeDataIndex);
 
     }
 
@@ -4837,8 +4836,6 @@ var TreeCompare = function(){
 
                         var undoTreeParam = undoTreeData.splice(slice_index,1)[0];
                         var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
-                        console.log(undoTreeParam);
-                        console.log(undoTreeIdx);
 
                         trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
                         update(trees[undoTreeIdx], trees[undoTreeIdx].data);
