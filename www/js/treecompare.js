@@ -4824,7 +4824,8 @@ var TreeCompare = function(){
             .on("click", function(){
                 if ($("#vis-container2").length !== 0){ // compare mode
 
-                    var slice_index;
+                    // find tree in the right canvas
+                    var slice_index = undefined;
                     for (var i = 0; i< undoTreeData.length; i++){
                         if (undoTreeData[i].canvasId === canvasId){
                             slice_index = i;
@@ -4832,7 +4833,8 @@ var TreeCompare = function(){
                     }
                     var tmpIndex = undoIndex;
 
-                    if(tmpIndex > 0){
+                    // update canvas with previous tree in the right canvas
+                    if(tmpIndex > 0 && slice_index !== undefined){
                         undoIndex = undoIndex - 1;
 
                         var undoTreeParam = undoTreeData.splice(slice_index,1)[0];
@@ -4846,7 +4848,7 @@ var TreeCompare = function(){
                             undoTreeDataIndex = [];
                         }
                     }
-                } else {
+                } else { // view mode
                     var tmpIndex = undoIndex;
 
                     if(tmpIndex > 0){
