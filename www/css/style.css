@@ -260,10 +260,18 @@ label {
 
 #settingsPanel {
     display: none;
-    background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+
+    background: rgb(79,79,79);
+    background: -moz-linear-gradient(-45deg,  rgba(79,79,79,1) 0%, rgba(68,68,68,1) 20%, rgba(14,14,14,1) 100%);
+    background: -webkit-linear-gradient(-45deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
+    background: linear-gradient(135deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#0e0e0e',GradientType=1 );
+
+    padding: 15px;
+    border-radius: 3px;
+    margin-top: 5px;
+    margin-bottom: 50px;
+
 }
 
 #exportPanel {
@@ -272,10 +280,6 @@ label {
     -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
     -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-}
-
-.sizeAdjust {
-    width: 190px !important;
 }
 
 input[type=radio] {
@@ -293,23 +297,26 @@ input[type=checkbox] {
 .extraMargin {
     margin-left: 20px !important;
 }
-
-#autoCollapseButtons {
-    width: 190px;
-    height: 50px;
-}
-
 .collapseElem {
-    float: left;
-    margin: 5px;
+    line-height: 30px;
+    vertical-align: middle;
     text-align: center;
+    color: whitesmoke;
+    text-align: center;
+    width: 40px;
+    display: inline-block;
+
+
 }
 
 .newickIn {
-    width: 200px;
+    width: 100%;
     margin-top: 4px;
     height: 200px;
     line-height: 20px;
+    padding: 4px;
+    border-radius: 4px;
+
 }
 
 #newickInputs p {

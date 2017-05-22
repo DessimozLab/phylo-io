@@ -15,16 +15,16 @@
 }
 
 #wrapper.toggled {
-    padding-left: 250px;
+    padding-left: 420px;
 }
 
 #sidebar-wrapper {
     z-index: 1000;
     position: fixed;
-    left: 250px;
+    left: 420px;
     width: 0;
     height: 100%;
-    margin-left: -250px;
+    margin-left: -420px;
     overflow-x: hidden;
     background: #000;
     -webkit-transition: all 0.5s ease;
@@ -34,7 +34,7 @@
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 250px;
+    width: 420px;
 }
 
 #page-content-wrapper {
@@ -45,19 +45,21 @@
 
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
-    margin-right: -250px;
+    margin-right: -420px;
 }
 
 /* Sidebar Styles */
 
 .sidebar-nav {
     position: absolute;
-    top: 0;
-    width: 250px;
-    margin: 0;
-    padding: 0 0 0 10px;
-    list-style: none;
+top: 50px;
+width: 370px;
+margin: 0 30px;
+padding: 0 20px 0 0;
+list-style: none;
+
 }
+
 .sidebar-nav li {
     margin-left: 20px !important;
 }
@@ -69,7 +71,7 @@
 
 .sidebar-nav li a:hover {
     color: #fff;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-nav li a:active,
@@ -93,7 +95,7 @@
 }
 
 #wrapper {
-    padding-left: 250px;
+    padding-left: 420px;
 }
 
 #wrapper.toggled {
@@ -101,7 +103,7 @@
 }
 
 #sidebar-wrapper {
-    width: 250px;
+    width: 420px;
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -119,19 +121,30 @@
 }
 
 #mode-buttons {
-    padding: 85px 20px 30px 20px;
+    padding: 30px 0 30px 20px;
 }
 
 .settingsLabel {
-    color: #555
+    color: whitesmoke;
 }
 
 .settingsCheckboxLabel {
-    color: #333
+    color: whitesmoke;
 }
 
 .btn-default.active {
     background: linear-gradient(#ddd, #aaa);
     text-shadow: 0 1px 0 #c9c9c9;
     border-color: #dbdbdb;
+}
+
+#menu-toggle {
+
+    position: absolute;
+    right: 5px;
+    top: 50px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    text-align: right;
 }
