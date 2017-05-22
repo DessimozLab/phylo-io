@@ -579,11 +579,13 @@
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-right");
             newWidth = 30;
             $('#sidebar-nav').hide();
+            $('#colorScale').css("left", "42%");
         }
         else {
             $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-right");
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
             $('#sidebar-nav').show();
+            $('#colorScale').css("left", "58%");
         }
         div_footer.width(newWidth);
     });
