@@ -2169,7 +2169,7 @@ var TreeCompare = function(){
 
         buildUndoButton(canvasId);
 
-        undo("undobtn");
+        undo(canvasId, "undobtn");
     }
 
     function createShareButton(canvasId){
@@ -4809,6 +4809,7 @@ var TreeCompare = function(){
         var tmpTree = deepCopy(trees[treeIndex].data);
         undoTreeData.push(tmpTree);
         undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
+        console.log(undoTreeDataIndex);
 
     }
 
@@ -4817,28 +4818,54 @@ var TreeCompare = function(){
      * input:
      *  buttonId: id element of the button that will perfom the und functionality
      */
-    function undo(buttonId){
-        $("#"+buttonId).unbind().click(function() {
+    function undo(canvasId, buttonId){
 
+        d3.select("#"+canvasId).select("#"+buttonId)
+            .on("click", function(){
+                if ($("#vis-container2").length !== 0){ // compare mode
 
-            var tmpIndex = undoIndex;
+                    var slice_index;
+                    for (var i = 0; i< undoTreeData.length; i++){
+                        if (undoTreeData[i].canvasId === canvasId){
+                            slice_index = i;
+                        }
+                    }
+                    var tmpIndex = undoIndex[slice_index];
 
-            if(tmpIndex > 0){
-                undoIndex = undoIndex - 1;
+                    if(tmpIndex > 0){
+                        undoIndex = undoIndex - 1;
 
-                var undoTreeParam = undoTreeData.pop();
-                var undoTreeIdx = undoTreeDataIndex.pop();
+                        var undoTreeParam = undoTreeData.pop();
+                        var undoTreeIdx = undoTreeDataIndex.pop();
 
-                trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
-                update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+                        trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
+                        update(trees[undoTreeIdx], trees[undoTreeIdx].data);
 
-                if (tmpIndex === 1){
-                    undoTreeData = [];
-                    undoTreeDataIndex = [];
+                        if (tmpIndex === 1){
+                            undoTreeData = [];
+                            undoTreeDataIndex = [];
+                        }
+                    }
+                } else {
+                    var tmpIndex = undoIndex;
+
+                    if(tmpIndex > 0){
+                        undoIndex = undoIndex - 1;
+
+                        var undoTreeParam = undoTreeData.pop();
+                        var undoTreeIdx = undoTreeDataIndex.pop();
+
+                        trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
+                        update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+
+                        if (tmpIndex === 1){
+                            undoTreeData = [];
+                            undoTreeDataIndex = [];
+                        }
+                    }
                 }
-            }
 
-        });
+            })
     }
 
     //return all the externalised functions
