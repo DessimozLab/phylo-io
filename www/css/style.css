@@ -83,12 +83,17 @@ html {
     height: 100%;
 }
 
+svg {
+    overflow: scroll !important;
+}
 .vis-container {
     /*height: calc(100% - 60px);*/
     height: 100%;
     padding: 0px;
     position: absolute;
     width: 100%;
+    overflow: scroll !important;
+    top: 60px;
 }
 
 .vis-scale {
