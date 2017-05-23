@@ -3264,8 +3264,22 @@ var TreeCompare = function(){
         $("#" + scaleId).empty();
         scaleId = "#" + scaleId;
 
+        // hidden
+        var sidebarIsHidden = $("#wrapper").hasClass("toggled");
+        var wrapperWidth = 0;
+        if(!sidebarIsHidden) {
+
+            if($("#compare-btn").hasClass("active")){
+                wrapperWidth = $("#sidebar-wrapper").width() / 2;
+            } else {
+                wrapperWidth = $("#sidebar-wrapper").width();
+            }
+
+        }
+
+        console.log("wrapperwidth: "+wrapperWidth);
         //set up the d3 vis
-        var width = $("#" + canvasId).width();
+        var width = $("#" + canvasId).width() + wrapperWidth;
         var height = $("#" + canvasId).height();
         var tree = d3.layout.tree()
             .size([height, width]);
