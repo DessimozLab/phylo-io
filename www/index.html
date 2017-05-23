@@ -97,9 +97,15 @@
         <!-- menu navigation bar -->
         <div id="navbar" class="navbar-collapse collapse list-inline">
             <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
+                <li class="dropdown" id="action">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
+                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
+                    </ul>
+                </li>
                 <li><a href="http://phylo.io/manual.html" class="homelinks">Help</a></li>
                 <li><a href="about.html" class="homelinks">About</a></li>
-                <li><a href="http://www.sib.swiss/about-us/contact" class="homelinks">Contact us</a></li>
             </ul>
         </div>
         <!-- END menu navigation bar -->
@@ -517,6 +523,9 @@
         $("#view-tree-params").css({
             "display": "block"
         });
+        $("#action").css(
+                {"display": "none"}
+        );
     }
     /*
      /
@@ -541,6 +550,7 @@
         $("#newickInSingle").val(tree1.nwk);
 
         $("#colorScale").empty();
+        $("#action").css({"display": "none"});
 
     } else if (gistID.length === 3) { //compare mode
 
@@ -562,9 +572,10 @@
         $("#newickIn1").val(tree1.nwk);
         $("#newickIn2").val(tree2.nwk);
 
-        $("#colorScale").html("<span style='text-align: center;'>Similarity to most common node</span><br>");
+        $("#colorScale").empty();
         treecomp.renderColorScale("colorScale");
 
+        $("#action").css({"display": "block"});
     } //end of gist id part
 
     $("#menu-toggle").click(function (e) {
@@ -572,21 +583,22 @@
         $("#wrapper").toggleClass("toggled");
 
         var div_footer = $("#footer_div");
-        var newWidth = 420;
+        var newWidth, sideBarWidth = 420;
+        var colorScaleWidth = 75;
 
         if ($("#collapse-sidebar-span").hasClass("fa fa-2x fa-arrow-circle-left")) {
             $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-left");
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-right");
             newWidth = 30;
             $('#sidebar-nav').hide();
-            $('#colorScale').css("left", "42%");
         }
         else {
             $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-right");
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
             $('#sidebar-nav').show();
-            $('#colorScale').css("left", "58%");
         }
+        var position = $("#wrapper").width() / 2 + sideBarWidth / 2 - colorScaleWidth / 3;
+        $('#colorScale').css("left", position + "px");
 
         div_footer.width(newWidth);
     });
@@ -608,6 +620,7 @@
         }
 
         $("#colorScale").empty();
+        $("#action").css({"display": "none"});
 
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickInSingle").val('');
@@ -652,6 +665,7 @@
         }
 
         $("#colorScale").empty();
+        $("#action").css({"display": "block"});
 
         $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickIn1").val('');
@@ -779,9 +793,10 @@
                 treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
                 treecomp.undo("undoBtn");
 
-                $("#colorScale").html("<span style='text-align: center;'>Similarity to most common node</span><br>");
+                $("#colorScale").empty();
                 treecomp.renderColorScale("colorScale");
 
+                $("#action").css({"display": "block"});
             } catch (e) {
                 if (e === "TooLittle)") {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
@@ -813,7 +828,7 @@
                 treecomp.undo("undoBtn");
 
                 $("#colorScale").empty();
-
+                $("#action").css({"display": "none"});
             } catch (e) {
                 if (e === "TooLittle)") {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
@@ -867,6 +882,7 @@
         // Copy left tree
         var svg1 = document.getElementById('vis-container1').getElementsByTagName('svg')[0].cloneNode(true);
         var svg2 = document.getElementById('vis-container2').getElementsByTagName('svg')[0].cloneNode(true);
+        var colorscale = document.getElementById('colorScale').getElementsByTagName('svg')[0].cloneNode(true);
 
         // Double the width on svg1
         var l_w = parseInt(svg1.getAttribute('width')),
@@ -887,16 +903,13 @@
             g.appendChild(main);
             g.appendChild(scale);
             g.appendChild(scaleText);
+            g.appendChild(colorscale);
 
             svg1.appendChild(g);
         }
         svgExport.setAttribute('hreflang', 'image/svg+xml');
         svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
-
-        // only for compare mode afaIk...
-        isCompared = (document.getElementById('vis-container1').className.split(' ').indexOf('vis-container') === (-1));
-        download_fn = (download_fn === '' || download_fn === "-with-") ? "side-by-side" : download_fn;
-        svgExport.setAttribute("download", download_fn + ".svg");
+        svgExport.setAttribute("download", "Phylo.io-cmp.svg");
     });
 
     /*------

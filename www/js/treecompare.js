@@ -897,14 +897,16 @@ var TreeCompare = function(){
         var colorScale = d3.scale.linear()
             .domain(colorScaleDomain)
             .range(colorScaleRange);
-        var width = 200;
-        var steps = 100;
-        var height = 30;
+        var width = 75;
+        var steps = 10;
+        var height = 25;
         var svgHeight = height + 5;
         var svg = d3.select("#" + scaleId).append("svg")
             .attr("width", width + "px")
             .attr("height", svgHeight + "px")
             .append("g");
+        svg.append("svg:title").text("Similarity to most common node");
+
         for (var i = 0; i < steps; i++) {
             svg.append("rect")
                 .attr("width", (width / steps) + "px")
@@ -915,14 +917,15 @@ var TreeCompare = function(){
         svg.append("text")
             .text("0")
             .attr("x", 0)
-            .attr("y", height + 20)
-            .attr("fill", "white");
+            .attr("y", height - 5)
+            .attr("fill", "lightgrey")
+            .attr("font-weight", 600);
         svg.append("text")
             .text("1")
-            .attr("x", width - 10)
-            .attr("y", height + 20)
-            .attr("fill", "white")
-
+            .attr("x", width - 8)
+            .attr("y", height - 5)
+            .attr("fill", "lightgrey")
+            .attr("font-weight", 600);
     }
 
     /*
@@ -3277,7 +3280,6 @@ var TreeCompare = function(){
 
         }
 
-        console.log("wrapperwidth: "+wrapperWidth);
         //set up the d3 vis
         var width = $("#" + canvasId).width() + wrapperWidth;
         var height = $("#" + canvasId).height();
