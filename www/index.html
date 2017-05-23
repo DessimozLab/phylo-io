@@ -760,6 +760,7 @@
     $("#renderButton").click(function (e) {
         $("#renderErrorMessage").empty();
         hideOptionalSettings();
+        $("#menu-toggle").click();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
