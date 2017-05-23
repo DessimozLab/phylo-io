@@ -2276,7 +2276,9 @@ var TreeCompare = function(){
 
         d3.select("#" + canvasId).select(".treeToolsButton")
             .on("click", function(){
+                $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
                 $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+
             });
     }
 

@@ -416,9 +416,11 @@ input.treename::-webkit-input-placeholder{
 
 .tooltipElemText{
     fill: white;
-    font-size: 8pt;
+    font-size: 9pt;
     /*font-weight: bold;*/
 }
+
+
 
 /*--end tooltipElem----------------------------------------------*/
 
@@ -547,6 +549,7 @@ rect.node {
     top: 5px;
 }
 
+
 .treeToolsButton {
     width: 26px;
     /*float: right;*/
@@ -557,7 +560,12 @@ rect.node {
     opacity: 1;
 }
 
+.opacity {
+    opacity: 1 !important;
+}
+
 .treeToolsMenu {
+    background-color: whitesmoke;
     text-align: left;
     position: absolute;
     padding: 2px;
