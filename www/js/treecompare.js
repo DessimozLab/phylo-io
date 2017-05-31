@@ -1620,7 +1620,7 @@ var TreeCompare = function(){
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
         //TODO: the drag and drop of the tree doesn't work properly
-        var lengthMult = treeData.treeWidth + 90;
+        var lengthMult = treeData.treeWidth + 90 + 450;
 
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
@@ -2528,7 +2528,9 @@ var TreeCompare = function(){
 
     }
 
-    function createLeafSearch(canvasId, baseTree){
+    function createLeafSearch(canvasId, name){
+
+        var baseTree = trees[findTreeIndex(name)];
 
         /*
          Helper function allows to search even partial strings
@@ -2583,7 +2585,9 @@ var TreeCompare = function(){
                     .text(results[i].name);
 
                 var indices = [];
+                // click on a leaf from the list and highlight only its path
                 d3.select("#"+canvasId).select("#"+results[i].name).on("click", function() {
+                    console.log(baseTree);
                     var index = $(this).attr("class");
                     //var index = i;
                     indices.push(parseInt(index));
@@ -3297,7 +3301,7 @@ var TreeCompare = function(){
         $("#"+canvasId+" .zoomSlider").remove();
         $("#"+canvasId+" .oppositeTreeAction").remove();
 
-        createLeafSearch(canvasId, baseTree);
+        createLeafSearch(canvasId, name);
         createToolbar(canvasId, baseTree, compareMode);
         createShareButton(canvasId);
         createUndoButton(canvasId);
@@ -4292,9 +4296,6 @@ var TreeCompare = function(){
             }
 
             function collapse(d) {
-
-
-                console.log("clicked treeindex: "+treeIndex);
 
                 /* Called on collapse AND uncollapse / expand. */
                 var load = false;
