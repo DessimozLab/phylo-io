@@ -6,13 +6,6 @@ html {
 
 
 #colorScale {
-    margin-top: 20px;
-    margin-left: 20px;
-    color: white;
-}
-
-#colorScale b {
-    /*margin-left: -20px;*/
     position: fixed;
     bottom: 0;
     padding-right: 10px;

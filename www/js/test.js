@@ -4812,7 +4812,7 @@ var TreeCompare = function(){
     function updateUndo(treeIndex){
 
         var tmpTree = deepCopy(trees[treeIndex].data);
-        console.log(tmpTree);
+        console.log(treeIndex);
         undoTreeData.push(tmpTree);
         undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
 

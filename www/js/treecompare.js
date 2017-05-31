@@ -895,7 +895,6 @@ var TreeCompare = function(){
         }
 
     }
-
     /*
      Can be called externally to render the color scale for tree comparison in a div
      */
@@ -903,14 +902,16 @@ var TreeCompare = function(){
         var colorScale = d3.scale.linear()
             .domain(colorScaleDomain)
             .range(colorScaleRange);
-        var width = 200;
-        var steps = 100;
-        var height = 30;
-        var svgHeight = height + 25;
+        var width = 75;
+        var steps = 10;
+        var height = 25;
+        var svgHeight = height + 20;
         var svg = d3.select("#" + scaleId).append("svg")
             .attr("width", width + "px")
             .attr("height", svgHeight + "px")
             .append("g");
+        svg.append("svg:title").text("Similarity to most common node");
+
         for (var i = 0; i < steps; i++) {
             svg.append("rect")
                 .attr("width", (width / steps) + "px")
@@ -921,15 +922,51 @@ var TreeCompare = function(){
         svg.append("text")
             .text("0")
             .attr("x", 0)
-            .attr("y", height + 20)
-            .attr("fill", "white");
+            .attr("y", height + 10)
+            .attr("fill", "black");
+            // .attr("font-weight", 600);
         svg.append("text")
             .text("1")
-            .attr("x", width - 10)
-            .attr("y", height + 20)
-            .attr("fill", "white")
-
+            .attr("x", width - 8)
+            .attr("y", height + 10)
+            .attr("fill", "black");
+            // .attr("font-weight", 600);
     }
+
+    /*
+     Can be called externally to render the color scale for tree comparison in a div
+     */
+    // function renderColorScale(scaleId) {
+    //     var colorScale = d3.scale.linear()
+    //         .domain(colorScaleDomain)
+    //         .range(colorScaleRange);
+    //     var width = 200;
+    //     var steps = 100;
+    //     var height = 30;
+    //     var svgHeight = height + 25;
+    //     var svg = d3.select("#" + scaleId).append("svg")
+    //         .attr("width", width + "px")
+    //         .attr("height", svgHeight + "px")
+    //         .append("g");
+    //     for (var i = 0; i < steps; i++) {
+    //         svg.append("rect")
+    //             .attr("width", (width / steps) + "px")
+    //             .attr("height", height + "px")
+    //             .attr("fill", colorScale(i / steps))
+    //             .attr("x", ((width / steps) * i) + "px")
+    //     }
+    //     svg.append("text")
+    //         .text("0")
+    //         .attr("x", 0)
+    //         .attr("y", height + 20)
+    //         .attr("fill", "white");
+    //     svg.append("text")
+    //         .text("1")
+    //         .attr("x", width - 10)
+    //         .attr("y", height + 20)
+    //         .attr("fill", "white")
+    //
+    // }
 
     /*
      Function that returns unvisible children or visible children if one or the other are given as input
@@ -4574,6 +4611,7 @@ var TreeCompare = function(){
                         return 'edit label >'
                     },
                     function () { // action function
+                        undoActionFunc = "edit label >";
                         updateUndo(treeIndex);
                         edit_label(d);
                         d.mouseoverHighlight = false;
@@ -4589,6 +4627,7 @@ var TreeCompare = function(){
                         }
                     },
                     function () { // action function
+                        undoActionFunc = "expand_collaps";
                         updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
@@ -4605,6 +4644,7 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
+                        undoActionFunc = "expand_collaps_all";
                         updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
@@ -4633,6 +4673,7 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
+                        undoActionFunc = "expand_all";
                         updateUndo(treeIndex);
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
@@ -4648,6 +4689,7 @@ var TreeCompare = function(){
                         return "swap subtrees >";
                     },
                     function () {
+                        undoActionFunc = "swap";
                         updateUndo(treeIndex);
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
@@ -4812,7 +4854,6 @@ var TreeCompare = function(){
     function updateUndo(treeIndex){
 
         var tmpTree = deepCopy(trees[treeIndex].data);
-        console.log(tmpTree);
         undoTreeData.push(tmpTree);
         undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
 
@@ -4848,7 +4889,6 @@ var TreeCompare = function(){
                     }
                 } else { // view mode
                     var tmpIndex = undoIndex;
-
                     if(tmpIndex > 0){
                         undoIndex = undoIndex - 1;
 
