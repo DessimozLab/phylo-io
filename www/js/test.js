@@ -776,7 +776,7 @@ var TreeCompare = function(){
             var leaves = getChildLeaves(tree).sort();
             for (var j = 0; j < leaves.length; j++) {
                 leaves[j].ID = Math.pow(2,j);
-                //console.log(leaves[j].ID);
+                console.log(leaves[j].ID);
             }
 
             //add required parameters to each node
@@ -3310,7 +3310,7 @@ var TreeCompare = function(){
         //render the scale if we have somewhere to put it
         if (scaleId) {
             var translatewidth = 100;
-            var translateheight = height - 100;
+            var translateheight = height - 50;
 
             d3.select("#" + canvasId + " svg")
                 .append("g")
