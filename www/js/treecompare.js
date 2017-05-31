@@ -1610,7 +1610,12 @@ var TreeCompare = function(){
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
         //TODO: the drag and drop of the tree doesn't work properly
-        var lengthMult = treeData.treeWidth + 90 + 450;
+        if ($("#vis-container2").length !== 0){
+            var lengthMult = treeData.treeWidth + 90 + 200;
+        } else {
+            var lengthMult = treeData.treeWidth + 90 + 400;
+        }
+
 
         //calculate horizontal position of nodes
         nodes.forEach(function(d) {
