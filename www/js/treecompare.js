@@ -14,12 +14,9 @@ var TreeCompare = function(){
 
     // global variables for undo functionality
     var undoIndex = 0;
-    //var undoSource = [];
-    //var undoAction = [];
-
-    var undoTreeData = [];
     var undoTreeDataIndex = [];
-    var undoActionFunc = null;
+    var undoActionFunc = [];
+    var undoActionData = [];
 
 
     /*
@@ -1450,13 +1447,6 @@ var TreeCompare = function(){
      /
      ---------------*/
     function update(source, treeData, duration, treeToggle) {
-
-        if(undoActionFunc){
-            /* save to undo stack with function to call */
-            undoIndex = undoIndex+1;
-            undoActionFunc = null;
-
-        }
 
         //time taken for animations in ms
         if (duration === undefined) {
@@ -4134,6 +4124,269 @@ var TreeCompare = function(){
     }
 
 
+    // function that allows to swap two branches when clicking on note d
+    function rotate(d, tree, comparedTree) {
+        var load = false;
+        if (comparedTree && d._children) {
+            load = true;
+            settings.loadingCallback();
+        }
+        setTimeout(function() {
+            if (load) {
+                settings.loadedCallback();
+            }
+            // here the actual rotation happens
+            var first = d.children[0];
+            var second = d.children[1];
+            d.children[0] = second;
+            d.children[1] = first;
+
+            update(d, tree.data);
+        }, 2);
+
+    }
+
+    function collapse(d, tree, comparedTree) {
+
+        /* Called on collapse AND uncollapse / expand. */
+        var load = false;
+        if (comparedTree && d._children) {
+            load = true;
+            settings.loadingCallback();
+        }
+        setTimeout(function() {
+            if (d.children) {
+                d.collapsed = true;
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.collapsed = false;
+                d.children = d._children;
+                d._children = null;
+
+                if (comparedTree) {
+                    // fixed bug on collapsing then highlighting and uncollapsing
+                    if (d.clickedParentHighlight) {
+                        postorderTraverse(d, function(e) {
+                            e.clickedParentHighlight = true;
+                        });
+                    }
+                    postorderTraverse(d, function(e) {
+                        BCN(e, comparedTree.root);
+                    }, false);
+                }
+            }
+            if (load) {
+                settings.loadedCallback(); // stops the spinning wheels
+            }
+            update(d, tree.data);
+        }, 2);
+
+    }
+
+    function collapseAll(d, tree, comparedTree, forceUncollapse) {
+        var load = false;
+        if (comparedTree && d._children) {
+            load /*._children*/= true;  // _children causes the spinny wheel to never go 'load' and go away
+            settings.loadingCallback();
+        }
+
+        if (forceUncollapse === undefined){
+            forceUncollapse = false
+        }
+        setTimeout(function() {
+            if (d._children || forceUncollapse) {// used when collapsed for uncollapsing
+                postorderTraverse(d, function(e) {
+                    if (e._children) {
+                        e.collapsed = false;
+                        e.children = e._children;
+                        e._children = null;
+                    }
+                    if (comparedTree) {
+                        if (d.clickedParentHighlight) {
+                            postorderTraverse(d, function(e) {
+                                e.clickedParentHighlight = true;
+                            });
+                        }
+                        BCN(e, comparedTree.root);
+                    }
+                });
+            } else if (d.children) { //used when uncollapsed for collapsing
+                postorderTraverse(d, function(e) {
+                    if (e.children) {
+                        e.collapsed = true;
+                        e._children = e.children;
+                        e.children = null;
+                    }
+                });
+            }
+            if (load) {
+                settings.loadedCallback();
+            }
+
+            update(d, tree.data);
+        }, 2)
+
+    }
+
+
+
+    function highlight(d, tree, comparedTree) {
+        var bcnColors = d3.scale.category20();
+
+        if (isCompared) {
+            function colorLinkNodeOver(n, hl) {
+                if (n.children) {
+                    for (var i = 0; i < n.children.length; i++) {
+                        colorLinkNodeOver(n.children[i], hl);
+                    }
+                }
+                if (hl) {
+                    n.clickedParentHighlight = true;
+                } else {
+                    n.clickedParentHighlight = false;
+                }
+            }
+
+            function clearHighlight(itree) {
+                var new_d = itree;
+                var doClear = false;
+                postorderTraverse(itree,function(e){
+                    if (e.clickedHighlight){
+                        new_d = e;
+                        doClear = true;
+                    }
+                },false);
+                if (doClear){
+                    new_d.clickedHighlight = false;
+                    var index = highlightedNodes.indexOf(new_d);
+
+                    if (index > -1) {
+                        highlightedNodes.splice(index, 1);
+                    }
+                    new_d[currentBCN].bcnhighlight = false;
+                    var leaves = new_d.leaves;
+                    var otherTreeData = comparedTree.data;
+                    for (var i = 0; i < leaves.length; i++) {
+                        if(leaves[i].correspondingLeaf !== undefined){
+                            leaves[i].correspondingLeaf.correspondingHighlight = false;
+                        }
+                    }
+
+                    colorLinkNodeOver(new_d, false);
+                    update(new_d, tree.data);
+                    update(otherTreeData.root, otherTreeData);
+                }
+            }
+
+            var leaves;
+            var otherTree;
+            var otherTreeData;
+            var i;
+            if (!_.contains(highlightedNodes, d)) {
+                clearHighlight(tree.root);
+                if (highlightedNodes.length < maxHighlightedNodes) {
+                    d.clickedHighlight = "red";
+                    d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
+                    highlightedNodes.push(d);
+                    leaves = d.leaves;
+                    otherTree = comparedTree.root;
+                    otherTreeData = comparedTree.data;
+
+                    for (i = 0; i < leaves.length; i++) {
+                        if(leaves[i].correspondingLeaf !== undefined) {
+                            leaves[i].correspondingLeaf.correspondingHighlight = true;
+                        }
+
+                    }
+                    expandPathToNode(d[currentBCN]);
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        getVisibleBCNs(otherTree, tree.root, false);
+                        settings.loadedCallback();
+                        colorLinkNodeOver(d, true);
+                        update(d, tree.data);
+                        update(otherTreeData.root, otherTreeData);
+                        if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
+                            var currentScale = otherTreeData.zoomBehaviour.scale();
+
+                            var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
+                            var x = (-d[currentBCN].x + ($("#" + otherTreeData.canvasId).height() / 2) / currentScale);
+
+                            otherTreeData.zoomBehaviour.translate([y, x]);
+                            d3.select("#" + otherTreeData.canvasId + " svg g")
+                                .transition(1500)
+                                .attr("transform", "scale(" + currentScale + ")" + "translate(" + otherTreeData.zoomBehaviour.translate() + ")");
+                        }
+                    }, 2);
+
+                }
+            } else {
+                d.clickedHighlight = false;
+                var index = highlightedNodes.indexOf(d);
+
+                if (index > -1) {
+                    highlightedNodes.splice(index, 1);
+                }
+                d[currentBCN].bcnhighlight = false;
+                leaves = d.leaves;
+                otherTree = comparedTree.root;
+                otherTreeData = comparedTree.data;
+
+                for (i = 0; i < leaves.length; i++) {
+                    leaves[i].correspondingLeaf.correspondingHighlight = false;
+                }
+                colorLinkNodeOver(d, false);
+                update(d, tree.data);
+                update(otherTreeData.root, otherTreeData);
+            }
+        }
+    }
+
+    // if (!d.children && !d._children && d.searchHighlight === true) {
+    //     expandPathToLeaf(d, true);
+    //     update(tree.root, tree.data);
+    // }
+
+    function edit_label(d, tree, comparedTree) {
+        // Read in input
+        var new_label = prompt('Enter new label');
+        var current_label = d.name;
+
+        if (new_label !== current_label) {
+            var found = false;
+
+            function check_label(e) {
+                //checking for the same label in another part of the tree.
+                if (e.name === new_label) {
+                    found = true;
+                } else if (!found && e.children) {
+                    e.children.forEach(check_label);
+                }
+            };
+
+            check_label(tree.root);
+            if (comparedTree && !found) {
+                check_label(comparedTree.root);
+            }
+
+            if (!found) {
+                // Change on this d and any matched d.
+                d.name = new_label;  // TODO: strip HTML tags....
+                if (d.correspondingLeaf) {
+                    d.correspondingLeaf.name = new_label;
+                }
+                // Update both trees
+                update(d, tree.data);
+                if (comparedTree) {
+                    update(comparedTree.root, comparedTree.data);
+                }
+            } else {
+                // Found label already
+            }
+        }
+    }
+
     /*
      get relevant event listener for clicking on a link depending on what mode is selected
      */
@@ -4141,6 +4394,7 @@ var TreeCompare = function(){
         var treeIndex = findTreeIndex(tree.name);
         function linkClick(e) {
             var d = e.target;
+            var root = tree.root.children[0];
             var svg = tree.data.svg;
 
 
@@ -4226,8 +4480,11 @@ var TreeCompare = function(){
                     postorderTraverse(d, function(e) {
                         e.mouseoverHighlight = false;
                     });
-                    undoActionFunc = "reroot";
-                    updateUndo(treeIndex);
+                    if (tree.root.children.length < 3){
+                        updateUndo(treeIndex, "reroot", root);
+                    } else {
+                        updateUndo(treeIndex, "reset", root);
+                    }
                     var rerootedTree = reroot(tree, d);
                     settings.loadingCallback();
                     setTimeout(function() {
@@ -4273,268 +4530,6 @@ var TreeCompare = function(){
 
             var svg = tree.data.svg;
 
-            // function that allows to swap two branches when clicking on note d
-            function rotate(d) {
-                var load = false;
-                if (isCompared && d._children) {
-                    load = true;
-                    settings.loadingCallback();
-                }
-                setTimeout(function() {
-                    if (load) {
-                        settings.loadedCallback();
-                    }
-                    // here the actual rotation happens
-                    var first = d.children[0];
-                    var second = d.children[1];
-                    d.children[0] = second;
-                    d.children[1] = first;
-
-                    update(d, tree.data);
-                }, 2);
-
-            }
-
-            function collapse(d) {
-
-                /* Called on collapse AND uncollapse / expand. */
-                var load = false;
-                if (isCompared && d._children) {
-                    load = true;
-                    settings.loadingCallback();
-                }
-                setTimeout(function() {
-                    if (d.children) {
-                        d.collapsed = true;
-                        d._children = d.children;
-                        d.children = null;
-                    } else {
-                        d.collapsed = false;
-                        d.children = d._children;
-                        d._children = null;
-
-                        if (isCompared) {
-                            // fixed bug on collapsing then highlighting and uncollapsing
-                            if (d.clickedParentHighlight) {
-                                postorderTraverse(d, function(e) {
-                                    e.clickedParentHighlight = true;
-                                });
-                            }
-                            postorderTraverse(d, function(e) {
-                                BCN(e, comparedTree.root);
-                            }, false);
-                        }
-                    }
-                    if (load) {
-                        settings.loadedCallback(); // stops the spinning wheels
-                    }
-                    update(d, tree.data);
-                }, 2);
-
-            }
-
-            function collapseAll(d,forceUncollapse) {
-                var load = false;
-                if (isCompared && d._children) {
-                    load /*._children*/= true;  // _children causes the spinny wheel to never go 'load' and go away
-                    settings.loadingCallback();
-                }
-
-                if (forceUncollapse === undefined){
-                    forceUncollapse = false
-                }
-                setTimeout(function() {
-                    if (d._children || forceUncollapse) {// used when collapsed for uncollapsing
-                        postorderTraverse(d, function(e) {
-                            if (e._children) {
-                                e.collapsed = false;
-                                e.children = e._children;
-                                e._children = null;
-                            }
-                            if (isCompared) {
-                                if (d.clickedParentHighlight) {
-                                    postorderTraverse(d, function(e) {
-                                        e.clickedParentHighlight = true;
-                                    });
-                                }
-                                BCN(e, comparedTree.root);
-                            }
-                        });
-                    } else if (d.children) { //used when uncollapsed for collapsing
-                        postorderTraverse(d, function(e) {
-                            if (e.children) {
-                                e.collapsed = true;
-                                e._children = e.children;
-                                e.children = null;
-                            }
-                        });
-                    }
-                    if (load) {
-                        settings.loadedCallback();
-                    }
-
-                    update(d, tree.data);
-                }, 2)
-
-            }
-
-
-
-            function highlight(d) {
-                var bcnColors = d3.scale.category20();
-
-                if (isCompared) {
-                    function colorLinkNodeOver(n, hl) {
-                        if (n.children) {
-                            for (var i = 0; i < n.children.length; i++) {
-                                colorLinkNodeOver(n.children[i], hl);
-                            }
-                        }
-                        if (hl) {
-                            n.clickedParentHighlight = true;
-                        } else {
-                            n.clickedParentHighlight = false;
-                        }
-                    }
-
-                    function clearHighlight(itree) {
-                        var new_d = itree;
-                        var doClear = false;
-                        postorderTraverse(itree,function(e){
-                            if (e.clickedHighlight){
-                                new_d = e;
-                                doClear = true;
-                            }
-                        },false);
-                        if (doClear){
-                            new_d.clickedHighlight = false;
-                            var index = highlightedNodes.indexOf(new_d);
-
-                            if (index > -1) {
-                                highlightedNodes.splice(index, 1);
-                            }
-                            new_d[currentBCN].bcnhighlight = false;
-                            var leaves = new_d.leaves;
-                            var otherTreeData = comparedTree.data;
-                            for (var i = 0; i < leaves.length; i++) {
-                                if(leaves[i].correspondingLeaf !== undefined){
-                                    leaves[i].correspondingLeaf.correspondingHighlight = false;
-                                }
-                            }
-
-                            colorLinkNodeOver(new_d, false);
-                            update(new_d, tree.data);
-                            update(otherTreeData.root, otherTreeData);
-                        }
-                    }
-
-                    var leaves;
-                    var otherTree;
-                    var otherTreeData;
-                    var i;
-                    if (!_.contains(highlightedNodes, d)) {
-                        clearHighlight(tree.root);
-                        if (highlightedNodes.length < maxHighlightedNodes) {
-                            d.clickedHighlight = "red";
-                            d[currentBCN].bcnhighlight = bcnColors(highlightedNodes.length);
-                            highlightedNodes.push(d);
-                            leaves = d.leaves;
-                            otherTree = comparedTree.root;
-                            otherTreeData = comparedTree.data;
-
-                            for (i = 0; i < leaves.length; i++) {
-                                if(leaves[i].correspondingLeaf !== undefined) {
-                                    leaves[i].correspondingLeaf.correspondingHighlight = true;
-                                }
-
-                            }
-                            expandPathToNode(d[currentBCN]);
-                            settings.loadingCallback();
-                            setTimeout(function() {
-                                getVisibleBCNs(otherTree, tree.root, false);
-                                settings.loadedCallback();
-                                colorLinkNodeOver(d, true);
-                                update(d, tree.data);
-                                update(otherTreeData.root, otherTreeData);
-                                if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
-                                    var currentScale = otherTreeData.zoomBehaviour.scale();
-
-                                    var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
-                                    var x = (-d[currentBCN].x + ($("#" + otherTreeData.canvasId).height() / 2) / currentScale);
-
-                                    otherTreeData.zoomBehaviour.translate([y, x]);
-                                    d3.select("#" + otherTreeData.canvasId + " svg g")
-                                        .transition(1500)
-                                        .attr("transform", "scale(" + currentScale + ")" + "translate(" + otherTreeData.zoomBehaviour.translate() + ")");
-                                }
-                            }, 2);
-
-                        }
-                    } else {
-                        d.clickedHighlight = false;
-                        var index = highlightedNodes.indexOf(d);
-
-                        if (index > -1) {
-                            highlightedNodes.splice(index, 1);
-                        }
-                        d[currentBCN].bcnhighlight = false;
-                        leaves = d.leaves;
-                        otherTree = comparedTree.root;
-                        otherTreeData = comparedTree.data;
-
-                        for (i = 0; i < leaves.length; i++) {
-                            leaves[i].correspondingLeaf.correspondingHighlight = false;
-                        }
-                        colorLinkNodeOver(d, false);
-                        update(d, tree.data);
-                        update(otherTreeData.root, otherTreeData);
-                    }
-                }
-            }
-
-            // if (!d.children && !d._children && d.searchHighlight === true) {
-            //     expandPathToLeaf(d, true);
-            //     update(tree.root, tree.data);
-            // }
-
-            function edit_label(d) {
-                // Read in input
-                var new_label = prompt('Enter new label');
-                var current_label = d.name;
-
-                if (new_label !== current_label) {
-                    var found = false;
-
-                    function check_label(e) {
-                        //checking for the same label in another part of the tree.
-                        if (e.name === new_label) {
-                            found = true;
-                        } else if (!found && e.children) {
-                            e.children.forEach(check_label);
-                        }
-                    };
-
-                    check_label(tree.root);
-                    if (isCompared && !found) {
-                        check_label(comparedTree.root);
-                    }
-
-                    if (!found) {
-                        // Change on this d and any matched d.
-                        d.name = new_label;  // TODO: strip HTML tags....
-                        if (d.correspondingLeaf) {
-                            d.correspondingLeaf.name = new_label;
-                        }
-                        // Update both trees
-                        update(d, tree.data);
-                        if (isCompared) {
-                            update(comparedTree.root, comparedTree.data);
-                        }
-                    } else {
-                        // Found label already
-                    }
-                }
-            }
 
             var triWidth = 10;
             var triHeight = 15;
@@ -4611,9 +4606,11 @@ var TreeCompare = function(){
                     function () { // text function
                         return 'edit label >'
                     },
-                    function () { // action function
-                        undoActionFunc = "edit label >";
-                        updateUndo(treeIndex);
+                    function () {
+                        // undo function
+                        updateUndo(treeIndex, "edit", d);
+
+                        // action function
                         edit_label(d);
                         d.mouseoverHighlight = false;
                     });
@@ -4627,13 +4624,15 @@ var TreeCompare = function(){
                             return "collapse >";
                         }
                     },
-                    function () { // action function
-                        undoActionFunc = "expand_collaps";
-                        updateUndo(treeIndex);
+                    function () {
+                        // undo functionality
+                        updateUndo(treeIndex, "collapse_expand", d);
+
+                        // action function
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        collapse(d);
+                        collapse(d, tree, comparedTree);
                     });
 
                 add_menu_item(".tooltipElem",
@@ -4645,12 +4644,13 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
-                        undoActionFunc = "expand_collaps_all";
-                        updateUndo(treeIndex);
+                        // undo functionality
+                        updateUndo(treeIndex, "collapse_expand_all", d);
+
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        collapseAll(d);
+                        collapseAll(d, tree, comparedTree);
                     });
             };
 
@@ -4674,8 +4674,17 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
-                        undoActionFunc = "expand_all";
-                        updateUndo(treeIndex);
+                        // undo functionality
+                        function check_collapsed(e) {
+                            if(e.children) {
+                                e.children.forEach(check_collapsed);
+                            } else if (e._children && e !== d) {
+                                updateUndo(treeIndex, "expand_all", e);
+                            }
+                        };
+                        check_collapsed(d);
+
+
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -4690,12 +4699,11 @@ var TreeCompare = function(){
                         return "swap subtrees >";
                     },
                     function () {
-                        undoActionFunc = "swap";
-                        updateUndo(treeIndex);
+                        updateUndo(treeIndex,"swap",d);
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        rotate(d);
+                        rotate(d,tree,comparedTree);
                         update(tree.root, tree.data);
                     });
             };
@@ -4711,12 +4719,11 @@ var TreeCompare = function(){
                         }
                     },
                     function () {
-                        undoActionFunc = "highlight";
-                        updateUndo(treeIndex);
+                        updateUndo(treeIndex,{"highlight":d});
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
-                        highlight(d);
+                        highlight(d, tree, comparedTree);
                     });
             }
 
@@ -4734,117 +4741,6 @@ var TreeCompare = function(){
     }
 
 
-    /* http://stackoverflow.com/a/11462081 */
-    function clone(src, deep) {
-
-        var toString = Object.prototype.toString;
-        if(!src || typeof src != "object"){
-            //any non-object ( Boolean, String, Number ), null, undefined, NaN
-            return src;
-        }
-
-        //Honor native/custom clone methods
-        if(src.clone && toString.call(src.clone) == "[object Function]"){
-            return src.clone(deep);
-        }
-
-        //DOM Elements
-        if(src.nodeType && toString.call(src.cloneNode) == "[object Function]"){
-            return src.cloneNode(deep);
-        }
-
-        //Date
-        if(toString.call(src) == "[object Date]"){
-            return new Date(src.getTime());
-        }
-
-        //RegExp
-        if(toString.call(src) == "[object RegExp]"){
-            return new RegExp(src);
-        }
-
-        //Function
-        if(toString.call(src) == "[object Function]"){
-            //Wrap in another method to make sure == is not true;
-            //Note: Huge performance issue due to closures, comment this :)
-            return (function(){
-                src.apply(this, arguments);
-            });
-
-        }
-
-        var ret, index;
-        //Array
-        if(toString.call(src) == "[object Array]"){
-            //[].slice(0) would soft clone
-            ret = src.slice();
-            if(deep){
-                index = ret.length;
-                while(index--){
-                    ret[index] = clone(ret[index], true);
-                }
-            }
-        }
-        //Object
-        else {
-            ret = src.constructor ? new src.constructor() : {};
-            for (var prop in src) {
-                ret[prop] = deep
-                    ? clone(src[prop], true)
-                    : src[prop];
-            }
-        }
-
-        return ret;
-    };
-
-
-    /*-----------------------------------
-     * Perfom deep copy of JSON object that stores the tree, import for undo functionality
-     * input:
-     *  object: JSON object with tree
-     */
-    function deepCopy(object) {
-        const cache = new WeakMap(); // Map of old - new references
-
-        function copy(obj) {
-            if (typeof obj !== 'object' ||
-                obj === null ||
-                obj instanceof HTMLElement
-            )
-                return obj; // primitive value or HTMLElement
-
-            if (obj instanceof Date)
-                return new Date().setTime(obj.getTime());
-
-            if (obj instanceof RegExp)
-                return new RegExp(obj.source, obj.flags);
-
-            if (cache.has(obj))
-                return cache.get(obj);
-
-            const result = obj instanceof Array ? [] : {};
-
-            cache.set(obj, result); // store reference to object before the recursive starts
-
-            if (obj instanceof Array) {
-                for(const o of obj) {
-                    result.push(copy(o));
-                }
-                return result;
-            }
-
-            const keys = Object.keys(obj);
-
-            for (const key of keys)
-                result[key] = copy(obj[key]);
-
-            return result;
-        }
-
-        return copy(object);
-    }
-
     /*-----------------------------------
      * Update the undo global lists:
      *   undoTreeData
@@ -4852,11 +4748,22 @@ var TreeCompare = function(){
      * input:
      *   treeIndex: the current tree part of the global list of trees
      */
-    function updateUndo(treeIndex){
+    function updateUndo(treeIndex, treeAction, treeActionData){
 
-        var tmpTree = deepCopy(trees[treeIndex].data);
-        undoTreeData.push(tmpTree);
-        undoTreeDataIndex.push(treeIndex); // save the tree that we are currently working on
+        undoIndex = undoIndex + 1;
+
+        if ($("#vis-container2").length !== 0) { // important since redo action need opposite tree
+            if(treeIndex === (trees.length-1)){
+                undoTreeDataIndex.push([treeIndex, treeIndex-1]);
+            }else{
+                undoTreeDataIndex.push([treeIndex, treeIndex+1]);
+            }
+        } else {
+            undoTreeDataIndex.push([treeIndex]);
+        }
+
+        undoActionFunc.push(treeAction);
+        undoActionData.push(treeActionData);
 
     }
 
@@ -4868,13 +4775,22 @@ var TreeCompare = function(){
     function undo(canvasId, buttonId){
 
         d3.select("#"+canvasId).select("#"+buttonId)
+
             .on("click", function(){
+
+                function findCanvasId(d){
+                    var treeIDSplit = d.ID.split("_");
+                    var treeID = treeIDSplit[0]+"_"+treeIDSplit[1];
+                    var id = $('#'+treeID).last().parent().prop('id');
+                    return id;
+                }
+
                 if ($("#vis-container2").length !== 0){ // compare mode
 
                     // find tree in the right canvas
                     var slice_index = undefined;
-                    for (var i = 0; i< undoTreeData.length; i++){
-                        if (undoTreeData[i].canvasId === canvasId){
+                    for (var i = 0; i< undoActionData.length; i++){
+                        if (findCanvasId(undoActionData[i]) === canvasId){
                             slice_index = i;
                         }
                     }
@@ -4883,8 +4799,9 @@ var TreeCompare = function(){
                     // update canvas with previous tree in the right canvas
                     if(tmpIndex > 0 && slice_index !== undefined){
                         undoIndex = undoIndex - 1;
-
-                        var undoTreeParam = undoTreeData.splice(slice_index,1)[0];
+                        console.log(undoAction);
+                        var undoAction = undoActionFunc.splice(slice_index,1)[0];
+                        var undoData = undoActionData.splice(slice_index,1)[0];
                         var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
 
                     }
@@ -4893,22 +4810,98 @@ var TreeCompare = function(){
                     if(tmpIndex > 0){
                         undoIndex = undoIndex - 1;
 
-                        var undoTreeParam = undoTreeData.pop();
+                        var undoAction = undoActionFunc.pop();
+                        var undoData = undoActionData.pop();
                         var undoTreeIdx = undoTreeDataIndex.pop();
 
                     }
                 }
-                trees[undoTreeIdx].data.root = deepCopy(undoTreeParam.root);
 
-                update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+
+                if(undoAction === 'collapse_expand'){
+                    if (undoTreeIdx.length === 2){
+                        collapse(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                    } else {
+                        collapse(undoData, trees[undoTreeIdx]);
+                    }
+
+                }
+
+                if(undoAction === 'collapse_expand_all'){
+                    if (undoTreeIdx.length === 2){
+                        collapseAll(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                    } else {
+                        collapseAll(undoData, trees[undoTreeIdx]);
+                    }
+                }
+
+                if(undoAction === 'expand_all'){
+                    if (undoTreeIdx.length === 2){
+                        collapseAll(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                    } else {
+                        collapseAll(undoData, trees[undoTreeIdx]);
+                    }
+                }
+
+                if(undoAction === 'reroot'){
+                    if (undoTreeIdx.length === 2){
+                        var comparedTree = trees[undoTreeIdx[1]];
+                    }
+                    var rerootedTree = reroot(trees[undoTreeIdx], undoData);
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        if (comparedTree){
+                            var index1 = findTreeIndex(tree.name);
+                            var index2 = findTreeIndex(comparedTree.name);
+
+                            preprocessTrees(trees[index1], trees[index2]);
+                            update(tree.root, rerootedTree.data);
+                            update(comparedTree.root, comparedTree.data);
+                        } else {
+                            update(trees[undoTreeIdx].root, rerootedTree.data);
+                            settings.loadedCallback();
+                        }
+                    }, 2);
+                }
+
+                if(undoAction === 'swap'){
+                    if (undoTreeIdx.length === 2){
+                        rotate(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                        update(trees[undoTreeIdx].root, trees[undoTreeIdx].data);
+                    } else {
+                        rotate(undoData, trees[undoTreeIdx]);
+                        update(trees[undoTreeIdx].root, trees[undoTreeIdx].data);
+                    }
+
+                }
+
+                if(undoAction === 'edit'){
+                    if (undoTreeIdx.length === 2){
+                        edit_label(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                    } else {
+                        edit_label(undoData, trees[undoTreeIdx]);
+                    }
+                }
+
+                if(undoAction === 'highlight'){
+                    if (undoTreeIdx.length === 2){
+                        highlight(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                    } else {
+                        highlight(undoData, trees[undoTreeIdx]);
+                    }
+                }
 
                 if (tmpIndex === 1){
-                    undoTreeData = [];
+                    undoActionFunc = [];
+                    undoActionData = [];
                     undoTreeDataIndex = [];
                 }
 
             })
+
+
     }
+
 
     //return all the externalised functions
     return {
