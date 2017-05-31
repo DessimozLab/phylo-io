@@ -2577,7 +2577,6 @@ var TreeCompare = function(){
                 var indices = [];
                 // click on a leaf from the list and highlight only its path
                 d3.select("#"+canvasId).select("#"+results[i].name).on("click", function() {
-                    console.log(baseTree);
                     var index = $(this).attr("class");
                     //var index = i;
                     indices.push(parseInt(index));
@@ -2602,7 +2601,6 @@ var TreeCompare = function(){
                         expandPathToLeaf(results[indices[indices.length-1]],false,true); // set clicked link to class link search
                     }
                     update(baseTree, baseTree.data);
-                    console.log(baseTree);
                 });
             }
         }
@@ -4890,6 +4888,11 @@ var TreeCompare = function(){
                         highlight(undoData, trees[undoTreeIdx]);
                     }
                 }
+
+                if(undoAction === 'reset'){
+                    alert("unrooted starting tree cannot be rerooted to origin, please re-render")
+                }
+
 
                 if (tmpIndex === 1){
                     undoActionFunc = [];
