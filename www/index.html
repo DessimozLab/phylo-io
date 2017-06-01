@@ -256,13 +256,13 @@
                             </div>
                             <div class="radio">
                                 <label class="settingsCheckboxLabel">
-                                    <input type="radio" name="internalLabels" value="internalLabelsName">Branch
+                                    <input type="radio" name="internalLabels" value="name">Branch
                                     Labels/Support
                                 </label>
                             </div>
                             <div class="radio">
                                 <label class="settingsCheckboxLabel">
-                                    <input type="radio" name="internalLabels" value="internalLabelsLength">Length
+                                    <input type="radio" name="internalLabels" value="length">Length
                                 </label>
                             </div>
                             <div class="radio">
@@ -348,6 +348,9 @@
                         </div>
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="alignTipLabels">Align tip labels </label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="settingsCheckboxLabel"><input type="checkbox" id="mirrorRightTree">Mirror right tree </label>
                         </div>
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="moveOnMouseOver" checked>Move
@@ -461,6 +464,7 @@
         fontSize: $("#fontSize").val(),
         useLengths: $("#useLengths").is(":checked"),
         alignTipLabels: $("#alignTipLabels").is(":checked"),
+        mirrorRightTree: $("#mirrorRightTree").is(":checked"),
         selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
         comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
         moveOnClick: $("#moveOnMouseOver").is(":checked"),
@@ -480,9 +484,9 @@
     treecomp.inputTreeFile("newickInSingle");
 
     // hide optional settings by default
-    //$('.opt').parent().hide();
+    $('.opt').parent().hide();
 
-    //hideOptionalSettings();
+    hideOptionalSettings();
 
     var mode = $("#mode-buttons .active").attr('id');
     if (mode === "view-btn") {
@@ -955,6 +959,12 @@
     $("#alignTipLabels").on("click", function () {
         treecomp.changeTreeSettings({
             alignTipLabels: $("#alignTipLabels").is(":checked")
+        });
+    });
+
+    $("#mirrorRightTree").on("click", function () {
+        treecomp.changeTreeSettings({
+            mirrorRightTree: $("#mirrorRightTree").is(":checked")
         });
     });
 

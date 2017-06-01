@@ -163,6 +163,7 @@ var TreeCompare = function(){
     function changeTreeSettings(settingsIn) {
         settings.useLengths = getSetting(settingsIn.useLengths,settings.useLengths);
         settings.alignTipLabels = getSetting(settingsIn.alignTipLabels,settings.alignTipLabels);
+        settings.mirrorRightTree = getSetting(settingsIn.mirrorRightTree,settings.mirrorRightTree);
         settings.selectMultipleSearch = getSetting(settingsIn.selectMultipleSearch,settings.selectMultipleSearch);
         settings.fontSize = getSetting(settingsIn.fontSize,settings.fontSize);
         settings.lineThickness = getSetting(settingsIn.lineThickness,settings.lineThickness);
@@ -1641,6 +1642,23 @@ var TreeCompare = function(){
             }
         });
 
+        //mirror right tree
+        var treeNameElements = treeData.root.ID.split("_");
+        var treeName = treeNameElements[0]+"_"+treeNameElements[1];
+
+        nodes.forEach(function(d) {
+            if (treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                d.y = lengthMult - d.y;
+            }
+        });
+        //return text width to adjust position of text when mirror
+        function getTextWidth(txt){
+            var c = document.createElement("canvas");
+            var ctx = c.getContext("2d");
+            ctx.font = settings.fontSize + "px Arial";
+            var textWidth = ctx.measureText(txt).width;
+            return textWidth
+        }
         setXPos(treeData.root, 0);
 
 
@@ -1694,7 +1712,14 @@ var TreeCompare = function(){
         nodeEnter.append("text")
             .attr("class", "node")
             .attr("x", function(d) {
-                return d.children || d._children ? -13 : 13;
+                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                    return -13 - getTextWidth(d.name);
+                } else if((d.children || d._children)){
+                    return -13;
+                } else {
+                    return  13;
+                }
+
             })
             .attr("dy", function(d) {
                 if(!(d.children || d._children)) { //ensures that length labels are on top of branch
@@ -1793,8 +1818,16 @@ var TreeCompare = function(){
                 });
         }
 
+
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
+            .attr("x", function(d) {
+                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                    return -13 - getTextWidth(d.name);
+                } else {
+                    return 13
+                }
+            })
             .text(function(d) {
                 if (!d.children && !d._children) { //print leaf names
                     return d.name
@@ -1899,7 +1932,11 @@ var TreeCompare = function(){
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function(d) {
-                        return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
+                        if(treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                            return "M" + 0 + "," + 0 + "L" + -xlength + "," + (-ylength) + "L" + -xlength + "," + (ylength) + "L" + 0 + "," + 0;
+                        } else {
+                            return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
+                        }
                     })
                     .style("fill", function(d) {
                         if (d[currentS]) {
@@ -1917,11 +1954,21 @@ var TreeCompare = function(){
                     })
                     .attr("x", function(d) {
                         //var xpos = (avg - (getLength(d) * (lengthMult / maxLength))) + 5;
-                        var xpos = d.triangleLength * (lengthMult / maxLength) + 5;
-                        if (xpos > canvasWidth){ // ensures that triangle doesn't go out of visible space
-                            xpos = xlength+5;
+                        var text = d.leaves[0].name + " ... " + d.leaves[d.leaves.length - 1].name;
+                        if(treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                            var xpos = d.triangleLength * (lengthMult / maxLength) + 5;
+                            if (xpos > canvasWidth){ // ensures that triangle doesn't go out of visible space
+                                xpos = xlength+5;
+                            }
+                            return -xpos- getTextWidth(text);
+                        }else{
+                            var xpos = d.triangleLength * (lengthMult / maxLength) + 5;
+                            if (xpos > canvasWidth){ // ensures that triangle doesn't go out of visible space
+                                xpos = xlength+5;
+                            }
+                            return xpos;
                         }
-                        return xpos;
+
                     });
             }
             if (d.children) {
@@ -1964,7 +2011,7 @@ var TreeCompare = function(){
                     var e = d.target;
                     var f = d.source;
                     if (f[currentS] && (settings.internalLabels === "none")) {
-                        return colorScale(f[currentS])
+                        return colorScale(e[currentS])
                     } else if (e["branchSupport"] && (settings.internalLabels === "name")) { // color branch according to branch support
                         return colorScaleRest(parseFloat(e["branchSupport"])/maxBranchSupport)
                     } else if (e["specifiedBranchColor"] && (settings.internalLabels === "color")) { // color branch according to prespecified rgb values in the nhx file
@@ -4835,7 +4882,6 @@ var TreeCompare = function(){
                     // update canvas with previous tree in the right canvas
                     if(tmpIndex > 0 && slice_index !== undefined){
                         undoIndex = undoIndex - 1;
-                        console.log(undoAction);
                         var undoAction = undoActionFunc.splice(slice_index,1)[0];
                         var undoData = undoActionData.splice(slice_index,1)[0];
                         var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
