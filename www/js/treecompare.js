@@ -53,6 +53,7 @@ var TreeCompare = function(){
 
     var settings = {
         useLengths: true,
+        alignTipLables: false,
         selectMultipleSearch: false,
         fontSize: 14,
         lineThickness: 3,
@@ -161,6 +162,7 @@ var TreeCompare = function(){
      */
     function changeTreeSettings(settingsIn) {
         settings.useLengths = getSetting(settingsIn.useLengths,settings.useLengths);
+        settings.alignTipLabels = getSetting(settingsIn.alignTipLabels,settings.alignTipLabels);
         settings.selectMultipleSearch = getSetting(settingsIn.selectMultipleSearch,settings.selectMultipleSearch);
         settings.fontSize = getSetting(settingsIn.fontSize,settings.fontSize);
         settings.lineThickness = getSetting(settingsIn.lineThickness,settings.lineThickness);
@@ -1593,6 +1595,7 @@ var TreeCompare = function(){
             d.x = d.x;
         }
 
+
         /*
          define the vertical position of the shown leaves depending on some bound and traverse this information to all leaves
          */
@@ -1610,11 +1613,13 @@ var TreeCompare = function(){
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
         //TODO: the drag and drop of the tree doesn't work properly
-        if ($("#vis-container2").length !== 0){
-            var lengthMult = treeData.treeWidth + 90 + 200;
-        } else {
-            var lengthMult = treeData.treeWidth + 90 + 400;
-        }
+        // if ($("#vis-container2").length !== 0){
+        //     var lengthMult = treeData.treeWidth + 90 + 200;
+        // } else {
+        //     var lengthMult = treeData.treeWidth + 90 + 400;
+        // }
+
+        var lengthMult = treeData.treeWidth + 90;
 
 
         //calculate horizontal position of nodes
@@ -1629,7 +1634,15 @@ var TreeCompare = function(){
             d.y = d.y - 90;
         });
 
+        //align tip labels
+        nodes.forEach(function(d) {
+            if (settings.alignTipLabels && (!d.children || d._children)){
+                d.y = lengthMult - 90;
+            }
+        });
+
         setXPos(treeData.root, 0);
+
 
         // Update the nodes…
         // Assign a unique numeric identifer to each node
@@ -4635,7 +4648,12 @@ var TreeCompare = function(){
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        collapse(d, tree, comparedTree);
+                        if(isCompared){
+                            collapse(d, tree, comparedTree);
+                        } else {
+                            collapse(d, tree);
+                        }
+
                     });
 
                 add_menu_item(".tooltipElem",
@@ -4653,7 +4671,12 @@ var TreeCompare = function(){
                         postorderTraverse(d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        collapseAll(d, tree, comparedTree);
+                        if(isCompared){
+                            collapseAll(d, tree, comparedTree);
+                        } else {
+                            collapseAll(d, tree);
+                        }
+
                     });
             };
 
@@ -4706,8 +4729,13 @@ var TreeCompare = function(){
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
-                        rotate(d,tree,comparedTree);
-                        update(tree.root, tree.data);
+                        if (isCompared){
+                            rotate(d,tree,comparedTree);
+                            update(tree.root, tree.data);
+                        } else {
+                            rotate(d,tree);
+                            update(tree.root, tree.data);
+                        }
                     });
             };
 
@@ -4726,7 +4754,12 @@ var TreeCompare = function(){
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
-                        highlight(d, tree, comparedTree);
+                        if (isCompared){
+                            highlight(d, tree, comparedTree);
+                        } else {
+                            highlight(d, tree);
+                        }
+
                     });
             }
 

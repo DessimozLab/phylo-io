@@ -347,6 +347,9 @@
                                 Lengths</label>
                         </div>
                         <div class="checkbox">
+                            <label class="settingsCheckboxLabel"><input type="checkbox" id="alignTipLabels">Align tip labels </label>
+                        </div>
+                        <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="moveOnMouseOver" checked>Move
                                 To Best Corresponding Node on Highlight Click</label>
                         </div>
@@ -393,9 +396,6 @@
         div_footer.width(divdiv.width());
 
     })();
-
-    var totalTrees = 0;
-    var addingTree = false;
 
     var spinnerOpts = {
         lines: 13 // The number of lines to draw
@@ -460,14 +460,13 @@
         nodeSize: $("#nodeSize").val(),
         fontSize: $("#fontSize").val(),
         useLengths: $("#useLengths").is(":checked"),
+        alignTipLabels: $("#alignTipLabels").is(":checked"),
         selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
         comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
         moveOnClick: $("#moveOnMouseOver").is(":checked"),
         clickAction: $("input[name=clickAction]:checked").val(),
         autoCollapse: $("#collapseAmount").html()
     });
-
-    var undoIndex = 0;
 
     /* Download name */
     var update_download_fn = function (canvasId, labelId) {
@@ -952,6 +951,13 @@
             useLengths: $("#useLengths").is(":checked")
         });
     });
+
+    $("#alignTipLabels").on("click", function () {
+        treecomp.changeTreeSettings({
+            alignTipLabels: $("#alignTipLabels").is(":checked")
+        });
+    });
+
     $("input[name=comparisonMetric]:radio").on("change", function () {
         treecomp.changeTreeSettings({
             comparisonMetric: $("input[name=comparisonMetric]:checked").val()
