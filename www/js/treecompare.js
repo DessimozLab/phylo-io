@@ -3853,8 +3853,10 @@ var TreeCompare = function(){
         createDeepLeafList(tree1);
         createDeepLeafList(tree2);
 
+        var isChrome = !!window.chrome && !!window.chrome.webstore;
+
         // use web workers only if trees are very large
-        if(tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100){
+        if((tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100) && !isChrome){
             getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
         } else {
             getVisibleBCNs(tree1,tree2);
@@ -4297,7 +4299,7 @@ var TreeCompare = function(){
     function highlight(d, tree, comparedTree) {
         var bcnColors = d3.scale.category20();
 
-        if (isCompared) {
+        if (comparedTree) {
             function colorLinkNodeOver(n, hl) {
                 if (n.children) {
                     for (var i = 0; i < n.children.length; i++) {
