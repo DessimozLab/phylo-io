@@ -1624,6 +1624,7 @@ var TreeCompare = function(){
 
 
         //calculate horizontal position of nodes
+        var newLenghtMult = 0;
         nodes.forEach(function(d) {
             if (settings.useLengths) { //setting selected by user
                 d.y = getLength(d)* (lengthMult / maxLength); //adjust position to screen size
@@ -1631,9 +1632,17 @@ var TreeCompare = function(){
             } else {
                 d.y = d.depth * lengthMult / 10;
                 d.baseY = d.y;
+                if(d.y > newLenghtMult){
+                    newLenghtMult = d.y
+                }
             }
             d.y = d.y - 90;
         });
+
+        // this ensures that when lengths are not used when rerooting the plot is still drawn similar
+        if(newLenghtMult>lengthMult){
+            lengthMult = newLenghtMult
+        }
 
         //align tip labels
         nodes.forEach(function(d) {
@@ -3588,9 +3597,9 @@ var TreeCompare = function(){
         }
 
         var translation = d3.event.translate;
-        var tbound = -(h - hcanvas) - (zoomPadding * scale);
+        var tbound = -(h - hcanvas) - (4*zoomPadding * scale);
         var bbound = zoomPadding;
-        var lbound = -(w - wcanvas) - (zoomPadding * scale);
+        var lbound = -(w - wcanvas) + (zoomPadding * scale);
         var rbound = zoomPadding;
 
         // limit translation to thresholds
