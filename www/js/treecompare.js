@@ -3298,7 +3298,7 @@ var TreeCompare = function(){
         //get the trees by name
         var baseTree = trees[findTreeIndex(name)];
         if (otherTreeName !== undefined) {
-            compareMode = false;
+            compareMode = true;
         }
         if (baseTree.hasOwnProperty("multiple")){
             var tree = baseTree;
@@ -3315,7 +3315,7 @@ var TreeCompare = function(){
             });
             //render various buttons and search bars and sliders
             //renderDownloadButton(canvasId);
-            createOppositeTreeActions(canvasId);
+            //createOppositeTreeActions(canvasId);
 
         }else{
             renderedTrees.push(baseTree);
@@ -3332,7 +3332,7 @@ var TreeCompare = function(){
 
             //render various buttons and search bars and sliders
             //renderDownloadButton(canvasId);
-            createOppositeTreeActions(canvasId);
+            //createOppositeTreeActions(canvasId);
         }
     }
 
@@ -3346,6 +3346,8 @@ var TreeCompare = function(){
         //get the trees by name
         if (otherTreeName !== undefined) {
             compareMode = true;
+        } else {
+            compareMode = false;
         }
 
         if (treeToggle === undefined){
@@ -3353,15 +3355,16 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
+        console.log(otherTreeName)
 
         $("#"+canvasId+" .treeToolsMenu").remove();
+        $("#"+canvasId+" .treeToolsText").remove();
         $("#"+canvasId+" .treeToolsButton").remove();
         $("#"+canvasId+" .shareButton").remove();
         $("#"+canvasId+" .undoButton").remove();
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
         $("#"+canvasId+" .zoomSlider").remove();
-        $("#"+canvasId+" .oppositeTreeAction").remove();
 
         createLeafSearch(canvasId, name);
         createToolbar(canvasId, baseTree, compareMode);
