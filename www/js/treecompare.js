@@ -3355,7 +3355,6 @@ var TreeCompare = function(){
         }
 
         renderedTrees.push(baseTree);
-        console.log(otherTreeName)
 
         $("#"+canvasId+" .treeToolsMenu").remove();
         $("#"+canvasId+" .treeToolsText").remove();
@@ -3570,6 +3569,8 @@ var TreeCompare = function(){
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             d3.selectAll(".tooltipElem").remove();
 
+            console.log(d3.select("#" + canvasId + " svg g"));
+
             var tooltips = $("[id$=tooltipElem]	");
             for (var i = 0; i < tooltips.length; i++) {
                 var tooltip = tooltips[i];
@@ -3587,7 +3588,7 @@ var TreeCompare = function(){
     }
 
     function getTranslation(canvasId, zoom) {
-        var zoomPadding = 100;
+        var zoomPadding = 1;
         var scale = d3.event.scale;
         var wcanvas = $("#" + canvasId + " svg").width();
         var hcanvas = $("#" + canvasId + " svg").height();
@@ -3600,10 +3601,10 @@ var TreeCompare = function(){
         }
 
         var translation = d3.event.translate;
-        var tbound = -(h - hcanvas) - (4*zoomPadding * scale);
-        var bbound = zoomPadding;
-        var lbound = -(w - wcanvas) + (zoomPadding * scale);
-        var rbound = zoomPadding;
+        var tbound = -(h - hcanvas) - (zoomPadding * scale);
+        var bbound = +(h - hcanvas) - (zoomPadding * scale);
+        var lbound = -(w - wcanvas) - (zoomPadding * scale);
+        var rbound = +(w - wcanvas) - (zoomPadding * scale);
 
         // limit translation to thresholds
         if (h < (hcanvas - (zoomPadding * 2))) {
@@ -4941,9 +4942,13 @@ var TreeCompare = function(){
 
                 if(undoAction === 'reroot'){
                     if (undoTreeIdx.length === 2){
+                        var tree = trees[undoTreeIdx[0]];
                         var comparedTree = trees[undoTreeIdx[1]];
+                        var rerootedTree = reroot(tree, undoData);
+                    }else {
+                        var tree = trees[undoTreeIdx];
+                        var rerootedTree = reroot(trees[undoTreeIdx], undoData);
                     }
-                    var rerootedTree = reroot(trees[undoTreeIdx], undoData);
                     settings.loadingCallback();
                     setTimeout(function() {
                         if (comparedTree){
