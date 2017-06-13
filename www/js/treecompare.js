@@ -3368,11 +3368,10 @@ var TreeCompare = function(){
 
         renderedTrees.push(baseTree);
 
+        $("#"+canvasId+" .treeTools").remove();
         $("#"+canvasId+" .treeToolsMenu").remove();
-        $("#"+canvasId+" .treeToolsText").remove();
-        $("#"+canvasId+" .treeToolsButton").remove();
-        $("#"+canvasId+" .shareButton").remove();
-        $("#"+canvasId+" .undoButton").remove();
+        $("#"+canvasId+" .share").remove();
+        $("#"+canvasId+" .undo").remove();
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
         $("#"+canvasId+" .zoomSlider").remove();
