@@ -1827,14 +1827,21 @@ var TreeCompare = function(){
                 });
         }
 
-
+        // Add text to nodes and leaves
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
             .attr("x", function(d) {
-                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){ //mirrored right tree
                     return -13 - getTextWidth(d.name);
-                } else {
+                } else if (!d.children && !d._children){ //leaves left tree
                     return 13
+                } else { //internal nodes
+                    if (treeName === trees[trees.length -1].name && settings.mirrorRightTree){ //internal nodes right tree
+                        return 23
+                    } else { //internal nodes left tree
+                        return -13
+                    }
+
                 }
             })
             .text(function(d) {
