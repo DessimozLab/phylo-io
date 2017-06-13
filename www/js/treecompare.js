@@ -3563,7 +3563,7 @@ var TreeCompare = function(){
                     zoomBehaviourSemantic.translate([0, 0]);
                 }} else if (prev === scale) {
 
-                var translation = getTranslation(canvasId, false);
+                var translation = d3.event.translate;
                 zoomBehaviourSemantic.translate(translation);
                 applyScaleText(scaleText, scale, root);
                 baseTree.data.prevTransform = translation;
@@ -3576,7 +3576,7 @@ var TreeCompare = function(){
 
         function zoom() {
             var scale = d3.event.scale;
-            var translation = getTranslation(canvasId, true);
+            var translation = d3.event.translate;
             zoomBehaviour.translate(translation);
             zoomBehaviour.scale(scale);
             applyScaleText(scaleText, scale, root);
@@ -3598,45 +3598,8 @@ var TreeCompare = function(){
                 }
             }
 
-            //updateDownloadLinkContent(canvasId, baseTree.data);
         }
 
-    }
-
-    function getTranslation(canvasId, zoom) {
-        var zoomPadding = 1;
-        var scale = d3.event.scale;
-        var wcanvas = $("#" + canvasId + " svg").width();
-        var hcanvas = $("#" + canvasId + " svg").height();
-
-        var h = d3.select("#" + canvasId + " svg g").node().getBBox().height;
-        var w = d3.select("#" + canvasId + " svg g").node().getBBox().width;
-        if (zoom) {
-            h = h * scale;
-            w = w * scale;
-        }
-
-        var translation = d3.event.translate;
-        var tbound = -(h - hcanvas) - (zoomPadding * scale);
-        var bbound = (h + hcanvas) + (zoomPadding * scale);
-        var lbound = -(w - wcanvas) - (zoomPadding * scale);
-        var rbound = +(w + wcanvas) + (zoomPadding * scale);
-
-        // limit translation to thresholds
-        if (h < (hcanvas - (zoomPadding * 2))) {
-            bbound = tbound - zoomPadding;
-            tbound = zoomPadding;
-        }
-        if (w < (wcanvas - (zoomPadding * 2))) {
-            rbound = lbound - zoomPadding;
-            lbound = zoomPadding;
-        }
-
-        translation = [
-            Math.max(Math.min(translation[0], rbound), lbound),
-            Math.max(Math.min(translation[1], bbound), tbound)
-        ];
-        return translation;
     }
 
     /*---------------
