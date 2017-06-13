@@ -2268,6 +2268,7 @@ var TreeCompare = function(){
 
             undo.append("a")
                 .attr("class", "btn btn-sm sharp undoButton")
+                .attr("title", "undo last tree manipulation")
                 .attr("id","undobtn")
                 .append("span")
                 .attr("class", "fa fa-undo")
@@ -2287,6 +2288,7 @@ var TreeCompare = function(){
 
             shareTools.append("a")
                 .attr("class", "btn btn-sm sharp shareButton")
+                .attr("title", "share tree as gist in the cloud")
                 .append("span")
                 .attr("class", "fa fa-cloud-upload")
                 .attr("aria-hidden","true");
@@ -2327,6 +2329,7 @@ var TreeCompare = function(){
 
             treeTools.append("a")
                 .attr("class", "btn btn-sm sharp treeToolsButton")
+                .attr("title", "tools for tree manipulation")
                 .append("span")
                 .attr("class", "fa fa-wrench")
                 .attr("aria-hidden","true");
@@ -2552,12 +2555,14 @@ var TreeCompare = function(){
             oppositeTreeActionButton.append("button")
                 .attr("id", "opTreeAcButton")
                 .attr("class", "btn btn-sm sharp opTreeAcButtonReroot")
+                .attr("title", "reroot according to opposite tree")
                 .attr("type", "button")
                 .append("span")
                 .text("reroot");
             oppositeTreeActionButton.append("button")
                 .attr("id", "opTreeAcButton")
                 .attr("class", "btn btn-sm sharp opTreeAcButtonReorder")
+                .attr("title", "reorder according to opposite tree")
                 .attr("type", "button")
                 .append("span")
                 .text("reorder");
@@ -2618,7 +2623,8 @@ var TreeCompare = function(){
                 .attr("class", "searchBox");
 
             var searchDivA = searchDiv.append("a")
-                .attr("class", "btn btn-sm sharp searchButton");
+                .attr("class", "btn btn-sm sharp searchButton")
+                .attr("title", "search by leaf name");
 
             searchDivA.append("span")
                 .attr("class", "glyphicon glyphicon-search")
@@ -2808,6 +2814,7 @@ var TreeCompare = function(){
             var treeToggleButtons = treeToggleDropDown.append("button")
                 .attr("id", "treeToggleDropdownButton")
                 .attr("class", "btn btn-sm sharp treeToggleDropdown-toggle")
+                .attr("title", "toggle trees dropdown")
                 .on('click', function(){
                     $("#dropDownList" + canvas).toggle();
                 });
@@ -2900,6 +2907,7 @@ var TreeCompare = function(){
                 .attr("type", "button")
                 .attr("class", "btn btn-sm sharp treeToggleButton")
                 .attr("id", "leftToggleButton")
+                .attr("title", "toggle trees to the left")
                 .append("span")
                 .attr("class", "glyphicon glyphicon-arrow-left")
                 .attr("aria-hidden", "true");
@@ -2908,6 +2916,7 @@ var TreeCompare = function(){
                 .attr("type", "button")
                 .attr("class", "btn btn-sm sharp treeToggleButton")
                 .attr("id", "rightToggleButton")
+                .attr("title", "toggle trees to the right")
                 .append("span")
                 .attr("class", "glyphicon glyphicon-arrow-right")
                 .attr("aria-hidden", "true");
@@ -3170,18 +3179,21 @@ var TreeCompare = function(){
             downloadButton.append("button")
                 .attr("id", "exportButton")
                 .attr("class", "btn btn-sm sharp nwk")
+                .attr("title", "export tree as nwk string")
                 .attr("type", "button")
                 .append("span")
                 .text("nwk");
             downloadButton.append("button")
                 .attr("id", "exportButton")
                 .attr("class", "btn btn-sm sharp svg")
+                .attr("title", "export tree as svg")
                 .attr("type", "button")
                 .append("span")
                 .text("svg");
             downloadButton.append("button")
                 .attr("id", "exportButton")
                 .attr("class", "btn btn-sm sharp png")
+                .attr("title", "export tree as png")
                 .attr("type", "button")
                 .append("span")
                 .text("png");
@@ -3569,8 +3581,6 @@ var TreeCompare = function(){
                 .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             d3.selectAll(".tooltipElem").remove();
 
-            console.log(d3.select("#" + canvasId + " svg g"));
-
             var tooltips = $("[id$=tooltipElem]	");
             for (var i = 0; i < tooltips.length; i++) {
                 var tooltip = tooltips[i];
@@ -3602,9 +3612,9 @@ var TreeCompare = function(){
 
         var translation = d3.event.translate;
         var tbound = -(h - hcanvas) - (zoomPadding * scale);
-        var bbound = +(h - hcanvas) - (zoomPadding * scale);
+        var bbound = (h + hcanvas) + (zoomPadding * scale);
         var lbound = -(w - wcanvas) - (zoomPadding * scale);
-        var rbound = +(w - wcanvas) - (zoomPadding * scale);
+        var rbound = +(w + wcanvas) + (zoomPadding * scale);
 
         // limit translation to thresholds
         if (h < (hcanvas - (zoomPadding * 2))) {
@@ -4573,6 +4583,7 @@ var TreeCompare = function(){
                             preprocessTrees(trees[index1], trees[index2]);
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
+                            settings.loadedCallback();
                         } else {
                             update(tree.root, rerootedTree.data);
                             settings.loadedCallback();
@@ -4958,6 +4969,7 @@ var TreeCompare = function(){
                             preprocessTrees(trees[index1], trees[index2]);
                             update(tree.root, rerootedTree.data);
                             update(comparedTree.root, comparedTree.data);
+                            settings.loadedCallback();
                         } else {
                             update(trees[undoTreeIdx].root, rerootedTree.data);
                             settings.loadedCallback();
