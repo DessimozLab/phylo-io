@@ -781,6 +781,7 @@ var TreeCompare = function(){
 
             //add required parameters to each node
             postorderTraverse(tree, function(d) {
+                d.keep = true;
                 d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
                 d.clickedParentHighlight = false;
@@ -1458,6 +1459,8 @@ var TreeCompare = function(){
 
         if (treeToggle === undefined){
             treeToggle = false;
+        } else {
+            duration = 0;
         }
 
         // Color scale for compare mode and bcn values from light yellow to dark blue
@@ -1685,6 +1688,7 @@ var TreeCompare = function(){
         // Enter any new nodes at the parent's previous position.
         // Perform the actual drawing
         var nodeEnter = node.enter().append("g")
+            .filter(function(d){return d.keep})
             .attr("class", "node")
             .attr("transform", function(d) {
                 if (source === treeData.root) {
@@ -4405,7 +4409,29 @@ var TreeCompare = function(){
     //     update(tree.root, tree.data);
     // }
 
-    function edit_label(d, tree, comparedTree) {
+    function getSibling(d){
+        var sibling = undefined;
+        //var indexSibling = d.parent.children.indexOf(sibling);
+        if (d.parent.children.length >= 2){
+            for (var i = 0; i < d.parent.children.length; i++ ){
+                if (d.parent.children[i] !== d){
+                    sibling = d.parent.children[i];
+                }
+            }
+        }
+        return sibling
+    }
+
+    function cutBranch(d, tree, comparedTree) {
+        var sibling = getSibling(d);
+        var droot = d.parent;
+        var droot_index = droot.parent.children.indexOf(droot);
+
+        d.parent.parent.children[droot_index] = sibling;
+        update(d, tree.data);
+    }
+
+    function editLabel(d, tree, comparedTree) {
         // Read in input
         var new_label = prompt('Enter new label');
         var current_label = d.name;
@@ -4561,6 +4587,27 @@ var TreeCompare = function(){
                     manualReroot = true;
                 });
 
+            add_menu_item(".tooltipElem",
+                function () { // text function
+                    return "cut branch";
+                },
+                function () {
+                    d = e.target;
+                    // undo functionality
+                    //updateUndo(treeIndex, "collapse_expand", d);
+
+                    // action function
+                    postorderTraverse(d, function (e) {
+                        e.mouseoverHighlight = false;
+                    });
+                    if(isCompared){
+                        cutBranch(d, tree, comparedTree);
+                    } else {
+                        cutBranch(d, tree);
+                    }
+
+                });
+
             $(document).click(function(event) {
                 if(!$(event.target).closest('#tooltipElem').length && $('#tooltipElem').is(":visible")) {
                     $('#tooltipElem').hide()
@@ -4669,7 +4716,7 @@ var TreeCompare = function(){
                         updateUndo(treeIndex, "edit", d);
 
                         // action function
-                        edit_label(d);
+                        editLabel(d);
                         d.mouseoverHighlight = false;
                     });
             }
@@ -4959,9 +5006,9 @@ var TreeCompare = function(){
 
                 if(undoAction === 'edit'){
                     if (undoTreeIdx.length === 2){
-                        edit_label(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                        editLabel(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
                     } else {
-                        edit_label(undoData, trees[undoTreeIdx]);
+                        editLabel(undoData, trees[undoTreeIdx]);
                     }
                 }
 
