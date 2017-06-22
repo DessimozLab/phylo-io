@@ -760,6 +760,7 @@ var TreeCompare = function(){
                 newicks = tmpNewicks.slice(0, -1);
             }
         }
+        console.log(tmpNewicks);
         // reset settings radiobuttons
         updateSettingsLabels();
 

@@ -360,6 +360,9 @@
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="selectMultipleSearch">Select
                                 multiple search results</label>
                         </div>
+                        <div class="checkbox">
+                            <label class="settingsCheckboxLabel"><input type="checkbox" id="ladderizeTree">Ladderize Tree</label>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -448,7 +451,7 @@
 
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
-        scaleColor: "black",
+        scaleColor: "red",
         loadingCallback: function () {
             $('#spinner-container').show();
             spinner.spin(spinnerTarget);
