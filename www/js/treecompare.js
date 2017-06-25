@@ -4425,7 +4425,7 @@ var TreeCompare = function(){
         return sibling
     }
 
-    function cutBranch(d, tree, comparedTree) {
+    function cutBranch(d, tree) {
         var sibling = getSibling(d);
         var droot = d.parent;
         var droot_index = droot.parent.children.indexOf(droot);
@@ -4436,7 +4436,7 @@ var TreeCompare = function(){
             e.leaves = getChildLeaves(e);
         });
 
-        update(d, tree.data);
+        return tree;
     }
 
     function editLabel(d, tree, comparedTree) {
@@ -4608,11 +4608,23 @@ var TreeCompare = function(){
                     postorderTraverse(d, function (e) {
                         e.mouseoverHighlight = false;
                     });
-                    if(isCompared){
-                        cutBranch(d, tree, comparedTree);
-                    } else {
-                        cutBranch(d, tree);
-                    }
+                    var cutTree = cutBranch(d, tree);
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        if (isCompared){
+                            var index1 = findTreeIndex(tree.name);
+                            var index2 = findTreeIndex(comparedTree.name);
+
+                            preprocessTrees(trees[index1], trees[index2]);
+                            update(tree.root, cutTree.data);
+                            update(comparedTree.root, comparedTree.data);
+                            settings.loadedCallback();
+                        } else {
+                            update(tree.root, cutTree.data);
+                            settings.loadedCallback();
+                        }
+                    }, 2);
+                    manualReroot = true;
 
                 });
 
