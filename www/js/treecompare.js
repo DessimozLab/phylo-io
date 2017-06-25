@@ -25,11 +25,15 @@ var TreeCompare = function(){
 
 
 
+<<<<<<< HEAD
      //blue - green - yellow - red
      //var colorScaleRange = ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
 
      orange:
      ['rgb(254,240,217)', 'rgb(253,212,158)', 'rgb(253,187,132)', 'rgb(252,141,89)', 'rgb(227,74,51)', 'rgb(179,0,0)'];
+=======
+    var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
+>>>>>>> 45d31b5c939dc7adddcd1c30a34a732ca8607260
 
      blue - green - yellow - red
      ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
@@ -125,7 +129,6 @@ var TreeCompare = function(){
     }
 
     window.onresize = resize;
-
 
     /*
      create ID with random number generator
@@ -228,7 +231,7 @@ var TreeCompare = function(){
     }
 
     /*
-     parse json when shared tree is loaded, ensures that adjusted visualization parameters are preserved
+    parse json when shared tree is loaded, ensures that adjusted visualization parameters are preserved
      */
     function jsonToNwk(json,addLabels) {
         //TODO: here add searchHighlihgt and make sure that branchlengths are preserved
@@ -488,7 +491,6 @@ var TreeCompare = function(){
                                 }
                             }
                         });
-
                     } else {
                         if (!(x===";" || x==="")){
                             settingsLbls.push('name');
@@ -814,9 +816,8 @@ var TreeCompare = function(){
         return trees[(trees.length - newicks.length)];
     }
 
-
     /*
-     depending on number of leaves function returns optimal collapsing depth
+    depending on number of leaves function returns optimal collapsing depth
      */
     function getRecommendedAutoCollapse(root) {
         var leafCount = root.leaves.length;
@@ -829,7 +830,7 @@ var TreeCompare = function(){
     }
 
     /*
-     depending on number of splits function returns maximum number of collapsing depth
+    depending on number of splits function returns maximum number of collapsing depth
      */
     function getMaxAutoCollapse() {
         var maxDepth = [];
@@ -854,7 +855,7 @@ var TreeCompare = function(){
     }
 
     /*
-     remove a tree from array of trees
+    remove a tree from array of trees
      */
     function removeTree(name) {
         trees.splice(findTreeIndex(name), 1);
@@ -895,6 +896,7 @@ var TreeCompare = function(){
         }
 
     }
+
     /*
      Can be called externally to render the color scale for tree comparison in a div
      */
@@ -969,14 +971,14 @@ var TreeCompare = function(){
     // }
 
     /*
-     Function that returns unvisible children or visible children if one or the other are given as input
+    Function that returns unvisible children or visible children if one or the other are given as input
      */
     function getChildren(d) {
         return d._children ? d._children : (d.children ? d.children : []);
     }
 
     /*
-     Changes text in the length scale according to changes in vis
+    Changes text in the length scale according to changes in vis
      */
     function applyScaleText(scaleText, zoomScale, root) {
         if (root.children || root._children) {
@@ -1179,7 +1181,6 @@ var TreeCompare = function(){
         return {parent:null, children:[], name:"", ID:"",length:0, mouseoverHighlight:false, mouseoverLinkHighlight:false, elementS:d.elementS};
     }
 
-
     /*
      Function to dynamically reroot a tree at a specific node
      Taken and adapted from knlh.js....
@@ -1257,6 +1258,7 @@ var TreeCompare = function(){
                 for (j = k = 0; j < p.children.length; ++j) {
                     p.children[k] = p.children[j];
                     if (j != i) ++k;
+
                 }
                 --p.children.length;
             }
@@ -1288,6 +1290,7 @@ var TreeCompare = function(){
     function getTreeFromCanvasId(id) {
         var name = d3.select("#" + id + " svg").attr("id");
         return trees[findTreeIndex(name)];
+
     }
 
 
@@ -1355,6 +1358,7 @@ var TreeCompare = function(){
             });
 
             outURL += encodeURIComponent(gistID1 + "-" + gistID2);
+
 
         }else {
             tree1 = trees[trees.length-1];
@@ -1442,8 +1446,6 @@ var TreeCompare = function(){
 
     }
 
-
-
     /*---------------
      /
      /    UPDATE: Main function that is every time called once an action on the visualization is performed
@@ -1515,7 +1517,6 @@ var TreeCompare = function(){
         treeData.prevNoLeavesVisible = !(leavesVisible > 0);
 
         var leafHeight = treeData.treeHeight;
-
         height = leaves * leafHeight/2;
         var trianglePadding = leafHeight;
 
@@ -1670,14 +1671,12 @@ var TreeCompare = function(){
         }
         setXPos(treeData.root, 0);
 
-
         // Update the nodes…
         // Assign a unique numeric identifer to each node
         // "zero" being the number of leaves
         var node = treeData.svg.selectAll("g.node")
             .data(nodes, function(d) {
                 return d.id || (d.id = ++treeData.i);
-
             })
             .attr("id", function(d){
                 return d.ID;
@@ -1708,7 +1707,6 @@ var TreeCompare = function(){
         nodeEnter.append("circle")
             .attr("class", "node")
             .attr("r", settings.nodeSize);
-
 
         nodeEnter.append("rect")
             .attr("class", "node")
@@ -1984,7 +1982,6 @@ var TreeCompare = function(){
                             }
                             return xpos;
                         }
-
                     });
             }
             if (d.children) {
@@ -2054,7 +2051,6 @@ var TreeCompare = function(){
                     return d.source.ID+'_'+ d.target.ID;
                 })
                 .attr("d", function(d) {
-
                     d = d.source;
                     var output;
                     if (source === treeData.root) {
@@ -2323,7 +2319,6 @@ var TreeCompare = function(){
                 } catch (e) {
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
                 }
-
             }
         });
     }
@@ -2398,7 +2393,6 @@ var TreeCompare = function(){
 
             });
     }
-
 
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
@@ -2580,6 +2574,7 @@ var TreeCompare = function(){
          | Renders middle buttons in compare mode for rerooting and resorting
          |
          ----------------------*/
+
         // draws buttons to swap one tree and not the other
         if (settings.enableFixedButtons) {
             buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass);
@@ -3689,6 +3684,7 @@ var TreeCompare = function(){
         }
     }
 
+
     /*
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
      if recalculate==false, doesn't calculate for a node if it aleady has a value
@@ -3912,7 +3908,6 @@ var TreeCompare = function(){
 
         var elementBCNNode = null;
         var maxElementS = 0;
-
         var spanningTree = getSpanningTree(tree, v);
 
         for (var i = 0; i < spanningTree.length; i++) {
@@ -4009,7 +4004,6 @@ var TreeCompare = function(){
             limitDepth(tree, autocollapse);
         }
     }
-
     /*---------------
      /
      /    EXTERNAL: external function for initialising a tree comparison visualisation
@@ -4287,7 +4281,6 @@ var TreeCompare = function(){
     }
 
 
-
     function highlight(d, tree, comparedTree) {
         var bcnColors = d3.scale.category20();
 
@@ -4426,7 +4419,6 @@ var TreeCompare = function(){
             if (comparedTree && !found) {
                 check_label(comparedTree.root);
             }
-
             if (!found) {
                 // Change on this d and any matched d.
                 d.name = new_label;  // TODO: strip HTML tags....
@@ -4453,7 +4445,6 @@ var TreeCompare = function(){
             var d = e.target;
             var root = tree.root.children[0];
             var svg = tree.data.svg;
-
 
             //render the tooltip on click
             //user then chooses which function above to call
@@ -4585,7 +4576,6 @@ var TreeCompare = function(){
     function getClickEventListenerNode(tree, isCompared, comparedTree) {
         var treeIndex = findTreeIndex(tree.name);
         function nodeClick(d) {
-
             var svg = tree.data.svg;
 
 
@@ -4623,7 +4613,6 @@ var TreeCompare = function(){
                 .attr("height", triHeight+rectHeight)
                 .moveToFront();
 
-
             tooltipContainer.append("path")
                 .attr("d", function() {
                     return "M" + x + "," + y + "L" + (x-triWidth) + "," + (y-triHeight) + "L" + (x+triWidth) + "," + (y-triHeight);
@@ -4633,6 +4622,7 @@ var TreeCompare = function(){
                 .style("fill", "black")
                 .attr("x", function(){
                     return x-(rectWidth / 2);
+
                 })
                 .attr("y", function() {
                     return y-triHeight - rectHeight + 1;
