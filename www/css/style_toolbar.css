@@ -1,18 +1,55 @@
 body,
 html {
     height: 100%;
-    overflow:hidden;
 }
 
+.icon-flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+.tree-tools {
+    position: absolute;
+    text-align:center;
+    width: 122px;
+    top: 40px;
+    right: 50px;
+
+}
+
+.tree-tools-menu {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding-bottom: 2px;
+    display: none;
+}
+
+.tree-tools-menu li {
+    list-style:none;
+    border-bottom: 1px;
+    text-align: left;
+    font-size: 8pt;
+}
+
+.tree-tools-text {
+    padding-left: 2px;
+}
 
 #colorScale {
-    position: fixed;
-    bottom: 0;
-    padding-right: 10px;
+    margin-top: 20px;
+    margin-left: 20px;
+    color: white;
+}
+
+#colorScale b {
+    margin-left: -20px;
 }
 
 #placeholder {
-    padding-top: 100px;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -34,11 +71,13 @@ html {
 #text {
     position: absolute;
     width: 200px;
+    top: 40px;
     left: 250px;
 }
 
 #arrow {
     left: 40px;
+    top: 40px;
     position: absolute;
     float: right;
     width: 200px;
@@ -68,44 +107,39 @@ html {
 
 }
 
-/*.sidebar-nav li {*/
-    /*text-indent: 20px;*/
-    /*line-height: 40px;*/
-/*}*/
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
 
 #wrapper {
     height: 100%;
 }
 
-svg {
-    width: 100%;
-}
 .vis-container {
     /*height: calc(100% - 60px);*/
     height: 100%;
     padding: 0px;
     position: absolute;
     width: 100%;
-    overflow: scroll !important;
-    top: 50px;
 }
 
-/*.vis-scale {*/
-    /*!*height: 60px;*!*/
-    /*width: 100%;*/
-    /*background-color: gray;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
+.vis-scale {
+    height: 60px;
+    width: 100%;
+    background-color: gray;
+    position: absolute;
+    bottom: 0px;
+}
 
-/*.vis-scale-2 {*/
-    /*!*height: 60px;*!*/
-    /*width: 50%;*/
-    /*background-color: gray;*/
-    /*float: left;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
+.vis-scale-2 {
+    height: 60px;
+    width: 50%;
+    background-color: gray;
+    float: left;
+    position: absolute;
+    bottom: 0px;
+}
 
 #vis-scale2 {
     margin-left: 50%;
@@ -120,10 +154,8 @@ svg {
     border-width: 0px;
     border-style: solid;
     border-right-width: 2px;
-    border-color: #e7e7e7;
-    border-width: thin;
-    border-bottom: 0px;
-    top: 50px;
+    border-color: black;
+    /*height: calc(100% - 60px);*/
 }
 
 #vis-container2 {
@@ -149,11 +181,14 @@ svg {
     color: #999;
 }
 
-
 #mode-buttons {
     width: 200px;
     margin-left: 20px;
     /*display: hidden;*/
+}
+
+#renderButton {
+    margin-left: 20px;
 }
 
 input[type=file]{
@@ -162,33 +197,53 @@ input[type=file]{
 
 label {
     padding-top: -40px;
-    color: lightgrey;
-    font-weight: 500;
+    color: #999;
+    font-size: 12px;
 }
 
-#renderButton {
-    margin-left: 20px;
+/*styles for export functionality*/
+
+.export-group {
+    margin: 0 auto;
 }
 
-.icon-flipped {
-    transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
+#exportButton {
+    width: 40px;
+    /*margin-left: 0px;*/
+    opacity: 0.3;
 }
 
-input[type=file]{
-    color:transparent;
+#exportButton:hover{
+    opacity: 1.0;
+}
+
+.dropdown-menu {
+    min-width: 60px;
+    font-size: 11px;
+    margin: 1px 0px 1px 0px;
+    text-align: center;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    background-color: white;
 }
 
 .dropdown-menu li a{
-    /*padding: 1px 0px 1px 0px;*/
+    padding: 1px 0px 1px 0px;
 }
+
+/*end styles for export functionality*/
 
 .alert {
     width: 200px;
     margin-left: 20px;
     line-height: 1.2;
+}
+
+.btn {
+    border: 0 none;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
 }
 
 .btn {
@@ -226,6 +281,24 @@ input[type=file]{
     box-shadow: none;
 }
 
+.button {
+    background-color: black; /* Green */
+    opacity: 0.9;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: white; /* Green */
+    color: black;
+}
+
+
 .dropbtn{
    background-color: #2b542c;
    border: none;
@@ -235,29 +308,31 @@ input[type=file]{
      background-color: #999;
  }
 
+
 #settingsPanel {
     display: none;
+    background-color: #999;
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+}
 
-    background: rgb(79,79,79);
-    background: -moz-linear-gradient(-45deg,  rgba(79,79,79,1) 0%, rgba(68,68,68,1) 20%, rgba(14,14,14,1) 100%);
-    background: -webkit-linear-gradient(-45deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
-    background: linear-gradient(135deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#0e0e0e',GradientType=1 );
-
-    padding: 15px;
-    border-radius: 3px;
-    margin-top: 5px;
-    margin-bottom: 50px;
-
+#exportPanel {
+    display: none;
+    background-color: #999;
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
 .sizeAdjust {
     width: 200px !important;
 }
 
-/*#settingsPanel [type=checkbox], b {*/
-    /*margin-left: 20px;*/
-/*}*/
+#settingsPanel [type=checkbox], b {
+    margin-left: 20px;
+}
+
 
 input[type=radio] {
     margin-right: 5px;
@@ -281,15 +356,11 @@ input[type=checkbox] {
 }
 
 .collapseElem {
-    line-height: 30px;
-    vertical-align: middle;
-    text-align: center;
-    color: whitesmoke;
-    text-align: center;
+    float: left;
     width: 40px;
-    display: inline-block;
-
-
+    height: 40px;
+    margin: 10px;
+    text-align: center;
 }
 
 .singleIn {
@@ -297,13 +368,10 @@ input[type=checkbox] {
 }
 
 .newickIn {
-    width: 100%;
+    width: 200px;
     margin-top: 4px;
     height: 200px;
     line-height: 20px;
-    padding: 4px;
-    border-radius: 4px;
-
 }
 
 #newickInputs p {
@@ -318,6 +386,25 @@ input[type=checkbox] {
 }
 
 #newickInputs {
+    min-height: 260px;
+}
+
+.exportIn {
+    margin-top: 4px;
+    line-height: 20px;
+}
+
+#exportInputs p {
+    color: white;
+    margin-bottom: -10px;
+}
+
+#exportInputs b {
+    margin: 0px;
+    color: #999;
+}
+
+#exportInputs {
     min-height: 260px;
 }
 
@@ -374,11 +461,6 @@ input[type=checkbox] {
     font-style: italic;
 }
 
-/*--end sidebar and general styles----------------------------------------------*/
-
-
-/*Styles for middle table compare mode for reorder and reroot*/
-
 table.fixed {
     width: 200px;
     text-indent: 0px;
@@ -405,14 +487,9 @@ table.fixed td:nth-of-type(3) {
     width:30px;
 }/*Setting the width of column 3.*/
 
-/*--end middle table for reroot and reorder----------------------------------------------*/
-
-/*Styles for treename input*/
-
 textarea{
     resize: none;
 }
-
 input {
     resize: none;
 }
@@ -428,11 +505,6 @@ input.treename::-webkit-input-placeholder{
     font-style: italic
 }
 
-/*--end treename input----------------------------------------------*/
-
-
-/*Styles for menu of node or link click*/
-
 .tooltipElem{
     position: relative;
     display: inline-block;
@@ -442,15 +514,9 @@ input.treename::-webkit-input-placeholder{
 
 .tooltipElemText{
     fill: white;
-    font-size: 9pt;
-    /*font-weight: bold;*/
+    font-size: 10pt;
+    font-weight: bold;
 }
-
-
-
-/*--end tooltipElem----------------------------------------------*/
-
-/*Styles for tree*/
 
 path.link {
     stroke: grey;
@@ -522,127 +588,31 @@ rect.node {
     stroke: black;
 }
 
-/*--end tree----------------------------------------------*/
-
-/*Styles for undobutton*/
-
-.undo {
-    padding: 5px;
-    right: 5px;
-    top: 5px;
-    position: absolute;
-}
-
-.undoButton {
-    width: 26px;
-    float: right;
-    opacity: 0.3
-}
-
-.undoButton:hover {
-    opacity: 1;
-}
-
-/*--end undo----------------------------------------------*/
-
-/*Styles for sharing*/
-
-.share {
-    padding: 5px;
-    right: 31px;
-    top: 5px;
-    position: absolute;
-}
-
-.shareButton {
-    width: 26px;
-    float: right;
-    opacity: 0.3
-}
-
-.shareButton:hover {
-    opacity: 1;
-}
-
-/*--end sharing----------------------------------------------*/
-
-/*Styles for toolbar*/
-
-.treeTools {
-    position: absolute;
-    padding: 5px;
-    right: 57px;
-    top: 5px;
-}
-
-
-.treeToolsButton {
-    width: 26px;
-    /*float: right;*/
-    opacity: 0.3;
-}
-
-.treeToolsButton:hover {
-    opacity: 1;
-}
-
-.opacity {
-    opacity: 1 !important;
-}
-
-.treeToolsMenu {
-    background-color: whitesmoke;
-    text-align: left;
-    position: absolute;
-    padding: 2px;
-    right: 10px;
-    top: 38px;
-    width: 104px;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 3px;
-    border-color: lightgray;
-    padding-bottom: 2px;
-    display: none;
-}
-
-treeToolsMenuContent {
-    text-align: left;
-}
-
-.treeToolsMenu li {
-    list-style:none;
-    /*border-bottom: 1px;*/
-    font-size: 8pt;
-    text-align: left;
-}
-
-.treeToolsText {
-    margin: auto;
-    text-align: left;
-}
-
-/*--end toolbar----------------------------------------------*/
-
 /*Styles for leaf searching*/
 
 .searchBox {
-    padding: 5px;
-    right: 83px;
-    top: 5px;
-    position: absolute;
+    max-width: 250px;
+    margin: 0 auto;
+    text-align: center;
+    /*min-height: 45px;*/
+    /*padding: 5px;*/
+    /*right: 5px;*/
+    /*top: 5px;*/
+    /*position: absolute;*/
 }
 
 .searchInput {
-    float: right;
-    width: 0px;
-    margin-left: 0px;
-    display: none;
+    /*float: right;*/
+    width: 80px;
+    height: 26px;
+    /*margin-left: 0px;*/
+    /*display: none;*/
 }
 
 .searchButton {
     width: 26px;
-    float: right;
+    height: 26px;
+    /*float: right;*/
     opacity: 0.3;
 }
 
@@ -650,7 +620,12 @@ treeToolsMenuContent {
     opacity: 1;
 }
 
-.searchResultsBox {
+.input-group .form-control {
+    width: 92px;
+    height: 26px;
+}
+
+.resultsBox {
     width: 150px;
     position: absolute;
     /*margin-right: 10px;*/
@@ -667,17 +642,15 @@ treeToolsMenuContent {
     text-algin: left;
 }
 
-.searchResultsList li {
+.resultsList li {
     margin-left: -35px;
     list-style-type: none;
     cursor: pointer;
 }
 
-.searchResultsList li:hover {
+.resultsList li:hover {
     background-color: orange;
 }
-
-/*--end search-------------------------*/
 
 
 /*Styles for tree toggling*/
@@ -773,95 +746,10 @@ button.treeToggleButton span{
     background-color: orange;
 }
 
-/*--end toggle----------------------------------------------*/
-
-/*styles for export functionality*/
-
-.export-group {
-    margin: 0 auto;
-    text-align: center;
-}
-
-#exportButton {
-    width: 32.5px;
-    margin-left: 0px;
-    opacity: 0.3;
-}
-
-
-#exportButton:hover{
-    opacity: 1.0;
-}
-
-#exportPanel {
-    display: none;
-    background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-}
-
-/*.dropdown-menu {*/
-    /*min-width: 60px;*/
-    /*font-size: 11px;*/
-    /*margin: 1px 0px 1px 0px;*/
-    /*text-align: center;*/
-    /*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-    /*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-    /*padding: 1px 0px 1px 0px;*/
-/*}*/
-
-/*--end export----------------------------------------------*/
-
-/*styles for opposite Tree action functionality*/
-
-.opTreeAcGroup {
-    margin: 0 auto;
-    text-align: center;
-}
-
-#opTreeAcButton {
-    width: 49px;
-    margin-left: 0px;
-    opacity: 0.3;
-}
-
-
-#opTreeAcButton:hover{
-    opacity: 1.0;
-}
-
-#opTreeAcPanel {
-    display: none;
-    background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-}
-
-/*.dropdown-menu {*/
-/*min-width: 60px;*/
-/*font-size: 11px;*/
-/*margin: 1px 0px 1px 0px;*/
-/*text-align: center;*/
-/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-/*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-/*padding: 1px 0px 1px 0px;*/
-/*}*/
-
-/*--end export----------------------------------------------*/
-
-
 /*Styles for rescaling buttons*/
 
 div.rescaleButtons {
-    width: 66px;
+    width: 78px;
     margin: 0 auto;
     /*top: 10px;*/
     /*left: 10px;*/
@@ -870,15 +758,15 @@ div.rescaleButtons {
 
 button.rescaleButton {
     font-size: 10px;
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     vertical-align: top;
     opacity: 0.3;
 }
 
-button.rescaleButton.span{
-    vertical-align: middle;
-}
+/*button.rescaleButton.span{*/
+    /*vertical-align: middle;*/
+/*}*/
 
 button.rescaleButton:hover{
     opacity: 1.0;
@@ -886,7 +774,7 @@ button.rescaleButton:hover{
 
 #upButton{
     display: block;
-    margin-left: 22px;
+    margin-left: 26px;
 }
 
 #leftButton{
@@ -894,24 +782,20 @@ button.rescaleButton:hover{
 }
 
 #rightButton{
-    margin-left: 22px;
+    margin-left: 26px;
     float: right;
 }
 
 #downButton{
     display: block;
-    margin-left: 22px;
+    margin-left: 26px;
 }
-
-/*--end rescale----------------------------------------------*/
-
-/*Styles for zooming buttons*/
 
 .zoomSliderContainer {
     /*position: absolute;*/
     margin: 0 auto;
     color: black;
-    width: 90px;
+    width: 100px;
     /*margin-left: -55px;*/
     /*margin-top: 400px;*/
     /*top: 50%;*/
@@ -930,43 +814,36 @@ button.rescaleButton:hover{
     /*transform: rotate(90deg);*/
 /*}*/
 
-/*--end zoom----------------------------------------------*/
+/*this following code makes the treename hide on focus*/
+/*
+.treename::-webkit-input-placeholder  {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.treename::-moz-placeholder   {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.treename:-moz-placeholder   {
+    color:gray;
+    -webkit-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+*/
 
 /*this following code makes the treename hide on focus*/
 .treename:focus::-webkit-input-placeholder  {color:transparent;} /* Chrome; Opera; Safari */
 .treename:focus::-moz-placeholder   {color:transparent;} /*Firefox 19    */
 .treename:-moz-placeholder   {color:transparent;} /* Firefox 18- */
 .treename:-ms-input-placeholder    {color:transparent;} /* IE 10*/
-
-
-/*personalized render icon*/
-
-@font-face {
-    font-family: 'icomoon';
-    src:  url('../fonts/icomoon.eot?v8nxfa');
-    src:  url('../fonts/icomoon.eot?v8nxfa#iefix') format('embedded-opentype'),
-    url('../fonts/icomoon.ttf?v8nxfa') format('truetype'),
-    url('../fonts/icomoon.woff?v8nxfa') format('woff'),
-    url('../fonts/icomoon.svg?v8nxfa#icomoon') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-[class^="icon-"], [class*=" icon-"] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'icomoon' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-.icon-phyloio-01:before {
-    content: "\e900";
-}
