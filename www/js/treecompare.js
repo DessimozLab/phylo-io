@@ -71,7 +71,7 @@ var TreeCompare = function(){
         enableDownloadButtons: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
-        enableScale: false,
+        enableScale: true,
         zoomMode: "traditional", //semantic, traditional
         fitTree: "scale", //none, scale
         enableSizeControls: true,
