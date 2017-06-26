@@ -71,6 +71,7 @@ var TreeCompare = function(){
         enableDownloadButtons: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
+        enableScale: false,
         zoomMode: "traditional", //semantic, traditional
         fitTree: "scale", //none, scale
         enableSizeControls: true,
@@ -155,6 +156,7 @@ var TreeCompare = function(){
         settings.enableSizeControls = getSetting(settingsIn.enableSizeControls,settings.enableSizeControls);
         settings.enableSearch = getSetting(settingsIn.enableSearch,settings.enableSearch);
         settings.autoCollapse = getSetting(settingsIn.autoCollapse,settings.autoCollapse);
+        settings.enableScale = getSetting(settingsIn.enableScale,settings.enableScale);
     }
 
     /*
@@ -861,7 +863,7 @@ var TreeCompare = function(){
         for (var i = 0; i < renderedTrees.length; i++) {
             if (renderedTrees[i].name === name) {
                 $("#" + renderedTrees[i].data.canvasId).empty();
-                if (renderedTrees[i].data.scaleId) {
+                if (renderedTrees[i].data.scaleId && settings.enableScale) {
                     $(renderedTrees[i].data.scaleId).empty();
                 }
             }
@@ -2153,8 +2155,9 @@ var TreeCompare = function(){
         });
 
         //calculate the new scale text
-        applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
-
+        if (settings.enableScale){
+            applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
+        }
 
         //event listeners for nodes to handle mouseover highlighting, important because all children nodes have to be highlighted
         //input d is currently selected node....
@@ -3323,13 +3326,16 @@ var TreeCompare = function(){
 
         //clear the canvas of any previous visualisation
         $("#" + canvasId).empty();
-        $("#" + scaleId).empty();
-
-        // variable i is set to the number of leaves (see above)
         jQuery.extend(baseTree.data, {
-            canvasId: canvasId,
-            scaleId: scaleId
+            canvasId: canvasId
         });
+
+        if (scaleId && settings.enableScale){
+            $("#" + scaleId).empty();
+            jQuery.extend(baseTree.data, {
+                scaleId: scaleId
+            });
+        }
     }
 
     /*---------------
@@ -3367,7 +3373,7 @@ var TreeCompare = function(){
         //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
-        if (scaleId){
+        if (scaleId  && settings.enableScale){
             $("#" + scaleId).empty();
             scaleId = "#" + scaleId;
         }
@@ -3410,7 +3416,7 @@ var TreeCompare = function(){
         root.y0 = 0;
 
         //render the scale if we have somewhere to put it
-        if (scaleId) {
+        if (scaleId && settings.enableScale) {
             var translatewidth = 100;
             var translateheight = height - 100;
 
@@ -3434,7 +3440,8 @@ var TreeCompare = function(){
                 .attr("fill", settings.scaleColor)
                 .attr("text-anchor", "middle");
             jQuery.extend(baseTree.data, {
-                scaleText: scaleText
+                scaleText: scaleText,
+                scaleId: scaleId
             });
         }
 
@@ -3448,7 +3455,6 @@ var TreeCompare = function(){
             id: findTreeIndex(name),
             zoomBehaviour: zoomBehaviour,
             zoomBehaviourSemantic: zoomBehaviourSemantic,
-            scaleId: scaleId
         });
 
         postorderTraverse(baseTree.data.root, function(d) {
@@ -3544,7 +3550,9 @@ var TreeCompare = function(){
 
                 var translation = d3.event.translate;
                 zoomBehaviourSemantic.translate(translation);
-                applyScaleText(scaleText, scale, root);
+                if (settings.enableScale){
+                    applyScaleText(scaleText, scale, root);
+                }
                 baseTree.data.prevTransform = translation;
                 d3.select("#" + canvasId + " svg g")
                     .attr("transform", "translate(" + translation + ")");
@@ -3558,7 +3566,9 @@ var TreeCompare = function(){
             var translation = d3.event.translate;
             zoomBehaviour.translate(translation);
             zoomBehaviour.scale(scale);
-            applyScaleText(scaleText, scale, root);
+            if(settings.enableScale){
+                applyScaleText(scaleText, scale, root);
+            }
             if (settings.enableZoomSliders) {
                 $("#zoomSlider" + baseTree.data.id).val(scale);
             }
