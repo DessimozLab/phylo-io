@@ -1460,6 +1460,8 @@ var TreeCompare = function(){
 
         if (treeToggle === undefined){
             treeToggle = false;
+        } else {
+            duration = 1;
         }
 
         // Color scale for compare mode and bcn values from light yellow to dark blue
