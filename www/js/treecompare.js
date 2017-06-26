@@ -3319,40 +3319,17 @@ var TreeCompare = function(){
         if (otherTreeName !== undefined) {
             compareMode = true;
         }
-        if (baseTree.hasOwnProperty("multiple")){
-            var tree = baseTree;
-            renderedTrees.push(tree);
+        renderedTrees.push(baseTree);
 
-            //clear the canvas of any previous visualisation
-            $("#" + canvasId).empty();
-            $("#" + scaleId).empty();
+        //clear the canvas of any previous visualisation
+        $("#" + canvasId).empty();
+        $("#" + scaleId).empty();
 
-            // variable i is set to the number of leaves (see above)
-            jQuery.extend(baseTree.data, {
-                canvasId: canvasId,
-                scaleId: scaleId
-            });
-            //render various buttons and search bars and sliders
-            //renderDownloadButton(canvasId);
-            //createOppositeTreeActions(canvasId);
-
-        }else{
-            renderedTrees.push(baseTree);
-
-            //clear the canvas of any previous visualisation
-            $("#" + canvasId).empty();
-            $("#" + scaleId).empty();
-
-            // variable i is set to the number of leaves (see above)
-            jQuery.extend(baseTree.data, {
-                canvasId: canvasId,
-                scaleId: scaleId
-            });
-
-            //render various buttons and search bars and sliders
-            //renderDownloadButton(canvasId);
-            //createOppositeTreeActions(canvasId);
-        }
+        // variable i is set to the number of leaves (see above)
+        jQuery.extend(baseTree.data, {
+            canvasId: canvasId,
+            scaleId: scaleId
+        });
     }
 
     /*---------------
@@ -3390,8 +3367,10 @@ var TreeCompare = function(){
         //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
-        $("#" + scaleId).empty();
-        scaleId = "#" + scaleId;
+        if (scaleId){
+            $("#" + scaleId).empty();
+            scaleId = "#" + scaleId;
+        }
 
         //set up the d3 vis
         var width = $("#" + canvasId).width();
