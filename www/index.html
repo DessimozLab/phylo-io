@@ -100,7 +100,7 @@
         <div id="navbar" class="navbar-collapse collapse list-inline">
             <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
                 <li class="dropdown" id="action">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
@@ -359,10 +359,6 @@
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="selectMultipleSearch">Select
                                 multiple search results</label>
-                        </div>
-                        <div class="checkbox">
-                            <label class="settingsCheckboxLabel"><input type="checkbox" id="ladderizeTree">Ladderize Tree</label>
-                        </div>
                     </div>
                 </li>
             </ul>
@@ -467,6 +463,7 @@
         fontSize: $("#fontSize").val(),
         useLengths: $("#useLengths").is(":checked"),
         alignTipLabels: $("#alignTipLabels").is(":checked"),
+        ladderizeTree: $("#ladderizeTree").is(":checked"),
         mirrorRightTree: $("#mirrorRightTree").is(":checked"),
         selectMultipleSearch: $("#selectMultipleSearch").is(":checked"),
         comparisonMetric: $("input[name=comparisonMetric]:checked").val(),
@@ -962,6 +959,12 @@
     $("#alignTipLabels").on("click", function () {
         treecomp.changeTreeSettings({
             alignTipLabels: $("#alignTipLabels").is(":checked")
+        });
+    });
+
+    $("#ladderizeTree").on("click", function () {
+        treecomp.changeTreeSettings({
+            ladderizeTree: $("#ladderizeTree").is(":checked")
         });
     });
 

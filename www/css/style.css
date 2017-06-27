@@ -816,6 +816,18 @@ button.treeToggleButton span{
 
 /*--end export----------------------------------------------*/
 
+#ladderizeButton {
+    width: 97.5px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+
+#ladderizeButton:hover{
+    opacity: 1.0;
+}
+
+
 /*styles for opposite Tree action functionality*/
 
 .opTreeAcGroup {
