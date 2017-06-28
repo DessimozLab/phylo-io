@@ -99,11 +99,20 @@
         <!-- menu navigation bar -->
         <div id="navbar" class="navbar-collapse collapse list-inline">
             <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
+                <li class="dist">
+                    <ul>
+                        <li id = "rf"></li>
+                        <li id = "spr"></li>
+                        <li id = "eucl"></li>
+                    </ul>
+                </li>
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
+                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>Calculate distance</a></li>
+
                     </ul>
                 </li>
                 <li><a href="http://phylo.io/manual.html" class="homelinks">Help</a></li>
@@ -893,6 +902,20 @@
         svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
         svgExport.setAttribute("download", "Phylo.io-cmp.svg");
     });
+
+    /*------
+     /
+     /    Calculate Distance
+     /
+     ------*/
+    $("#distance").click(function(e){
+        var rf = treecomp.calcDist();
+        d3.select("#rf").text("Robinson-Foulds: "+rf);
+    })
+
+
+
+
 
     /*------
      /

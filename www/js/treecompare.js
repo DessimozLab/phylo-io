@@ -1450,7 +1450,7 @@ var TreeCompare = function(){
 
     }
 
-    function ladderizeTree(tree) {
+    function ladderizeTree(tree, direction) {
 
 
         function sortChildrenByNumLeaves(d, tree, direction) {
@@ -1493,9 +1493,9 @@ var TreeCompare = function(){
         postorderTraverse(tree.root, function(d){
             if (d.children && d.parent){
                 var currentNode = d;
-                sortChildrenByNumLeaves(d,tree, "descending");
+                sortChildrenByNumLeaves(d,tree, direction);
             } else if (!d.parent) {
-                sortChildrenByNumLeaves(d,tree, "descending");
+                sortChildrenByNumLeaves(d,tree, direction);
             }
         });
 
@@ -2471,6 +2471,48 @@ var TreeCompare = function(){
             });
     }
 
+    function splitsToBitString(tree){
+
+        function getLeafNames(leaves){
+            var allLeafNames  = [];
+            var leaf;
+            for(var i=0; i<leaves.length; i++){
+                allLeafNames.push(leaves[i].name);
+            }
+            return allLeafNames.sort()
+        }
+
+        var allLeaves = tree.root.leaves;
+        var allLeafNames = getLeafNames(allLeaves);
+        var allLeafMaxNum = Math.pow(2,allLeafNames.length) -1;
+
+        var allSplits = [];
+
+        postorderTraverse(tree.root, function(d){
+            if(d.children){
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++){
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1){
+                        binaryString += "1"
+                    }else {
+                        binaryString += "0"
+                    }
+                }
+                var tmpNum = parseInt(binaryString, 2);
+                if (tmpNum > allLeafMaxNum/2){
+                    var num = allLeafMaxNum - tmpNum;
+                } else {
+                    var num = tmpNum;
+                }
+                allSplits.push(num);
+            }
+        });
+        return allSplits;
+    }
+
+
+
 
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
@@ -3251,19 +3293,59 @@ var TreeCompare = function(){
 
     function createLadderizedTree(canvasId, ladderizeClass, baseTree){
         //renders the manual zoom slider if turned on
-        var downloadButton = d3.select("#"+canvasId).select("."+ladderizeClass).append("div");
-        downloadButton.append("button")
-            .attr("id", "ladderizeButton")
-            .attr("class", "btn btn-sm sharp ladderize")
+        var ladderizeButton = d3.select("#"+canvasId).select("."+ladderizeClass).append("div");
+        ladderizeButton.append("button")
+            .attr("id", "ladderizeAscButton")
+            .attr("class", "btn btn-sm sharp asc")
             .attr("title", "Ladderize Tree")
             .attr("type", "button")
             .append("span")
-            .text("ladderize")
+            .text("asc");
 
-        d3.select("#"+canvasId).select(".ladderize")
+        d3.select("#"+canvasId).select(".asc")
             .on('click', function () {
-                ladderizeTree(baseTree)
+                ladderizeTree(baseTree, "ascending")
             });
+
+        //var downloadButton = d3.select("#"+canvasId).select("."+ladderizeClass).append("div");
+        ladderizeButton.append("button")
+            .attr("id", "ladderizeDescButton")
+            .attr("class", "btn btn-sm sharp desc")
+            .attr("title", "Ladderize Tree")
+            .attr("type", "button")
+            .append("span")
+            .text("desc");
+
+        d3.select("#"+canvasId).select(".desc")
+            .on('click', function () {
+                ladderizeTree(baseTree, "descending")
+            });
+    }
+
+    function calcRFDist(leftTree, rightTree){
+        var leftSplits = splitsToBitString(leftTree);
+        var rightSplits = splitsToBitString(rightTree);
+        var uniqueSplits = [];
+
+        for (var i=0; i<leftSplits.length; i++){
+            if (!(leftSplits[i] in rightSplits)){
+                uniqueSplits.push(leftSplits[i])
+            }
+        }
+
+        for (var i=0; i<rightSplits.length; i++){
+            if (!(rightSplits[i] in leftSplits)){
+                uniqueSplits.push(rightSplits[i])
+            }
+        }
+        return uniqueSplits.length;
+    }
+
+    function calcDist() {
+        var leftTree = trees[trees.length - 2];
+        var rightTree = trees[trees.length - 1];
+
+        return calcRFDist(leftTree, rightTree);
     }
 
     function createTreeDownload(canvasId, downloadClass){
@@ -5096,6 +5178,7 @@ var TreeCompare = function(){
         changeTreeSettings: changeTreeSettings,
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
-        changeAutoCollapseDepth: changeAutoCollapseDepth
+        changeAutoCollapseDepth: changeAutoCollapseDepth,
+        calcDist: calcDist
     }
 };
