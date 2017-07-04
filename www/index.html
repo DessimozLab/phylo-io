@@ -769,6 +769,11 @@
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
+            if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+                $("#rf").empty();
+                $("#spr").empty();
+                $("#eucl").empty();
+            }
             try {
                 //$("#page-content-wrapper").empty();
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
@@ -799,6 +804,9 @@
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
                 }
             }
+//            if
+//            $("#distancesList").style.display="none";
+
         } else if (mode === "view-btn") {
 
             // init & enable undo
@@ -909,8 +917,13 @@
      /
      ------*/
     $("#distance").click(function(e){
-        var rf = treecomp.calcDist();
-        d3.select("#rf").text("Robinson-Foulds: "+rf);
+        var rf = treecomp.calcDist()[0][0];
+        var rf_norm = treecomp.calcDist()[0][1];
+        var eucl = treecomp.calcDist()[1];
+        d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
+        d3.select("eucl").text("Euclidean: "+eucl);
+//        d3.select("spr").text("SPR: "+ );
+
     })
 
 
