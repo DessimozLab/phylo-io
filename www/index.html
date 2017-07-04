@@ -917,11 +917,14 @@
      /
      ------*/
     $("#distance").click(function(e){
-        var rf = treecomp.calcDist()[0][0];
-        var rf_norm = treecomp.calcDist()[0][1];
-        var eucl = treecomp.calcDist()[1];
+        var dist = treecomp.calcDist();
+        console.log(dist);
+        var rf = dist[0][0];
+        var rf_norm = dist[0][1];
+        var eucl = dist[1][0];
+        var eucl_norm = dist[1][1];
         d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
-        d3.select("eucl").text("Euclidean: "+eucl);
+        d3.select("#eucl").text("Euclidean: "+eucl+"/"+eucl_norm);
 //        d3.select("spr").text("SPR: "+ );
 
     })

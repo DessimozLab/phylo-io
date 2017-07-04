@@ -2505,46 +2505,6 @@ var TreeCompare = function() {
             });
     }
 
-    function splitsToBitString(tree) {
-
-        function getLeafNames(leaves) {
-            var allLeafNames = [];
-            var leaf;
-            for (var i = 0; i < leaves.length; i++) {
-                allLeafNames.push(leaves[i].name);
-            }
-            return allLeafNames.sort()
-        }
-
-        var allLeaves = tree.root.leaves;
-        var allLeafNames = getLeafNames(allLeaves);
-        var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
-
-        var allSplits = [];
-
-        postorderTraverse(tree.root, function (d) {
-            if (d.children) {
-                var leafNames = getLeafNames(d.leaves);
-                var binaryString = "";
-                for (var i = 0; i < allLeafNames.length; i++) {
-                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                        binaryString += "1"
-                    } else {
-                        binaryString += "0"
-                    }
-                }
-                var tmpNum = parseInt(binaryString, 2);
-                if (tmpNum > allLeafMaxNum / 2) {
-                    var num = allLeafMaxNum - tmpNum;
-                } else {
-                    var num = tmpNum;
-                }
-                allSplits.push(num);
-            }
-        });
-        return allSplits;
-    }
-
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
@@ -3353,103 +3313,113 @@ var TreeCompare = function() {
             });
     }
 
+    function splitsToBitString(tree) {
+
+        function getLeafNames(leaves) {
+            var allLeafNames = [];
+            var leaf;
+            for (var i = 0; i < leaves.length; i++) {
+                allLeafNames.push(leaves[i].name);
+            }
+            return allLeafNames.sort()
+        }
+
+        var allLeaves = tree.root.leaves;
+        var allLeafNames = getLeafNames(allLeaves);
+        var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
+
+        var allSplits = [];
+        var allSplitsDict = {};
+
+        postorderTraverse(tree.root, function (d) {
+            if (d.children) {
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1";
+                    } else {
+                        binaryString += "0";
+                    }
+                }
+                var tmpNum = parseInt(binaryString, 2);
+                if (tmpNum > allLeafMaxNum / 2) {
+                    var num = allLeafMaxNum - tmpNum;
+                } else {
+                    var num = tmpNum;
+                }
+                allSplits.push(num);
+                allSplitsDict[num] = d.length;
+            }
+        });
+        return [allSplits, allSplitsDict];
+    }
+
     function calcRFDist(leftTree, rightTree) {
         var leftSplits = splitsToBitString(leftTree);
         var rightSplits = splitsToBitString(rightTree);
-        var uniqueSplits = [];
-        // console.log(leftSplits);
-        // console.log(rightSplits);
+        var allSplitsIDs = _.uniq(leftSplits[0].concat(rightSplits[0]));
 
-        for (var i = 0; i < leftSplits.length; i++) {
-            if (leftSplits[i] in rightSplits) {
-                leftSplits.splice(i, 1)
+
+        var rf = 0;
+        for (var i = 0; i < allSplitsIDs.length; i++) {
+            if (leftSplits[1][allSplitsIDs[i]] !== undefined ){
+                var bLeft = 1;
+            } else {
+                var bLeft = 0;
             }
+
+            if (rightSplits[1][allSplitsIDs[i]] !== undefined ){
+                var bRight = 1;
+            } else {
+                var bRight = 0;
+            }
+
+            rf = rf + Math.pow((bLeft-bRight), 2)
         }
 
-        for (var i = 0; i < rightSplits.length; i++) {
-            if (rightSplits[i] in leftSplits) {
-                rightSplits.splice(i, 1)
-            }
-        }
-        // console.log(leftSplits)
-        // console.log(rightSplits)
-        var relativeDist = uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3));
-        return [uniqueSplits.length, relativeDist];
+        var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
+
+
+        return [rf, rfRelative.toFixed(2)];
     }
 
-
-    function addDist(tree) {
-        // add a distance to each node, make a dictionary
-        var allSplits = splitsToBitString(tree);
-        console.log(allSplits);
-        var distances = [];
-        for (var i = 0; i < allSplits.length; i++) {
-            distDict[i] = allSplits[i];
-        }
-        //console.log(distDict);
-
-        postorderTraverse(tree.root, function (d) {
-            if (d.parent) {
-                distances.push(d.length);
-                //console.log(distances);
-            }
-        });
-        var items = allSplits.map(function(x){
-            for(var i =0; i < distances.length; i++) {
-                return [x, distances[i]];
-            }
-
-        });
-        return items
-        console.log(items);
-    }
 
 
     function calcEuclidean(leftTree, rightTree) {
-        var branchScore = 0;
-        // var leftSplits = splitsToBitString(leftTree);
-        // var rightSplits = splitsToBitString(rightTree);
-
-        var leftData = addDist(leftTree);
-        console.log(leftData);
-        var rightData = addDist(rightTree);
-
-        var tmpLeft = leftData;
-        var tmpRight = rightData;
+        var leftSplits = splitsToBitString(leftTree);
+        var rightSplits = splitsToBitString(rightTree);
+        var allSplitsIDs = _.uniq(leftSplits[0].concat(rightSplits[0]));
 
 
-        //calculate distance between unique splits only + make a sorted array of shared splits
-        for (var i=0; i<leftData.length; i++) {
-            if (!(leftData[i] in rightData)) {
-                tmpLeft.splice(i, 1);
-                branchScore += (leftData[i][0])^2;  // non-existing split has b = 0
+        var euc = 0;
+        for (var i = 0; i < allSplitsIDs.length; i++) {
+            if (leftSplits[1][allSplitsIDs[i]] !== undefined ){
+                var bLeft = leftSplits[1][allSplitsIDs[i]];
+            } else {
+                var bLeft = 0;
             }
 
-        }
-
-        tmpLeft.sort();
-
-        for (var i=0; i<rightData.length; i++) {
-            if (!(rightData[i] in leftData)) {
-                tmpRight.splice(i, 1);
-                branchScore += (rightData[i][0])^2;
+            if (rightSplits[1][allSplitsIDs[i]] !== undefined ){
+                var bRight = rightSplits[1][allSplitsIDs[i]];
+            } else {
+                var bRight = 0;
             }
-        }
-        tmpRight.sort();
 
-        // add shared splits to branchScore
-        for (var i =0; i<tmpLeft.length; i++){
-            branchScore += (tmpLeft[i][0] - tmpRight[i][0]) ^ 2
+            euc = euc + Math.pow((bLeft-bRight), 2)
         }
-        var euclDist = sqrt(branchScore);
-        return euclDist
+
+
+        var relativeEuc = euc / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
+        return [euc, relativeEuc.toFixed(2)];
     }
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
         var rightTree = trees[trees.length - 1];
         var distArray = [];
-        distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree)); // add other metrics here
+        distArray.push(calcRFDist(leftTree, rightTree));
+        distArray.push(calcEuclidean(leftTree, rightTree)); // add other metrics here
         return distArray
     }
 
