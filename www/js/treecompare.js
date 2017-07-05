@@ -3240,11 +3240,13 @@ var TreeCompare = function(){
             d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
                     var svg = d3.select("#" + canvasId + " svg");
+                    addLogo(svg);
                     var svgString = getSVGString(svg.node());
                     svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
                     function save(dataBlob, filesize) {
                         saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
                     }
+                    svg.select("#export_logo").remove();
                 });
 
             // SVG
