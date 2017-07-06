@@ -2521,6 +2521,7 @@ var TreeCompare = function() {
         var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
 
         var allSplits = [];
+        var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
             if (d.children) {
@@ -2539,12 +2540,13 @@ var TreeCompare = function() {
                 } else {
                     var num = tmpNum;
                 }
+                allSplitsDict[num] = d.length;
                 allSplits.push(num);
             }
 
         });
 
-        return allSplits;
+        return [allSplits, allSplitsDict];
     }
 
     // function makeDict(d) {
@@ -3368,13 +3370,11 @@ var TreeCompare = function() {
     }
 
     function calcRFDist(leftTree, rightTree) {
-        //var dict = makeDict(.root);
-        //console.log(dict);
-        var leftSplits = splitsToBitString(leftTree);
-        var rightSplits = splitsToBitString(rightTree);
+
+        var leftSplits = splitsToBitString(leftTree)[0];
+        var rightSplits = splitsToBitString(rightTree)[0];
         var uniqueSplits = [];
-        // console.log(leftSplits);
-        // console.log(rightSplits);
+
 
         for (var i = 0; i < leftSplits.length; i++) {
             if (leftSplits[i] in rightSplits) {
@@ -3387,56 +3387,54 @@ var TreeCompare = function() {
                 rightSplits.splice(i, 1)
             }
         }
-        // console.log(leftSplits)
-        // console.log(rightSplits)
+
         uniqueSplits.push(leftSplits, rightSplits);
         var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3)))*1000)/1000;
         return [uniqueSplits.length, relativeDist];
     }
 
 
-    function addDist(tree) {
-        // add a distance to each node, make a dictionary
-        var allSplits = splitsToBitString(tree);
-        //console.log(allSplits);
-        var distances = [];
-
-        postorderTraverse(tree.root, function (d) {
-            if (d.parent) {
-                distances.push(d.length);
-                //console.log(distances);
-            }
-        });
-
-        var splitsDict = {};
-        for(var i = 0; i<allSplits.length; i++) {
-            splitsDict[allSplits[i]] = distances[i];
-            }
-        console.log(splitsDict);
-        return(splitsDict)
-
-    }
+    // function addDist(tree) {
+    //     // add a distance to each node, make a dictionary
+    //     var allSplits = splitsToBitString(tree);
+    //     //console.log(allSplits);
+    //     var distances = [];
+    //
+    //     postorderTraverse(tree.root, function (d) {
+    //         if (d.parent) {
+    //             distances.push(d.length);
+    //             //console.log(distances);
+    //         }
+    //     });
+    //
+    //     var splitsDict = {};
+    //     for(var i = 0; i<allSplits.length; i++) {
+    //         splitsDict[allSplits[i]] = distances[i];
+    //         }
+    //     console.log(splitsDict);
+    //     return(splitsDict)
+    //
+    // }
 
 
     function calcEuclidean(leftTree, rightTree) {
+        // [a,b,c,d]; [a,c,e] -> [a,b,c,d,e]
         var branchScore = 0;
-        // var leftSplits = splitsToBitString(leftTree);
-        // var rightSplits = splitsToBitString(rightTree);
+        var leftData = splitsToBitString(leftTree);
+        var rightData = splitsToBitString(rightTree);
 
-        var leftData = addDist(leftTree);
-        var rightData = addDist(rightTree);
-        console.log(rightData.length); // NB! length parameter is undefined for a dictionary
+        console.log(leftData); // NB! length parameter is undefined for a dictionary
 
-        var tmpLeft = leftData;
-        var tmpRight = rightData;
+        // var tmpLeft = leftData;
+        // var tmpRight = rightData;
         //console.log(tmpLeft[0]);
 
 
         //calculate distance between unique splits only + make a sorted array of shared splits
-        for (i in leftData) {
-            if (!(leftData[i] in rightData)) {
-                delete tmpLeft[i];
-                branchScore += (leftData[i])^2;  // non-existing split has b = 0
+        for (i in leftData[0]) {
+            if (!(leftData[i] in rightData[0])) {
+                // delete tmpLeft[i];
+                branchScore += (leftData[1][leftData[i]])^2;  // non-existing split has b = 0
             }
 
         }
@@ -3446,7 +3444,7 @@ var TreeCompare = function() {
 
         for (i in rightData) {
             if (!(rightData[i] in leftData)) {
-               delete tmpRight[i];
+               // delete tmpRight[i];
                 //console.log(tmpRight[i]);
                 branchScore += (rightData[i])^2;
             }
