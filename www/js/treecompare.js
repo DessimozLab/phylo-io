@@ -3420,50 +3420,46 @@ var TreeCompare = function() {
     function calcEuclidean(leftTree, rightTree) {
         // [a,b,c,d]; [a,c,e] -> [a,b,c,d,e]
         var branchScore = 0;
-        var leftData = splitsToBitString(leftTree);
-        var rightData = splitsToBitString(rightTree);
+        var leftData = splitsToBitString(leftTree)[1];
+        var rightData = splitsToBitString(rightTree)[1];
+       
 
-        console.log(leftData); // NB! length parameter is undefined for a dictionary
+        //make an array with no duplications
 
-        // var tmpLeft = leftData;
-        // var tmpRight = rightData;
-        //console.log(tmpLeft[0]);
+        var totalData = [];
 
+        for (key in leftData) {
+            totalData.push(key);
 
-        //calculate distance between unique splits only + make a sorted array of shared splits
-        for (i in leftData[0]) {
-            if (!(leftData[i] in rightData[0])) {
-                // delete tmpLeft[i];
-                branchScore += (leftData[1][leftData[i]])^2;  // non-existing split has b = 0
+        }
+        for (key in rightData) {
+            if (!(key in totalData)) {
+                totalData.push(key);
+            }
+        }
+
+        //Iterate through array and check for key in the dictionary. Then calculate branch score
+
+        for (var i = 0; i < totalData.length; i++) {
+
+            if (totalData[i] in leftData && totalData[i] in rightData) {
+                branchScore += Math.pow((leftData[totalData[i]] - rightData[totalData[i]]), 2);
             }
 
-        }
-        //console.log(tmpLeft);
-
-        //tmpLeft.sort();
-
-        for (i in rightData) {
-            if (!(rightData[i] in leftData)) {
-               // delete tmpRight[i];
-                //console.log(tmpRight[i]);
-                branchScore += (rightData[i])^2;
+            else if (totalData[i] in leftData) {
+                branchScore += Math.pow(leftData[totalData[i]], 2);
             }
 
+            else {
+                branchScore += Math.pow(rightData[totalData[i]], 2);
+            }
         }
-        console.log(tmpRight);
-
-        //tmpRight.sort();
-
-        // add shared splits to branchScore
-        for (var i =0; i<tmpLeft.length; i++){
-            branchScore += (tmpLeft[i] - tmpRight[i]) ^ 2
-            console.log(branchScore);
-        }
-
-        var euclDist = Math.sqrt(branchScore);
+        var euclDist = Math.round(Math.sqrt(branchScore)*1000)/1000;
         console.log(euclDist);
         return euclDist
     }
+
+
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
