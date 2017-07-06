@@ -2541,10 +2541,24 @@ var TreeCompare = function() {
                 }
                 allSplits.push(num);
             }
+
         });
+
         return allSplits;
     }
 
+    // function makeDict(d) {
+    //     var branchLengths = [];
+    //     branchLengths.push(d.length);
+    //     console.log(branchLengths);
+    //     var splitsDict = {};
+    //     var allSplits = splitsToBitString(tree);
+    //     for(var i = 0; i<allSplits.length; i++) {
+    //         splitsDict[allSplits[i]] = branchLengths[i];
+    //     }
+    //     console.log(splitsDict);
+    //
+    // }
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
@@ -3354,6 +3368,8 @@ var TreeCompare = function() {
     }
 
     function calcRFDist(leftTree, rightTree) {
+        //var dict = makeDict(.root);
+        //console.log(dict);
         var leftSplits = splitsToBitString(leftTree);
         var rightSplits = splitsToBitString(rightTree);
         var uniqueSplits = [];
@@ -3373,7 +3389,8 @@ var TreeCompare = function() {
         }
         // console.log(leftSplits)
         // console.log(rightSplits)
-        var relativeDist = uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3));
+        uniqueSplits.push(leftSplits, rightSplits);
+        var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3)))*1000)/1000;
         return [uniqueSplits.length, relativeDist];
     }
 
@@ -3381,12 +3398,8 @@ var TreeCompare = function() {
     function addDist(tree) {
         // add a distance to each node, make a dictionary
         var allSplits = splitsToBitString(tree);
-        console.log(allSplits);
+        //console.log(allSplits);
         var distances = [];
-        for (var i = 0; i < allSplits.length; i++) {
-            distDict[i] = allSplits[i];
-        }
-        //console.log(distDict);
 
         postorderTraverse(tree.root, function (d) {
             if (d.parent) {
@@ -3394,14 +3407,14 @@ var TreeCompare = function() {
                 //console.log(distances);
             }
         });
-        var items = allSplits.map(function(x){
-            for(var i =0; i < distances.length; i++) {
-                return [x, distances[i]];
-            }
 
-        });
-        return items
-        console.log(items);
+        var splitsDict = {};
+        for(var i = 0; i<allSplits.length; i++) {
+            splitsDict[allSplits[i]] = distances[i];
+            }
+        console.log(splitsDict);
+        return(splitsDict)
+
     }
 
 
@@ -3411,37 +3424,46 @@ var TreeCompare = function() {
         // var rightSplits = splitsToBitString(rightTree);
 
         var leftData = addDist(leftTree);
-        console.log(leftData);
         var rightData = addDist(rightTree);
+        console.log(rightData.length); // NB! length parameter is undefined for a dictionary
 
         var tmpLeft = leftData;
         var tmpRight = rightData;
+        //console.log(tmpLeft[0]);
 
 
         //calculate distance between unique splits only + make a sorted array of shared splits
-        for (var i=0; i<leftData.length; i++) {
+        for (i in leftData) {
             if (!(leftData[i] in rightData)) {
-                tmpLeft.splice(i, 1);
-                branchScore += (leftData[i][0])^2;  // non-existing split has b = 0
+                delete tmpLeft[i];
+                branchScore += (leftData[i])^2;  // non-existing split has b = 0
             }
 
         }
+        //console.log(tmpLeft);
 
-        tmpLeft.sort();
+        //tmpLeft.sort();
 
-        for (var i=0; i<rightData.length; i++) {
+        for (i in rightData) {
             if (!(rightData[i] in leftData)) {
-                tmpRight.splice(i, 1);
-                branchScore += (rightData[i][0])^2;
+               delete tmpRight[i];
+                //console.log(tmpRight[i]);
+                branchScore += (rightData[i])^2;
             }
+
         }
-        tmpRight.sort();
+        console.log(tmpRight);
+
+        //tmpRight.sort();
 
         // add shared splits to branchScore
         for (var i =0; i<tmpLeft.length; i++){
-            branchScore += (tmpLeft[i][0] - tmpRight[i][0]) ^ 2
+            branchScore += (tmpLeft[i] - tmpRight[i]) ^ 2
+            console.log(branchScore);
         }
-        var euclDist = sqrt(branchScore);
+
+        var euclDist = Math.sqrt(branchScore);
+        console.log(euclDist);
         return euclDist
     }
 
