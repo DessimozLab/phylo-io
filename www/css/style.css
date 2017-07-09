@@ -11,6 +11,20 @@ html {
     padding-right: 10px;
 }
 
+.logo {
+    display: block;
+    text-indent: -9999px;
+    width: 100px;
+    height: 82px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><circle cx='15' cy='15' r='10' /></svg>");
+    background-size: 100px 82px;
+    position: absolute;
+    padding: 5px;
+    right: 57px;
+    bottom: 5px;
+    z-index: -1000;
+}
+
 #placeholder {
     padding-top: 100px;
     width: 100%;
