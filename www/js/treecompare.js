@@ -1299,7 +1299,7 @@ var TreeCompare = function(){
      /    EXTERNAL: Function to create URL with attached gist-ID for export of visualization
      /
      ---------------*/
-    function exportTree(isCompared){
+    function exportTreeToGist(isCompared){
 
         /*
          Function to write JSON structure to gist
@@ -2312,7 +2312,7 @@ var TreeCompare = function(){
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
-                    var exportURLGist = treecomp.exportTree(true);
+                    var exportURLGist = treecomp.exportTreeToGist(true);
                     $("#exportURLInSingle").attr('href', exportURLGist);
                     $("#exportURLInSingle").html(exportURLGist);
                     $('#myModal').modal('show');
@@ -2321,7 +2321,7 @@ var TreeCompare = function(){
                 }
             } else if (mode === "view-btn"){
                 try{
-                    var exportURLGist = treecomp.exportTree(false);
+                    var exportURLGist = treecomp.exportTreeToGist(false);
                     $("#exportURLInSingle").attr('href', exportURLGist);
                     $("#exportURLInSingle").html(exportURLGist);
                     $('#myModal').modal('show');
@@ -3181,24 +3181,26 @@ var TreeCompare = function(){
         });
     }
 
+    function addLogo(svg) {
+        var logo_xml = '<svg id="export_logo" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 107.35 22.23"><defs><style>.cls-1{fill:#808285;}.cls-2{fill:#939598;}.cls-3{fill:#bcbec0;}</style></defs><path class="cls-1" d="M17.17,22.23V5.72H21a6.55,6.55,0,0,1,4.53,1.45,5.16,5.16,0,0,1,1.62,4.05,5.58,5.58,0,0,1-1.52,4,5.16,5.16,0,0,1-3.88,1.58,6.81,6.81,0,0,1-2.31-.46v5.84H17.17ZM20.91,7.74H19.38v6.72a4.51,4.51,0,0,0,2.09.51A3.21,3.21,0,0,0,24,13.92a3.88,3.88,0,0,0,1-2.72,3.82,3.82,0,0,0-.46-1.89,2.76,2.76,0,0,0-1.24-1.19A5.54,5.54,0,0,0,20.91,7.74Z"/><path class="cls-1" d="M29.43,0.06H31.6v7.1A4.18,4.18,0,0,1,35,5.51a3.6,3.6,0,0,1,2,.55,3.31,3.31,0,0,1,1.29,1.51,7.46,7.46,0,0,1,.42,2.86v6.22H36.47V9.89A3,3,0,0,0,35.88,8a1.9,1.9,0,0,0-1.55-.73A2.62,2.62,0,0,0,33,7.6,6.1,6.1,0,0,0,31.6,8.83v7.83H29.43V0.06Z"/><path class="cls-1" d="M47.5,5.72h2.43l-7.74,16.5H39.77l3.71-7.92L39.26,5.72h2.46l3,6.17Z"/><path class="cls-1" d="M51.49,0.06h2.16v16.6H51.49V0.06Z"/><path class="cls-1" d="M62,5.7a5.7,5.7,0,0,1,4.15,1.61,5.41,5.41,0,0,1,1.65,4,5.14,5.14,0,0,1-1.68,3.93,5.94,5.94,0,0,1-4.22,1.56,5.7,5.7,0,0,1-4.11-1.59,5.26,5.26,0,0,1-1.65-4,5.31,5.31,0,0,1,1.67-4A5.82,5.82,0,0,1,62,5.7ZM61.89,7.65a3.42,3.42,0,0,0-2.55,1,3.57,3.57,0,0,0-1,2.6,3.41,3.41,0,0,0,1,2.56,3.61,3.61,0,0,0,2.63,1,3.55,3.55,0,0,0,2.61-1,3.46,3.46,0,0,0,1-2.57,3.43,3.43,0,0,0-1.06-2.58A3.68,3.68,0,0,0,61.89,7.65Z"/><path class="cls-1" d="M71.62,14.29v2.36H70V14.29h1.58Z"/><path class="cls-1" d="M75.85,0.06v2H74.67v-2h1.18Zm0,5.67V16.65H74.67V5.72h1.18Z"/><path class="cls-1" d="M84.14,5.51a5.3,5.3,0,0,1,4,1.63,5.59,5.59,0,0,1,1.59,4.06,5.56,5.56,0,0,1-1.59,4,5.67,5.67,0,0,1-7.94,0,5.54,5.54,0,0,1-1.6-4,5.57,5.57,0,0,1,1.6-4.06A5.34,5.34,0,0,1,84.14,5.51Zm0,10.22a4.09,4.09,0,0,0,3.08-1.29,4.49,4.49,0,0,0,1.24-3.24A4.53,4.53,0,0,0,87.21,8a4.07,4.07,0,0,0-3.07-1.31A4.11,4.11,0,0,0,81,7.95,4.52,4.52,0,0,0,79.8,11.2,4.48,4.48,0,0,0,81,14.44,4.12,4.12,0,0,0,84.14,15.73Z"/><polygon class="cls-2" points="101.29 12.33 94.93 12.33 94.93 10.91 99.87 10.91 99.87 6.46 94.93 6.46 94.93 5.04 101.29 5.04 101.29 12.33"/><polygon class="cls-2" points="106.29 17.36 94.72 17.36 94.72 15.94 104.87 15.94 104.9 5.41 102.74 5.41 102.74 3.99 106.32 3.99 106.29 17.36"/><polygon class="cls-2" points="103.45 4.7 102.03 4.7 102.03 1.42 95.51 1.42 95.51 0 103.45 0 103.45 4.7"/><polygon class="cls-3" points="103.45 9.39 100.65 9.39 100.65 7.97 102.03 7.97 102.03 4.7 103.45 4.7 103.45 9.39"/><polygon class="cls-2" points="11.86 7.46 5.7 7.46 5.7 0.23 11.86 0.23 11.86 1.65 7.12 1.65 7.12 6.04 11.86 6.04 11.86 7.46"/><polygon class="cls-2" points="12.68 17.26 0.04 17.26 0 7.08 3.51 7.08 3.51 8.49 1.43 8.49 1.45 15.84 12.68 15.84 12.68 17.26"/><polygon class="cls-2" points="10.49 12.44 2.84 12.44 2.84 7.79 4.26 7.79 4.26 11.02 10.49 11.02 10.49 12.44"/><polygon class="cls-3" points="4.26 7.79 2.84 7.79 2.84 3.13 6.41 3.13 6.41 4.55 4.26 4.55 4.26 7.79"/></svg>';
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(logo_xml, "image/svg+xml");
+        svg.node().appendChild(doc.documentElement);
+        //svg.append("g").append(doc.documentElement);
+
+        var width = d3.select("svg").select("g").node().getBoundingClientRect().width;
+        var height = d3.select("svg").select("g").node().getBoundingClientRect().height;
+
+        d3.select("#export_logo").attr("width", "75px")
+            .attr("x", 20)
+            .attr("y",-height/2-60)
+            .style("position", "absolute")
+            .style("bottom", "5px")
+            .style("right", "27px");
+
+    }
+
     function createTreeDownload(canvasId, downloadClass){
-        function addLogo(svg) {
-            var logo_xml = '<svg id="export_logo" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 107.35 22.23"><defs><style>.cls-1{fill:#808285;}.cls-2{fill:#939598;}.cls-3{fill:#bcbec0;}</style></defs><path class="cls-1" d="M17.17,22.23V5.72H21a6.55,6.55,0,0,1,4.53,1.45,5.16,5.16,0,0,1,1.62,4.05,5.58,5.58,0,0,1-1.52,4,5.16,5.16,0,0,1-3.88,1.58,6.81,6.81,0,0,1-2.31-.46v5.84H17.17ZM20.91,7.74H19.38v6.72a4.51,4.51,0,0,0,2.09.51A3.21,3.21,0,0,0,24,13.92a3.88,3.88,0,0,0,1-2.72,3.82,3.82,0,0,0-.46-1.89,2.76,2.76,0,0,0-1.24-1.19A5.54,5.54,0,0,0,20.91,7.74Z"/><path class="cls-1" d="M29.43,0.06H31.6v7.1A4.18,4.18,0,0,1,35,5.51a3.6,3.6,0,0,1,2,.55,3.31,3.31,0,0,1,1.29,1.51,7.46,7.46,0,0,1,.42,2.86v6.22H36.47V9.89A3,3,0,0,0,35.88,8a1.9,1.9,0,0,0-1.55-.73A2.62,2.62,0,0,0,33,7.6,6.1,6.1,0,0,0,31.6,8.83v7.83H29.43V0.06Z"/><path class="cls-1" d="M47.5,5.72h2.43l-7.74,16.5H39.77l3.71-7.92L39.26,5.72h2.46l3,6.17Z"/><path class="cls-1" d="M51.49,0.06h2.16v16.6H51.49V0.06Z"/><path class="cls-1" d="M62,5.7a5.7,5.7,0,0,1,4.15,1.61,5.41,5.41,0,0,1,1.65,4,5.14,5.14,0,0,1-1.68,3.93,5.94,5.94,0,0,1-4.22,1.56,5.7,5.7,0,0,1-4.11-1.59,5.26,5.26,0,0,1-1.65-4,5.31,5.31,0,0,1,1.67-4A5.82,5.82,0,0,1,62,5.7ZM61.89,7.65a3.42,3.42,0,0,0-2.55,1,3.57,3.57,0,0,0-1,2.6,3.41,3.41,0,0,0,1,2.56,3.61,3.61,0,0,0,2.63,1,3.55,3.55,0,0,0,2.61-1,3.46,3.46,0,0,0,1-2.57,3.43,3.43,0,0,0-1.06-2.58A3.68,3.68,0,0,0,61.89,7.65Z"/><path class="cls-1" d="M71.62,14.29v2.36H70V14.29h1.58Z"/><path class="cls-1" d="M75.85,0.06v2H74.67v-2h1.18Zm0,5.67V16.65H74.67V5.72h1.18Z"/><path class="cls-1" d="M84.14,5.51a5.3,5.3,0,0,1,4,1.63,5.59,5.59,0,0,1,1.59,4.06,5.56,5.56,0,0,1-1.59,4,5.67,5.67,0,0,1-7.94,0,5.54,5.54,0,0,1-1.6-4,5.57,5.57,0,0,1,1.6-4.06A5.34,5.34,0,0,1,84.14,5.51Zm0,10.22a4.09,4.09,0,0,0,3.08-1.29,4.49,4.49,0,0,0,1.24-3.24A4.53,4.53,0,0,0,87.21,8a4.07,4.07,0,0,0-3.07-1.31A4.11,4.11,0,0,0,81,7.95,4.52,4.52,0,0,0,79.8,11.2,4.48,4.48,0,0,0,81,14.44,4.12,4.12,0,0,0,84.14,15.73Z"/><polygon class="cls-2" points="101.29 12.33 94.93 12.33 94.93 10.91 99.87 10.91 99.87 6.46 94.93 6.46 94.93 5.04 101.29 5.04 101.29 12.33"/><polygon class="cls-2" points="106.29 17.36 94.72 17.36 94.72 15.94 104.87 15.94 104.9 5.41 102.74 5.41 102.74 3.99 106.32 3.99 106.29 17.36"/><polygon class="cls-2" points="103.45 4.7 102.03 4.7 102.03 1.42 95.51 1.42 95.51 0 103.45 0 103.45 4.7"/><polygon class="cls-3" points="103.45 9.39 100.65 9.39 100.65 7.97 102.03 7.97 102.03 4.7 103.45 4.7 103.45 9.39"/><polygon class="cls-2" points="11.86 7.46 5.7 7.46 5.7 0.23 11.86 0.23 11.86 1.65 7.12 1.65 7.12 6.04 11.86 6.04 11.86 7.46"/><polygon class="cls-2" points="12.68 17.26 0.04 17.26 0 7.08 3.51 7.08 3.51 8.49 1.43 8.49 1.45 15.84 12.68 15.84 12.68 17.26"/><polygon class="cls-2" points="10.49 12.44 2.84 12.44 2.84 7.79 4.26 7.79 4.26 11.02 10.49 11.02 10.49 12.44"/><polygon class="cls-3" points="4.26 7.79 2.84 7.79 2.84 3.13 6.41 3.13 6.41 4.55 4.26 4.55 4.26 7.79"/></svg>';
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(logo_xml, "image/svg+xml");
-            svg.node().appendChild(doc.documentElement);
-
-            var width = d3.select("svg").select("g").node().getBoundingClientRect().width;
-            var height = d3.select("svg").select("g").node().getBoundingClientRect().height;
-
-            d3.select("#export_logo").attr("width", "75px")
-                .attr("x", width-100)
-                .attr("y", height/2-10)
-                .style("position", "absolute")
-                .style("bottom", "5px")
-                .style("right", "27px");
-
-        }
 
 
         function buildDownloadButton(canvasId, downloadClass) {
@@ -5001,6 +5003,50 @@ var TreeCompare = function(){
 
     }
 
+    /*------
+     /
+     /    SVG export button
+     /
+     ------*/
+    function exportBothTrees(canvasIDLeft, canvasIDRight){
+        var svg = d3.select("#" + canvasIDLeft + " svg");
+        addLogo(svg);
+
+        // Copy left tree
+        var svg1 = document.getElementById(canvasIDLeft).getElementsByTagName('svg')[0].cloneNode(true);
+        var svg2 = document.getElementById(canvasIDRight).getElementsByTagName('svg')[0].cloneNode(true);
+        var colorscale = document.getElementById('colorScale').getElementsByTagName('svg')[0].cloneNode(true);
+
+        // Double the width on svg1
+        var l_w = parseInt(svg1.getAttribute('width')),
+            r_w = parseInt(svg2.getAttribute('width'));
+        svg1.setAttribute('width', (l_w + r_w));
+        // Add right tree into left tree's svg
+        var g = document.createElement('g');
+        var lastElementIndex = svg2.childNodes.length - 3;
+        var scaleTextIndex = svg2.childNodes.length - 2;
+
+        if (lastElementIndex > -1) {
+            g.setAttribute('transform', 'translate(' + l_w + ',0)');
+            main = svg2.childNodes[lastElementIndex];
+            scale = svg2.childNodes[scaleTextIndex];
+            scaleText = svg2.lastElementChild;
+
+            g.appendChild(main);
+            g.appendChild(scale);
+            g.appendChild(scaleText);
+            g.appendChild(colorscale);
+
+            svg1.appendChild(g);
+        }
+
+        svgExport.setAttribute('hreflang', 'image/svg+xml');
+        svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
+        svgExport.setAttribute("download", "Phylo.io-cmp.svg");
+
+        svg.select("#export_logo").remove();
+    }
+
 
     //return all the externalised functions
     return {
@@ -5011,7 +5057,8 @@ var TreeCompare = function(){
         renderColorScale: renderColorScale,
         addTree: addTree,
         addTreeGistURL: addTreeGistURL,
-        exportTree: exportTree,
+        exportTreeToGist: exportTreeToGist,
+        exportBothTrees: exportBothTrees,
         removeTree: removeTree,
         getTrees: getTrees,
         compareTrees: compareTrees,
