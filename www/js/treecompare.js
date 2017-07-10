@@ -3418,48 +3418,71 @@ var TreeCompare = function() {
 
 
     function calcEuclidean(leftTree, rightTree) {
-        // [a,b,c,d]; [a,c,e] -> [a,b,c,d,e]
+
         var branchScore = 0;
         var leftData = splitsToBitString(leftTree)[1];
         var rightData = splitsToBitString(rightTree)[1];
-       
+
 
         //make an array with no duplications
 
         var totalData = [];
 
         for (key in leftData) {
+            console.log(key);
             totalData.push(key);
+        }
 
-        }
         for (key in rightData) {
-            if (!(key in totalData)) {
                 totalData.push(key);
-            }
         }
+
+        console.log(totalData);
+
+        var uniqueData = totalData.filter(function(item, pos) {
+            return totalData.indexOf(item) == pos;
+        });
+        console.log(uniqueData);
+
 
         //Iterate through array and check for key in the dictionary. Then calculate branch score
 
-        for (var i = 0; i < totalData.length; i++) {
+        for (var i = 0; i < uniqueData.length; i++) {
 
-            if (totalData[i] in leftData && totalData[i] in rightData) {
-                branchScore += Math.pow((leftData[totalData[i]] - rightData[totalData[i]]), 2);
+            if (uniqueData[i] in leftData && uniqueData[i] in rightData) {
+                branchScore += Math.pow((leftData[uniqueData[i]] - rightData[uniqueData[i]]), 2);
             }
 
-            else if (totalData[i] in leftData) {
-                branchScore += Math.pow(leftData[totalData[i]], 2);
+            else if (uniqueData[i] in leftData) {
+                branchScore += Math.pow(leftData[uniqueData[i]], 2);
             }
 
             else {
-                branchScore += Math.pow(rightData[totalData[i]], 2);
+                branchScore += Math.pow(rightData[uniqueData[i]], 2);
             }
         }
+
         var euclDist = Math.round(Math.sqrt(branchScore)*1000)/1000;
-        console.log(euclDist);
         return euclDist
     }
 
+    function calcSPR(leftTree, rigthTree) {
+        var leftSplits = splitsToBitString(leftTree)[0];
+        var rightSplits = splitsToBitString(rigthTree)[0];
 
+        for (var i = 0; i < leftSplits.length; i++) {
+            if (leftSplits[i] in rightSplits) {
+                leftSplits.splice(i, 1)
+            }
+        }
+
+        for (var i = 0; i < rightSplits.length; i++) {
+            if (rightSplits[i] in leftSplits) {
+                rightSplits.splice(i, 1)
+            }
+        }
+
+    }
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
