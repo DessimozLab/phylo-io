@@ -2509,7 +2509,6 @@ var TreeCompare = function() {
 
         function getLeafNames(leaves) {
             var allLeafNames = [];
-            var leaf;
             for (var i = 0; i < leaves.length; i++) {
                 allLeafNames.push(leaves[i].name);
             }
@@ -2524,25 +2523,23 @@ var TreeCompare = function() {
         var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
-            if (d.children) {
-                var leafNames = getLeafNames(d.leaves);
-                var binaryString = "";
-                for (var i = 0; i < allLeafNames.length; i++) {
-                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                        binaryString += "1"
-                    } else {
-                        binaryString += "0"
-                    }
-                }
-                var tmpNum = parseInt(binaryString, 2);
-                if (tmpNum > allLeafMaxNum / 2) {
-                    var num = allLeafMaxNum - tmpNum;
+            var leafNames = getLeafNames(d.leaves);
+            var binaryString = "";
+            for (var i = 0; i < allLeafNames.length; i++) {
+                if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                    binaryString += "1"
                 } else {
-                    var num = tmpNum;
+                    binaryString += "0"
                 }
-                allSplitsDict[num] = d.length;
-                allSplits.push(num);
             }
+            var tmpNum = parseInt(binaryString, 2);
+            if (tmpNum > allLeafMaxNum / 2) {
+                var num = allLeafMaxNum - tmpNum;
+            } else {
+                var num = tmpNum;
+            }
+            allSplitsDict[num] = d.length;
+            allSplits.push(num);
 
         });
 
@@ -3394,29 +3391,6 @@ var TreeCompare = function() {
     }
 
 
-    // function addDist(tree) {
-    //     // add a distance to each node, make a dictionary
-    //     var allSplits = splitsToBitString(tree);
-    //     //console.log(allSplits);
-    //     var distances = [];
-    //
-    //     postorderTraverse(tree.root, function (d) {
-    //         if (d.parent) {
-    //             distances.push(d.length);
-    //             //console.log(distances);
-    //         }
-    //     });
-    //
-    //     var splitsDict = {};
-    //     for(var i = 0; i<allSplits.length; i++) {
-    //         splitsDict[allSplits[i]] = distances[i];
-    //         }
-    //     console.log(splitsDict);
-    //     return(splitsDict)
-    //
-    // }
-
-
     function calcEuclidean(leftTree, rightTree) {
 
         var branchScore = 0;
@@ -3429,7 +3403,6 @@ var TreeCompare = function() {
         var totalData = [];
 
         for (key in leftData) {
-            console.log(key);
             totalData.push(key);
         }
 
@@ -3437,23 +3410,19 @@ var TreeCompare = function() {
                 totalData.push(key);
         }
 
-        console.log(totalData);
-
         var uniqueData = totalData.filter(function(item, pos) {
             return totalData.indexOf(item) == pos;
         });
-        console.log(uniqueData);
 
 
         //Iterate through array and check for key in the dictionary. Then calculate branch score
-
         for (var i = 0; i < uniqueData.length; i++) {
 
             if (uniqueData[i] in leftData && uniqueData[i] in rightData) {
                 branchScore += Math.pow((leftData[uniqueData[i]] - rightData[uniqueData[i]]), 2);
             }
 
-            else if (uniqueData[i] in leftData) {
+            else if (uniqueData[i] in leftData ) {
                 branchScore += Math.pow(leftData[uniqueData[i]], 2);
             }
 
