@@ -120,6 +120,11 @@ svg {
     /*position: absolute;*/
     /*bottom: 0px;*/
 /*}*/
+.dist li {
+    font-size: x-small;
+    list-style-type: none;
+
+}
 
 #vis-scale2 {
     margin-left: 50%;
@@ -829,6 +834,32 @@ button.treeToggleButton span{
 /*}*/
 
 /*--end export----------------------------------------------*/
+
+#ladderizeDescButton {
+    width: 48.75px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+
+#ladderizeDescButton:hover{
+    opacity: 1.0;
+}
+
+#ladderizeDescButton:active{
+    color: #ffffff;
+}
+
+#ladderizeAscButton {
+    width: 48.75px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+
+#ladderizeAscButton:hover{
+    opacity: 1.0;
+}
 
 /*styles for opposite Tree action functionality*/
 

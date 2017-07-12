@@ -69,6 +69,7 @@ var TreeCompare = function(){
         loadedCallback: function() {},
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
+        enableLadderizeTreeButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
         enableScale: true,
@@ -152,6 +153,7 @@ var TreeCompare = function(){
     function changeCanvasSettings(settingsIn) {
         settings.enableZoomSliders = getSetting(settingsIn.enableZoomSliders,settings.enableZoomSliders);
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
+        settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
         settings.enableFixedButtons = getSetting(settingsIn.enableFixedButtons,settings.enableFixedButtons);
         settings.enableSizeControls = getSetting(settingsIn.enableSizeControls,settings.enableSizeControls);
         settings.enableSearch = getSetting(settingsIn.enableSearch,settings.enableSearch);
@@ -197,8 +199,12 @@ var TreeCompare = function(){
                 });
             }
         }
+
+
+
         updateAllRenderedTrees();
     }
+
 
     /*
      function to update currently rendered trees when settings are changed
@@ -1444,6 +1450,57 @@ var TreeCompare = function(){
 
     }
 
+    function ladderizeTree(tree, direction) {
+
+
+        function sortChildrenByNumLeaves(d, tree, direction) {
+            var childIdxToLeaveNumMap = {};
+
+            for (var i = 0; i < d.children.length; i++){
+                childIdxToLeaveNumMap[i] = d.children[i].leaves.length
+            }
+            // Create items array
+            var items = Object.keys(childIdxToLeaveNumMap).map(function(key) {
+                return [parseInt(key), childIdxToLeaveNumMap[key]];
+            });
+
+            if (direction == 'ascending') {
+                items.sort(function(first, second) {
+                    return second[1] - first[1]
+                });
+            }
+            else if (direction == 'descending'){
+                items.sort(function(first, second) {
+                    return first[1] - second[1]
+                });
+            }
+            settings.loadingCallback();
+            setTimeout(function() {
+                // here the actual rotation happens
+                var tmp = [];
+                for (var i = 0; i < items.length; i++){
+                    tmp.push(d.children[items[i][0]]);
+                }
+                d.children = tmp;
+
+                update(d, tree.data);
+
+                settings.loadedCallback();
+            }, 2);
+
+        }
+
+        postorderTraverse(tree.root, function(d){
+            if (d.children && d.parent){
+                var currentNode = d;
+                sortChildrenByNumLeaves(d,tree, direction);
+            } else if (!d.parent) {
+                sortChildrenByNumLeaves(d,tree, direction);
+            }
+        });
+
+    }
+
 
 
     /*---------------
@@ -2363,11 +2420,19 @@ var TreeCompare = function(){
                 .attr("class", "zoom")
                 .text("Zoom");
 
+
             treeToolsMenu.append("li")
                 .attr("class", "treeToolsText")
                 .append("div")
                 .attr("class", "export")
                 .text("Export");
+
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "ladderize")
+                .text("Ladderize");
+
 
             if (compareMode) {
                 treeToolsMenu.append("li")
@@ -2392,6 +2457,11 @@ var TreeCompare = function(){
             createTreeDownload(canvasId, "export");
         }
 
+        if (settings.enableLadderizeTreeButton) {
+            createLadderizedTree(canvasId, "ladderize", baseTree);
+        }
+
+
         if (settings.enableOppositeTreeActions && compareMode) {
             createOppositeTreeActions(canvasId, "oppositeTreeAction");
         }
@@ -2403,6 +2473,48 @@ var TreeCompare = function(){
 
             });
     }
+
+    function splitsToBitString(tree){
+
+        function getLeafNames(leaves){
+            var allLeafNames  = [];
+            var leaf;
+            for(var i=0; i<leaves.length; i++){
+                allLeafNames.push(leaves[i].name);
+            }
+            return allLeafNames.sort()
+        }
+
+        var allLeaves = tree.root.leaves;
+        var allLeafNames = getLeafNames(allLeaves);
+        var allLeafMaxNum = Math.pow(2,allLeafNames.length) -1;
+
+        var allSplits = [];
+
+        postorderTraverse(tree.root, function(d){
+            if(d.children){
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++){
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1){
+                        binaryString += "1"
+                    }else {
+                        binaryString += "0"
+                    }
+                }
+                var tmpNum = parseInt(binaryString, 2);
+                if (tmpNum > allLeafMaxNum/2){
+                    var num = allLeafMaxNum - tmpNum;
+                } else {
+                    var num = tmpNum;
+                }
+                allSplits.push(num);
+            }
+        });
+        return allSplits;
+    }
+
+
 
 
 
@@ -3193,11 +3305,42 @@ var TreeCompare = function(){
 
         d3.select("#exportLogo").attr("width", "75px")
             .attr("x", 20)
-            .attr("y",-height/2-60)
+            .attr("y", -height / 2 - 60)
             .style("position", "absolute")
             .style("bottom", "5px")
             .style("right", "27px");
+    }
 
+
+    function createLadderizedTree(canvasId, ladderizeClass, baseTree){
+        //renders the manual zoom slider if turned on
+        var ladderizeButton = d3.select("#"+canvasId).select("."+ladderizeClass).append("div");
+        ladderizeButton.append("button")
+            .attr("id", "ladderizeAscButton")
+            .attr("class", "btn btn-sm sharp asc")
+            .attr("title", "Ladderize Tree")
+            .attr("type", "button")
+            .append("span")
+            .text("asc");
+
+        d3.select("#"+canvasId).select(".asc")
+            .on('click', function () {
+                ladderizeTree(baseTree, "ascending")
+            });
+
+        //var downloadButton = d3.select("#"+canvasId).select("."+ladderizeClass).append("div");
+        ladderizeButton.append("button")
+            .attr("id", "ladderizeDescButton")
+            .attr("class", "btn btn-sm sharp desc")
+            .attr("title", "Ladderize Tree")
+            .attr("type", "button")
+            .append("span")
+            .text("desc");
+
+        d3.select("#"+canvasId).select(".desc")
+            .on('click', function () {
+                ladderizeTree(baseTree, "descending")
+            });
     }
 
     function createTreeDownload(canvasId, downloadClass){
@@ -3375,10 +3518,6 @@ var TreeCompare = function(){
             compareMode = true;
         } else {
             compareMode = false;
-        }
-
-        if (treeToggle === undefined){
-            treeToggle = false;
         }
 
         renderedTrees.push(baseTree);
@@ -5065,6 +5204,6 @@ var TreeCompare = function(){
         changeTreeSettings: changeTreeSettings,
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
-        changeAutoCollapseDepth: changeAutoCollapseDepth
+        changeAutoCollapseDepth: changeAutoCollapseDepth,
     }
 };
