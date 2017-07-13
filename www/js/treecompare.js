@@ -2546,18 +2546,48 @@ var TreeCompare = function() {
         return [allSplits, allSplitsDict];
     }
 
-    // function makeDict(d) {
-    //     var branchLengths = [];
-    //     branchLengths.push(d.length);
-    //     console.log(branchLengths);
-    //     var splitsDict = {};
-    //     var allSplits = splitsToBitString(tree);
-    //     for(var i = 0; i<allSplits.length; i++) {
-    //         splitsDict[allSplits[i]] = branchLengths[i];
-    //     }
-    //     console.log(splitsDict);
-    //
-    // }
+    function splitsToBitString_1(tree) {
+
+        function getLeafNames(leaves) {
+            var allLeafNames = [];
+            for (var i = 0; i < leaves.length; i++) {
+                allLeafNames.push(leaves[i].name);
+            }
+            return allLeafNames.sort()
+        }
+
+        var allLeaves = tree.root.leaves;
+        var allLeafNames = getLeafNames(allLeaves);
+        var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
+
+        var allSplits = [];
+        var allSplitsDict = {};
+
+        postorderTraverse(tree.root, function (d) {
+            if(d.children) {
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1"
+                    } else {
+                        binaryString += "0"
+                    }
+                }
+                var tmpNum = parseInt(binaryString, 2);
+                if (tmpNum > allLeafMaxNum / 2) {
+                    var num = allLeafMaxNum - tmpNum;
+                } else {
+                    var num = tmpNum;
+                }
+                allSplitsDict[num] = d.length;
+                allSplits.push(num);
+            }
+
+        });
+
+        return [allSplits, allSplitsDict];
+    }
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
@@ -3368,25 +3398,24 @@ var TreeCompare = function() {
 
     function calcRFDist(leftTree, rightTree) {
 
-        var leftSplits = splitsToBitString(leftTree)[0];
-        var rightSplits = splitsToBitString(rightTree)[0];
+        // splitsToBitString_1 does not traverse through leaves
+        var leftSplits = splitsToBitString_1(leftTree)[0];
+        var rightSplits = splitsToBitString_1(rightTree)[0];
         var uniqueSplits = [];
 
-
         for (var i = 0; i < leftSplits.length; i++) {
-            if (leftSplits[i] in rightSplits) {
-                leftSplits.splice(i, 1)
+            if (rightSplits.indexOf(leftSplits[i]) == -1) {
+                uniqueSplits.push(leftSplits[i])
             }
         }
 
         for (var i = 0; i < rightSplits.length; i++) {
-            if (rightSplits[i] in leftSplits) {
-                rightSplits.splice(i, 1)
+            if (leftSplits.indexOf(rightSplits[i]) == -1) {
+                uniqueSplits.push(rightSplits[i])
             }
         }
 
-        uniqueSplits.push(leftSplits, rightSplits);
-        var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3)))*1000)/1000;
+        var relativeDist = Math.round((uniqueSplits.length / (3 * (leftTree.root.leaves.length) - 6))*1000)/1000;
         return [uniqueSplits.length, relativeDist];
     }
 
@@ -3439,6 +3468,8 @@ var TreeCompare = function() {
         var leftSplits = splitsToBitString(leftTree)[0];
         var rightSplits = splitsToBitString(rigthTree)[0];
 
+        // prune the agreement splits
+
         for (var i = 0; i < leftSplits.length; i++) {
             if (leftSplits[i] in rightSplits) {
                 leftSplits.splice(i, 1)
@@ -3451,13 +3482,33 @@ var TreeCompare = function() {
             }
         }
 
+        // determine disagreement splits between 2 trees
+
+        var uniqueSplitsMatrix = leftSplits.concat(rightSplits);
+        //console.log(uniqueSplitsMatrix);
+
+        var uniqueSplitsMatrix_filt = uniqueSplitsMatrix.filter(function(item, pos) {
+            return uniqueSplitsMatrix.indexOf(item) == pos;
+        });
+        //console.log(uniqueSplitsMatrix_filt);
+
+        //construct a 1:1 matrix with disagreement splits
+
+        // for(var i = 0; i < uniqueSplitsMatrix.length; i++){
+        //     for (var j = 0; j < uniqueSplitsMatrix.length; j++){
+        //         uniqueSplitsMatrix[i].push(uniqueSplitsMatrix[j]);
+        //         console.log(uniqueSplitsMatrix);
+        //     }
+        // }
+        return "ZHOPA"
+
     }
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
         var rightTree = trees[trees.length - 1];
         var distArray = [];
-        distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree)); // add other metrics here
+        distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree)); // add other metrics here
         return distArray
     }
 
