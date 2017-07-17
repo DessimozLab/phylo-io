@@ -102,10 +102,26 @@
             <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 5px">
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu multi-level">
                         <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
-                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
-                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>Calculate distance</a></li>
+                        <li class="dropdown-submenu">
+                            <a tabindex="-1" href="#" id="svgExport1"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export </a>
+                            <ul class="dropdown-menu">
+                                <li><a> Left tree </a></li>
+                                <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> nwk </a></li>
+                                <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> svg </a></li>
+                                <li><a href="#" id="pngExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> png </a></li>
+                                <li class="divider"></li>
+                                <li><a> Right tree </a></li>
+                                <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> nwk </a></li>
+                                <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> svg </a></li>
+                                <li><a href="#" id="pngExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> png </a></li>
+                                <li class="divider"></li>
+                                <li><a> Both tree </a></li>
+                                <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> svg </a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" id="distance"><span class="fa fa-arrows-h" aria-hidden="true"></span> Calculate distance</a></li>
 
                     </ul>
                 </li>

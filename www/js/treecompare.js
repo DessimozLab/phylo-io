@@ -2421,11 +2421,11 @@ var TreeCompare = function(){
                 .text("Zoom");
 
 
-            treeToolsMenu.append("li")
-                .attr("class", "treeToolsText")
-                .append("div")
-                .attr("class", "export")
-                .text("Export");
+            // treeToolsMenu.append("li")
+            //     .attr("class", "treeToolsText")
+            //     .append("div")
+            //     .attr("class", "export")
+            //     .text("Export");
 
             treeToolsMenu.append("li")
                 .attr("class", "treeToolsText")
@@ -2453,9 +2453,9 @@ var TreeCompare = function(){
             createZoomSlider(canvasId, "zoom", baseTree);
         }
 
-        if (settings.enableDownloadButtons) {
-            createTreeDownload(canvasId, "export");
-        }
+        // if (settings.enableDownloadButtons) {
+        //     createTreeDownload(canvasId, "export");
+        // }
 
         if (settings.enableLadderizeTreeButton) {
             createLadderizedTree(canvasId, "ladderize", baseTree);
