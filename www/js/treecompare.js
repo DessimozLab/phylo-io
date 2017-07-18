@@ -3466,6 +3466,11 @@ var TreeCompare = function() {
 
 
     function calcSPR(leftTree, rightTree) {
+        /*
+        tree1: (A,(C,D),E,F);
+        tree2: (A,(D,F),C,E);
+         */
+
         var leftSplits = splitsToBitString_1(leftTree)[0];
         var rightSplits = splitsToBitString_1(rightTree)[0];
         var uniqueSplitsLeft = [];
