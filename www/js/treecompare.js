@@ -3415,7 +3415,7 @@ var TreeCompare = function() {
             }
         }
 
-        var relativeDist = Math.round((uniqueSplits.length / (3 * (leftTree.root.leaves.length) - 6))*1000)/1000;
+        var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3))*1000))/1000;
         return [uniqueSplits.length, relativeDist];
     }
 
@@ -3464,42 +3464,61 @@ var TreeCompare = function() {
         return euclDist
     }
 
-    function calcSPR(leftTree, rigthTree) {
-        var leftSplits = splitsToBitString(leftTree)[0];
-        var rightSplits = splitsToBitString(rigthTree)[0];
 
-        // prune the agreement splits
+    function calcSPR(leftTree, rightTree) {
+        var leftSplits = splitsToBitString_1(leftTree)[0];
+        var rightSplits = splitsToBitString_1(rightTree)[0];
+        var uniqueSplitsLeft = [];
+        var uniqueSplitsRight = [];
 
         for (var i = 0; i < leftSplits.length; i++) {
-            if (leftSplits[i] in rightSplits) {
-                leftSplits.splice(i, 1)
+            if (rightSplits.indexOf(leftSplits[i]) == -1) {
+                uniqueSplitsLeft.push(leftSplits[i])
             }
         }
 
         for (var i = 0; i < rightSplits.length; i++) {
-            if (rightSplits[i] in leftSplits) {
-                rightSplits.splice(i, 1)
+            if (leftSplits.indexOf(rightSplits[i]) == -1) {
+                uniqueSplitsRight.push(rightSplits[i])
             }
         }
 
-        // determine disagreement splits between 2 trees
 
-        var uniqueSplitsMatrix = leftSplits.concat(rightSplits);
-        //console.log(uniqueSplitsMatrix);
+        var dsMatrix = [];
+        var ds = [];
+        for (var i = 0; i < uniqueSplitsLeft.length; i++) {
+            var binaryStrLeft = uniqueSplitsLeft[i].toString(2);
+            dsMatrix.push([binaryStrLeft]);
 
-        var uniqueSplitsMatrix_filt = uniqueSplitsMatrix.filter(function(item, pos) {
-            return uniqueSplitsMatrix.indexOf(item) == pos;
-        });
-        //console.log(uniqueSplitsMatrix_filt);
+            for (var j = 0; j < uniqueSplitsRight.length; j++){
+                var binaryStrRight = uniqueSplitsRight[j].toString(2);
 
-        //construct a 1:1 matrix with disagreement splits
+                dsMatrix[i].push(binaryStrRight);
+            }
+        }
 
-        // for(var i = 0; i < uniqueSplitsMatrix.length; i++){
-        //     for (var j = 0; j < uniqueSplitsMatrix.length; j++){
-        //         uniqueSplitsMatrix[i].push(uniqueSplitsMatrix[j]);
-        //         console.log(uniqueSplitsMatrix);
+        console.log(dsMatrix);
+
+        // determine which leaves correspond to DS pair,
+        // i.e. find a collection of leaves to be removed to make trees identical
+
+
+        // for (var i = 0; i < dsMatrix.length; i++){
+        //     var binaryStrLeft = dsMatrix[i][0].toString(2);
+        //     console.log(binaryStrLeft);
+        //     for (var j = 1; j < dsMatrix[i].length; j++){       //right splits start from index 1
+        //         var binaryStrRight = dsMatrix[i][j].toString(2);
+        //         console.log(binaryStrRight);
+        //         // perform operation here
+        //
         //     }
+        //
         // }
+
+
+
+
+
         return "..."
 
     }
