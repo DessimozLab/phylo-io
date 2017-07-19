@@ -2525,6 +2525,7 @@ var TreeCompare = function() {
 
         if (funcType == "SPR") {
             var binaryStringList = [];
+            var digitList = [];
             postorderTraverse(tree.root, function (d) {
                 if (d.children) {
                     var leafNames = getLeafNames(d.leaves);
@@ -2536,13 +2537,19 @@ var TreeCompare = function() {
                             binaryString += "0"
                         }
                     }
-
                     binaryStringList.push(binaryString);
+
+                    var tmpNum = parseInt(binaryString, 2);
+                    if (tmpNum > allLeafMaxNum / 2) {
+                        var num = allLeafMaxNum - tmpNum;
+                    } else {
+                        var num = tmpNum;
+                    }
+                    digitList.push(num);
                 }
 
             });
-
-            return binaryStringList
+            return [binaryStringList, digitList]
         }
 
         else if (funcType == "RF") {
@@ -3453,7 +3460,6 @@ var TreeCompare = function() {
 
     function calcRFDist(leftTree, rightTree) {
         funcType = "RF";
-        // splitsToBitString_1 does not traverse through leaves
         var leftSplits = splitsToBitString(leftTree);
         var rightSplits = splitsToBitString(rightTree);
         var uniqueSplits = [];
@@ -3529,26 +3535,29 @@ var TreeCompare = function() {
          */
 
         funcType = "SPR";
-        var leftSplits = splitsToBitString(leftTree);
-        var rightSplits = splitsToBitString(rightTree);
+        var leftSplitsStr = splitsToBitString(leftTree)[0];
+        var rightSplitsStr = splitsToBitString(rightTree)[0];
+        var leftSplitsNum = splitsToBitString(leftTree)[1];
+        var rightSplitsNum = splitsToBitString(rightTree)[1];
+
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
 
-        for (var i = 0; i < leftSplits.length; i++) {
-            if (rightSplits.indexOf(leftSplits[i]) == -1) {
-                uniqueSplitsLeft.push(leftSplits[i])
+        for (var i = 0; i < leftSplitsNum.length; i++) {
+            if (rightSplitsNum.indexOf(leftSplitsNum[i]) == -1) {
+                uniqueSplitsLeft.push(leftSplitsStr[i]);
+                console.log(uniqueSplitsLeft);
             }
         }
 
-        for (var i = 0; i < rightSplits.length; i++) {
-            if (leftSplits.indexOf(rightSplits[i]) == -1) {
-                uniqueSplitsRight.push(rightSplits[i])
+        for (var i = 0; i < rightSplitsNum.length; i++) {
+            if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
+                uniqueSplitsRight.push(rightSplitsStr[i]);
+
             }
         }
 
-        console.log(uniqueSplitsLeft, uniqueSplitsRight);
-
-        //bitwise xor operator on a pair of strings
+        // bitwise xor operator on a pair of strings
 
         function xorStringBuilder (bitString1, bitString2) {
             var xorString = "";
@@ -3569,11 +3578,6 @@ var TreeCompare = function() {
             }
         }
         console.log(dsMatrix);
-
-
-
-
-
 
 
         return "..."
