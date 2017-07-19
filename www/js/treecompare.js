@@ -2349,23 +2349,26 @@ var TreeCompare = function(){
         undo(canvasId, "undobtn");
     }
 
-    function createShareButton(canvasId){
+    function createSharing(canvasId, downloadClass){
 
-        function buildShareButton(canvasId){
-            var shareTools = d3.select("#" + canvasId).append("div")
+        function buildShareButton(canvasId, downloadClass){
+            var shareTools = d3.select("#" + canvasId).select("."+downloadClass).append("div")
                 .attr("class", "share");
 
-            shareTools.append("a")
-                .attr("class", "btn btn-sm sharp shareButton")
+            shareTools.append("button")
+                .attr("id", "shareButton")
+                .attr("class", "btn btn-sm sharp share")
                 .attr("title", "share tree as gist in the cloud")
+                .attr("type", "button")
                 .append("span")
                 .attr("class", "fa fa-cloud-upload")
                 .attr("aria-hidden","true");
+
         }
 
-        buildShareButton(canvasId);
+        buildShareButton(canvasId, downloadClass);
 
-        $(".shareButton").click(function(e) {
+        $("#shareButton").click(function(e) {
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
@@ -2388,6 +2391,58 @@ var TreeCompare = function(){
 
             }
         });
+    }
+
+    function createExportBar(canvasId, baseTree, compareMode){
+
+        function buildExportBar(canvasId) {
+            var exportTools = d3.select("#" + canvasId).append("div")
+                .attr("class", "exportTools");
+
+            exportTools.append("a")
+                .attr("class", "btn btn-sm sharp exportButton")
+                .attr("title", "export or share tree visualization")
+                .append("span")
+                .attr("class", "fa fa-download")
+                .attr("aria-hidden","true");
+
+            var exportMenu = d3.select("#" + canvasId).append("div")
+                .attr("class", "exportMenu");
+            // .append("ul")
+            // .attr("class", "treeToolsMenuContent");
+
+            exportMenu.append("li")
+                .attr("class", "exportText")
+                .append("div")
+                .attr("class", "export")
+                .text("Export");
+
+            exportMenu.append("li")
+                .attr("class", "exportText")
+                .append("div")
+                .attr("class", "share")
+                .text("Share");
+        }
+        buildExportBar(canvasId);
+
+        if (settings.enableDownloadButtons) {
+            createTreeDownload(canvasId, "export");
+        }
+
+        if (settings.enableDownloadButtons) {
+            createSharing(canvasId, "share");
+        }
+
+        d3.select("#" + canvasId).select(".exportButton")
+            .on("click", function(){
+                $("#" + canvasId + " .exportButton").toggleClass("opacity");
+                $("#" + canvasId + " .exportMenu").slideToggle(200);
+                if (d3.select("#" + canvasId + " .treeToolsMenu").style("display") !== "none"){
+                    $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
+                    $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+
+                }
+            });
     }
 
     function createToolbar(canvasId, baseTree, compareMode){
@@ -2424,12 +2479,6 @@ var TreeCompare = function(){
             treeToolsMenu.append("li")
                 .attr("class", "treeToolsText")
                 .append("div")
-                .attr("class", "export")
-                .text("Export");
-
-            treeToolsMenu.append("li")
-                .attr("class", "treeToolsText")
-                .append("div")
                 .attr("class", "ladderize")
                 .text("Ladderize");
 
@@ -2453,10 +2502,6 @@ var TreeCompare = function(){
             createZoomSlider(canvasId, "zoom", baseTree);
         }
 
-        if (settings.enableDownloadButtons) {
-            createTreeDownload(canvasId, "export");
-        }
-
         if (settings.enableLadderizeTreeButton) {
             createLadderizedTree(canvasId, "ladderize", baseTree);
         }
@@ -2470,6 +2515,11 @@ var TreeCompare = function(){
             .on("click", function(){
                 $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
                 $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+                if (d3.select("#" + canvasId + " .exportMenu").style("display") !== "none"){
+                    $("#" + canvasId + " .exportButton").toggleClass("opacity");
+                    $("#" + canvasId + " .exportMenu").slideToggle(200);
+
+                }
 
             });
     }
@@ -3378,7 +3428,7 @@ var TreeCompare = function(){
         if (settings.enableDownloadButtons) {
 
             // draw button
-            buildDownloadButton(canvasId, "export");
+            buildDownloadButton(canvasId, downloadClass);
 
 
             // PNG
@@ -3532,7 +3582,8 @@ var TreeCompare = function(){
 
         createLeafSearch(canvasId, name);
         createToolbar(canvasId, baseTree, compareMode);
-        createShareButton(canvasId);
+        createExportBar(canvasId);
+        // createShareButton(canvasId);
         createUndoButton(canvasId);
         //renderSearchBar(canvasId, baseTree);
 
