@@ -3542,11 +3542,16 @@ var TreeCompare = function() {
 
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
+        var agrSplits = [];
 
         for (var i = 0; i < leftSplitsNum.length; i++) {
             if (rightSplitsNum.indexOf(leftSplitsNum[i]) == -1) {
                 uniqueSplitsLeft.push(leftSplitsStr[i]);
-                console.log(uniqueSplitsLeft);
+                //console.log(uniqueSplitsLeft);
+            } else {
+
+                agrSplits.push(leftSplitsStr[i]);
+                //console.log(agrSplits.length, agrSplits);
             }
         }
 
@@ -3556,6 +3561,20 @@ var TreeCompare = function() {
 
             }
         }
+
+        function cutCherries (bitString) {
+            var charCount = 0;
+            for (var i = 0; i < bitString.length; i++){
+                if (bitString[i] == "1"){
+                    charCount += 1;
+                }
+            }
+            if (charCount == 2 && bitString.includes("11")) {
+                var ind = bitString.indexOf("1");
+                bitString = bitString.replace('11', '1');
+            }
+        }
+
 
         // bitwise xor operator on a pair of strings
 
@@ -3577,7 +3596,7 @@ var TreeCompare = function() {
                 dsMatrix[i].push(xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]));
             }
         }
-        console.log(dsMatrix);
+        //console.log(dsMatrix);
 
 
         return "..."
