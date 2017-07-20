@@ -2527,27 +2527,24 @@ var TreeCompare = function() {
             var binaryStringList = [];
             var digitList = [];
             postorderTraverse(tree.root, function (d) {
-                if (d.children) {
-                    var leafNames = getLeafNames(d.leaves);
-                    var binaryString = "";
-                    for (var i = 0; i < allLeafNames.length; i++) {
-                        if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                            binaryString += "1"
-                        } else {
-                            binaryString += "0"
-                        }
-                    }
-                    binaryStringList.push(binaryString);
-
-                    var tmpNum = parseInt(binaryString, 2);
-                    if (tmpNum > allLeafMaxNum / 2) {
-                        var num = allLeafMaxNum - tmpNum;
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1"
                     } else {
-                        var num = tmpNum;
+                        binaryString += "0"
                     }
-                    digitList.push(num);
                 }
+                binaryStringList.push(binaryString);
 
+                var tmpNum = parseInt(binaryString, 2);
+                if (tmpNum > allLeafMaxNum / 2) {
+                    var num = allLeafMaxNum - tmpNum;
+                } else {
+                    var num = tmpNum;
+                }
+                digitList.push(num);
             });
             return [binaryStringList, digitList]
         }
@@ -3543,35 +3540,45 @@ var TreeCompare = function() {
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
         var agrSplits = [];
+        var cherIndex = [];
 
         for (var i = 0; i < leftSplitsNum.length; i++) {
-            if (rightSplitsNum.indexOf(leftSplitsNum[i]) == -1) {
-                uniqueSplitsLeft.push(leftSplitsStr[i]);
-                //console.log(uniqueSplitsLeft);
-            } else {
-
+            if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
                 agrSplits.push(leftSplitsStr[i]);
-                //console.log(agrSplits.length, agrSplits);
+                cherIndex.push(cutCherries(leftSplitsStr[i]));
+            } else {
+                // cut the leaves which have indices stored in cherIndex array
+                for (var i = 0; i < cherIndex.length; i++){
+                    leftSplitsStr = leftSplitsStr.slice(0, cherIndex[i]) + leftSplitsStr.slice(cherIndex[i] + 1);
+                }
+
+                uniqueSplitsLeft.push(leftSplitsStr[i]);
             }
         }
+        console.log(agrSplits);
+        console.log(cherIndex);
 
         for (var i = 0; i < rightSplitsNum.length; i++) {
             if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
-                uniqueSplitsRight.push(rightSplitsStr[i]);
+                // cut the leaves which have indices stored in cherIndex array
 
+                uniqueSplitsRight.push(rightSplitsStr[i]);
             }
         }
 
+
+
         function cutCherries (bitString) {
             var charCount = 0;
-            for (var i = 0; i < bitString.length; i++){
-                if (bitString[i] == "1"){
+            for (var i = 0; i < bitString.length; i++) {
+                if (bitString[i] == "1") {
                     charCount += 1;
                 }
             }
+
             if (charCount == 2 && bitString.includes("11")) {
-                var ind = bitString.indexOf("1");
-                bitString = bitString.replace('11', '1');
+                 var tmpInd = bitString.indexOf("1");
+                 return tmpInd
             }
         }
 
