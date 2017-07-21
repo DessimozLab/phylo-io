@@ -3542,34 +3542,11 @@ var TreeCompare = function() {
         var agrSplits = [];
         var cherIndex = [];
 
-        for (var i = 0; i < leftSplitsNum.length; i++) {
-            if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
-                agrSplits.push(leftSplitsStr[i]);
-                cherIndex.push(cutCherries(leftSplitsStr[i]));
-            } else {
-                // cut the leaves which have indices stored in cherIndex array
-                for (var i = 0; i < cherIndex.length; i++){
-                    leftSplitsStr = leftSplitsStr.slice(0, cherIndex[i]) + leftSplitsStr.slice(cherIndex[i] + 1);
-                }
-
-                uniqueSplitsLeft.push(leftSplitsStr[i]);
-            }
-        }
-        console.log(agrSplits);
-        console.log(cherIndex);
-
-        for (var i = 0; i < rightSplitsNum.length; i++) {
-            if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
-                // cut the leaves which have indices stored in cherIndex array
-
-                uniqueSplitsRight.push(rightSplitsStr[i]);
-            }
-        }
-
-
+        // remove the cherries
 
         function cutCherries (bitString) {
             var charCount = 0;
+            var tmpInd = 0;
             for (var i = 0; i < bitString.length; i++) {
                 if (bitString[i] == "1") {
                     charCount += 1;
@@ -3577,11 +3554,41 @@ var TreeCompare = function() {
             }
 
             if (charCount == 2 && bitString.includes("11")) {
-                 var tmpInd = bitString.indexOf("1");
-                 return tmpInd
+                tmpInd = bitString.indexOf("1");
+            } else {
+                tmpInd = -1;
+            }
+            return tmpInd
+        }
+
+
+        for (var i = 0; i < leftSplitsNum.length; i++) {
+            if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
+                agrSplits.push(leftSplitsStr[i]);
+                var tmpInd = cutCherries(leftSplitsStr[i]);
+                if (tmpInd != -1) {
+                    cherIndex.push(tmpInd);
+                }
+
+            } else {
+                // cut the leaves which have indices stored in cherIndex array
+                for (var j = 0; j < cherIndex.length; j++){
+                    var tmpleftSplitStr = leftSplitsStr[i];
+                    leftSplitsStr[i] = tmpleftSplitStr.slice(0,cherIndex[j]) + tmpleftSplitStr.slice(cherIndex[j]+1,tmpleftSplitStr.length);
+                }
+                uniqueSplitsLeft.push(leftSplitsStr[i]);
             }
         }
 
+        for (var i = 0; i < rightSplitsNum.length; i++) {
+            if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
+                for (var j = 0; j < cherIndex.length; j++){
+                    var tmpRightSplitStr = rightSplitsStr[i];
+                    rightSplitsStr[i] = tmpRightSplitStr.slice(0, cherIndex[j]) + tmpRightSplitStr.slice(cherIndex[j]+1,tmpRightSplitStr.length);
+                }
+                uniqueSplitsRight.push(rightSplitsStr[i]);
+            }
+        }
 
         // bitwise xor operator on a pair of strings
 
@@ -3603,7 +3610,11 @@ var TreeCompare = function() {
                 dsMatrix[i].push(xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]));
             }
         }
-        //console.log(dsMatrix);
+
+
+
+        // apply Hungarian search method
+
 
 
         return "..."
