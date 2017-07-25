@@ -3557,50 +3557,32 @@ var TreeCompare = function() {
             }
         }
 
+
+
         // find cherries for each string within an array
 
-        function getCherries (splitsList) {
-            var extend = false;
-
-            for (var i = 0; i < splitsList.length; i++) {
+        function getCherries (splitStr) {
                 var charCount1 = 0;
                 var charCount0 = 0;
-                var tmpInd = 0;
-                var tmpStr = splitsList[i];
 
-                for (var i = 0; i < tmpStr.length; i++) {
-                    if (tmpStr[i] == "1") {
+                for (var i = 0; i < splitStr.length; i++) {
+                    if (splitStr[i] == "1") {
                         charCount1 += 1;
                     } else {
                         charCount0 += 1;
                     }
                 }
                 if (charCount1 == 2) {
-                    extend = true;
-                    tmpInd = tmpStr.indexOf("1");
+                    var tmpInd = splitStr.indexOf("1");
 
 
                 } else if (charCount0 == 2) {
-                    extend = true;
-                    tmpInd = tmpStr.indexOf("0");
+                    tmpInd = splitStr.indexOf("0");
 
                 }
 
-                if(tmpInd != 0) {
-
-                    // updateList(uniqueSplitsLeft, tmpInd);
-                    // updateList(uniqueSplitsRight, tmpInd);
-                    // updateList(agrSplits, tmpInd);
-                }
-            }
-
-            if (!extend){
-                return splitsList
-            }
+            return tmpInd
         }
-
-        agrSplits = getCherries(agrSplits);
-        console.log(agrSplits);
 
         // update lists, cutting the leaf found by getCherries from all splits
 
@@ -3611,14 +3593,36 @@ var TreeCompare = function() {
                 tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
                 newList.push(tmpStr);
             }
-            if (myList == agrSplits) {
-                getCherries(newList)
-            } else {
-                return newList
+            return newList
+        }
+
+        // iterate through agr. splits
+
+        function simplifySplits (splitsList){
+            var extend = false;
+            for (var i = 0; i < splitsList.length; i++) {
+                var tmpStr = agrSplits[i];
+                var cherInd = getCherries(tmpStr);
+                if (typeof (cherInd) !== 'undefined') {
+                    extend = true;
+                    agrSplits = updateList(agrSplits, cherInd)
+                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, cherInd)
+                    uniqueSplitsRight = updateList(uniqueSplitsRight, cherInd)
+                }
+            }
+            recursionCheck(extend);
+            return agrSplits
+        }
+
+        // recurse the function unless no cherries to collapse
+
+        function recursionCheck(x) {
+            if (x) {
+                simplifySplits(agrSplits)
             }
         }
 
-
+        simplifySplits(agrSplits)
 
         // bitwise xor operator on a pair of strings
 
