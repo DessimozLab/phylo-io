@@ -3540,55 +3540,85 @@ var TreeCompare = function() {
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
         var agrSplits = [];
-        var cherIndex = [];
-
-        // remove the cherries
-
-        function cutCherries (bitString) {
-            var charCount = 0;
-            var tmpInd = 0;
-            for (var i = 0; i < bitString.length; i++) {
-                if (bitString[i] == "1") {
-                    charCount += 1;
-                }
-            }
-
-            if (charCount == 2 && bitString.includes("11")) {
-                tmpInd = bitString.indexOf("1");
-            } else {
-                tmpInd = -1;
-            }
-            return tmpInd
-        }
-
 
         for (var i = 0; i < leftSplitsNum.length; i++) {
             if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
                 agrSplits.push(leftSplitsStr[i]);
-                var tmpInd = cutCherries(leftSplitsStr[i]);
-                if (tmpInd != -1) {
-                    cherIndex.push(tmpInd);
-                }
+
 
             } else {
-                // cut the leaves which have indices stored in cherIndex array
-                for (var j = 0; j < cherIndex.length; j++){
-                    var tmpleftSplitStr = leftSplitsStr[i];
-                    leftSplitsStr[i] = tmpleftSplitStr.slice(0,cherIndex[j]) + tmpleftSplitStr.slice(cherIndex[j]+1,tmpleftSplitStr.length);
-                }
                 uniqueSplitsLeft.push(leftSplitsStr[i]);
             }
         }
 
         for (var i = 0; i < rightSplitsNum.length; i++) {
             if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
-                for (var j = 0; j < cherIndex.length; j++){
-                    var tmpRightSplitStr = rightSplitsStr[i];
-                    rightSplitsStr[i] = tmpRightSplitStr.slice(0, cherIndex[j]) + tmpRightSplitStr.slice(cherIndex[j]+1,tmpRightSplitStr.length);
-                }
                 uniqueSplitsRight.push(rightSplitsStr[i]);
             }
         }
+
+        // find cherries for each string within an array
+
+        function getCherries (splitsList) {
+            var extend = false;
+
+            for (var i = 0; i < splitsList.length; i++) {
+                var charCount1 = 0;
+                var charCount0 = 0;
+                var tmpInd = 0;
+                var tmpStr = splitsList[i];
+
+                for (var i = 0; i < tmpStr.length; i++) {
+                    if (tmpStr[i] == "1") {
+                        charCount1 += 1;
+                    } else {
+                        charCount0 += 1;
+                    }
+                }
+                if (charCount1 == 2) {
+                    extend = true;
+                    tmpInd = tmpStr.indexOf("1");
+
+
+                } else if (charCount0 == 2) {
+                    extend = true;
+                    tmpInd = tmpStr.indexOf("0");
+
+                }
+
+                if(tmpInd != 0) {
+
+                    // updateList(uniqueSplitsLeft, tmpInd);
+                    // updateList(uniqueSplitsRight, tmpInd);
+                    // updateList(agrSplits, tmpInd);
+                }
+            }
+
+            if (!extend){
+                return splitsList
+            }
+        }
+
+        agrSplits = getCherries(agrSplits);
+        console.log(agrSplits);
+
+        // update lists, cutting the leaf found by getCherries from all splits
+
+        function updateList(myList, tmpInd) {
+            var newList = [];
+            for (var i = 0; i < myList.length; i++){
+                var tmpStr = myList[i];
+                tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
+                newList.push(tmpStr);
+            }
+            if (myList == agrSplits) {
+                getCherries(newList)
+            } else {
+                return newList
+            }
+        }
+
+
 
         // bitwise xor operator on a pair of strings
 
