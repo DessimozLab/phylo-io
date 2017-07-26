@@ -3654,43 +3654,82 @@ var TreeCompare = function() {
         }
 
 
-        // fill in the matrix and determine number of '1'
 
-        var dsMatrix = [];
-        var tmpDsMatrix = [];
-        for (var i = 0; i < uniqueSplitsLeft.length; i++) {
-            dsMatrix.push([]);
-            tmpDsMatrix.push([]);
-            for (var j = 0; j < uniqueSplitsRight.length; j++){
-                var tmpStr = xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]);
-                dsMatrix[i].push(tmpStr);
-
-                var tmpNum = 0;
-                for (var l = 0; l < tmpStr.length; l++){
-                    if (tmpStr[l] == '1'){
-                        tmpNum += 1
-                    }
-                }
-
-                tmpDsMatrix[i].push(tmpNum);
+        function recursionCheck_1(x) {
+            if (x) {
+                matrixSearch(uniqueSplitsLeft, uniqueSplitsRight)
             }
         }
 
+        var tmpSprValue = 0;
+        function matrixSearch (leftSplits, rightSplits) {
 
-        //console.log(dsMatrix);
+            // fill in the matrix and determine number of '1'
+            tmpSprValue +=1;
+            var extend = false;
+            var dsMatrix = [];
+            var tmpDsMatrix = [];
+            for (var i = 0; i < uniqueSplitsLeft.length; i++) {
+                dsMatrix.push([]);
+                tmpDsMatrix.push([]);
+                for (var j = 0; j < uniqueSplitsRight.length; j++) {
+                    var tmpStr = xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]);
+                    dsMatrix[i].push(tmpStr);
+
+                    var tmpNum = 0;
+                    for (var l = 0; l < tmpStr.length; l++) {
+                        if (tmpStr[l] == '1') {
+                            tmpNum += 1
+                        }
+                    }
+                    tmpDsMatrix[i].push(tmpNum);
+                }
+            }
+
+            //find max value of '1' to check if recursion is required
+            var maxRow = tmpDsMatrix.map(function (row) {
+                return Math.max.apply(Math, row);
+            });
+            var maxValue = Math.max.apply(null, maxRow);
+
+            if(maxValue != 0) {
+                extend = true
+            } else{
+                return tmpSprValue
+            }
+
+            // find min value of '1'
+            var minRow = tmpDsMatrix.map(function (row) {
+                return Math.min.apply(Math, row.filter(Boolean));
+            });
+            var minValue = Math.min.apply(null, minRow.filter(Boolean));
+
+            for (var i = 0; i < tmpDsMatrix.length; i++) {
+                for (var j = 0; j < tmpDsMatrix[i].length; j++) {
+                    if (tmpDsMatrix[i][j] == minValue) {
+                        var minString = dsMatrix[i][j];
+                    }
+                }
+            }
+
+            console.log(minString);
+
+            for (var i = 0; i < minString.length; i++) {
+                if (minString[i] == "1") {
+                    var tmpInd = i;
+                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, tmpInd);
+                    uniqueSplitsRight = updateList(uniqueSplitsRight, tmpInd);
+                }
+            }
+            recursionCheck_1(extend);
+
+            return tmpSprValue
+        }
 
 
-        var minRow = tmpDsMatrix.map(function(row){return Math.min.apply(Math, row);});
-        //console.log(minRow);
-
-
-
-
-
-        return "..."
-
+        var spr = matrixSearch(uniqueSplitsLeft, uniqueSplitsRight);
+        return spr
     }
-
 
 
     function calcDist() {
