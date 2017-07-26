@@ -3541,6 +3541,25 @@ var TreeCompare = function() {
         var uniqueSplitsRight = [];
         var agrSplits = [];
 
+        // function listBuilder (leftSplits, rightSplits) {
+        //     for (var i = 0; i < leftSplits.length; i++) {
+        //         if (rightSplits.indexOf(leftSplits[i]) !== -1) {
+        //             agrSplits.push(leftSplits[i]);
+        //
+        //         } else {
+        //             uniqueSplitsLeft.push(leftSplits[i]);
+        //         }
+        //     }
+        //     for (var i = 0; i < rightSplits.length; i++) {
+        //         if (leftSplits.indexOf(rightSplits[i]) == -1) {
+        //             uniqueSplitsRight.push(rightSplits[i]);
+        //         }
+        //     }
+        //     return agrSplits, uniqueSplitsLeft, uniqueSplitsRight;
+        // }
+        //
+        // console.log(listBuilder(leftSplitsStr, rightSplitsStr));
+
         for (var i = 0; i < leftSplitsNum.length; i++) {
             if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
                 agrSplits.push(leftSplitsStr[i]);
@@ -3557,7 +3576,7 @@ var TreeCompare = function() {
             }
         }
 
-
+        console.log(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
 
         // find cherries for each string within an array
 
@@ -3605,9 +3624,9 @@ var TreeCompare = function() {
                 var cherInd = getCherries(tmpStr);
                 if (typeof (cherInd) !== 'undefined') {
                     extend = true;
-                    agrSplits = updateList(agrSplits, cherInd)
-                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, cherInd)
-                    uniqueSplitsRight = updateList(uniqueSplitsRight, cherInd)
+                    agrSplits = updateList(agrSplits, cherInd);
+                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, cherInd);
+                    uniqueSplitsRight = updateList(uniqueSplitsRight, cherInd);
                 }
             }
             recursionCheck(extend);
@@ -3622,7 +3641,7 @@ var TreeCompare = function() {
             }
         }
 
-        simplifySplits(agrSplits)
+        simplifySplits(agrSplits);
 
         // bitwise xor operator on a pair of strings
 
@@ -3635,19 +3654,36 @@ var TreeCompare = function() {
         }
 
 
-        // fill in the matrix
+        // fill in the matrix and determine number of '1'
 
         var dsMatrix = [];
+        var tmpDsMatrix = [];
         for (var i = 0; i < uniqueSplitsLeft.length; i++) {
             dsMatrix.push([]);
+            tmpDsMatrix.push([]);
             for (var j = 0; j < uniqueSplitsRight.length; j++){
-                dsMatrix[i].push(xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]));
+                var tmpStr = xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]);
+                dsMatrix[i].push(tmpStr);
+
+                var tmpNum = 0;
+                for (var l = 0; l < tmpStr.length; l++){
+                    if (tmpStr[l] == '1'){
+                        tmpNum += 1
+                    }
+                }
+
+                tmpDsMatrix[i].push(tmpNum);
             }
         }
 
 
+        //console.log(dsMatrix);
 
-        // apply Hungarian search method
+
+        var minRow = tmpDsMatrix.map(function(row){return Math.min.apply(Math, row);});
+        //console.log(minRow);
+
+
 
 
 
