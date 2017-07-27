@@ -3576,7 +3576,7 @@ var TreeCompare = function() {
             }
         }
 
-        console.log(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+        //console.log(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
 
         // find cherries for each string within an array
 
@@ -3666,6 +3666,7 @@ var TreeCompare = function() {
 
             // fill in the matrix and determine number of '1'
             tmpSprValue +=1;
+            console.log(tmpSprValue, "NEW ITERATION");
             var extend = false;
             var dsMatrix = [];
             var tmpDsMatrix = [];
@@ -3674,6 +3675,7 @@ var TreeCompare = function() {
                 tmpDsMatrix.push([]);
                 for (var j = 0; j < uniqueSplitsRight.length; j++) {
                     var tmpStr = xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]);
+                    console.log(tmpStr);
                     dsMatrix[i].push(tmpStr);
 
                     var tmpNum = 0;
@@ -3691,10 +3693,12 @@ var TreeCompare = function() {
                 return Math.max.apply(Math, row);
             });
             var maxValue = Math.max.apply(null, maxRow);
+            console.log(maxValue);
+
 
             if(maxValue != 0) {
                 extend = true
-            } else{
+            } else {
                 return tmpSprValue
             }
 
@@ -3703,6 +3707,7 @@ var TreeCompare = function() {
                 return Math.min.apply(Math, row.filter(Boolean));
             });
             var minValue = Math.min.apply(null, minRow.filter(Boolean));
+            console.log(minValue);
 
             for (var i = 0; i < tmpDsMatrix.length; i++) {
                 for (var j = 0; j < tmpDsMatrix[i].length; j++) {
@@ -3712,22 +3717,28 @@ var TreeCompare = function() {
                 }
             }
 
-            console.log(minString);
 
-            for (var i = 0; i < minString.length; i++) {
-                if (minString[i] == "1") {
-                    var tmpInd = i;
-                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, tmpInd);
-                    uniqueSplitsRight = updateList(uniqueSplitsRight, tmpInd);
-                }
-            }
+
+            //iterate through minimum string and splice '1's
+            function minStrSplicer() {
+                        var tmpInd = minString.indexOf('1');
+                        if (tmpInd != -1) {
+                            minString = minString.slice(0, tmpInd) + minString.slice(tmpInd + 1);   // !!!
+                            uniqueSplitsLeft = updateList(uniqueSplitsLeft, tmpInd);
+                            uniqueSplitsRight = updateList(uniqueSplitsRight, tmpInd);
+                            minStrSplicer(minString);
+                        } else {
+                            return minString
+                        }
+                    }
+
+            minStrSplicer(minString);
             recursionCheck_1(extend);
 
             return tmpSprValue
         }
 
-
-        var spr = matrixSearch(uniqueSplitsLeft, uniqueSplitsRight);
+        var spr = matrixSearch(uniqueSplitsLeft, uniqueSplitsRight) - 1;
         return spr
     }
 
