@@ -2601,51 +2601,6 @@ var TreeCompare = function() {
     }
 
 
-    // function splitsToBitString_1(tree) {
-    //
-    //
-    //         function getLeafNames(leaves) {
-    //             var allLeafNames = [];
-    //             for (var i = 0; i < leaves.length; i++) {
-    //                 allLeafNames.push(leaves[i].name);
-    //             }
-    //             return allLeafNames.sort()
-    //         }
-    //
-    //         var allLeaves = tree.root.leaves;
-    //         var allLeafNames = getLeafNames(allLeaves);
-    //         var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
-    //
-    //         var allSplits = [];
-    //         var allSplitsDict = {};
-    //
-    //         postorderTraverse(tree.root, function (d) {
-    //             if (d.children) {
-    //                 var leafNames = getLeafNames(d.leaves);
-    //                 var binaryString = "";
-    //                 for (var i = 0; i < allLeafNames.length; i++) {
-    //                     if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-    //                         binaryString += "1"
-    //                     } else {
-    //                         binaryString += "0"
-    //                     }
-    //                 }
-    //                 var tmpNum = parseInt(binaryString, 2);
-    //                 if (tmpNum > allLeafMaxNum / 2) {
-    //                     var num = allLeafMaxNum - tmpNum;
-    //                 } else {
-    //                     var num = tmpNum;
-    //                 }
-    //                 allSplitsDict[num] = d.length;
-    //                 allSplits.push(num);
-    //             }
-    //
-    //         });
-    //
-    //
-    //     return [allSplits, allSplitsDict];
-    // }
-
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
          /
@@ -3479,6 +3434,7 @@ var TreeCompare = function() {
 
 
     function calcEuclidean(leftTree, rightTree) {
+        console.log("euclidean called");
         funcType = "Eucl";
         var branchScore = 0;
         var leftData = splitsToBitString(leftTree);
@@ -3525,13 +3481,13 @@ var TreeCompare = function() {
 
 
     function calcSPR(leftTree, rightTree) {
-
+        console.log('SPR called');
         /*
-        tree1: (A,(C,D),E,F);
-        tree2: (A,(D,F),C,E);
+         tree1: (A,(C,D),E,F);
+         tree2: (A,(D,F),C,E);
          */
-
         funcType = "SPR";
+        var SPR = 0;
         var leftSplitsStr = splitsToBitString(leftTree)[0];
         var rightSplitsStr = splitsToBitString(rightTree)[0];
         var leftSplitsNum = splitsToBitString(leftTree)[1];
@@ -3540,206 +3496,198 @@ var TreeCompare = function() {
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
         var agrSplits = [];
+        //checking if unique splits actually exist
+        if (typeof (uniqueSplitsLeft) !== 'undefined' || typeof (uniqueSplitsRight) !== 'undefined') {
 
-        // function listBuilder (leftSplits, rightSplits) {
-        //     for (var i = 0; i < leftSplits.length; i++) {
-        //         if (rightSplits.indexOf(leftSplits[i]) !== -1) {
-        //             agrSplits.push(leftSplits[i]);
-        //
-        //         } else {
-        //             uniqueSplitsLeft.push(leftSplits[i]);
-        //         }
-        //     }
-        //     for (var i = 0; i < rightSplits.length; i++) {
-        //         if (leftSplits.indexOf(rightSplits[i]) == -1) {
-        //             uniqueSplitsRight.push(rightSplits[i]);
-        //         }
-        //     }
-        //     return agrSplits, uniqueSplitsLeft, uniqueSplitsRight;
-        // }
-        //
-        // console.log(listBuilder(leftSplitsStr, rightSplitsStr));
+            for (var i = 0; i < leftSplitsNum.length; i++) {
+                if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
+                    agrSplits.push(leftSplitsStr[i]);
+                } else {
+                    uniqueSplitsLeft.push(leftSplitsStr[i]);
+                }
+            }
 
-        for (var i = 0; i < leftSplitsNum.length; i++) {
-            if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
-                agrSplits.push(leftSplitsStr[i]);
+            for (var i = 0; i < rightSplitsNum.length; i++) {
+                if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
+                    uniqueSplitsRight.push(rightSplitsStr[i]);
+                }
+            }
+
+            var output = simplifySplits(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+            agrSplits = output[0];
+            uniqueSplitsLeft = output[1];
+            uniqueSplitsRight = output[2];
+
+            SPR = minDsFinder(uniqueSplitsLeft, uniqueSplitsRight) - 1;
+            console.log("SPR is: ", SPR);
+        }
+        return SPR
+    }
 
 
-            } else {
-                uniqueSplitsLeft.push(leftSplitsStr[i]);
+    // in strings corresponding to cherries, find index of leaf to be cut
+    function getCherries (splitStr) {
+            var charCount1 = 0;
+            var charCount0 = 0;
+
+            for (var i = 0; i < splitStr.length; i++) {
+                if (splitStr[i] == "1") {
+                    charCount1 += 1;
+                } else {
+                    charCount0 += 1;
+                }
+            }
+            if (charCount1 == 2) {
+                var tmpInd = splitStr.indexOf("1");
+
+
+            } else if (charCount0 == 2) {
+                tmpInd = splitStr.indexOf("0");
+
+            }
+
+        return tmpInd
+    }
+
+    // update lists, cutting the leaf found by getCherries or minStrSplicer from all splits
+    function updateList(myList, tmpInd) {
+        var newList = [];
+        for (var i = 0; i < myList.length; i++){
+            var tmpStr = myList[i];
+            tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
+            newList.push(tmpStr);
+        }
+        return newList
+    }
+
+    // iterate through agr. splits until no cherries to cut
+    function simplifySplits (agrSplits, leftSplits, rightSplits){
+        var extend = false;
+        for (var i = 0; i < agrSplits.length; i++) {
+            var tmpStr = agrSplits[i];
+            var cherInd = getCherries(tmpStr);
+            if (typeof (cherInd) !== 'undefined') {
+                console.log('cherInd exists');
+                extend = true;
+                leftSplits = updateList(leftSplits, cherInd);
+                rightSplits = updateList(rightSplits, cherInd);
+                agrSplits = updateList(agrSplits, cherInd);
+                console.log('ok', agrSplits, leftSplits, rightSplits);
             }
         }
 
-        for (var i = 0; i < rightSplitsNum.length; i++) {
-            if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
-                uniqueSplitsRight.push(rightSplitsStr[i]);
-            }
+        if (extend){
+            console.log("EXTEND");
+            return simplifySplits (agrSplits, leftSplits, rightSplits);
         }
 
-        //console.log(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+        console.log("extend is false");
+        return [agrSplits, leftSplits, rightSplits];
+    }
 
-        // find cherries for each string within an array
+    // bitwise xor operator on a pair of strings
+    function xorStringBuilder (bitString1, bitString2) {
+        var xorString = "";
+        for (var i = 0; i < bitString1.length; i++) {
+            xorString = xorString.concat(bitString1.charCodeAt(i) ^ bitString2.charCodeAt(i));
+        }
+        return xorString
+    }
 
-        function getCherries (splitStr) {
-                var charCount1 = 0;
-                var charCount0 = 0;
 
-                for (var i = 0; i < splitStr.length; i++) {
-                    if (splitStr[i] == "1") {
-                        charCount1 += 1;
-                    } else {
-                        charCount0 += 1;
+    // construct disagreement split matrix and find shortest disagreement splits
+    function matrixBuilder (leftSplits, rightSplits) {
+
+        // fill in the matrix and determine number of '1'
+        var dsMatrix = [];
+        var tmpDsMatrix = [];
+        for (var i = 0; i < leftSplits.length; i++) {
+            dsMatrix.push([]);
+            tmpDsMatrix.push([]);
+            for (var j = 0; j < rightSplits.length; j++) {
+                var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
+                //console.log(tmpStr);
+                dsMatrix[i].push(tmpStr);
+
+                var tmpNum = 0;
+                for (var l = 0; l < tmpStr.length; l++) {
+                    if (tmpStr[l] == '1') {
+                        tmpNum += 1
                     }
                 }
-                if (charCount1 == 2) {
-                    var tmpInd = splitStr.indexOf("1");
-
-
-                } else if (charCount0 == 2) {
-                    tmpInd = splitStr.indexOf("0");
-
-                }
-
-            return tmpInd
-        }
-
-        // update lists, cutting the leaf found by getCherries from all splits
-
-        function updateList(myList, tmpInd) {
-            var newList = [];
-            for (var i = 0; i < myList.length; i++){
-                var tmpStr = myList[i];
-                tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
-                newList.push(tmpStr);
-            }
-            return newList
-        }
-
-        // iterate through agr. splits
-
-        function simplifySplits (splitsList){
-            var extend = false;
-            for (var i = 0; i < splitsList.length; i++) {
-                var tmpStr = agrSplits[i];
-                var cherInd = getCherries(tmpStr);
-                if (typeof (cherInd) !== 'undefined') {
-                    extend = true;
-                    agrSplits = updateList(agrSplits, cherInd);
-                    uniqueSplitsLeft = updateList(uniqueSplitsLeft, cherInd);
-                    uniqueSplitsRight = updateList(uniqueSplitsRight, cherInd);
-                }
-            }
-            recursionCheck(extend);
-            return agrSplits
-        }
-
-        // recurse the function unless no cherries to collapse
-
-        function recursionCheck(x) {
-            if (x) {
-                simplifySplits(agrSplits)
-            }
-        }
-
-        simplifySplits(agrSplits);
-
-        // bitwise xor operator on a pair of strings
-
-        function xorStringBuilder (bitString1, bitString2) {
-            var xorString = "";
-            for (var i = 0; i < bitString1.length; i++) {
-                xorString = xorString.concat(bitString1.charCodeAt(i) ^ bitString2.charCodeAt(i));
-            }
-            return xorString
-        }
-
-
-
-        function recursionCheck_1(x) {
-            if (x) {
-                matrixSearch(uniqueSplitsLeft, uniqueSplitsRight)
-            }
-        }
-
-        var tmpSprValue = 0;
-        function matrixSearch (leftSplits, rightSplits) {
-
-            // fill in the matrix and determine number of '1'
-            tmpSprValue +=1;
-            console.log(tmpSprValue, "NEW ITERATION");
-            var extend = false;
-            var dsMatrix = [];
-            var tmpDsMatrix = [];
-            for (var i = 0; i < uniqueSplitsLeft.length; i++) {
-                dsMatrix.push([]);
-                tmpDsMatrix.push([]);
-                for (var j = 0; j < uniqueSplitsRight.length; j++) {
-                    var tmpStr = xorStringBuilder(uniqueSplitsLeft[i], uniqueSplitsRight[j]);
-                    console.log(tmpStr);
-                    dsMatrix[i].push(tmpStr);
-
-                    var tmpNum = 0;
-                    for (var l = 0; l < tmpStr.length; l++) {
-                        if (tmpStr[l] == '1') {
-                            tmpNum += 1
-                        }
-                    }
+                // remove strings without '1' in them
+                if (tmpNum != 0) {
                     tmpDsMatrix[i].push(tmpNum);
+                } else {
+                    dsMatrix[i][j] = '';
                 }
             }
+        }
+        //console.log(dsMatrix, tmpDsMatrix);
+        return [dsMatrix, tmpDsMatrix]
+    }
 
-            //find max value of '1' to check if recursion is required
-            var maxRow = tmpDsMatrix.map(function (row) {
-                return Math.max.apply(Math, row);
-            });
-            var maxValue = Math.max.apply(null, maxRow);
-            console.log(maxValue);
+    // cut the leaves in disagreement
+    function minStrSplicer(minString, leftSplits, rightSplits) {
+        var tmpInd = minString.indexOf('1');
+        if (tmpInd != -1) {
+            minString = minString.slice(0, tmpInd) + minString.slice(tmpInd + 1);
+            console.log(minString, 'splicer iterated');
+            leftSplits = updateList(leftSplits, tmpInd);
+            rightSplits = updateList(rightSplits, tmpInd);
+            //console.log(leftSplits, rightSplits);
+            return minStrSplicer(minString, leftSplits, rightSplits);
+        }
+        return [leftSplits, rightSplits]
+    }
+
+    // this function actually does iteration
+    var globalCount = 0;
+    function minDsFinder (leftSplits, rightSplits) {
+        globalCount +=1;
+        // console.log(globalCount);
+        var dsMatrix = matrixBuilder(leftSplits, rightSplits)[0];
+        var tmpDsMatrix = matrixBuilder(leftSplits, rightSplits)[1];
+
+        //find max value of '1' to check if recursion is required
+        // var maxRow = tmpDsMatrix.map(function (row) {
+        //     return Math.max.apply(Math, row);
+        // });
+        // var maxValue = Math.max.apply(null, maxRow);
+        // console.log(maxValue);
 
 
-            if(maxValue != 0) {
-                extend = true
-            } else {
-                return tmpSprValue
-            }
+        //if (maxValue != 0) {
 
-            // find min value of '1'
-            var minRow = tmpDsMatrix.map(function (row) {
-                return Math.min.apply(Math, row.filter(Boolean));
-            });
-            var minValue = Math.min.apply(null, minRow.filter(Boolean));
-            console.log(minValue);
+        // find lowest value of '1'
 
+
+        // var minRow = tmpDsMatrix.map(function (row) {
+        //     return Math.min.apply(Math, row.filter(Boolean));
+        // });
+        // var minValue = Math.min.apply(null, minRow.filter(Boolean));
+
+        var minRow = tmpDsMatrix.map(function (row) {
+            return Math.min.apply(Math, row);
+        });
+        var minValue = Math.min.apply(null, minRow);
+        console.log(minValue);
+        if (minValue !== Infinity) {
             for (var i = 0; i < tmpDsMatrix.length; i++) {
                 for (var j = 0; j < tmpDsMatrix[i].length; j++) {
                     if (tmpDsMatrix[i][j] == minValue) {
                         var minString = dsMatrix[i][j];
+                        console.log(minString);
                     }
                 }
             }
 
 
-
-            //iterate through minimum string and splice '1's
-            function minStrSplicer() {
-                        var tmpInd = minString.indexOf('1');
-                        if (tmpInd != -1) {
-                            minString = minString.slice(0, tmpInd) + minString.slice(tmpInd + 1);   // !!!
-                            uniqueSplitsLeft = updateList(uniqueSplitsLeft, tmpInd);
-                            uniqueSplitsRight = updateList(uniqueSplitsRight, tmpInd);
-                            minStrSplicer(minString);
-                        } else {
-                            return minString
-                        }
-                    }
-
-            minStrSplicer(minString);
-            recursionCheck_1(extend);
-
-            return tmpSprValue
+            leftSplits = minStrSplicer(minString, leftSplits, rightSplits)[0];
+            rightSplits = minStrSplicer(minString, leftSplits, rightSplits)[1];
+            return minDsFinder(leftSplits, rightSplits);
         }
-
-        var spr = matrixSearch(uniqueSplitsLeft, uniqueSplitsRight) - 1;
-        return spr
+        return globalCount
     }
 
 
