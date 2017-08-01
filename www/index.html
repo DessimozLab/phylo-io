@@ -918,10 +918,11 @@
      /
      ------*/
     $("#distance").click(function(e){
-        var rf = treecomp.calcDist()[0][0];
-        var rf_norm = treecomp.calcDist()[0][1];
-        var eucl = treecomp.calcDist()[1];
-        var spr = treecomp.calcDist()[2];
+        var distances = treecomp.calcDist();
+        var rf = distances[0][0];
+        var rf_norm = distances[0][1];
+        var eucl = distances[1];
+        var spr = distances[2];
         d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
         d3.select("#eucl").text("Euclidean: " + eucl);
         d3.select("#spr").text("SPR: " + spr);
