@@ -2527,24 +2527,26 @@ var TreeCompare = function() {
             var binaryStringList = [];
             var digitList = [];
             postorderTraverse(tree.root, function (d) {
-                var leafNames = getLeafNames(d.leaves);
-                var binaryString = "";
-                for (var i = 0; i < allLeafNames.length; i++) {
-                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                        binaryString += "1"
-                    } else {
-                        binaryString += "0"
+                if (d.children) {
+                    var leafNames = getLeafNames(d.leaves);
+                    var binaryString = "";
+                    for (var i = 0; i < allLeafNames.length; i++) {
+                        if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                            binaryString += "1"
+                        } else {
+                            binaryString += "0"
+                        }
                     }
-                }
-                binaryStringList.push(binaryString);
+                    binaryStringList.push(binaryString);
 
-                var tmpNum = parseInt(binaryString, 2);
-                if (tmpNum > allLeafMaxNum / 2) {
-                    var num = allLeafMaxNum - tmpNum;
-                } else {
-                    var num = tmpNum;
+                    var tmpNum = parseInt(binaryString, 2);
+                    if (tmpNum > allLeafMaxNum / 2) {
+                        var num = allLeafMaxNum - tmpNum;
+                    } else {
+                        var num = tmpNum;
+                    }
+                    digitList.push(num);
                 }
-                digitList.push(num);
             });
             return [binaryStringList, digitList]
         }
@@ -3481,7 +3483,6 @@ var TreeCompare = function() {
 
 
     function calcSPR(leftTree, rightTree) {
-        console.log('SPR called');
         funcType = "SPR";
         var globalCount = 0;
         var leftSplitsStr = splitsToBitString(leftTree)[0];
@@ -3509,15 +3510,8 @@ var TreeCompare = function() {
 
         // checking whether unique splits exist
         if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
-            var output = simplifySplits(agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
-            agrSplits = output[0];
-            uniqueSplitsLeft = output[1];
-            uniqueSplitsRight = output[2];
-
-            globalCount = minDsFinder(globalCount, uniqueSplitsLeft, uniqueSplitsRight);
-            console.log(globalCount);
+            globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
             var SPR = globalCount - 1;
-            console.log("SPR is: ", SPR);
         } else {
             SPR = 0;
         }
@@ -3572,7 +3566,6 @@ var TreeCompare = function() {
                 leftSplits = updateList(leftSplits, cherInd);
                 rightSplits = updateList(rightSplits, cherInd);
                 agrSplits = updateList(agrSplits, cherInd);
-                console.log('ok', agrSplits, leftSplits, rightSplits);
             }
         }
 
@@ -3581,7 +3574,7 @@ var TreeCompare = function() {
             return simplifySplits (agrSplits, leftSplits, rightSplits);
         }
 
-        console.log("extend is false");
+        console.log("extend is false", rightSplits);
         return [agrSplits, leftSplits, rightSplits];
     }
 
@@ -3594,7 +3587,7 @@ var TreeCompare = function() {
         return xorString
     }
 
-    // construct disagreement split matrix and find shortest disagreement splits
+    // construct disagreement split matrix
     function matrixBuilder (leftSplits, rightSplits) {
 
         // fill in the matrix and determine number of '1'
@@ -3619,63 +3612,53 @@ var TreeCompare = function() {
 
             }
         }
-        console.log("xor strings matrix ", dsMatrix);
-        console.log("number matrix ", tmpDsMatrix);
         return [dsMatrix, tmpDsMatrix]
     }
 
     // cut the leaves in disagreement
-    function minStrSplicer(minString, leftSplits, rightSplits) {
+    function minStrSplicer(minString, myList) {
         var tmpInd = minString.indexOf('1');
         if (tmpInd != -1) {
             minString = minString.slice(0, tmpInd) + minString.slice(tmpInd + 1);
-            console.log(minString, 'splicer iterated');
-            leftSplits = updateList(leftSplits, tmpInd);
-            rightSplits = updateList(rightSplits, tmpInd);
-            for (var i = 0; i < leftSplits.length; i++){
-                var tmpSplit = leftSplits[i];
-                if (tmpSplit.indexOf(leftSplits) !== -1){
-                    console.log("AGR SPLIT DETECTED");
-                    leftSplits.splice(tmpSplit, 1);
-                    rightSplits.splice(tmpSplit, 1);
-                }
-            }
-            return minStrSplicer(minString, leftSplits, rightSplits);
+            myList = updateList(myList, tmpInd);
+            return minStrSplicer(minString, myList);
         }
-        return [leftSplits, rightSplits]
+        return myList
     }
 
     // this function actually does iteration
+    function minDsFinder (globalCount, agrSplits, leftSplits, rightSplits) {
+        globalCount += 1;
+        var output = simplifySplits(agrSplits, leftSplits, rightSplits); // remove agr. cherries
+        agrSplits = output[0];
+        leftSplits = output[1];
+        rightSplits = output[2];
 
-    function minDsFinder (globalCount, leftSplits, rightSplits) {
-        globalCount +=1;
-        console.log("globalCount is ", globalCount);
-        var dsMatrix = matrixBuilder(leftSplits, rightSplits)[0];
-        var tmpDsMatrix = matrixBuilder(leftSplits, rightSplits)[1];
+        output = matrixBuilder(leftSplits, rightSplits); // build the xor string matrix
+        var dsMatrix = output[0];
+        var tmpDsMatrix = output[1];
 
-        var minRow = tmpDsMatrix.map(function (row) {
+        var minRow = tmpDsMatrix.map(function (row) { // find the shortest DS
             return Math.min.apply(Math, row);
         });
         var minValue = Math.min.apply(null, minRow);
         console.log("min number of '1' ", minValue);
 
         if (minValue !== Infinity) {
-            console.log("minDsFinder will be called again");
             for (var i = 0; i < tmpDsMatrix.length; i++) {
                 for (var j = 0; j < tmpDsMatrix[i].length; j++) {
                     if (tmpDsMatrix[i][j] == minValue) {
                         var minString = dsMatrix[i][j];
-                        console.log(minString);
                     }
                 }
             }
-            leftSplits = minStrSplicer(minString, leftSplits, rightSplits)[0];
-            rightSplits = minStrSplicer(minString, leftSplits, rightSplits)[1];
-            return minDsFinder(globalCount, leftSplits, rightSplits);
+            agrSplits = minStrSplicer(minString, agrSplits);
+            leftSplits = minStrSplicer(minString, leftSplits);
+            rightSplits = minStrSplicer(minString, rightSplits);
+            return minDsFinder(globalCount, agrSplits, leftSplits, rightSplits);
         }
         return globalCount
     }
-
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
