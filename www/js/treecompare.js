@@ -3436,7 +3436,6 @@ var TreeCompare = function() {
 
 
     function calcEuclidean(leftTree, rightTree) {
-        console.log("euclidean called");
         funcType = "Eucl";
         var branchScore = 0;
         var leftData = splitsToBitString(leftTree);
@@ -3561,7 +3560,6 @@ var TreeCompare = function() {
             var tmpStr = agrSplits[i];
             var cherInd = getCherries(tmpStr);
             if (typeof (cherInd) !== 'undefined') {
-                console.log('cherInd exists');
                 extend = true;
                 leftSplits = updateList(leftSplits, cherInd);
                 rightSplits = updateList(rightSplits, cherInd);
@@ -3570,11 +3568,8 @@ var TreeCompare = function() {
         }
 
         if (extend){
-            console.log("EXTEND");
             return simplifySplits (agrSplits, leftSplits, rightSplits);
         }
-
-        console.log("extend is false", rightSplits);
         return [agrSplits, leftSplits, rightSplits];
     }
 
@@ -3642,7 +3637,6 @@ var TreeCompare = function() {
             return Math.min.apply(Math, row);
         });
         var minValue = Math.min.apply(null, minRow);
-        console.log("min number of '1' ", minValue);
 
         if (minValue !== Infinity) {
             for (var i = 0; i < tmpDsMatrix.length; i++) {
@@ -3665,7 +3659,6 @@ var TreeCompare = function() {
         var rightTree = trees[trees.length - 1];
         var distArray = [];
         distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
-        console.log(distArray);
         return distArray
     }
 
