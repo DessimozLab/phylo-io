@@ -81,6 +81,8 @@ var TreeCompare = function() {
         autoCollapse: null
     };
 
+
+
     //Add a work helper function to the jQuery object
     $.work = function (args) {
         var def = $.Deferred(function (dfd) {
@@ -1167,7 +1169,7 @@ var TreeCompare = function() {
             children = getChildren(d);
         } else {
             if (d.children) {
-                children = d.children;
+                children = d.children
             }
         }
         if (children.length > 0) {
@@ -1182,7 +1184,6 @@ var TreeCompare = function() {
             return;
         }
     }
-
     /*
      function important for rerooting to create new top leave root node
      */
@@ -2505,6 +2506,8 @@ var TreeCompare = function() {
             });
     }
 
+
+
     function splitsToBitString(tree) {
 
         function getLeafNames(leaves) {
@@ -2517,7 +2520,8 @@ var TreeCompare = function() {
 
         var allLeaves = tree.root.leaves;
         var allLeafNames = getLeafNames(allLeaves);
-        var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
+        var allLeafMaxNum = bigInt(Math.pow(2, allLeafNames.length) - 1).value;
+        console.log(allLeafMaxNum);
 
         var allSplits = [];
         var allSplitsDict = {};
@@ -2527,7 +2531,7 @@ var TreeCompare = function() {
             var binaryStringList = [];
             var digitList = [];
             postorderTraverse(tree.root, function (d) {
-                if (d.children) {
+                if (d.children || d._children) {
                     var leafNames = getLeafNames(d.leaves);
                     var binaryString = "";
                     for (var i = 0; i < allLeafNames.length; i++) {
@@ -2537,23 +2541,25 @@ var TreeCompare = function() {
                             binaryString += "0"
                         }
                     }
-                    binaryStringList.push(binaryString);
+                    var tmpNum = bigInt(parseInt(binaryString, 2)).value;
 
-                    var tmpNum = parseInt(binaryString, 2);
                     if (tmpNum > allLeafMaxNum / 2) {
                         var num = allLeafMaxNum - tmpNum;
                     } else {
                         var num = tmpNum;
                     }
+
+                    binaryStringList.push(binaryString);
                     digitList.push(num);
                 }
             });
+            console.log(digitList);
             return [binaryStringList, digitList]
         }
 
         else if (funcType == "RF") {
             postorderTraverse(tree.root, function (d) {
-                if (d.children) {
+                if (d.children || d._children) {
                     var leafNames = getLeafNames(d.leaves);
                     var binaryString = "";
                     for (var i = 0; i < allLeafNames.length; i++) {
@@ -2564,7 +2570,7 @@ var TreeCompare = function() {
                         }
                     }
 
-                    var tmpNum = parseInt(binaryString, 2);
+                    var tmpNum = bigInt(parseInt(binaryString, 2)).value;
                     if (tmpNum > allLeafMaxNum / 2) {
                         var num = allLeafMaxNum - tmpNum;
                     } else {
@@ -2589,7 +2595,7 @@ var TreeCompare = function() {
                         binaryString += "0"
                     }
                 }
-                var tmpNum = parseInt(binaryString, 2);
+                var tmpNum = bigInt(parseInt(binaryString, 2)).value;
                 if (tmpNum > allLeafMaxNum / 2) {
                     var num = allLeafMaxNum - tmpNum;
                 } else {
@@ -3415,7 +3421,9 @@ var TreeCompare = function() {
     function calcRFDist(leftTree, rightTree) {
         funcType = "RF";
         var leftSplits = splitsToBitString(leftTree);
+        console.log('all left splits', leftSplits);
         var rightSplits = splitsToBitString(rightTree);
+        console.log('all right splits', rightSplits);
         var uniqueSplits = [];
 
         for (var i = 0; i < leftSplits.length; i++) {
@@ -3429,6 +3437,8 @@ var TreeCompare = function() {
                 uniqueSplits.push(rightSplits[i])
             }
         }
+
+        console.log(uniqueSplits);
 
         var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3))*1000))/1000;
         return [uniqueSplits.length, relativeDist];
@@ -3484,10 +3494,14 @@ var TreeCompare = function() {
     function calcSPR(leftTree, rightTree) {
         funcType = "SPR";
         var globalCount = 0;
-        var leftSplitsStr = splitsToBitString(leftTree)[0];
-        var rightSplitsStr = splitsToBitString(rightTree)[0];
-        var leftSplitsNum = splitsToBitString(leftTree)[1];
-        var rightSplitsNum = splitsToBitString(rightTree)[1];
+
+        var output = splitsToBitString(leftTree);
+        var leftSplitsStr = output[0];
+        var leftSplitsNum = output[1];
+
+        output = splitsToBitString(rightTree);
+        var rightSplitsStr = output[0];
+        var rightSplitsNum = output[1];
 
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
@@ -3506,6 +3520,25 @@ var TreeCompare = function() {
                 uniqueSplitsRight.push(rightSplitsStr[i]);
             }
         }
+
+        // // work with strings
+        // for (var i = 0; i < leftSplitsStr.length; i++) {
+        //     if (rightSplitsStr.indexOf(leftSplitsStr[i]) !== -1) {
+        //         agrSplits.push(leftSplitsStr[i]);
+        //     } else {
+        //         uniqueSplitsLeft.push(leftSplitsStr[i]);
+        //     }
+        // }
+        //
+        // for (var i = 0; i < rightSplitsStr.length; i++) {
+        //     if (leftSplitsStr.indexOf(rightSplitsStr[i]) == -1) {
+        //         uniqueSplitsRight.push(rightSplitsStr[i]);
+        //     }
+        // }
+
+        console.log('uniqueSplitsLeft', uniqueSplitsLeft);
+        console.log('uniqueSplitsRight', uniqueSplitsRight);
+        console.log('agrSplits', agrSplits);
 
         // checking whether unique splits exist
         if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
@@ -3659,6 +3692,7 @@ var TreeCompare = function() {
         var rightTree = trees[trees.length - 1];
         var distArray = [];
         distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
+        console.log(distArray);
         return distArray
     }
 
