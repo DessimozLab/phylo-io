@@ -3317,7 +3317,6 @@ var TreeCompare = function() {
 
         function getLeafNames(leaves) {
             var allLeafNames = [];
-            var leaf;
             for (var i = 0; i < leaves.length; i++) {
                 allLeafNames.push(leaves[i].name);
             }
@@ -3326,13 +3325,14 @@ var TreeCompare = function() {
 
         var allLeaves = tree.root.leaves;
         var allLeafNames = getLeafNames(allLeaves);
-        var allLeafMaxNum = Math.pow(2, allLeafNames.length) - 1;
+        var allLeafMaxNum = bigInt(Math.pow(2, allLeafNames.length) - 1);
 
         var allSplits = [];
+        var allBinaryStrings = [];
         var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
-            if (d.children) {
+            if (d.children || d._children) {
                 var leafNames = getLeafNames(d.leaves);
                 var binaryString = "";
                 for (var i = 0; i < allLeafNames.length; i++) {
@@ -3342,44 +3342,52 @@ var TreeCompare = function() {
                         binaryString += "0";
                     }
                 }
-                var tmpNum = parseInt(binaryString, 2);
-                if (tmpNum > allLeafMaxNum / 2) {
-                    var num = allLeafMaxNum - tmpNum;
+                var tmpNum = bigInt(parseInt(binaryString, 2));
+                if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
+                    var num = allLeafMaxNum.minus(tmpNum);
+                    // console.log(binaryString)
+                    var b1 = binaryString.replace(/1/g,"a");
+                    var b2 = b1.replace(/0/g,"1");
+                    var b3 = b2.replace(/a/g,"0");
+                    binaryString = b3;
+                    // console.log(binaryString)
                 } else {
                     var num = tmpNum;
                 }
+                allBinaryStrings.push(binaryString);
                 allSplits.push(num);
                 allSplitsDict[num] = d.length;
             }
-        });
-        return [allSplits, allSplitsDict];
+        }, true);
+        return [allSplits, allSplitsDict, allBinaryStrings];
     }
 
     function calcRFDist(leftTree, rightTree) {
         var leftSplits = splitsToBitString(leftTree);
         var rightSplits = splitsToBitString(rightTree);
-        var allSplitsIDs = _.uniq(leftSplits[0].concat(rightSplits[0]));
+        var allSplitsIDs = _.uniq(leftSplits[2].concat(rightSplits[2]));
+        var intersectingSplitsIDs = _.intersection(leftSplits[2],rightSplits[2]);
 
-
-        var rf = 0;
-        for (var i = 0; i < allSplitsIDs.length; i++) {
-            if (leftSplits[1][allSplitsIDs[i]] !== undefined ){
-                var bLeft = 1;
-            } else {
-                var bLeft = 0;
-            }
-
-            if (rightSplits[1][allSplitsIDs[i]] !== undefined ){
-                var bRight = 1;
-            } else {
-                var bRight = 0;
-            }
-
-            rf = rf + Math.pow((bLeft-bRight), 2)
-        }
-
+        // var rf = 0;
+        // for (var i = 0; i < allSplitsIDs.length; i++) {
+        //     if (leftSplits[1][allSplitsIDs[i]] !== undefined ){
+        //         var bLeft = 1;
+        //     } else {
+        //         var bLeft = 0;
+        //     }
+        //
+        //     if (rightSplits[1][allSplitsIDs[i]] !== undefined ){
+        //         var bRight = 1;
+        //     } else {
+        //         var bRight = 0;
+        //     }
+        //
+        //     rf = rf + Math.pow((bLeft-bRight), 2)
+        // }
+        //
+        // var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
+        var rf = allSplitsIDs.length - intersectingSplitsIDs.length;
         var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
-
 
         return [rf, rfRelative.toFixed(2)];
     }
