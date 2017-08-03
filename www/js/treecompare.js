@@ -2507,108 +2507,6 @@ var TreeCompare = function() {
     }
 
 
-
-    function splitsToBitString(tree) {
-
-        function getLeafNames(leaves) {
-            var allLeafNames = [];
-            for (var i = 0; i < leaves.length; i++) {
-                allLeafNames.push(leaves[i].name);
-            }
-            return allLeafNames.sort()
-        }
-
-        var allLeaves = tree.root.leaves;
-        var allLeafNames = getLeafNames(allLeaves);
-        var allLeafMaxNum = bigInt(Math.pow(2, allLeafNames.length) - 1).value;
-        console.log(allLeafMaxNum);
-
-        var allSplits = [];
-        var allSplitsDict = {};
-
-
-        if (funcType == "SPR") {
-            var binaryStringList = [];
-            var digitList = [];
-            postorderTraverse(tree.root, function (d) {
-                if (d.children || d._children) {
-                    var leafNames = getLeafNames(d.leaves);
-                    var binaryString = "";
-                    for (var i = 0; i < allLeafNames.length; i++) {
-                        if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                            binaryString += "1"
-                        } else {
-                            binaryString += "0"
-                        }
-                    }
-                    var tmpNum = bigInt(parseInt(binaryString, 2)).value;
-
-                    if (tmpNum > allLeafMaxNum / 2) {
-                        var num = allLeafMaxNum - tmpNum;
-                    } else {
-                        var num = tmpNum;
-                    }
-
-                    binaryStringList.push(binaryString);
-                    digitList.push(num);
-                }
-            });
-            console.log(digitList);
-            return [binaryStringList, digitList]
-        }
-
-        else if (funcType == "RF") {
-            postorderTraverse(tree.root, function (d) {
-                if (d.children || d._children) {
-                    var leafNames = getLeafNames(d.leaves);
-                    var binaryString = "";
-                    for (var i = 0; i < allLeafNames.length; i++) {
-                        if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                            binaryString += "1"
-                        } else {
-                            binaryString += "0"
-                        }
-                    }
-
-                    var tmpNum = bigInt(parseInt(binaryString, 2)).value;
-                    if (tmpNum > allLeafMaxNum / 2) {
-                        var num = allLeafMaxNum - tmpNum;
-                    } else {
-                        var num = tmpNum;
-                    }
-                    allSplits.push(num);
-                }
-            });
-
-            return allSplits
-        }
-
-
-        else {
-            postorderTraverse(tree.root, function (d) {
-                var leafNames = getLeafNames(d.leaves);
-                var binaryString = "";
-                for (var i = 0; i < allLeafNames.length; i++) {
-                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                        binaryString += "1"
-                    } else {
-                        binaryString += "0"
-                    }
-                }
-                var tmpNum = bigInt(parseInt(binaryString, 2)).value;
-                if (tmpNum > allLeafMaxNum / 2) {
-                    var num = allLeafMaxNum - tmpNum;
-                } else {
-                    var num = tmpNum;
-                }
-                allSplitsDict[num] = d.length;
-            });
-
-            return allSplitsDict
-        }
-    }
-
-
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
         /*---------------
          /
@@ -3416,125 +3314,135 @@ var TreeCompare = function() {
             });
     }
 
-    var funcType = "";
+    function splitsToBitString(tree) {
+
+        function getLeafNames(leaves) {
+            var allLeafNames = [];
+            for (var i = 0; i < leaves.length; i++) {
+                allLeafNames.push(leaves[i].name);
+            }
+            return allLeafNames.sort()
+        }
+
+        var allLeaves = tree.root.leaves;
+        var allLeafNames = getLeafNames(allLeaves);
+        var allLeafMaxNum = bigInt(Math.pow(2, allLeafNames.length) - 1);
+
+        var allSplits = [];
+        var allBinaryStrings = [];
+        var allSplitsDict = {};
+
+        postorderTraverse(tree.root, function (d) {
+            if (d.children || d._children) {
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1";
+                    } else {
+                        binaryString += "0";
+                    }
+                }
+                var tmpNum = bigInt(parseInt(binaryString, 2));
+                if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
+                    var num = allLeafMaxNum.minus(tmpNum);
+                    // console.log(binaryString)
+                    var b1 = binaryString.replace(/1/g,"a");
+                    var b2 = b1.replace(/0/g,"1");
+                    var b3 = b2.replace(/a/g,"0");
+                    binaryString = b3;
+                    // console.log(binaryString)
+                } else {
+                    var num = tmpNum;
+                }
+                allBinaryStrings.push(binaryString);
+                allSplits.push(num);
+                allSplitsDict[num] = d.length;
+            }
+        }, true);
+        return [allSplits, allSplitsDict, allBinaryStrings];
+    }
 
     function calcRFDist(leftTree, rightTree) {
-        funcType = "RF";
         var leftSplits = splitsToBitString(leftTree);
-        console.log('all left splits', leftSplits);
         var rightSplits = splitsToBitString(rightTree);
-        console.log('all right splits', rightSplits);
-        var uniqueSplits = [];
+        var allSplitsIDs = _.uniq(leftSplits[2].concat(rightSplits[2]));
+        var intersectingSplitsIDs = _.intersection(leftSplits[2],rightSplits[2]);
+        var rf = allSplitsIDs.length - intersectingSplitsIDs.length;
+        var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
 
-        for (var i = 0; i < leftSplits.length; i++) {
-            if (rightSplits.indexOf(leftSplits[i]) == -1) {
-                uniqueSplits.push(leftSplits[i])
-            }
-        }
-
-        for (var i = 0; i < rightSplits.length; i++) {
-            if (leftSplits.indexOf(rightSplits[i]) == -1) {
-                uniqueSplits.push(rightSplits[i])
-            }
-        }
-
-        console.log(uniqueSplits);
-
-        var relativeDist = Math.round((uniqueSplits.length / (2 * (leftTree.root.leaves.length - 3))*1000))/1000;
-        return [uniqueSplits.length, relativeDist];
+        return [rf, rfRelative.toFixed(2)];
     }
 
 
     function calcEuclidean(leftTree, rightTree) {
-        funcType = "Eucl";
         var branchScore = 0;
         var leftData = splitsToBitString(leftTree);
         var rightData = splitsToBitString(rightTree);
 
 
-        //Make an array with no duplications
-
-        var totalData = [];
-
-        for (key in leftData) {
-            totalData.push(key);
-        }
-
-        for (key in rightData) {
-                totalData.push(key);
-        }
-
-        var uniqueData = totalData.filter(function(item, pos) {
-            return totalData.indexOf(item) == pos;
-        });
-
-
-        //Iterate through array and check for key in the dictionary. Then calculate branch score
-
-        for (var i = 0; i < uniqueData.length; i++) {
-
-            if (uniqueData[i] in leftData && uniqueData[i] in rightData) {
-                branchScore += Math.pow((leftData[uniqueData[i]] - rightData[uniqueData[i]]), 2);
-            }
-
-            else if (uniqueData[i] in leftData ) {
-                branchScore += Math.pow(leftData[uniqueData[i]], 2);
-            }
-
-            else {
-                branchScore += Math.pow(rightData[uniqueData[i]], 2);
-            }
-        }
-
-        var euclDist = Math.round(Math.sqrt(branchScore)*1000)/1000;
-        return euclDist
+        // //Make an array with no duplications
+        //
+        // var totalData = [];
+        //
+        // for (key in leftData) {
+        //     totalData.push(key);
+        // }
+        //
+        // for (key in rightData) {
+        //         totalData.push(key);
+        // }
+        //
+        // var uniqueData = totalData.filter(function(item, pos) {
+        //     return totalData.indexOf(item) == pos;
+        // });
+        //
+        //
+        // //Iterate through array and check for key in the dictionary. Then calculate branch score
+        //
+        // for (var i = 0; i < uniqueData.length; i++) {
+        //
+        //     if (uniqueData[i] in leftData && uniqueData[i] in rightData) {
+        //         branchScore += Math.pow((leftData[uniqueData[i]] - rightData[uniqueData[i]]), 2);
+        //     }
+        //
+        //     else if (uniqueData[i] in leftData ) {
+        //         branchScore += Math.pow(leftData[uniqueData[i]], 2);
+        //     }
+        //
+        //     else {
+        //         branchScore += Math.pow(rightData[uniqueData[i]], 2);
+        //     }
+        // }
+        //
+        // var euclDist = Math.round(Math.sqrt(branchScore)*1000)/1000;
+        // return euclDist
+        return 0
     }
 
 
     function calcSPR(leftTree, rightTree) {
-        funcType = "SPR";
         var globalCount = 0;
 
-        var output = splitsToBitString(leftTree);
-        var leftSplitsStr = output[0];
-        var leftSplitsNum = output[1];
+        var leftSplitsStr = splitsToBitString(leftTree)[2];
+        var rightSplitsStr =  splitsToBitString(rightTree)[2];
 
-        output = splitsToBitString(rightTree);
-        var rightSplitsStr = output[0];
-        var rightSplitsNum = output[1];
 
         var uniqueSplitsLeft = [];
         var uniqueSplitsRight = [];
-        var agrSplits = [];
+        var agrSplits = _.intersection(leftSplitsStr,  rightSplitsStr);
 
-        for (var i = 0; i < leftSplitsNum.length; i++) {
-            if (rightSplitsNum.indexOf(leftSplitsNum[i]) !== -1) {
-                agrSplits.push(leftSplitsStr[i]);
-            } else {
+        for (var i = 0; i < leftSplitsStr.length; i++) {
+            if (agrSplits.indexOf(leftSplitsStr[i]) === -1) {
                 uniqueSplitsLeft.push(leftSplitsStr[i]);
             }
         }
 
-        for (var i = 0; i < rightSplitsNum.length; i++) {
-            if (leftSplitsNum.indexOf(rightSplitsNum[i]) == -1) {
+        for (var i = 0; i < rightSplitsStr.length; i++) {
+            if (agrSplits.indexOf(rightSplitsStr[i]) === -1) {
                 uniqueSplitsRight.push(rightSplitsStr[i]);
             }
         }
-
-        // // work with strings
-        // for (var i = 0; i < leftSplitsStr.length; i++) {
-        //     if (rightSplitsStr.indexOf(leftSplitsStr[i]) !== -1) {
-        //         agrSplits.push(leftSplitsStr[i]);
-        //     } else {
-        //         uniqueSplitsLeft.push(leftSplitsStr[i]);
-        //     }
-        // }
-        //
-        // for (var i = 0; i < rightSplitsStr.length; i++) {
-        //     if (leftSplitsStr.indexOf(rightSplitsStr[i]) == -1) {
-        //         uniqueSplitsRight.push(rightSplitsStr[i]);
-        //     }
-        // }
 
         console.log('uniqueSplitsLeft', uniqueSplitsLeft);
         console.log('uniqueSplitsRight', uniqueSplitsRight);
