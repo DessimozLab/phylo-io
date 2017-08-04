@@ -3355,19 +3355,19 @@ var TreeCompare = function() {
                 } else {
                     var num = tmpNum;
                 }
-                allBinaryStrings.push(binaryString);
-                allSplits.push(num);
-                allSplitsDict[num] = d.length;
+                allBinaryStrings.push(binaryString); // strings
+                //allSplits.push(num); // numbers (??)
+                allSplitsDict[binaryString] = d.length; // string - length dictionary
             }
         }, true);
-        return [allSplits, allSplitsDict, allBinaryStrings];
+        return [allSplitsDict, allBinaryStrings];
     }
 
     function calcRFDist(leftTree, rightTree) {
         var leftSplits = splitsToBitString(leftTree);
         var rightSplits = splitsToBitString(rightTree);
-        var allSplitsIDs = _.uniq(leftSplits[2].concat(rightSplits[2]));
-        var intersectingSplitsIDs = _.intersection(leftSplits[2],rightSplits[2]);
+        var allSplitsIDs = _.uniq(leftSplits[1].concat(rightSplits[1]));
+        var intersectingSplitsIDs = _.intersection(leftSplits[1],rightSplits[1]);
         var rf = allSplitsIDs.length - intersectingSplitsIDs.length;
         var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
 
@@ -3377,85 +3377,96 @@ var TreeCompare = function() {
 
     function calcEuclidean(leftTree, rightTree) {
         var branchScore = 0;
-        var leftData = splitsToBitString(leftTree);
+        var leftData = splitsToBitString(leftTree); // [0]: object, [1]: list of strings
         var rightData = splitsToBitString(rightTree);
 
+        var leftDataDict = leftData[0];
+        var leftDataList = leftData[1];
+        var rightDataDict = rightData[0];
+        var rightDataList = rightData[1];
 
-        // //Make an array with no duplications
-        //
-        // var totalData = [];
-        //
-        // for (key in leftData) {
-        //     totalData.push(key);
-        // }
-        //
-        // for (key in rightData) {
-        //         totalData.push(key);
-        // }
-        //
-        // var uniqueData = totalData.filter(function(item, pos) {
-        //     return totalData.indexOf(item) == pos;
-        // });
-        //
-        //
+        console.log('leftDataDict', leftDataDict);
+
+        var uniqueData = _.uniq(leftDataList.concat(rightDataList));  //array of strings without duplications
+        console.log('uniqueData', uniqueData);
+        var agrSplits = _.intersection(leftDataList,rightDataList); //agreement splits
+
+        for (var i = 0; i < uniqueData.length; i++) {
+            var tmpStr = uniqueData[i];
+            if(agrSplits.indexOf(tmpStr) !== -1 ) {
+                branchScore += Math.pow((leftDataDict[tmpStr] - rightDataDict[tmpStr]), 2);
+            }
+            else if (leftDataList.indexOf(tmpStr) !== -1){
+                branchScore += Math.pow(leftDataDict[tmpStr], 2);
+        }
+            else {
+                branchScore += Math.pow(rightDataDict[tmpStr], 2);
+            }
+        }
+
+        console.log(branchScore);
+
+
+
+
         // //Iterate through array and check for key in the dictionary. Then calculate branch score
-        //
         // for (var i = 0; i < uniqueData.length; i++) {
         //
-        //     if (uniqueData[i] in leftData && uniqueData[i] in rightData) {
-        //         branchScore += Math.pow((leftData[uniqueData[i]] - rightData[uniqueData[i]]), 2);
+        //     if (uniqueData[i] in leftDataDict && uniqueData[i] in rightDataDict) {
+        //         branchScore += Math.pow((leftDataDict[uniqueData[i]] - rightDataDict[uniqueData[i]]), 2);
         //     }
         //
-        //     else if (uniqueData[i] in leftData ) {
-        //         branchScore += Math.pow(leftData[uniqueData[i]], 2);
+        //     else if (uniqueData[i] in leftDataDict) {
+        //         branchScore += Math.pow(leftDataDict[uniqueData[i]], 2);
         //     }
         //
-        //     else {
-        //         branchScore += Math.pow(rightData[uniqueData[i]], 2);
+        //     else if (uniqueData[i] in rightDataDict) {
+        //         branchScore += Math.pow(rightDataDict[uniqueData[i]], 2);
         //     }
         // }
-        //
-        // var euclDist = Math.round(Math.sqrt(branchScore)*1000)/1000;
-        // return euclDist
-        return 0
+
+
+        var euclDist = Math.sqrt(branchScore);
+        return euclDist.toFixed(3)
     }
 
 
     function calcSPR(leftTree, rightTree) {
-        var globalCount = 0;
-
-        var leftSplitsStr = splitsToBitString(leftTree)[2];
-        var rightSplitsStr =  splitsToBitString(rightTree)[2];
-
-
-        var uniqueSplitsLeft = [];
-        var uniqueSplitsRight = [];
-        var agrSplits = _.intersection(leftSplitsStr,  rightSplitsStr);
-
-        for (var i = 0; i < leftSplitsStr.length; i++) {
-            if (agrSplits.indexOf(leftSplitsStr[i]) === -1) {
-                uniqueSplitsLeft.push(leftSplitsStr[i]);
-            }
-        }
-
-        for (var i = 0; i < rightSplitsStr.length; i++) {
-            if (agrSplits.indexOf(rightSplitsStr[i]) === -1) {
-                uniqueSplitsRight.push(rightSplitsStr[i]);
-            }
-        }
-
-        console.log('uniqueSplitsLeft', uniqueSplitsLeft);
-        console.log('uniqueSplitsRight', uniqueSplitsRight);
-        console.log('agrSplits', agrSplits);
-
-        // checking whether unique splits exist
-        if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
-            globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
-            var SPR = globalCount - 1;
-        } else {
-            SPR = 0;
-        }
-        return SPR
+        // var globalCount = 0;
+        //
+        // var leftSplitsStr = splitsToBitString(leftTree)[1];
+        // var rightSplitsStr =  splitsToBitString(rightTree)[1];
+        //
+        //
+        // var uniqueSplitsLeft = [];
+        // var uniqueSplitsRight = [];
+        // var agrSplits = _.intersection(leftSplitsStr,  rightSplitsStr);
+        //
+        // for (var i = 0; i < leftSplitsStr.length; i++) {
+        //     if (agrSplits.indexOf(leftSplitsStr[i]) === -1) {
+        //         uniqueSplitsLeft.push(leftSplitsStr[i]);
+        //     }
+        // }
+        //
+        // for (var i = 0; i < rightSplitsStr.length; i++) {
+        //     if (agrSplits.indexOf(rightSplitsStr[i]) === -1) {
+        //         uniqueSplitsRight.push(rightSplitsStr[i]);
+        //     }
+        // }
+        //
+        // console.log('uniqueSplitsLeft', uniqueSplitsLeft);
+        // console.log('uniqueSplitsRight', uniqueSplitsRight);
+        // console.log('agrSplits', agrSplits);
+        //
+        // // checking whether unique splits exist
+        // if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
+        //     globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+        //     var SPR = globalCount - 1;
+        // } else {
+        //     SPR = 0;
+        // }
+        // return SPR
+        return 0
     }
 
 
