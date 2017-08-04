@@ -3314,7 +3314,7 @@ var TreeCompare = function() {
             });
     }
 
-    function splitsToBitString(tree) {
+    function splitsToBitString(tree, funcType) {
 
         function getLeafNames(leaves) {
             var allLeafNames = [];
@@ -3333,7 +3333,32 @@ var TreeCompare = function() {
         var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
-            if (d.children || d._children) {
+            if (d.children || d._children && (funcType === "RF" || functype === "SPR")){
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1";
+                    } else {
+                        binaryString += "0";
+                    }
+                }
+                var tmpNum = bigInt(parseInt(binaryString, 2));
+                if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
+                    var num = allLeafMaxNum.minus(tmpNum);
+                    // console.log(binaryString)
+                    var b1 = binaryString.replace(/1/g,"a");
+                    var b2 = b1.replace(/0/g,"1");
+                    var b3 = b2.replace(/a/g,"0");
+                    binaryString = b3;
+                    // console.log(binaryString)
+                } else {
+                    var num = tmpNum;
+                }
+                allBinaryStrings.push(binaryString); // strings
+                //allSplits.push(num); // numbers (??)
+                allSplitsDict[binaryString] = d.length; // string - length dictionary
+            } else if(funcType === "EUC"){
                 var leafNames = getLeafNames(d.leaves);
                 var binaryString = "";
                 for (var i = 0; i < allLeafNames.length; i++) {
@@ -3364,8 +3389,8 @@ var TreeCompare = function() {
     }
 
     function calcRFDist(leftTree, rightTree) {
-        var leftSplits = splitsToBitString(leftTree);
-        var rightSplits = splitsToBitString(rightTree);
+        var leftSplits = splitsToBitString(leftTree, 'RF');
+        var rightSplits = splitsToBitString(rightTree, 'RF');
         var allSplitsIDs = _.uniq(leftSplits[1].concat(rightSplits[1]));
         var intersectingSplitsIDs = _.intersection(leftSplits[1],rightSplits[1]);
         var rf = allSplitsIDs.length - intersectingSplitsIDs.length;
@@ -3377,8 +3402,8 @@ var TreeCompare = function() {
 
     function calcEuclidean(leftTree, rightTree) {
         var branchScore = 0;
-        var leftData = splitsToBitString(leftTree); // [0]: object, [1]: list of strings
-        var rightData = splitsToBitString(rightTree);
+        var leftData = splitsToBitString(leftTree, 'EUC'); // [0]: object, [1]: list of strings
+        var rightData = splitsToBitString(rightTree, 'EUC');
 
         var leftDataDict = leftData[0];
         var leftDataList = leftData[1];
@@ -3405,26 +3430,6 @@ var TreeCompare = function() {
         }
 
         console.log(branchScore);
-
-
-
-
-        // //Iterate through array and check for key in the dictionary. Then calculate branch score
-        // for (var i = 0; i < uniqueData.length; i++) {
-        //
-        //     if (uniqueData[i] in leftDataDict && uniqueData[i] in rightDataDict) {
-        //         branchScore += Math.pow((leftDataDict[uniqueData[i]] - rightDataDict[uniqueData[i]]), 2);
-        //     }
-        //
-        //     else if (uniqueData[i] in leftDataDict) {
-        //         branchScore += Math.pow(leftDataDict[uniqueData[i]], 2);
-        //     }
-        //
-        //     else if (uniqueData[i] in rightDataDict) {
-        //         branchScore += Math.pow(rightDataDict[uniqueData[i]], 2);
-        //     }
-        // }
-
 
         var euclDist = Math.sqrt(branchScore);
         return euclDist.toFixed(3)
