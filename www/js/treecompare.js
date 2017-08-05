@@ -326,6 +326,20 @@ var TreeCompare = function(){
                     subtree = subtree + ":"+nest.length;
                 }
             }
+            else if(nest.hasOwnProperty('_children')){
+                var _children = [];
+                nest._children.forEach(function(child){
+                    var subsubtree = nested(child);
+                    _children.push(subsubtree);
+                });
+                var substring = _children.join();
+                if(nest.hasOwnProperty('name')){
+                    subtree = "("+substring+")" + nest.name;
+                }
+                if(nest.hasOwnProperty('length')){ // Does length mean branch length?
+                    subtree = subtree + ":"+nest.length;
+                }
+            }
             else{
                 var leaf = "";
                 if(nest.hasOwnProperty('name')){
