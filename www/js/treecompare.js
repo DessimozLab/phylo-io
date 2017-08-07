@@ -17,6 +17,7 @@ var TreeCompare = function(){
     var undoTreeDataIndex = [];
     var undoActionFunc = [];
     var undoActionData = [];
+    var undoFullTreeData = [];
 
 
     /*
@@ -803,6 +804,7 @@ var TreeCompare = function(){
 
             //add required parameters to each node
             postorderTraverse(tree, function(d) {
+                d.keep = true;
                 d.ID = name+"_node_"+idCounter;
                 d.leaves = getChildLeaves(d);
                 d.clickedParentHighlight = false;
@@ -1534,6 +1536,9 @@ var TreeCompare = function(){
         } else {
             duration = 1;
         }
+        if (treeToggle === true) {
+            duration = 0;
+        }
 
         // Color scale for compare mode and bcn values from light yellow to dark blue
         var colorScale = d3.scale.linear()
@@ -1590,8 +1595,7 @@ var TreeCompare = function(){
         treeData.prevNoLeavesVisible = !(leavesVisible > 0);
 
         var leafHeight = treeData.treeHeight;
-
-        height = leaves * leafHeight/2;
+        height = leaves * leafHeight;
         var trianglePadding = leafHeight;
 
         //helper function to calculate all the leaf nodes visible, including the nodes with the collapsing
@@ -1613,6 +1617,7 @@ var TreeCompare = function(){
 
         var allVisLeaves = getLeavesShown(treeData.root);
         var divisor = ((treeData.root.leaves.length - allVisLeaves) > 0) ? allVisLeaves : treeData.root.leaves.length; //number of leaves when collapsed
+
 
         //helper function to get info about number of collapsed nodes in a subtree
         function getCollapsedParams(e) {
@@ -1642,24 +1647,26 @@ var TreeCompare = function(){
         }
 
         var params = getCollapsedParams(treeData.root); //helper function getCollapsedParams(e) above is called and saved in params
-        var collapsedHeight = params.collapsedHeight; // height of tree with collapsed branches
+        var collapsedHeight = params.collapsedHeight; // height of collapsed leaves with collapsed branches
         var amendedLeafHeight = ((treeData.root.leaves.length * leafHeight) - collapsedHeight) / (divisor);
-
         //calculate the vertical position for a node in the visualisation
         //yes x is vertical position, blame d3's tree vis structure not me...
+        var test = 0;
         function setXPos(d, upperBound) {
             var params;
             var collapsedHeight;
+
             if (d.children) { // defines the vertical position of the inner nodes
                 for (var i = 0; i < d.children.length; i++) {
                     setXPos(d.children[i], upperBound);
+                    test+=1;
 
                     params = getCollapsedParams(d.children[i]);
                     collapsedHeight = params.collapsedHeight;
                     var leavesHidden = params.leavesHidden;
-
                     upperBound += (((d.children[i].leaves.length - leavesHidden) * amendedLeafHeight) + collapsedHeight);
                 }
+                // console.log(upperBound)
                 d.x = d.children[0].x+((d.children[d.children.length-1].x- d.children[0].x)/2);
             } else if (d._children) { //gets the position of the nodes that lead to the triangles
                 params = getCollapsedParams(d);
@@ -1745,7 +1752,6 @@ var TreeCompare = function(){
         }
         setXPos(treeData.root, 0);
 
-
         // Update the nodes…
         // Assign a unique numeric identifer to each node
         // "zero" being the number of leaves
@@ -1760,6 +1766,7 @@ var TreeCompare = function(){
         // Enter any new nodes at the parent's previous position.
         // Perform the actual drawing
         var nodeEnter = node.enter().append("g")
+            .filter(function(d){return d.keep})
             .attr("class", "node")
             .attr("transform", function(d) {
                 if (source === treeData.root) {
@@ -3715,6 +3722,7 @@ var TreeCompare = function(){
             var newHeight;
             if (leavesVisible > 0) {
                 newHeight = renderHeight / (leavesVisible + leavesHidden);
+
             } else {
                 newHeight = renderHeight / (leavesVisible + leavesHidden);
                 newHeight = (newHeight * triangleHeightDivisor);
@@ -4064,6 +4072,12 @@ var TreeCompare = function(){
         createDeepLeafList(tree2);
 
         var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+        if(trees1.name === undefined){ // this part is important due to the clonening . . .
+            trees1.name = trees1.root.ID.split("_")[0]+"_"+trees1.root.ID.split("_")[1]
+        } else if (trees2.name === undefined){
+            trees2.name = trees2.root.ID.split("_")[0]+"_"+trees2.root.ID.split("_")[1]
+        }
 
         // use web workers only if trees are very large
         if((tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100) && !isChrome){
@@ -4623,7 +4637,34 @@ var TreeCompare = function(){
     //     update(tree.root, tree.data);
     // }
 
-    function edit_label(d, tree, comparedTree) {
+    function getSibling(d){
+        var sibling = undefined;
+        //var indexSibling = d.parent.children.indexOf(sibling);
+        if (d.parent.children.length >= 2){
+            for (var i = 0; i < d.parent.children.length; i++ ){
+                if (d.parent.children[i] !== d){
+                    sibling = d.parent.children[i];
+                }
+            }
+        }
+        return sibling
+    }
+
+    function cutBranch(d, tree) {
+        var sibling = getSibling(d);
+        var droot = d.parent;
+        var droot_index = droot.parent.children.indexOf(droot);
+
+        d.parent.parent.children[droot_index] = sibling;
+
+        postorderTraverse(tree.data.root, function(e) {
+            e.leaves = getChildLeaves(e);
+        });
+
+        return tree;
+    }
+
+    function editLabel(d, tree, comparedTree) {
         // Read in input
         var new_label = prompt('Enter new label');
         var current_label = d.name;
@@ -4779,6 +4820,40 @@ var TreeCompare = function(){
                     manualReroot = true;
                 });
 
+            add_menu_item(".tooltipElem",
+                function () { // text function
+                    return "cut branch";
+                },
+                function () {
+                    d = e.target;
+                    // undo functionality
+                    //updateUndo(treeIndex, "collapse_expand", d);
+
+                    // action function
+                    postorderTraverse(d, function (e) {
+                        e.mouseoverHighlight = false;
+                    });
+                    updateUndo(treeIndex, "restore_branch", d);
+                    var cutTree = cutBranch(d, tree);
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        if (isCompared){
+                            var index1 = findTreeIndex(tree.name);
+                            var index2 = findTreeIndex(comparedTree.name);
+
+                            preprocessTrees(trees[index1], trees[index2]);
+                            update(tree.root, cutTree.data);
+                            update(comparedTree.root, comparedTree.data);
+                            settings.loadedCallback();
+                        } else {
+                            update(tree.root, cutTree.data);
+                            settings.loadedCallback();
+                        }
+                    }, 2);
+                    manualReroot = true;
+
+                });
+
             $(document).click(function(event) {
                 if(!$(event.target).closest('#tooltipElem').length && $('#tooltipElem').is(":visible")) {
                     $('#tooltipElem').hide()
@@ -4887,7 +4962,7 @@ var TreeCompare = function(){
                         updateUndo(treeIndex, "edit", d);
 
                         // action function
-                        edit_label(d);
+                        editLabel(d);
                         d.mouseoverHighlight = false;
                     });
             }
@@ -5036,6 +5111,81 @@ var TreeCompare = function(){
         return nodeClick;
     }
 
+    /*-----------------------------------
+     * Update the undo global lists:
+     *   undoTreeData
+     *   undoTreeDataIndex
+     * input:
+     *   treeIndex: the current tree part of the global list of trees
+     */
+    function clone(obj){
+        var clonedObjectsArray = [];
+        var originalObjectsArray = []; //used to remove the unique ids when finished
+        var next_objid = 0;
+
+        function objectId(obj) {
+            if (obj == null) return null;
+            if (obj.__obj_id == undefined){
+                obj.__obj_id = next_objid++;
+                originalObjectsArray[obj.__obj_id] = obj;
+            }
+            return obj.__obj_id;
+        }
+
+        function cloneRecursive(obj) {
+            if (null == obj || typeof obj == "string" || typeof obj == "number" || typeof obj == "boolean") return obj;
+
+            // Handle Date
+            if (obj instanceof Date) {
+                var copy = new Date();
+                copy.setTime(obj.getTime());
+                return copy;
+            }
+
+            // Handle Array
+            if (obj instanceof Array) {
+                var copy = [];
+                for (var i = 0; i < obj.length; ++i) {
+                    copy[i] = cloneRecursive(obj[i]);
+                }
+                return copy;
+            }
+
+            // Handle Object
+            if (obj instanceof Object) {
+                if (clonedObjectsArray[objectId(obj)] != undefined)
+                    return clonedObjectsArray[objectId(obj)];
+
+                var copy;
+                if (obj instanceof Function)//Handle Function
+                    copy = function(){return obj.apply(this, arguments);};
+                else
+                    copy = {};
+
+                clonedObjectsArray[objectId(obj)] = copy;
+
+                for (var attr in obj)
+                    if (attr != "__obj_id" && obj.hasOwnProperty(attr))
+                        copy[attr] = cloneRecursive(obj[attr]);
+
+                return copy;
+            }
+
+
+            throw new Error("Unable to copy obj! Its type isn't supported.");
+        }
+        var cloneObj = cloneRecursive(obj);
+
+
+
+        //remove the unique ids
+        for (var i = 0; i < originalObjectsArray.length; i++)
+        {
+            delete originalObjectsArray[i].__obj_id;
+        };
+
+        return cloneObj;
+    }
 
     /*-----------------------------------
      * Update the undo global lists:
@@ -5060,6 +5210,8 @@ var TreeCompare = function(){
 
         undoActionFunc.push(treeAction);
         undoActionData.push(treeActionData);
+        var tmpTree = clone(trees[treeIndex].data);
+        undoFullTreeData.push(tmpTree);
 
     }
 
@@ -5098,6 +5250,7 @@ var TreeCompare = function(){
                         var undoAction = undoActionFunc.splice(slice_index,1)[0];
                         var undoData = undoActionData.splice(slice_index,1)[0];
                         var undoTreeIdx = undoTreeDataIndex.splice(slice_index,1)[0];
+                        var undoFullTreeD = undoFullTreeData.splice(slice_index,1)[0];
 
                     }
                 } else { // view mode
@@ -5108,6 +5261,7 @@ var TreeCompare = function(){
                         var undoAction = undoActionFunc.pop();
                         var undoData = undoActionData.pop();
                         var undoTreeIdx = undoTreeDataIndex.pop();
+                        var undoFullTreeD = undoFullTreeData.pop();
 
                     }
                 }
@@ -5177,9 +5331,9 @@ var TreeCompare = function(){
 
                 if(undoAction === 'edit'){
                     if (undoTreeIdx.length === 2){
-                        edit_label(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
+                        editLabel(undoData, trees[undoTreeIdx[0]],trees[undoTreeIdx[1]]);
                     } else {
-                        edit_label(undoData, trees[undoTreeIdx]);
+                        editLabel(undoData, trees[undoTreeIdx]);
                     }
                 }
 
@@ -5195,11 +5349,39 @@ var TreeCompare = function(){
                     alert("unrooted starting tree cannot be rerooted to origin, please re-render")
                 }
 
+                if(undoAction === 'restore_branch'){
+                    if(undoTreeIdx.length === 2){
+                        var index1 = undoTreeIdx[0];
+                        var index2 = undoTreeIdx[1];
+
+                        var comparedTree = trees[index2];
+                        var tmp = clone(undoFullTreeD.root);
+                        trees[index1].data.root = tmp;
+                        trees[index1].root = tmp;
+                    } else {
+                        var tmp = clone(undoFullTreeD.root);
+                        trees[undoTreeIdx].data.root = tmp;
+                        trees[undoTreeIdx].root = tmp;
+                    }
+                    settings.loadingCallback();
+                    setTimeout(function() {
+                        if (comparedTree){
+                            preprocessTrees(trees[index1].data, comparedTree);
+                            update(trees[index1].root, trees[index1].data);
+                            update(comparedTree.root, comparedTree.data);
+                            settings.loadedCallback();
+                        } else {
+                            update(trees[undoTreeIdx], trees[undoTreeIdx].data);
+                            settings.loadedCallback();
+                        }
+                    }, 2);
+                }
 
                 if (tmpIndex === 1){
                     undoActionFunc = [];
                     undoActionData = [];
                     undoTreeDataIndex = [];
+                    undoFullTreeData = [];
                 }
 
             })
