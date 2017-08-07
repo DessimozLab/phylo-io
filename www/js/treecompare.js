@@ -3437,41 +3437,40 @@ var TreeCompare = function() {
 
 
     function calcSPR(leftTree, rightTree) {
-        // var globalCount = 0;
-        //
-        // var leftSplitsStr = splitsToBitString(leftTree)[1];
-        // var rightSplitsStr =  splitsToBitString(rightTree)[1];
-        //
-        //
-        // var uniqueSplitsLeft = [];
-        // var uniqueSplitsRight = [];
-        // var agrSplits = _.intersection(leftSplitsStr,  rightSplitsStr);
-        //
-        // for (var i = 0; i < leftSplitsStr.length; i++) {
-        //     if (agrSplits.indexOf(leftSplitsStr[i]) === -1) {
-        //         uniqueSplitsLeft.push(leftSplitsStr[i]);
-        //     }
-        // }
-        //
-        // for (var i = 0; i < rightSplitsStr.length; i++) {
-        //     if (agrSplits.indexOf(rightSplitsStr[i]) === -1) {
-        //         uniqueSplitsRight.push(rightSplitsStr[i]);
-        //     }
-        // }
-        //
-        // console.log('uniqueSplitsLeft', uniqueSplitsLeft);
-        // console.log('uniqueSplitsRight', uniqueSplitsRight);
-        // console.log('agrSplits', agrSplits);
-        //
-        // // checking whether unique splits exist
-        // if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
-        //     globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
-        //     var SPR = globalCount - 1;
-        // } else {
-        //     SPR = 0;
-        // }
-        // return SPR
-        return 0
+        var globalCount = 0;
+
+        var leftSplitsStr = splitsToBitString(leftTree, 'SPR')[1];
+        var rightSplitsStr =  splitsToBitString(rightTree, 'SPR')[1];
+
+
+        var uniqueSplitsLeft = [];
+        var uniqueSplitsRight = [];
+        var agrSplits = _.intersection(leftSplitsStr,  rightSplitsStr);
+
+        for (var i = 0; i < leftSplitsStr.length; i++) {
+            if (agrSplits.indexOf(leftSplitsStr[i]) === -1) {
+                uniqueSplitsLeft.push(leftSplitsStr[i]);
+            }
+        }
+
+        for (var i = 0; i < rightSplitsStr.length; i++) {
+            if (agrSplits.indexOf(rightSplitsStr[i]) === -1) {
+                uniqueSplitsRight.push(rightSplitsStr[i]);
+            }
+        }
+
+        console.log('uniqueSplitsLeft', uniqueSplitsLeft);
+        console.log('uniqueSplitsRight', uniqueSplitsRight);
+        console.log('agrSplits', agrSplits);
+
+        // checking whether unique splits exist
+        if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
+            globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+            var SPR = globalCount - 1;
+        } else {
+            SPR = 0;
+        }
+        return SPR
     }
 
 
@@ -3568,12 +3567,12 @@ var TreeCompare = function() {
     }
 
     // cut the leaves in disagreement
-    function minStrSplicer(minString, myList) {
-        var tmpInd = minString.indexOf('1');
+    function minStrSplicer(minimumString, myList) {
+        var tmpInd = minimumString.indexOf('1'); //TODO: are you going through the list????
         if (tmpInd != -1) {
-            minString = minString.slice(0, tmpInd) + minString.slice(tmpInd + 1);
+            minimumString = minimumString.slice(0, tmpInd) + minimumString.slice(tmpInd + 1);
             myList = updateList(myList, tmpInd);
-            return minStrSplicer(minString, myList);
+            return minStrSplicer(minimumString, myList);
         }
         return myList
     }
@@ -3581,6 +3580,7 @@ var TreeCompare = function() {
     // this function actually does iteration
     function minDsFinder (globalCount, agrSplits, leftSplits, rightSplits) {
         globalCount += 1;
+        //TODO: here has to be the intersection called again (remove from main and put here)
         var output = simplifySplits(agrSplits, leftSplits, rightSplits); // remove agr. cherries
         agrSplits = output[0];
         leftSplits = output[1];
@@ -3606,6 +3606,8 @@ var TreeCompare = function() {
             agrSplits = minStrSplicer(minString, agrSplits);
             leftSplits = minStrSplicer(minString, leftSplits);
             rightSplits = minStrSplicer(minString, rightSplits);
+            // we should see that all the splits are of the same length!!!
+            //TODO: here you have to make sure that we are still looking at the right side of the tree (you should allways have a smaller number of 1s than 0s, if the same number you have define what you are looking at 0011 or 1100 )
             return minDsFinder(globalCount, agrSplits, leftSplits, rightSplits);
         }
         return globalCount
