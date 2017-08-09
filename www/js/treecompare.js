@@ -4655,6 +4655,9 @@ var TreeCompare = function(){
         var droot = d.parent;
         var droot_index = droot.parent.children.indexOf(droot);
 
+        var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
+        sibling.length = newLenght;
+
         d.parent.parent.children[droot_index] = sibling;
 
         postorderTraverse(tree.data.root, function(e) {
