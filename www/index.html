@@ -4,7 +4,7 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
-    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+    <script type="text/javascript" src="js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
     <script type="text/javascript" src="js/underscore.min.js"></script>
@@ -918,15 +918,15 @@
      /
      ------*/
     $("#distance").click(function(e){
-        var dist = treecomp.calcDist();
-        console.log(dist);
-        var rf = dist[0][0];
-        var rf_norm = dist[0][1];
-        var eucl = dist[1][0];
-        var eucl_norm = dist[1][1];
+
+        var distances = treecomp.calcDist();
+        var rf = distances[0][0];
+        var rf_norm = distances[0][1];
+        var eucl = distances[1];
+        var spr = distances[2];
         d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
         d3.select("#eucl").text("Euclidean: "+eucl+"/"+eucl_norm);
-//        d3.select("spr").text("SPR: "+ );
+        d3.select("spr").text("SPR: "+ );
 
     })
 

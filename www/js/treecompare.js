@@ -767,7 +767,6 @@ var TreeCompare = function() {
                 newicks = tmpNewicks.slice(0, -1);
             }
         }
-        console.log(tmpNewicks);
         // reset settings radiobuttons
         updateSettingsLabels();
 
@@ -784,7 +783,6 @@ var TreeCompare = function() {
             var leaves = getChildLeaves(tree).sort();
             for (var j = 0; j < leaves.length; j++) {
                 leaves[j].ID = Math.pow(2, j);
-                //console.log(leaves[j].ID);
             }
 
             //add required parameters to each node
@@ -1429,7 +1427,6 @@ var TreeCompare = function() {
             name = "Tree " + num;
         }
 
-        console.log(newTree);
         var parsedNwk = newTree.split("$$");
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
@@ -1520,7 +1517,6 @@ var TreeCompare = function() {
         }
 
         postorderTraverse(tree.root, function (d) {
-            console.log(d);
             if (d.children && d.parent) {
                 var currentNode = d;
                 sortChildrenByNumLeaves(d, tree, direction);
@@ -3332,7 +3328,7 @@ var TreeCompare = function() {
         var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
-            if (d.children || d._children) {
+            if (d.children || d._children && (funcType === "RF" || funcType === "SPR")){
                 var leafNames = getLeafNames(d.leaves);
                 var binaryString = "";
                 for (var i = 0; i < allLeafNames.length; i++) {
@@ -3345,12 +3341,27 @@ var TreeCompare = function() {
                 var tmpNum = bigInt(parseInt(binaryString, 2));
                 if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
                     var num = allLeafMaxNum.minus(tmpNum);
-                    // console.log(binaryString)
-                    var b1 = binaryString.replace(/1/g,"a");
-                    var b2 = b1.replace(/0/g,"1");
-                    var b3 = b2.replace(/a/g,"0");
-                    binaryString = b3;
-                    // console.log(binaryString)
+                    binaryString = stringInverter(binaryString);
+                } else {
+                    var num = tmpNum;
+                }
+                allBinaryStrings.push(binaryString); // strings
+                //allSplits.push(num); // numbers (??)
+                allSplitsDict[binaryString] = d.length; // string - length dictionary
+            } else if(funcType === "EUC"){
+                var leafNames = getLeafNames(d.leaves);
+                var binaryString = "";
+                for (var i = 0; i < allLeafNames.length; i++) {
+                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
+                        binaryString += "1";
+                    } else {
+                        binaryString += "0";
+                    }
+                }
+                var tmpNum = bigInt(parseInt(binaryString, 2));
+                if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
+                    var num = allLeafMaxNum.minus(tmpNum);
+                    binaryString = stringInverter(binaryString);
                 } else {
                     var num = tmpNum;
                 }
@@ -3363,17 +3374,111 @@ var TreeCompare = function() {
     }
 
     function calcRFDist(leftTree, rightTree) {
-        var leftSplits = splitsToBitString(leftTree);
-        var rightSplits = splitsToBitString(rightTree);
-        var allSplitsIDs = _.uniq(leftSplits[2].concat(rightSplits[2]));
-        var intersectingSplitsIDs = _.intersection(leftSplits[2],rightSplits[2]);
 
-        // var rf = 0;
-        // for (var i = 0; i < allSplitsIDs.length; i++) {
-        //     if (leftSplits[1][allSplitsIDs[i]] !== undefined ){
-        //         var bLeft = 1;
-        //     } else {
-        //         var bLeft = 0;
+        var leftSplits = splitsToBitString(leftTree, 'RF');
+        var rightSplits = splitsToBitString(rightTree, 'RF');
+        var allSplitsIDs = _.uniq(leftSplits[1].concat(rightSplits[1]));
+        var intersectingSplitsIDs = _.intersection(leftSplits[1],rightSplits[1]);
+        var rf = allSplitsIDs.length - intersectingSplitsIDs.length;
+        var rfRelative = rf / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
+
+        return [rf, rfRelative.toFixed(2)];
+    }
+
+
+    function calcEuclidean(leftTree, rightTree) {
+        var branchScore = 0;
+        var leftData = splitsToBitString(leftTree, 'EUC'); // [0]: object, [1]: list of strings
+        var rightData = splitsToBitString(rightTree, 'EUC');
+
+        var leftDataDict = leftData[0];
+        var leftDataList = leftData[1];
+        var rightDataDict = rightData[0];
+        var rightDataList = rightData[1];
+
+        // console.log('leftDataDict', leftDataDict);
+
+        var uniqueData = _.uniq(leftDataList.concat(rightDataList));  //array of strings without duplications
+        // console.log('uniqueData', uniqueData);
+        var agrSplits = _.intersection(leftDataList,rightDataList); //agreement splits
+
+        for (var i = 0; i < uniqueData.length; i++) {
+            var tmpStr = uniqueData[i];
+            if(agrSplits.indexOf(tmpStr) !== -1 ) {
+                branchScore += Math.pow((leftDataDict[tmpStr] - rightDataDict[tmpStr]), 2);
+            }
+            else if (leftDataList.indexOf(tmpStr) !== -1){
+                branchScore += Math.pow(leftDataDict[tmpStr], 2);
+        }
+            else {
+                branchScore += Math.pow(rightDataDict[tmpStr], 2);
+            }
+        }
+
+        // console.log(branchScore);
+
+        var euclDist = Math.sqrt(branchScore);
+        return euclDist.toFixed(3)
+    }
+
+
+    function calcSPR(leftTree, rightTree) {
+        var globalCount = 0;
+
+        var leftSplitsStr = splitsToBitString(leftTree, 'SPR')[1];
+        var rightSplitsStr =  splitsToBitString(rightTree, 'SPR')[1];
+
+        var agrSplits = intersectBuilder(leftSplitsStr, rightSplitsStr)[0];
+        // console.log('agrSplits initial', agrSplits.length);
+        var uniqueSplitsLeft = intersectBuilder(leftSplitsStr, rightSplitsStr)[1];
+        var uniqueSplitsRight = intersectBuilder(leftSplitsStr, rightSplitsStr)[2];
+
+        // console.log('leftSplits', uniqueSplitsLeft);
+        // console.log('rightSplits', uniqueSplitsRight);
+        // console.log('agrSplits', agrSplits);
+
+        // checking whether unique splits exist
+        var SPR = 0;
+        if (uniqueSplitsLeft.length !== 0 || uniqueSplitsRight.length !== 0) {
+            globalCount = minDsFinder(globalCount, agrSplits, uniqueSplitsLeft, uniqueSplitsRight);
+            SPR = globalCount - 1;
+        }
+        return SPR
+    }
+
+
+    // in strings corresponding to cherries, find index of leaf to be cut
+    function getCherries (splitStr) {
+            var charCount1 = splitStr.count("1");
+            var charCount0 = splitStr.count("0");
+
+            // for (var i = 0; i < splitStr.length; i++) {
+            //     if (splitStr[i] == "1") {
+            //         charCount1 += 1;
+            //     } else {
+            //         charCount0 += 1;
+            //     }
+            // }
+            if (charCount1 == 2) {
+                var tmpInd = splitStr.indexOf("1");
+
+
+            } else if (charCount0 == 2) {
+                tmpInd = splitStr.indexOf("0");
+
+            }
+
+        return tmpInd
+    }
+
+    function intersectBuilder (leftSplits, rightSplits) {
+        var uniqueSplitsLeft = [];
+        var uniqueSplitsRight = [];
+        var agrSplits = _.intersection(leftSplits,  rightSplits);
+
+        // for (var i = 0; i < leftSplits.length; i++) {
+        //     if (rightSplits.indexOf(leftSplits[i]) === -1) {
+        //         uniqueSplitsLeft.push(leftSplits[i]);
         //     }
         //
         //     if (rightSplits[1][allSplitsIDs[i]] !== undefined ){
@@ -3392,6 +3497,28 @@ var TreeCompare = function() {
         return [rf, rfRelative.toFixed(2)];
     }
 
+    String.prototype.count=function(s1) {
+        return (this.length - this.replace(new RegExp(s1,"g"), '').length) / s1.length;
+    }
+
+    // update lists, cutting the leaf found by getCherries or minStrSplicer from all splits
+    function updateList(myList, tmpInd) {
+        var newList = [];
+        for (var i = 0; i < myList.length; i++){
+            var tmpStr = myList[i];
+            tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
+
+            if (tmpStr[0]==="1") {
+                // console.log(binaryString)
+                tmpStr = stringInverter(tmpStr);
+                // console.log(binaryString)
+            }
+            if (tmpStr.count("1") > 1 && tmpStr.count("1") < tmpStr.length -1){
+                newList.push(tmpStr); // strings
+            }
+        }
+        return newList
+    }
 
 
     function calcEuclidean(leftTree, rightTree) {
@@ -3417,18 +3544,83 @@ var TreeCompare = function() {
             euc = euc + Math.pow((bLeft-bRight), 2)
         }
 
-
         var relativeEuc = euc / ((leftTree.root.leaves.length - 3)+(rightTree.root.leaves.length - 3));
         return [euc, relativeEuc.toFixed(2)];
+
+    }
+
+
+    // this function actually does iteration
+    function minDsFinder (globalCount, agrSplits, leftSplits, rightSplits) {
+        globalCount += 1;
+        //TODO: here has to be the intersection called again (remove from main and put here)
+        var output = simplifySplits(agrSplits, leftSplits, rightSplits); // remove agr. cherries
+        agrSplits = output[0];
+        leftSplits = output[1];
+        rightSplits = output[2];
+
+        output = intersectBuilder(leftSplits, rightSplits);
+        agrSplits = output[0];  // rebuild splits lists
+        leftSplits = output[1];
+        rightSplits = output[2];
+
+        // console.log('leftSplits', leftSplits);
+        // console.log('rightSplits', rightSplits);
+        // console.log('agrSplits', agrSplits);
+
+        if (leftSplits.length != 0 && rightSplits.length != 0) {
+            output = matrixBuilder(leftSplits, rightSplits); // build the xor string matrix
+            // console.log(output);
+            var dsMatrix = output[0];
+            var tmpDsMatrix = output[1];
+
+            var minRow = tmpDsMatrix.map(function (row) { // find the shortest DS
+                return Math.min.apply(Math, row);
+            });
+            var minValue = Math.min.apply(null, minRow);
+            // console.log(minValue);
+
+
+            for (var i = 0; i < tmpDsMatrix.length; i++) {
+                for (var j = 0; j < tmpDsMatrix[i].length; j++) {
+                    if (tmpDsMatrix[i][j] == minValue) {
+                        var minString = dsMatrix[i][j];
+                    }
+                }
+            }
+            // console.log('minString', minString);
+            var agrSplitsUpd = minStrSplicer(minString, agrSplits);
+            var leftSplitsUpd = minStrSplicer(minString, leftSplits);
+            var rightSplitsUpd = minStrSplicer(minString, rightSplits);
+
+            //console.log(leftSplitsUpd);
+            // we should see that all the splits are of the same length!!!
+            //TODO: here you have to make sure that we are still looking at the right side of the tree (you should allways have a smaller number of 1s than 0s, if the same number you have define what you are looking at 0011 or 1100 )
+            return minDsFinder(globalCount, agrSplitsUpd, leftSplitsUpd, rightSplitsUpd);
+
+        }
+        return globalCount
     }
 
     function calcDist() {
         var leftTree = trees[trees.length - 2];
         var rightTree = trees[trees.length - 1];
         var distArray = [];
-        distArray.push(calcRFDist(leftTree, rightTree));
-        distArray.push(calcEuclidean(leftTree, rightTree)); // add other metrics here
-        return distArray
+
+        var rf, euc, spr;
+        settings.loadingCallback();
+        setTimeout(function() {
+            rf = calcRFDist(leftTree, rightTree);
+            euc = calcEuclidean(leftTree, rightTree);
+            spr = calcSPR(leftTree, rightTree);
+            d3.select("#rf").text("Robinson-Foulds: "+rf[0]+"/"+rf[1]);
+            d3.select("#eucl").text("Euclidean: " + euc);
+            d3.select("#spr").text("SPR: " + spr);
+            settings.loadedCallback();
+        }, 2);
+        // console.log(distArray);
+        // distArray.push(rf, euc , spr);// add other metrics here
+        // return distArray
     }
 
     function createTreeDownload(canvasId, downloadClass){
