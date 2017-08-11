@@ -3437,7 +3437,6 @@ var TreeCompare = function() {
         var rightSplitsStr =  splitsToBitString(rightTree, 'SPR')[1];
 
         var agrSplits = intersectBuilder(leftSplitsStr, rightSplitsStr)[0];
-        console.log('agrSplits initial', agrSplits.length);
         var uniqueSplitsLeft = intersectBuilder(leftSplitsStr, rightSplitsStr)[1];
         var uniqueSplitsRight = intersectBuilder(leftSplitsStr, rightSplitsStr)[2];
 
@@ -3454,25 +3453,33 @@ var TreeCompare = function() {
 
     // in strings corresponding to cherries, find index of leaf to be cut
     function getCherries (splitStr) {
-            var charCount1 = 0;
-            var charCount0 = 0;
+            // var charCount1 = 0;
+            // var charCount0 = 0;
+            //
+            // for (var i = 0; i < splitStr.length; i++) {
+            //     if (splitStr[i] == "1") {
+            //         charCount1 += 1;
+            //     } else {
+            //         charCount0 += 1;
+            //     }
+            // }
+            // if (charCount1 == 2) {
+            //     var tmpInd = splitStr.indexOf("1");
+            //
+            //
+            // } else if (charCount0 == 2) {
+            //     tmpInd = splitStr.indexOf("0");
+            //
+            // }
 
-            for (var i = 0; i < splitStr.length; i++) {
-                if (splitStr[i] == "1") {
-                    charCount1 += 1;
-                } else {
-                    charCount0 += 1;
-                }
-            }
-            if (charCount1 == 2) {
-                var tmpInd = splitStr.indexOf("1");
-
-
-            } else if (charCount0 == 2) {
-                tmpInd = splitStr.indexOf("0");
-
-            }
-
+        var zeroCount = counter(splitStr)[0];
+        var oneCount = counter(splitStr)[1];
+        if (oneCount == 2) {
+            var tmpInd = splitStr.indexOf("1");
+        }
+        else if (zeroCount == 2) {
+            tmpInd = splitStr.indexOf("0");
+        }
         return tmpInd
     }
 
@@ -3481,31 +3488,14 @@ var TreeCompare = function() {
         var uniqueSplitsRight = [];
         var agrSplits = _.intersection(leftSplits,  rightSplits);
 
-        // for (var i = 0; i < leftSplits.length; i++) {
-        //     if (rightSplits.indexOf(leftSplits[i]) === -1) {
-        //         uniqueSplitsLeft.push(leftSplits[i]);
-        //     }
-        // }
-        //
-        // for (var i = 0; i < rightSplits.length; i++) {
-        //     if (leftSplits.indexOf(rightSplits[i]) === -1) {
-        //         uniqueSplitsRight.push(rightSplits[i]);
-        //     }
-        // }
+        uniqueSplitsLeft = leftSplits.filter(function(x) {
+            return !rightSplits.includes(x);
+        } );
 
-        for (var i = 0; i < leftSplits.length; i++) {
-            if (agrSplits.indexOf(leftSplits[i]) === -1) {
-                uniqueSplitsLeft.push(leftSplits[i]);
-            }
-        }
+        uniqueSplitsRight = rightSplits.filter(function(x) {
+            return !leftSplits.includes(x);
+        } );
 
-        for (var i = 0; i < rightSplits.length; i++) {
-            if (agrSplits.indexOf(rightSplits[i]) === -1) {
-                uniqueSplitsRight.push(rightSplits[i]);
-            }
-        }
-
-        //agrSplits = _.uniq(agrSplits); // !!!
         uniqueSplitsLeft = _.uniq(uniqueSplitsLeft);
         uniqueSplitsRight = _.uniq(uniqueSplitsRight);
 
@@ -3520,23 +3510,30 @@ var TreeCompare = function() {
             tmpStr = tmpStr.slice(0, tmpInd) + tmpStr.slice(tmpInd + 1);
 
             //invert strings in case on the wrong side of the tree
-            var zeroCount = 0;
-            var oneCount = 0;
-            for (var j = 0; j < tmpStr.length; j++){
-                if (tmpStr[j] == "0"){
-                    zeroCount += 1;
-                } else {
-                    oneCount += 1;
-                }
-            }
-
+            var zeroCount = counter(tmpStr)[0];
+            var oneCount = counter(tmpStr)[1];
             if (oneCount > zeroCount){
                 tmpStr = stringInverter(tmpStr);
             }
-            newList.push(tmpStr);
+
+            if (oneCount > 1) {
+                newList.push(tmpStr);
+            }
         }
         return newList
     }
+
+
+    // counts the number of characters avoiding loops
+    function counter (myString){
+        var myStringTmp = myString;
+        myString = myString.replace(/1/g, "");
+        var zeroCount = myString.length;
+        myStringTmp = myStringTmp.replace(/0/g, "");
+        var oneCount = myStringTmp.length;
+        return [zeroCount, oneCount]
+    }
+
 
     // invert '1's into '0's when required
     function stringInverter(myString) {
@@ -3577,8 +3574,19 @@ var TreeCompare = function() {
 
     // construct disagreement split matrix
     function matrixBuilder (leftSplits, rightSplits) {
+        //     var xorStrDict = {};
+        //     for (var i = 0; i < leftSplits.length; i++) {
+        //         for (var j = 0; j < rightSplits.length; j++) {
+        //             var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
+        //             var tmpNum = counter(tmpStr)[1];
+        //             xorStrDict[tmpStr] = tmpNum;
+        //         }
+        //     }
+        //     console.log('xorStrDict', xorStrDict);
+        //     return xorStrDict
+        // }
 
-        // fill in the matrix and determine number of '1'
+        //fill in the matrix and determine number of '1'
         var dsMatrix = [];
         var tmpDsMatrix = [];
         for (var i = 0; i < leftSplits.length; i++) {
@@ -3600,6 +3608,9 @@ var TreeCompare = function() {
         }
         return [dsMatrix, tmpDsMatrix]
     }
+
+
+
 
     // cut the leaves in disagreement
     function minStrSplicer(minimumString, myList) {
@@ -3632,10 +3643,16 @@ var TreeCompare = function() {
         console.log('agrSplits', agrSplits.length);
 
         if (leftSplits.length != 0 && rightSplits.length != 0) {
-            output = matrixBuilder(leftSplits, rightSplits); // build the xor string matrix
+
+            // var xorStrDict = matrixBuilder(leftSplits, rightSplits);
+            //
+            // //find the shortest DS
+            // var minString = Object.keys(xorStrDict).reduce(function(a, b){ return xorStrDict[a] < xorStrDict[b] ? a : b });
+            // console.log('minString', minString);
+
+            output = matrixBuilder(leftSplits, rightSplits);// build the xor string/number lists
             var dsMatrix = output[0];
             var tmpDsMatrix = output[1];
-
             var minRow = tmpDsMatrix.map(function (row) { // find the shortest DS
                 return Math.min.apply(Math, row);
             });
@@ -3647,6 +3664,7 @@ var TreeCompare = function() {
                 for (var j = 0; j < tmpDsMatrix[i].length; j++) {
                     if (tmpDsMatrix[i][j] == minValue) {
                         var minString = dsMatrix[i][j];
+                        break;
                     }
                 }
             }
