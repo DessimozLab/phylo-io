@@ -1,0 +1,2436 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for munkres-js/munkres.js</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="../prettify.css">
+
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">munkres-js/munkres.js</span></h1>
+    <h2>
+        
+        Statements: <span class="metric">91.98% <small>(218 / 237)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Branches: <span class="metric">90.36% <small>(75 / 83)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Functions: <span class="metric">86.36% <small>(19 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Lines: <span class="metric">92.37% <small>(218 / 236)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">munkres-js/</a> &#187; munkres.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">50</span>
+<span class="cline-any cline-yes">50</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">45</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">295</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">59</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">59</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-yes">134</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">75</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">75</span>
+<span class="cline-any cline-yes">43</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">75</span>
+<span class="cline-any cline-yes">34</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">55</span>
+<span class="cline-any cline-yes">182</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">32</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">16</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">75</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">42</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51</span>
+<span class="cline-any cline-yes">36</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+&nbsp;
+/**
+ * Introduction
+ * ============
+ *
+ * The Munkres module provides an implementation of the Munkres algorithm
+ * (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
+ * useful for solving the Assignment Problem.
+ *
+ * Assignment Problem
+ * ==================
+ *
+ * Let C be an n×n-matrix representing the costs of each of n workers
+ * to perform any of n jobs. The assignment problem is to assign jobs to
+ * workers in a way that minimizes the total cost. Since each worker can perform
+ * only one job and each job can be assigned to only one worker the assignments
+ * represent an independent set of the matrix C.
+ *
+ * One way to generate the optimal set is to create all permutations of
+ * the indices necessary to traverse the matrix so that no row and column
+ * are used more than once. For instance, given this matrix (expressed in
+ * Python)
+ *
+ * 	matrix = [[5, 9, 1],
+ * 			  [10, 3, 2],
+ * 			  [8, 7, 4]]
+ *
+ * You could use this code to generate the traversal indices::
+ *
+ * 	def permute(a, results):
+ * 		if len(a) == 1:
+ * 			results.insert(len(results), a)
+ *
+ * 		else:
+ * 			for i in range(0, len(a)):
+ * 				element = a[i]
+ * 				a_copy = [a[j] for j in range(0, len(a)) if j != i]
+ * 				subresults = []
+ * 				permute(a_copy, subresults)
+ * 				for subresult in subresults:
+ * 					result = [element] + subresult
+ * 					results.insert(len(results), result)
+ *
+ * 	results = []
+ * 	permute(range(len(matrix)), results) # [0, 1, 2] for a 3x3 matrix
+ *
+ * After the call to permute(), the results matrix would look like this::
+ *
+ * 	[[0, 1, 2],
+ * 	 [0, 2, 1],
+ * 	 [1, 0, 2],
+ * 	 [1, 2, 0],
+ * 	 [2, 0, 1],
+ * 	 [2, 1, 0]]
+ *
+ * You could then use that index matrix to loop over the original cost matrix
+ * and calculate the smallest cost of the combinations
+ *
+ * 	n = len(matrix)
+ * 	minval = sys.maxsize
+ * 	for row in range(n):
+ * 		cost = 0
+ * 		for col in range(n):
+ * 			cost += matrix[row][col]
+ * 		minval = min(cost, minval)
+ *
+ * 	print minval
+ *
+ * While this approach works fine for small matrices, it does not scale. It
+ * executes in O(n!) time: Calculating the permutations for an n×x-matrix
+ * requires n! operations. For a 12×12 matrix, that’s 479,001,600
+ * traversals. Even if you could manage to perform each traversal in just one
+ * millisecond, it would still take more than 133 hours to perform the entire
+ * traversal. A 20×20 matrix would take 2,432,902,008,176,640,000 operations. At
+ * an optimistic millisecond per operation, that’s more than 77 million years.
+ *
+ * The Munkres algorithm runs in O(n³) time, rather than O(n!). This
+ * package provides an implementation of that algorithm.
+ *
+ * This version is based on
+ * http://www.public.iastate.edu/~ddoty/HungarianAlgorithm.html.
+ *
+ * This version was originally written for Python by Brian Clapper from the (Ada)
+ * algorithm at the above web site (The ``Algorithm::Munkres`` Perl version,
+ * in CPAN, was clearly adapted from the same web site.) and ported to
+ * JavaScript by Hauke Henningsen (addaleax).
+ *
+ * Usage
+ * =====
+ *
+ * Construct a Munkres object
+ *
+ * 	var m = new Munkres();
+ *
+ * Then use it to compute the lowest cost assignment from a cost matrix. Here’s
+ * a sample program
+ *
+ * 	var matrix = [[5, 9, 1],
+ * 			     [10, 3, 2],
+ * 			     [8, 7, 4]];
+ * 	var m = new Munkres();
+ * 	var indices = m.compute(matrix);
+ * 	console.log(format_matrix(matrix), 'Lowest cost through this matrix:');
+ * 	var total = 0;
+ * 	for (var i = 0; i &lt; indices.length; ++i) {
+ * 		var row = indices[l][0], col = indices[l][1];
+ * 		var value = matrix[row][col];
+ * 		total += value;
+ *
+ * 		console.log('(' + rol + ', ' + col + ') -&gt; ' + value);
+ * 	}
+ *
+ * 	console.log('total cost:', total);
+ *
+ * Running that program produces::
+ *
+ * 	Lowest cost through this matrix:
+ * 	[5, 9, 1]
+ * 	[10, 3, 2]
+ * 	[8, 7, 4]
+ * 	(0, 0) -&gt; 5
+ * 	(1, 1) -&gt; 3
+ * 	(2, 2) -&gt; 4
+ * 	total cost: 12
+ *
+ * The instantiated Munkres object can be used multiple times on different
+ * matrices.
+ *
+ * Non-square Cost Matrices
+ * ========================
+ *
+ * The Munkres algorithm assumes that the cost matrix is square. However, it's
+ * possible to use a rectangular matrix if you first pad it with 0 values to make
+ * it square. This module automatically pads rectangular cost matrices to make
+ * them square.
+ *
+ * Notes:
+ *
+ * - The module operates on a *copy* of the caller's matrix, so any padding will
+ *   not be seen by the caller.
+ * - The cost matrix must be rectangular or square. An irregular matrix will
+ *   *not* work.
+ *
+ * Calculating Profit, Rather than Cost
+ * ====================================
+ *
+ * The cost matrix is just that: A cost matrix. The Munkres algorithm finds
+ * the combination of elements (one from each row and column) that results in
+ * the smallest cost. It’s also possible to use the algorithm to maximize
+ * profit. To do that, however, you have to convert your profit matrix to a
+ * cost matrix. The simplest way to do that is to subtract all elements from a
+ * large value.
+ *
+ * The ``munkres`` module provides a convenience method for creating a cost
+ * matrix from a profit matrix, i.e. make_cost_matrix.
+ *
+ * References
+ * ==========
+ *
+ * 1. http://www.public.iastate.edu/~ddoty/HungarianAlgorithm.html
+ *
+ * 2. Harold W. Kuhn. The Hungarian Method for the assignment problem.
+ *    *Naval Research Logistics Quarterly*, 2:83-97, 1955.
+ *
+ * 3. Harold W. Kuhn. Variants of the Hungarian method for assignment
+ *    problems. *Naval Research Logistics Quarterly*, 3: 253-258, 1956.
+ *
+ * 4. Munkres, J. Algorithms for the Assignment and Transportation Problems.
+ *    *Journal of the Society of Industrial and Applied Mathematics*,
+ *    5(1):32-38, March, 1957.
+ *
+ * 5. https://en.wikipedia.org/wiki/Hungarian_algorithm
+ *
+ * Copyright and License
+ * =====================
+ *
+ * This software is released under a BSD license, adapted from
+ * &lt;http://opensource.org/licenses/bsd-license.php&gt;
+ *
+ * Copyright (c) 2008 Brian M. Clapper
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name "clapper.org" nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software without
+ *   specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+&nbsp;
+/**
+ * A very large numerical value which can be used like an integer
+ * (i. e., adding integers of similar size does not result in overflow).
+ */
+var MAX_SIZE = parseInt(Number.MAX_SAFE_INTEGER/2) || ((1 &lt;&lt; 26)*(1 &lt;&lt; 26));
+&nbsp;
+/**
+ * A default value to pad the cost matrix with if it is not quadratic.
+ */
+var DEFAULT_PAD_VALUE = 0;
+&nbsp;
+// ---------------------------------------------------------------------------
+// Classes
+// ---------------------------------------------------------------------------
+&nbsp;
+/**
+ * Calculate the Munkres solution to the classical assignment problem.
+ * See the module documentation for usage.
+ * @constructor
+ */
+function Munkres() {
+	this.C = null
+&nbsp;
+	this.row_covered = []
+	this.col_covered = []
+	this.n = 0
+	this.Z0_r = 0
+	this.Z0_c = 0
+	this.marked = null
+	this.path = null
+}
+&nbsp;
+/**
+ * Pad a possibly non-square matrix to make it square.
+ *
+ * @param {Array} matrix An array of arrays containing the matrix cells
+ * @param {Number} [pad_value] The value used to pad a rectangular matrix
+ *
+ * @return {Array} An array of arrays representing the padded matrix
+ */
+Munkres.prototype.pad_matrix = function(matrix, pad_value) {
+	pad_value = pad_value || DEFAULT_PAD_VALUE;
+&nbsp;
+	var max_columns = 0;
+	var total_rows = matrix.length;
+&nbsp;
+	for (var i = 0; i &lt; total_rows; ++i)
+		if (matrix[i].length &gt; max_columns)
+			max_columns = matrix[i].length;
+&nbsp;
+	total_rows = max_columns &gt; total_rows ? max_columns : total_rows;
+&nbsp;
+	var new_matrix = [];
+&nbsp;
+	for (var i = 0; i &lt; total_rows; ++i) {
+		var row = matrix[i] || [];
+		var new_row = row.slice();
+&nbsp;
+		// If this row is too short, pad it
+		while (total_rows &gt; new_row.length)
+			new_row.push(pad_value);
+&nbsp;
+		new_matrix.push(new_row);
+	}
+&nbsp;
+	return new_matrix;
+};
+&nbsp;
+/**
+ * Compute the indices for the lowest-cost pairings between rows and columns
+ * in the database. Returns a list of (row, column) tuples that can be used
+ * to traverse the matrix.
+ *
+ * **WARNING**: This code handles square and rectangular matrices.
+ * It does *not* handle irregular matrices.
+ *
+ * @param {Array} cost_matrix The cost matrix. If this cost matrix is not square,
+ *                            it will be padded with DEFAULT_PAD_VALUE. Optionally,
+ *                            the pad value can be specified via options.padValue.
+ *                            This method does *not* modify the caller's matrix.
+ *                            It operates on a copy of the matrix.
+ * @param {Object} [options] Additional options to pass in
+ * @param {Number} [options.padValue] The value to use to pad a rectangular cost_matrix
+ *
+ * @return {Array} An array of ``(row, column)`` arrays that describe the lowest
+ *                 cost path through the matrix
+ */
+Munkres.prototype.compute = function(cost_matrix, options) {
+&nbsp;
+	options = options || {};
+	options.padValue = options.padValue || DEFAULT_PAD_VALUE;
+&nbsp;
+	this.C = this.pad_matrix(cost_matrix, options.padValue);
+	this.n = this.C.length;
+	this.original_length = cost_matrix.length;
+	this.original_width = cost_matrix[0].length;
+&nbsp;
+	var nfalseArray = []; /* array of n false values */
+	while (nfalseArray.length &lt; this.n)
+		nfalseArray.push(false);
+	this.row_covered = nfalseArray.slice();
+	this.col_covered = nfalseArray.slice();
+	this.Z0_r = 0;
+	this.Z0_c = 0;
+	this.path =   this.__make_matrix(this.n * 2, 0);
+	this.marked = this.__make_matrix(this.n, 0);
+&nbsp;
+	var step = 1;
+&nbsp;
+	var steps = { 1 : this.__step1,
+	              2 : this.__step2,
+	              3 : this.__step3,
+	              4 : this.__step4,
+	              5 : this.__step5,
+	              6 : this.__step6 };
+&nbsp;
+	while (true) {
+		var func = steps[step];
+		if (!func) // done
+			break;
+&nbsp;
+		step = func.apply(this);
+	}
+&nbsp;
+	var results = [];
+	for (var i = 0; i &lt; this.original_length; ++i)
+		for (var j = 0; j &lt; this.original_width; ++j)
+			if (this.marked[i][j] == 1)
+				results.push([i, j]);
+&nbsp;
+	return results;
+};
+&nbsp;
+/**
+ * Create an n×n matrix, populating it with the specific value.
+ *
+ * @param {Number} n Matrix dimensions
+ * @param {Number} val Value to populate the matrix with
+ *
+ * @return {Array} An array of arrays representing the newly created matrix
+ */
+Munkres.prototype.__make_matrix = function(n, val) {
+	var matrix = [];
+	for (var i = 0; i &lt; n; ++i) {
+		matrix[i] = [];
+		for (var j = 0; j &lt; n; ++j)
+			matrix[i][j] = val;
+	}
+&nbsp;
+	return matrix;
+};
+&nbsp;
+/**
+ * For each row of the matrix, find the smallest element and
+ * subtract it from every element in its row. Go to Step 2.
+ */
+Munkres.prototype.__step1 = function() {
+	for (var i = 0; i &lt; this.n; ++i) {
+		// Find the minimum value for this row and subtract that minimum
+		// from every element in the row.
+		var minval = Math.min.apply(Math, this.C[i]);
+&nbsp;
+		for (var j = 0; j &lt; this.n; ++j)
+			this.C[i][j] -= minval;
+	}
+&nbsp;
+	return 2;
+};
+&nbsp;
+/**
+ * Find a zero (Z) in the resulting matrix. If there is no starred
+ * zero in its row or column, star Z. Repeat for each element in the
+ * matrix. Go to Step 3.
+ */
+Munkres.prototype.__step2 = function() {
+	for (var i = 0; i &lt; this.n; ++i) {
+		for (var j = 0; j &lt; this.n; ++j) {
+			if (this.C[i][j] == 0 &amp;&amp;
+				!this.col_covered[j] &amp;&amp;
+				!this.row_covered[i])
+			{
+				this.marked[i][j] = 1;
+				this.col_covered[j] = true;
+				this.row_covered[i] = true;
+			}
+		}
+	}
+&nbsp;
+	this.__clear_covers();
+&nbsp;
+	return 3;
+};
+&nbsp;
+/**
+ * Cover each column containing a starred zero. If K columns are
+ * covered, the starred zeros describe a complete set of unique
+ * assignments. In this case, Go to DONE, otherwise, Go to Step 4.
+ */
+Munkres.prototype.__step3 = function() {
+	var count = 0;
+&nbsp;
+	for (var i = 0; i &lt; this.n; ++i) {
+		for (var j = 0; j &lt; this.n; ++j) {
+			if (this.marked[i][j] == 1) {
+				this.col_covered[j] = true;
+				++count;
+			}
+		}
+	}
+&nbsp;
+	return (count &gt;= this.n) ? 7 : 4;
+};
+&nbsp;
+/**
+ * Find a noncovered zero and prime it. If there is no starred zero
+ * in the row containing this primed zero, Go to Step 5. Otherwise,
+ * cover this row and uncover the column containing the starred
+ * zero. Continue in this manner until there are no uncovered zeros
+ * left. Save the smallest uncovered value and Go to Step 6.
+ */
+&nbsp;
+Munkres.prototype.__step4 = function() {
+	var done = false;
+	var row = -1, col = -1, star_col = -1;
+&nbsp;
+	while (!done) {
+		var z = this.__find_a_zero();
+		row = z[0];
+		col = z[1];
+&nbsp;
+		if (row &lt; 0)
+			return 6;
+&nbsp;
+		this.marked[row][col] = 2;
+		star_col = this.__find_star_in_row(row);
+		if (star_col &gt;= 0) {
+			col = star_col;
+			this.row_covered[row] = true;
+			this.col_covered[col] = false;
+		} else {
+			this.Z0_r = row;
+			this.Z0_c = col;
+			return 5;
+		}
+	}
+};
+&nbsp;
+/**
+ * Construct a series of alternating primed and starred zeros as
+ * follows. Let Z0 represent the uncovered primed zero found in Step 4.
+ * Let Z1 denote the starred zero in the column of Z0 (if any).
+ * Let Z2 denote the primed zero in the row of Z1 (there will always
+ * be one). Continue until the series terminates at a primed zero
+ * that has no starred zero in its column. Unstar each starred zero
+ * of the series, star each primed zero of the series, erase all
+ * primes and uncover every line in the matrix. Return to Step 3
+ */
+Munkres.prototype.__step5 = function() {
+	var count = 0;
+&nbsp;
+	this.path[count][0] = this.Z0_r;
+	this.path[count][1] = this.Z0_c;
+	var done = false;
+&nbsp;
+	while (!done) {
+		var row = this.__find_star_in_col(this.path[count][1]);
+		if (row &gt;= 0) {
+			count++;
+			this.path[count][0] = row;
+			this.path[count][1] = this.path[count-1][1];
+		} else {
+			done = true
+		}
+&nbsp;
+		if (!done) {
+			var col = this.__find_prime_in_row(this.path[count][0]);
+			count++;
+			this.path[count][0] = this.path[count-1][0];
+			this.path[count][1] = col;
+		}
+	}
+&nbsp;
+	this.__convert_path(this.path, count);
+	this.__clear_covers();
+	this.__erase_primes();
+	return 3;
+};
+&nbsp;
+/**
+ * Add the value found in Step 4 to every element of each covered
+ * row, and subtract it from every element of each uncovered column.
+ * Return to Step 4 without altering any stars, primes, or covered
+ * lines.
+ */
+Munkres.prototype.__step6 = function() {
+	var minval = this.__find_smallest();
+&nbsp;
+	for (var i = 0; i &lt; this.n; ++i) {
+		for (var j = 0; j &lt; this.n; ++j) {
+			if (this.row_covered[i])
+				this.C[i][j] += minval;
+			if (!this.col_covered[j])
+				this.C[i][j] -= minval;
+		}
+	}
+&nbsp;
+	return 4;
+};
+&nbsp;
+/**
+ * Find the smallest uncovered value in the matrix.
+ *
+ * @return {Number} The smallest uncovered value, or MAX_SIZE if no value was found
+ */
+Munkres.prototype.__find_smallest = function() {
+	var minval = MAX_SIZE;
+&nbsp;
+	for (var i = 0; i &lt; this.n; ++i)
+		for (var j = 0; j &lt; this.n; ++j)
+			if (!this.row_covered[i] &amp;&amp; !this.col_covered[j])
+				if (minval &gt; this.C[i][j])
+					minval = this.C[i][j];
+&nbsp;
+	return minval;
+};
+&nbsp;
+/**
+ * Find the first uncovered element with value 0.
+ *
+ * @return {Array} The indices of the found element or [-1, -1] if not found
+ */
+Munkres.prototype.__find_a_zero = function() {
+	for (var i = 0; i &lt; this.n; ++i)
+		for (var j = 0; j &lt; this.n; ++j)
+			if (this.C[i][j] == 0 &amp;&amp;
+				!this.row_covered[i] &amp;&amp;
+				!this.col_covered[j])
+				return [i, j];
+&nbsp;
+	return [-1, -1];
+};
+&nbsp;
+/**
+ * Find the first starred element in the specified row. Returns
+ * the column index, or -1 if no starred element was found.
+ *
+ * @param {Number} row The index of the row to search
+ * @return {Number}
+ */
+&nbsp;
+Munkres.prototype.__find_star_in_row = function(row) {
+	for (var j = 0; j &lt; this.n; ++j)
+		if (this.marked[row][j] == 1)
+			return j;
+&nbsp;
+	return -1;
+};
+&nbsp;
+/**
+ * Find the first starred element in the specified column.
+ *
+ * @return {Number} The row index, or -1 if no starred element was found
+ */
+Munkres.prototype.__find_star_in_col = function(col) {
+	for (var i = 0; i &lt; this.n; ++i)
+		if (this.marked[i][col] == 1)
+			return i;
+&nbsp;
+	return -1;
+};
+&nbsp;
+/**
+ * Find the first prime element in the specified row.
+ *
+ * @return {Number} The column index, or -1 if no prime element was found
+ */
+&nbsp;
+Munkres.prototype.__find_prime_in_row = function(row) {
+	for (var j = 0; j &lt; this.n; ++j)
+		if (this.marked[row][j] == 2)
+			return j;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return -1;</span>
+};
+&nbsp;
+Munkres.prototype.__convert_path = function(path, count) {
+	for (var i = 0; i &lt;= count; ++i)
+		this.marked[path[i][0]][path[i][1]] =
+			(this.marked[path[i][0]][path[i][1]] == 1) ? 0 : 1;
+};
+&nbsp;
+/** Clear all covered matrix cells */
+Munkres.prototype.__clear_covers = function() {
+	for (var i = 0; i &lt; this.n; ++i) {
+		this.row_covered[i] = false;
+		this.col_covered[i] = false;
+	}
+};
+&nbsp;
+/** Erase all prime markings */
+Munkres.prototype.__erase_primes = function() {
+	for (var i = 0; i &lt; this.n; ++i)
+		for (var j = 0; j &lt; this.n; ++j)
+			if (this.marked[i][j] == 2)
+				this.marked[i][j] = 0;
+};
+&nbsp;
+// ---------------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------------
+&nbsp;
+/**
+ * Create a cost matrix from a profit matrix by calling
+ * 'inversion_function' to invert each value. The inversion
+ * function must take one numeric argument (of any type) and return
+ * another numeric argument which is presumed to be the cost inverse
+ * of the original profit.
+ *
+ * This is a static method. Call it like this:
+ *
+ * 	cost_matrix = make_cost_matrix(matrix[, inversion_func]);
+ *
+ * For example:
+ *
+ * 	cost_matrix = make_cost_matrix(matrix, function(x) { return MAXIMUM - x; });
+ *
+ * @param {Array} profit_matrix An array of arrays representing the matrix
+ *                              to convert from a profit to a cost matrix
+ * @param {Function} [inversion_function] The function to use to invert each
+ *                                       entry in the profit matrix
+ *
+ * @return {Array} The converted matrix
+ */
+<span class="fstat-no" title="function not covered" >function make_cost_matrix (profit_matrix, inversion_function) {</span>
+<span class="cstat-no" title="statement not covered" >	if (!inversion_function) {</span>
+<span class="cstat-no" title="statement not covered" >		var maximum = -1.0/0.0;</span>
+<span class="cstat-no" title="statement not covered" >		for (var i = 0; i &lt; profit_matrix.length; ++i)</span>
+<span class="cstat-no" title="statement not covered" >			for (var j = 0; j &lt; profit_matrix[i].length; ++j)</span>
+<span class="cstat-no" title="statement not covered" >				if (profit_matrix[i][j] &gt; maximum)</span>
+<span class="cstat-no" title="statement not covered" >					maximum = profit_matrix[i][j];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		inversion_function = <span class="fstat-no" title="function not covered" >function(x) {</span> <span class="cstat-no" title="statement not covered" >return maximum - x; </span>};</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	var cost_matrix = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	for (var i = 0; i &lt; profit_matrix.length; ++i) {</span>
+<span class="cstat-no" title="statement not covered" >		var row = profit_matrix[i];</span>
+<span class="cstat-no" title="statement not covered" >		cost_matrix[i] = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		for (var j = 0; j &lt; row.length; ++j)</span>
+<span class="cstat-no" title="statement not covered" >			cost_matrix[i][j] = inversion_function(profit_matrix[i][j]);</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return cost_matrix;</span>
+}
+&nbsp;
+/**
+ * Convenience function: Converts the contents of a matrix of integers
+ * to a printable string.
+ *
+ * @param {Array} matrix The matrix to print
+ *
+ * @return {String} The formatted matrix
+ */
+function format_matrix(matrix) {
+<span class="fstat-no" title="function not covered" >	function log10(v) {</span>
+<span class="cstat-no" title="statement not covered" >		if (Math.log10)</span>
+<span class="cstat-no" title="statement not covered" >			return Math.log10(v);</span>
+<span class="cstat-no" title="statement not covered" >		return Math.log(v) / Math.log(10);</span>
+	}
+&nbsp;
+	var columnWidths = [];
+	for (var i = 0; i &lt; matrix.length; ++i) {
+		for (var j = 0; j &lt; matrix[i].length; ++j) {
+			var entryWidth = String(matrix[i][j]).length;
+&nbsp;
+			if (!columnWidths[j] || entryWidth &gt;= columnWidths[j])
+				columnWidths[j] = entryWidth;
+		}
+	}
+&nbsp;
+	var formatted = '';
+	for (var i = 0; i &lt; matrix.length; ++i) {
+		for (var j = 0; j &lt; matrix[i].length; ++j) {
+			var s = String(matrix[i][j]);
+&nbsp;
+			// pad at front with spaces
+			while (s.length &lt; columnWidths[j])
+				s = ' ' + s;
+&nbsp;
+			formatted += s;
+&nbsp;
+			// separate columns
+			if (j != matrix[i].length - 1)
+				formatted += ' ';
+		}
+&nbsp;
+		if (i != matrix[i].length - 1)
+			formatted += '\n';
+	}
+&nbsp;
+	return formatted;
+}
+&nbsp;
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
+&nbsp;
+<span class="missing-if-branch" title="else path not taken" >E</span>if (typeof exports != 'undefined' &amp;&amp; exports) {
+	exports.version = "1.1.0";
+	exports.format_matrix = format_matrix;
+	exports.make_cost_matrix = make_cost_matrix;
+	exports.Munkres = Munkres;
+}
+&nbsp;
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+&nbsp;
+<span class="missing-if-branch" title="else path not taken" >E</span>if (typeof require != 'undefined' &amp;&amp;
+    typeof module != 'undefined' &amp;&amp;
+    require.main == module) {
+	var assert = require('assert');
+&nbsp;
+	var matrices = [
+		// Square
+		[[[400, 150, 400],
+		  [400, 450, 600],
+		  [300, 225, 300]],
+		 850],  // expected cost
+&nbsp;
+		// Rectangular variant
+		[[[400, 150, 400, 1],
+		  [400, 450, 600, 2],
+		  [300, 225, 300, 3]],
+		 452],  // expected cost
+&nbsp;
+&nbsp;
+		// Square
+		[[[10, 10,  8],
+		  [9,  8,  1],
+		  [9,  7,  4]],
+		 18],
+&nbsp;
+		// Rectangular variant
+		[[[10, 10,  8, 11],
+		  [9,  8,  1, 1],
+		  [9,  7,  4, 10]],
+		 15],
+&nbsp;
+		// All-zero square
+		[[[0, 0, 0],
+		  [0, 0, 0],
+		  [0, 0, 0]],
+		 0],
+	];
+&nbsp;
+	var m = new Munkres();
+&nbsp;
+	for (var k = 0; k &lt; matrices.length; ++k) {
+		var cost_matrix = matrices[k][0];
+		var expected_total = matrices[k][1];
+&nbsp;
+		console.log('cost matrix');
+		console.log(format_matrix(cost_matrix));
+&nbsp;
+		var indices = m.compute(cost_matrix);
+		var total_cost = 0;
+&nbsp;
+		for (var l = 0; l &lt; indices.length; ++l) {
+			var r = indices[l][0], c = indices[l][1];
+			var x = cost_matrix[r][c];
+			total_cost += x;
+&nbsp;
+			console.log('(' + r + ', ' + c + ') -&gt; ' + x);
+		}
+&nbsp;
+		console.log('lowest cost = ' + total_cost + ', expected = ' + expected_total);
+&nbsp;
+		assert.equal(expected_total, total_cost);
+	}
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 16 2015 04:54:42 GMT+0100 (CET)</div>
+</div>
+
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+
+<script src="../sorter.js"></script>
+</body>
+</html>
