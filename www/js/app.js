@@ -7,8 +7,35 @@ requirejs.config({
     baseUrl: 'js/lib',
     paths: {
         app: '../app',
-        jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min"
+        jquery: 'jquery-2.1.4.min',
+        underscore: 'underscore.min',
+        bootstrap: 'bootstrap.min',
+        canvasToBlob: 'canvas-toBlob',
+        circularJson: 'circular-json',
+        d3: 'd3.min',
+        FileSaver: 'FileSaver.min',
+        newick: 'newick',
+        spin: 'spin.min',
+        munkres: 'munkres',
+        treecompare: 'treecompare',
+        fontawesome: '//use.fontawesome.com/28dcb2432d',
+        bigInteger: '//peterolson.github.com/BigInteger.js/BigInteger.min'
+    },
+    shim: {
+        "bootstrap": {
+            deps: ["jquery"]
+        },
+        "treecompare": {
+            deps: ["jquery", "d3", "FileSaver", "bigInteger", "munkres"]
+        },
+        "bigInteger": {
+            deps: ["underscore", "jquery"]
+        },
+        "munkres": {
+            deps: ["underscore", "jquery"]
+        }
     }
+
 });
 
 // Start loading the main app file. Put all of

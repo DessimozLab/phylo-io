@@ -1,11 +1,12 @@
-define( function(require) {
+define(["d3", "underscore", "bigInteger", "jquery", "munkres"], function(d3, _, bigInteger, $, munkres) {
 
-    var _ = require('underscore.min');
-    var d3 = require('d3.min');
+    // var _ = require('underscore.min');
+    // var d3 = require('d3.min');
     // var $ = require('./jquery-2.1.4.min');
 
+    // var bigInt = require('BigInteger.min');
 
-
+    // console.log(bigInt(11111111111111111111111111111111111));
 
     var TreeCompare = function() {
 
@@ -3655,15 +3656,14 @@ define( function(require) {
                 // var minString = Object.keys(xorStrDict).reduce(function(a, b){ return xorStrDict[a] < xorStrDict[b] ? a : b });
                 // console.log('minString', minString);
                 // var munkres = require('../../node_modules/munkres-js/munkres');
-                // console.log(munkres([
-                //     [400, 150, 400],
-                //     [400, 450, 600],
-                //     [300, 225, 300]
-                // ]))
+
 
                 output = matrixBuilder(leftSplits, rightSplits);// build the xor string/number lists
                 var dsMatrix = output[0];
                 var tmpDsMatrix = output[1];
+                var m = new Munkres()
+                console.log(m.compute([tmpDsMatrix]));
+                console.log(tmpDsMatrix);
                 var minRow = tmpDsMatrix.map(function (row) { // find the shortest DS
                     return Math.min.apply(Math, row);
                 });
@@ -3694,7 +3694,7 @@ define( function(require) {
             var rightTree = trees[trees.length - 1];
             var distArray = [];
             distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
-            console.log(distArray);
+            // console.log(distArray);
             return distArray
         }
 
@@ -4266,8 +4266,8 @@ define( function(require) {
                 highlight = false;
             }
 
-            var worker1 = $.work({file: './js/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
-            var worker2 = $.work({file: './js/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
+            var worker1 = $.work({file: './js/lib/bcn_processor.js', args: {tree1: tree1, tree2: tree2, recalculate: recalculate} });
+            var worker2 = $.work({file: './js/lib/bcn_processor.js', args: {tree1: tree2, tree2: tree1, recalculate: recalculate} });
 
             $.when(worker1, worker2).done(function(t1, t2){
                 var bcnvalT1 = [];

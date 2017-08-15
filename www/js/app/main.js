@@ -1,8 +1,4 @@
-
-define(["jquery", "treecompare", "spin.min"], function($, TreeCompare, Spinner) {
-    // var $ = require('jquery-2.1.4.min')
-    //var TreeCompare = require('treecompare');
-    //var Spinner = require('spin.min');
+define(["jquery", "treecompare", "spin", "d3","bootstrap","bigInteger"], function($, TreeCompare, Spinner, d3, bootstrap, bigInt) {
 
     (function () {
         var div_footer = $("#footer_div");
@@ -519,7 +515,9 @@ define(["jquery", "treecompare", "spin.min"], function($, TreeCompare, Spinner) 
      /    Calculate Distance
      /
      ------*/
-    $("#distance").click(function(e){
+    console.log($("#distance"))
+    $("#distance").click(function (e) {
+        console.log("here");
         var distances = treecomp.calcDist();
         var rf = distances[0][0];
         var rf_norm = distances[0][1];
