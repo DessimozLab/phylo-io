@@ -2912,7 +2912,9 @@ var TreeCompare = function(){
 
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
                     if(d.parent){
-                        d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
+                        d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false);
+                        d3.select("#"+d.ID).select("circle").classed("search", false);
+                        d3.select("#"+d.ID).select("text").classed("search", false);
                     }
                 });
                 update(baseTree.root,baseTree.data);
@@ -2982,6 +2984,8 @@ var TreeCompare = function(){
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
                     if(d.parent){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
+                        d3.select("#"+d.ID).select("circle").classed("search", false);
+                        d3.select("#"+d.ID).select("text").classed("search", false);
                     }
                 });
 
@@ -3595,7 +3599,7 @@ var TreeCompare = function(){
 
         $("#"+canvasId+" .treeTools").remove();
         $("#"+canvasId+" .treeToolsMenu").remove();
-        $("#"+canvasId+" .share").remove();
+        $("#"+canvasId+" .exportTools").remove();
         $("#"+canvasId+" .undo").remove();
         $("#"+canvasId+" .searchBox").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
@@ -3894,9 +3898,13 @@ var TreeCompare = function(){
                     leaf.parent._children = null;
                 }
                 d3.select("#"+leaf.parent.ID+"_"+leaf.ID).classed("search", true);
+                d3.select("#"+leaf.ID).select("circle").classed("search", true);
+                d3.select("#"+leaf.ID).select("text").classed("search", true);
             }
             else {
                 d3.select("#"+leaf.parent.ID+"_"+leaf.ID).classed("search", false);
+                d3.select("#"+leaf.ID).select("circle").classed("search", false);
+                d3.select("#"+leaf.ID).select("text").classed("search", false);
             }
             expandPathToLeaf(leaf.parent, unhighlight, uncollapse);
         }
