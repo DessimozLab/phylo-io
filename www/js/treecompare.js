@@ -1734,13 +1734,13 @@ var TreeCompare = function(){
         });
 
         //mirror right tree
-        if (settings.mirrorRightTree){
+        if (settings.mirrorRightTree && renderedTrees.length > 1){
             var treeNameElements = treeData.root.ID.split("_");
             var treeName = treeNameElements[0]+"_"+treeNameElements[1];
             var oppositeTreeName = d3.select("#vis-container2 svg").attr("id");
             var treeIdx = findTreeIndex(oppositeTreeName);
 
-            // console.log(treeIdx);
+
             nodes.forEach(function(d) {
                 if (treeName === trees[treeIdx].name && settings.mirrorRightTree){
                     d.y = lengthMult - d.y;
@@ -3574,7 +3574,7 @@ var TreeCompare = function(){
         if (otherTreeName !== undefined) {
             compareMode = true;
         }
-        //renderedTrees.push(baseTree);
+        // renderedTrees.push(baseTree);
 
         //clear the canvas of any previous visualisation
         $("#" + canvasId).empty();
