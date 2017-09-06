@@ -1734,21 +1734,28 @@ var TreeCompare = function(){
         });
 
         //mirror right tree
-        var treeNameElements = treeData.root.ID.split("_");
-        var treeName = treeNameElements[0]+"_"+treeNameElements[1];
+        if (settings.mirrorRightTree){
+            var treeNameElements = treeData.root.ID.split("_");
+            var treeName = treeNameElements[0]+"_"+treeNameElements[1];
+            var oppositeTreeName = d3.select("#vis-container2 svg").attr("id");
+            var treeIdx = findTreeIndex(oppositeTreeName);
 
-        nodes.forEach(function(d) {
-            if (treeName === trees[trees.length -1].name && settings.mirrorRightTree){
-                d.y = lengthMult - d.y;
+            // console.log(treeIdx);
+            nodes.forEach(function(d) {
+                if (treeName === trees[treeIdx].name && settings.mirrorRightTree){
+                    d.y = lengthMult - d.y;
+                }
+            });
+            //return text width to adjust position of text when mirror
+            function getTextWidth(txt){
+                var c = document.createElement("canvas");
+                var ctx = c.getContext("2d");
+                ctx.font = settings.fontSize + "px Arial";
+                var textWidth = ctx.measureText(txt).width;
+                return textWidth
             }
-        });
-        //return text width to adjust position of text when mirror
-        function getTextWidth(txt){
-            var c = document.createElement("canvas");
-            var ctx = c.getContext("2d");
-            ctx.font = settings.fontSize + "px Arial";
-            var textWidth = ctx.measureText(txt).width;
-            return textWidth
+        } else {
+            var treeIdx = trees.length -1;
         }
         setXPos(treeData.root, 0);
 
@@ -1803,7 +1810,7 @@ var TreeCompare = function(){
         nodeEnter.append("text")
             .attr("class", "node")
             .attr("x", function(d) {
-                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){
                     return -13 - getTextWidth(d.name);
                 } else if((d.children || d._children)){
                     return -13;
@@ -1913,12 +1920,12 @@ var TreeCompare = function(){
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
             .attr("x", function(d) {
-                if ((!d.children || d._children) && treeName === trees[trees.length -1].name && settings.mirrorRightTree){ //mirrored right tree
+                if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){ //mirrored right tree
                     return -13 - getTextWidth(d.name);
                 } else if (!d.children && !d._children){ //leaves left tree
                     return 13
                 } else { //internal nodes
-                    if (treeName === trees[trees.length -1].name && settings.mirrorRightTree){ //internal nodes right tree
+                    if (treeName === trees[treeIdx].name && settings.mirrorRightTree){ //internal nodes right tree
                         return 23
                     } else { //internal nodes left tree
                         return -13
@@ -2030,7 +2037,7 @@ var TreeCompare = function(){
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function(d) {
-                        if(treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                        if(treeName === trees[treeIdx].name && settings.mirrorRightTree){
                             return "M" + 0 + "," + 0 + "L" + -xlength + "," + (-ylength) + "L" + -xlength + "," + (ylength) + "L" + 0 + "," + 0;
                         } else {
                             return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
@@ -2053,7 +2060,7 @@ var TreeCompare = function(){
                     .attr("x", function(d) {
                         //var xpos = (avg - (getLength(d) * (lengthMult / maxLength))) + 5;
                         var text = d.leaves[0].name + " ... " + d.leaves[d.leaves.length - 1].name;
-                        if(treeName === trees[trees.length -1].name && settings.mirrorRightTree){
+                        if(treeName === trees[treeIdx].name && settings.mirrorRightTree){
                             var xpos = d.triangleLength * (lengthMult / maxLength) + 5;
                             if (xpos > canvasWidth){ // ensures that triangle doesn't go out of visible space
                                 xpos = xlength+5;
@@ -3044,6 +3051,7 @@ var TreeCompare = function(){
                 d3.select("#" + canvas + " svg").remove();
                 var toggledTree = trees[ind];
                 var newName = toggledTree.name;
+                renderedTrees = [];
                 if(oppositeCanvas !== undefined){ // compare mode
                     var oppositeName = d3.select("#" + oppositeCanvas + " svg").attr("id");
                     d3.select("#" + oppositeCanvas + " svg").remove();
@@ -3132,6 +3140,7 @@ var TreeCompare = function(){
                 }
                 toggledTree.display = true;
                 var new_name = toggledTree.name;
+                renderedTrees = [];
 
                 if(oppositeTreeName !== undefined){ // compare mode
                     var index2 = findTreeIndex(oppositeTreeName);
@@ -3187,7 +3196,7 @@ var TreeCompare = function(){
 
                 toggledTree.display = true;
                 var new_name = toggledTree.name;
-
+                renderedTrees = [];
                 if (oppositeTreeName !== undefined){
                     var index2 = findTreeIndex(oppositeTreeName);
                     var oppositeTree = trees[index2];
@@ -3565,7 +3574,7 @@ var TreeCompare = function(){
         if (otherTreeName !== undefined) {
             compareMode = true;
         }
-        renderedTrees.push(baseTree);
+        //renderedTrees.push(baseTree);
 
         //clear the canvas of any previous visualisation
         $("#" + canvasId).empty();
