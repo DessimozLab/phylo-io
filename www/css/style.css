@@ -11,6 +11,20 @@ html {
     padding-right: 10px;
 }
 
+.logo {
+    display: block;
+    text-indent: -9999px;
+    width: 100px;
+    height: 82px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><circle cx='15' cy='15' r='10' /></svg>");
+    background-size: 100px 82px;
+    position: absolute;
+    padding: 5px;
+    right: 57px;
+    bottom: 5px;
+    z-index: -1000;
+}
+
 #placeholder {
     padding-top: 100px;
     width: 100%;
@@ -496,12 +510,30 @@ circle.node.select{
     fill: green !important;
 }
 
+circle.node.search {
+    fill: orange !important;
+}
+
+circle.node.search:hover {
+    fill: green !important;
+}
+
 text.node{
     fill: black;
     font-family: sans-serif;
 }
 
 text.node.select{
+    fill: green !important;
+    font-weight: bold;
+}
+
+text.node.search{
+    fill: orange !important;
+    font-weight: bold;
+}
+
+text.node.search:hover{
     fill: green !important;
     font-weight: bold;
 }
@@ -552,24 +584,107 @@ rect.node {
 
 /*Styles for sharing*/
 
-.share {
+#shareButton {
+    width: 97.5px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+#shareButton:hover{
+    opacity: 1.0;
+}
+
+.exportTools {
     padding: 5px;
     right: 31px;
     top: 5px;
     position: absolute;
 }
 
-.shareButton {
+.exportButton {
     width: 26px;
     float: right;
     opacity: 0.3
 }
 
-.shareButton:hover {
+.exportButton:hover {
     opacity: 1;
 }
 
+.exportMenu {
+    background-color: whitesmoke;
+    text-align: left;
+    position: absolute;
+    padding: 2px;
+    right: 10px;
+    top: 38px;
+    width: 104px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: lightgray;
+    padding-bottom: 2px;
+    display: none;
+}
+
+.exportMenuContent {
+    text-align: left;
+}
+
+.exportMenu li {
+    list-style:none;
+    /*border-bottom: 1px;*/
+    font-size: 8pt;
+    text-align: left;
+}
+
+.exportText {
+    margin: auto;
+    text-align: left;
+}
+
 /*--end sharing----------------------------------------------*/
+
+/*styles for export functionality*/
+
+.export-group {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#exportButton {
+    width: 32.5px;
+    margin-left: 0px;
+    opacity: 0.3;
+}
+
+
+#exportButton:hover{
+    opacity: 1.0;
+}
+
+#exportPanel {
+    display: none;
+    background-color: #999;
+    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
+}
+
+/*.dropdown-menu {*/
+/*min-width: 60px;*/
+/*font-size: 11px;*/
+/*margin: 1px 0px 1px 0px;*/
+/*text-align: center;*/
+/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
+/*background-color: white;*/
+/*}*/
+
+/*.dropdown-menu li a{*/
+/*padding: 1px 0px 1px 0px;*/
+/*}*/
+
+/*--end export----------------------------------------------*/
 
 /*Styles for toolbar*/
 
@@ -780,46 +895,6 @@ button.treeToggleButton span{
 
 /*--end toggle----------------------------------------------*/
 
-/*styles for export functionality*/
-
-.export-group {
-    margin: 0 auto;
-    text-align: center;
-}
-
-#exportButton {
-    width: 32.5px;
-    margin-left: 0px;
-    opacity: 0.3;
-}
-
-
-#exportButton:hover{
-    opacity: 1.0;
-}
-
-#exportPanel {
-    display: none;
-    background-color: #999;
-    -webkit-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-    box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
-}
-
-/*.dropdown-menu {*/
-    /*min-width: 60px;*/
-    /*font-size: 11px;*/
-    /*margin: 1px 0px 1px 0px;*/
-    /*text-align: center;*/
-    /*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-    /*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-    /*padding: 1px 0px 1px 0px;*/
-/*}*/
-
-/*--end export----------------------------------------------*/
 
 #ladderizeDescButton {
     width: 48.75px;

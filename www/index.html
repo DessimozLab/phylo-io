@@ -7,7 +7,7 @@
     <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
-    <script type="text/javascript" src="js/underscore.min.js"></script>
+    <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
     <script type="text/javascript" src="js/spin.min.js"></script>
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -82,17 +82,18 @@
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only"><Toggle>  </Toggle> navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
 
             <div class="row" style="width: 300px">
-                <a class="navbar-brand" href="/www/index.html" style="padding-left: 20px;margin-right: 5px; padding-top: 2px">
+                <a class="navbar-brand" href="index.html" style="padding-left: 20px;margin-right: 5px; padding-top: 2px">
                     <!-- always show the brand name -->
+
                     <span class="navbar-brand"
-                          style="font-size:x-large; font-weight: bold; margin-top: -3px">Phylo.io</span>
+                          style="font-size:x-large; font-weight: bold; margin-top: -3px"><img src="img/logo.svg" width="130" /></span>
                 </a>
             </div>
         </div>
@@ -117,7 +118,7 @@
 
                     </ul>
                 </li>
-                <li><a href="http://phylo.io/manual.html" class="homelinks">Help</a></li>
+                <li><a href="manual.html" class="homelinks">Help</a></li>
                 <li><a href="about.html" class="homelinks">About</a></li>
             </ul>
         </div>
@@ -343,7 +344,7 @@
                                 </label>
                             </div>
                         </form>
-                        <label class="settingsLabel">Adjust Tree Style:</label>
+                        <label class="settingsLabel">Adjust Tree Style:</label><br>
                         <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Line
                             Thickness</label>
                         <input type="range" class="sizeAdjust" id="lineThickness" min="1" max="10" value="3">
@@ -458,7 +459,7 @@
 
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
-        scaleColor: "red",
+        scaleColor: "black",
         loadingCallback: function () {
             $('#spinner-container').show();
             spinner.spin(spinnerTarget);
@@ -853,7 +854,7 @@
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
             try {
-                var exportURLGist = treecomp.exportTree(true);
+                var exportURLGist = treecomp.exportTreeToGist(true);
                 $("#exportURLInSingle").attr('href', exportURLGist);
                 $("#exportURLInSingle").html(exportURLGist);
                 $('#myModal').modal('show');
@@ -862,7 +863,7 @@
             }
         } else if (mode === "view-btn") {
             try {
-                var exportURLGist = treecomp.exportTree(false);
+                var exportURLGist = treecomp.exportTreeToGist(false);
                 $("#exportURLInSingle").attr('href', exportURLGist);
                 $("#exportURLInSingle").html(exportURLGist);
                 $('#myModal').modal('show');
@@ -875,42 +876,11 @@
 
     /*------
      /
-     /    SVG export button
+     /    EXPORT BOTH TREES
      /
      ------*/
     $("#svgExport").click(function (e) {
-
-        // Copy left tree
-        var svg1 = document.getElementById('vis-container1').getElementsByTagName('svg')[0].cloneNode(true);
-        var svg2 = document.getElementById('vis-container2').getElementsByTagName('svg')[0].cloneNode(true);
-        var colorscale = document.getElementById('colorScale').getElementsByTagName('svg')[0].cloneNode(true);
-
-        // Double the width on svg1
-        var l_w = parseInt(svg1.getAttribute('width')),
-            r_w = parseInt(svg2.getAttribute('width'));
-        svg1.setAttribute('width', (l_w + r_w));
-
-        // Add right tree into left tree's svg
-        var g = document.createElement('g');
-        var lastElementIndex = svg2.childNodes.length - 3;
-        var scaleTextIndex = svg2.childNodes.length - 2;
-
-        if (lastElementIndex > -1) {
-            g.setAttribute('transform', 'translate(' + l_w + ',0)');
-            main = svg2.childNodes[lastElementIndex];
-            scale = svg2.childNodes[scaleTextIndex];
-            scaleText = svg2.lastElementChild;
-
-            g.appendChild(main);
-            g.appendChild(scale);
-            g.appendChild(scaleText);
-            g.appendChild(colorscale);
-
-            svg1.appendChild(g);
-        }
-        svgExport.setAttribute('hreflang', 'image/svg+xml');
-        svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
-        svgExport.setAttribute("download", "Phylo.io-cmp.svg");
+        treecomp.exportBothTrees("vis-container1", "vis-container2");
     });
 
     /*------
@@ -929,8 +899,6 @@
         d3.select("#spr").text("SPR: " + spr);
 
     });
-
-
 
 
 
