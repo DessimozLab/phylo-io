@@ -3441,29 +3441,7 @@ var TreeCompare = function() {
         var allSplitsDict = {};
 
         postorderTraverse(tree.root, function (d) {
-            if (d.children || d._children && (funcType === "RF" || funcType === "SPR")){
-                var leafNames = getLeafNames(d.leaves);
-                var binaryString = "";
-                for (var i = 0; i < allLeafNames.length; i++) {
-                    if (leafNames.indexOf(allLeafNames[i]) !== -1) {
-                        binaryString += "1";
-                    } else {
-                        binaryString += "0";
-                    }
-                }
-                var tmpNum = bigInt(parseInt(binaryString, 2));
-                if (tmpNum.compare(allLeafMaxNum.over(2)) === 1) {
-                    var num = allLeafMaxNum.minus(tmpNum);
-                    // console.log(binaryString)
-                    binaryString = stringInverter(binaryString);
-                    // console.log(binaryString)
-                } else {
-                    var num = tmpNum;
-                }
-                allBinaryStrings.push(binaryString); // strings
-                //allSplits.push(num); // numbers (??)
-                allSplitsDict[binaryString] = d.length; // string - length dictionary
-            } else if(funcType === "EUC"){
+            if (d.children || d._children && (funcType === "RF" || funcType === "SPR" || funcType === "EUC")){
                 var leafNames = getLeafNames(d.leaves);
                 var binaryString = "";
                 for (var i = 0; i < allLeafNames.length; i++) {
@@ -3512,10 +3490,9 @@ var TreeCompare = function() {
         var rightDataDict = rightData[0];
         var rightDataList = rightData[1];
 
-        console.log('leftDataDict', leftDataDict);
-
+        // console.log('leftDataDict', leftDataDict);
         var uniqueData = _.uniq(leftDataList.concat(rightDataList));  //array of strings without duplications
-        console.log('uniqueData', uniqueData);
+        // console.log('uniqueData', uniqueData);
         var agrSplits = _.intersection(leftDataList,rightDataList); //agreement splits
 
         for (var i = 0; i < uniqueData.length; i++) {
@@ -3530,8 +3507,6 @@ var TreeCompare = function() {
                 branchScore += Math.pow(rightDataDict[tmpStr], 2);
             }
         }
-
-        console.log(branchScore);
 
         var euclDist = Math.sqrt(branchScore);
         return euclDist.toFixed(3)
@@ -3561,24 +3536,6 @@ var TreeCompare = function() {
 
     // in strings corresponding to cherries, find index of leaf to be cut
     function getCherries (splitStr) {
-            // var charCount1 = 0;
-            // var charCount0 = 0;
-            //
-            // for (var i = 0; i < splitStr.length; i++) {
-            //     if (splitStr[i] == "1") {
-            //         charCount1 += 1;
-            //     } else {
-            //         charCount0 += 1;
-            //     }
-            // }
-            // if (charCount1 == 2) {
-            //     var tmpInd = splitStr.indexOf("1");
-            //
-            //
-            // } else if (charCount0 == 2) {
-            //     tmpInd = splitStr.indexOf("0");
-            //
-            // }
 
         var zeroCount = counter(splitStr)[0];
         var oneCount = counter(splitStr)[1];
@@ -3736,37 +3693,27 @@ var TreeCompare = function() {
     function minDsFinder (globalCount, agrSplits, leftSplits, rightSplits) {
         globalCount += 1;
         //TODO: here has to be the intersection called again (remove from main and put here)
-        var output = simplifySplits(agrSplits, leftSplits, rightSplits); // remove agr. cherries
-        agrSplits = output[0];
-        leftSplits = output[1];
-        rightSplits = output[2];
+        var simplifiedSplits = simplifySplits(agrSplits, leftSplits, rightSplits); // remove agr. cherries
+        // agrSplits = simplifiedSplits[0];
+        leftSplits = simplifiedSplits[1];
+        rightSplits = simplifiedSplits[2];
 
-        output = intersectBuilder(leftSplits, rightSplits);
-        agrSplits = output[0];  // rebuild splits lists
-        leftSplits = output[1];
-        rightSplits = output[2];
+        var intersections = intersectBuilder(leftSplits, rightSplits);
+        agrSplits = intersections[0];  // rebuild splits lists
+        leftSplits = intersections[1];
+        rightSplits = intersections[2];
 
-        console.log('leftSplits', leftSplits.length);
-        console.log('rightSplits', rightSplits.length);
-        console.log('agrSplits', agrSplits.length);
 
         if (leftSplits.length != 0 && rightSplits.length != 0) {
 
-            // var xorStrDict = matrixBuilder(leftSplits, rightSplits);
-            //
-            // //find the shortest DS
-            // var minString = Object.keys(xorStrDict).reduce(function(a, b){ return xorStrDict[a] < xorStrDict[b] ? a : b });
-            // console.log('minString', minString);
-
-            output = matrixBuilder(leftSplits, rightSplits);// build the xor string/number lists
-            var dsMatrix = output[0];
-            var tmpDsMatrix = output[1];
+            var matrix = matrixBuilder(leftSplits, rightSplits);// build the xor string/number lists
+            var dsMatrix = matrix[0];
+            var tmpDsMatrix = matrix[1];
             var minRow = tmpDsMatrix.map(function (row) { // find the shortest DS
                 return Math.min.apply(Math, row);
             });
             var minValue = Math.min.apply(null, minRow);
-            console.log(minValue);
-
+            // console.log(minValue);
 
             for (var i = 0; i < tmpDsMatrix.length; i++) {
                 for (var j = 0; j < tmpDsMatrix[i].length; j++) {
@@ -3794,8 +3741,7 @@ var TreeCompare = function() {
         var rightTree = trees[trees.length - 1];
         var distArray = [];
         distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
-        console.log(distArray);
-        return distArray
+s        return distArray
     }
 
     function createTreeDownload(canvasId, downloadClass){
