@@ -4,6 +4,7 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
+    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
     <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
@@ -99,7 +100,15 @@
 
         <!-- menu navigation bar -->
         <div id="navbar" class="navbar-collapse collapse list-inline">
-            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 5px">
+            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
+                <li class="dist">
+                    <ul>
+                        <li id = "rf"></li>
+                        <li id = "eucl"></li>
+                        <li id = "spr"></li>
+
+                    </ul>
+                </li>
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -763,6 +772,11 @@
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
+            if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+                $("#rf").empty();
+                $("#spr").empty();
+                $("#eucl").empty();
+            }
             try {
                 //$("#page-content-wrapper").empty();
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
@@ -793,6 +807,9 @@
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
                 }
             }
+//            if
+//            $("#distancesList").style.display="none";
+
         } else if (mode === "view-btn") {
 
             // init & enable undo
@@ -866,7 +883,22 @@
         treecomp.exportBothTrees("vis-container1", "vis-container2");
     });
 
+    /*------
+     /
+     /    Calculate Distance
+     /
+     ------*/
+    $("#distance").click(function(e){
+        var distances = treecomp.calcDist();
+        var rf = distances[0][0];
+        var rf_norm = distances[0][1];
+        var eucl = distances[1];
+        var spr = distances[2];
+        d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
+        d3.select("#eucl").text("Euclidean: " + eucl);
+        d3.select("#spr").text("SPR: " + spr);
 
+    });
 
     /*------
      /
@@ -879,7 +911,6 @@
             ($(this).hide().next().hide())
         });
     }
-
 
     var settingsShown = false;
 
