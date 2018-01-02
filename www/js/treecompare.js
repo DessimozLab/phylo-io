@@ -3741,7 +3741,7 @@ var TreeCompare = function() {
         var rightTree = trees[trees.length - 1];
         var distArray = [];
         distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
-s        return distArray
+        return distArray
     }
 
     function createTreeDownload(canvasId, downloadClass){

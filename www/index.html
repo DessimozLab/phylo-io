@@ -643,6 +643,12 @@
         if (settingsShown) {
             showHideSettingsPanel("hide");
         }
+
+        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            $("#rf").empty();
+            $("#spr").empty();
+            $("#eucl").empty();
+        }
     });
 
     /*
@@ -687,6 +693,12 @@
 
         if (settingsShown) {
             showHideSettingsPanel("hide");
+        }
+
+        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            $("#rf").empty();
+            $("#spr").empty();
+            $("#eucl").empty();
         }
     });
 
@@ -811,7 +823,6 @@
 //            $("#distancesList").style.display="none";
 
         } else if (mode === "view-btn") {
-
             // init & enable undo
             //$("#undoBtn").data('undoIdx', undoIndex);
 
