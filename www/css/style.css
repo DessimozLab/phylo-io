@@ -6,9 +6,11 @@ html {
 
 
 #colorScale {
-    position: fixed;
+    width: 50%;
+    margin: auto;
+    position: absolute;
     bottom: 0;
-    padding-right: 10px;
+    right: 25px;
 }
 
 .logo {
