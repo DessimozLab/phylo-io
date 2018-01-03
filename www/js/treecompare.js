@@ -2909,8 +2909,8 @@ var TreeCompare = function() {
         buildSearchBox(canvasId);
 
         d3.select("#" + canvasId).select(".searchButton").on("click", function () {
-
-            if ($('.searchInput').is(":visible")) {
+            var searchInput = $("#" + canvasId + ' .searchInput');
+            if (searchInput.is(":visible")) {
 
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactive
                     if(d.parent){
