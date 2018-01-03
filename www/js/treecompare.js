@@ -5273,6 +5273,9 @@ var TreeCompare = function() {
                 .attr("ry", 10);
 
 
+            // textDone += textInc;
+
+
             function add_menu_item(selector, text_f, act_f) {
                 d3.select(selector).append("text")
                     .attr("class", "tooltipElem tooltipElemText")
@@ -5289,6 +5292,23 @@ var TreeCompare = function() {
                     .on("click", act_f);
             };
 
+            if (d.children || d._children) {
+                tooltipContainer.append("line")
+                    .attr("x1", (x+(-rectWidth / 2)))
+                    .attr("x2", (x+(-rectWidth / 2))+rectWidth)
+                    .attr("y1", (y-rectHeight - triHeight + tpad + textDone)+3)
+                    .attr("y2", (y-rectHeight - triHeight + tpad + textDone)+3)
+                    .attr("stroke", "grey")
+                    .attr("stroke-width", "1.5");
+                add_menu_item(".tooltipElem",
+                    function () { // text function
+                        if (d.elementS){
+                            return '#leaf: '+d.leaves.length+' | bcn: '+ d.elementS.toFixed(2);
+                        } else {
+                            return '#leaf: '+d.leaves.length;
+                        }
+                    });
+            }
             if (!d.children && !d._children) {
                 add_menu_item(".tooltipElem",
                     function () { // text function
