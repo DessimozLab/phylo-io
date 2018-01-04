@@ -3736,9 +3736,12 @@ var TreeCompare = function() {
         return globalCount
     }
 
+
     function calcDist() {
-        var leftTree = trees[trees.length - 2];
-        var rightTree = trees[trees.length - 1];
+        var leftIdx = d3.select("#vis-container1").select("svg").attr("id").split("_")[1];
+        var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
+        var leftTree = trees[leftIdx];
+        var rightTree = trees[rightIdx];
         var distArray = [];
         distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
         return distArray
