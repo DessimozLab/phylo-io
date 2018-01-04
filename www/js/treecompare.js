@@ -2878,6 +2878,16 @@ var TreeCompare = function() {
                         expandPathToLeaf(results[indices[indices.length - 1]], false, true); // set clicked link to class link search
                     }
                     update(baseTree, baseTree.data);
+                    if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
+                        var currentScale = baseTree.data.zoomBehaviour.scale();
+                        var y = (-results[indices[j]].y + ($("#" + baseTree.data.canvasId).width() / 2) / currentScale);
+                        var x = (-results[indices[j]].x + ($("#" + baseTree.data.canvasId).height() / 2) / currentScale);
+                        baseTree.data.zoomBehaviour.translate([y, x]);
+                        d3.select("#" + baseTree.data.canvasId + " svg g")
+                            .transition(1500)
+                            .attr("transform", "scale(" + currentScale + ")" + "translate(" + baseTree.data.zoomBehaviour.translate() + ")");
+                    }
+
                 });
             }
         }
@@ -3736,12 +3746,69 @@ var TreeCompare = function() {
         return globalCount
     }
 
+    function getIntersectionOfLeaves(leftLeaves, rightLeaves){
+        return _.intersection(leftLeaves, rightLeaves)
+    }
+
+    function getIntersectingTrees(leftTree, rightTree, commonLeaves){
+        var leftTreeIndex = findTreeIndex(leftTree.name);
+        var rightTreeIndex = findTreeIndex(rightTree.name);
+        postorderTraverse(leftTree.root, function(d){
+            if (!d.children && !d._children){
+                if (commonLeaves.indexOf(d.name) < 0){
+                    updateUndo(leftTreeIndex, "restore_branch", d);
+                    var cutTree = cutBranch(d, leftTree);
+                    var index1 = findTreeIndex(leftTree.name);
+                    var index2 = findTreeIndex(rightTree.name);
+
+                    preprocessTrees(trees[index1], trees[index2]);
+                    update(leftTree.root, cutTree.data);
+                    update(rightTree.root, rightTree.data);
+                }
+            }
+
+        });
+        postorderTraverse(rightTree.root, function(d){
+            if (!d.children && !d._children){
+                if (commonLeaves.indexOf(d.name) < 0){
+                    updateUndo(rightTreeIndex, "restore_branch", d);
+                    var cutTree = cutBranch(d, rightTree);
+                    var index1 = findTreeIndex(rightTree.name);
+                    var index2 = findTreeIndex(leftTree.name);
+
+                    preprocessTrees(trees[index1], trees[index2]);
+                    update(rightTree.root, cutTree.data);
+                    update(leftTree.root, leftTree.data);
+                }
+            }
+
+        });
+
+    }
+
+
     function calcDist() {
-        var leftTree = trees[trees.length - 2];
-        var rightTree = trees[trees.length - 1];
-        var distArray = [];
-        distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
-        return distArray
+        var leftIdx = d3.select("#vis-container1").select("svg").attr("id").split("_")[1];
+        var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
+        var leftTree = trees[leftIdx];
+        var rightTree = trees[rightIdx];
+        var leftLeaves = leftTree.root.deepLeafList.sort();
+        var rightLeaves = rightTree.root.deepLeafList.sort();
+        var commonLeaves = getIntersectionOfLeaves(leftLeaves, rightLeaves);
+        var sameLeaves = _.isEqual(leftLeaves, rightLeaves);
+        if (sameLeaves) {
+            var distArray = [];
+            distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
+            return distArray
+        } else {
+            alert('Trees have different leaf sets. Left and right trees are trimmed')
+            getIntersectingTrees(leftTree, rightTree, commonLeaves);
+            var distArray = [];
+            distArray.push(calcRFDist(leftTree, rightTree), calcEuclidean(leftTree, rightTree), calcSPR(leftTree, rightTree));// add other metrics here
+            return distArray
+
+        }
+
     }
 
     function createTreeDownload(canvasId, downloadClass){
@@ -4987,13 +5054,18 @@ var TreeCompare = function() {
     function cutBranch(d, tree) {
         var sibling = getSibling(d);
         var droot = d.parent;
-        var droot_index = droot.parent.children.indexOf(droot);
+        if (droot === tree.root){
+            d.parent.children[0] = sibling.children[0];
+            d.parent.children[1] = sibling.children[1];
+        } else {
+            var droot_index = droot.parent.children.indexOf(droot);
+            if (d.parent.parent.children[droot_index] != undefined){
+                var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
+                sibling.length = newLenght;
+            }
+            d.parent.parent.children[droot_index] = sibling;
 
-        var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
-        sibling.length = newLenght;
-
-        d.parent.parent.children[droot_index] = sibling;
-
+        }
         postorderTraverse(tree.data.root, function(e) {
             e.leaves = getChildLeaves(e);
         });
@@ -5732,6 +5804,7 @@ var TreeCompare = function() {
                             settings.loadedCallback();
                         }
                     }, 2);
+                    settings.loadedCallback();
                 }
 
                 if (tmpIndex === 1){
