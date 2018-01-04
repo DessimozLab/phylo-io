@@ -790,12 +790,21 @@ treeToolsMenuContent {
 }
 
 .searchResultsList li {
+    display: block;
     margin-left: -35px;
     list-style-type: none;
     cursor: pointer;
 }
 
-.searchResultsList li:hover {
+.searchResultsList a{
+    color: black;
+    text-decoration: none;
+    display: block;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.searchResultsList a:hover {
     background-color: orange;
 }
 

@@ -2878,6 +2878,16 @@ var TreeCompare = function() {
                         expandPathToLeaf(results[indices[indices.length - 1]], false, true); // set clicked link to class link search
                     }
                     update(baseTree, baseTree.data);
+                    if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
+                        var currentScale = baseTree.data.zoomBehaviour.scale();
+                        var y = (-results[indices[j]].y + ($("#" + baseTree.data.canvasId).width() / 2) / currentScale);
+                        var x = (-results[indices[j]].x + ($("#" + baseTree.data.canvasId).height() / 2) / currentScale);
+                        baseTree.data.zoomBehaviour.translate([y, x]);
+                        d3.select("#" + baseTree.data.canvasId + " svg g")
+                            .transition(1500)
+                            .attr("transform", "scale(" + currentScale + ")" + "translate(" + baseTree.data.zoomBehaviour.translate() + ")");
+                    }
+
                 });
             }
         }
