@@ -5109,9 +5109,9 @@ var TreeCompare = function() {
             var rectHeight = 90;
 
             var rpad = 10;
-            var tpad = 20;
+            var tpad = 15;
             var textDone = 0;
-            var textInc = 20;
+            var textInc = 15;
 
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
@@ -5175,7 +5175,7 @@ var TreeCompare = function() {
 
             add_menu_item(".tooltipElem",
                 function(){
-                    return 'reroot'
+                    return 'reroot >'
                 },
                 function(){
                     // This is to reroot
@@ -5209,7 +5209,7 @@ var TreeCompare = function() {
 
             add_menu_item(".tooltipElem",
                 function () { // text function
-                    return "cut branch";
+                    return "trim branch >";
                 },
                 function () {
                     d = e.target;
