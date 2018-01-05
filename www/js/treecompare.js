@@ -5349,14 +5349,20 @@ var TreeCompare = function() {
                     .attr("y2", (y-rectHeight - triHeight + tpad + textDone)+3)
                     .attr("stroke", "grey")
                     .attr("stroke-width", "1.5");
-                add_menu_item(".tooltipElem",
-                    function () { // text function
+
+                d3.select(".tooltipElem").append("text")
+                    .attr("class", "tooltipElemInfoText")
+                    .attr("y", (y-rectHeight - triHeight + tpad + textDone))
+                    .attr("x", (x+(-rectWidth / 2) + rpad))
+                    .attr("id", "infoText")
+                    .text(function() {
                         if (d.elementS){
                             return '#leaf: '+d.leaves.length+' | bcn: '+ d.elementS.toFixed(2);
                         } else {
                             return '#leaf: '+d.leaves.length;
                         }
                     });
+                textDone += textInc;
             }
             if (!d.children && !d._children) {
                 add_menu_item(".tooltipElem",

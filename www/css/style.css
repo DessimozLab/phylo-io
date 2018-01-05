@@ -467,6 +467,11 @@ input.treename::-webkit-input-placeholder{
     /*font-weight: bold;*/
 }
 
+.tooltipElemInfoText{
+    fill: white;
+    font-size: 9pt;
+    /*font-weight: bold;*/
+}
 
 
 /*--end tooltipElem----------------------------------------------*/
