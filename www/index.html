@@ -4,9 +4,10 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
+    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
-    <script type="text/javascript" src="js/underscore.min.js"></script>
+    <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
     <script type="text/javascript" src="js/spin.min.js"></script>
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -20,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="css/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
     <script>
         (function (i, s, o, g, r, a, m) {
@@ -81,7 +82,7 @@
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only"><Toggle>  </Toggle> navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -99,13 +100,21 @@
 
         <!-- menu navigation bar -->
         <div id="navbar" class="navbar-collapse collapse list-inline">
-            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 5px">
+            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
+                <li class="dist">
+                    <ul>
+                        <li id = "rf"></li>
+                        <li id = "eucl"></li>
+                        <li id = "spr"></li>
+
+                    </ul>
+                </li>
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" id="export"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
-                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span>Calculate distance</a></li>
+                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
 
                     </ul>
                 </li>
@@ -403,7 +412,7 @@
     })();
 
     var spinnerOpts = {
-        lines: 13 // The number of lines to draw
+        lines: 15 // The number of lines to draw
         ,
         length: 28 // The length of each line
         ,
@@ -425,7 +434,7 @@
         ,
         speed: 1 // Rounds per second
         ,
-        trail: 60 // Afterglow percentage
+        trail: 50 // Afterglow percentage
         ,
         fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
         ,
@@ -437,7 +446,7 @@
         ,
         left: '10%' // Left position relative to parent
         ,
-        shadow: true // Whether to render a shadow
+        shadow: false // Whether to render a shadow
         ,
         hwaccel: true // Whether to use hardware acceleration
         ,
@@ -583,8 +592,6 @@
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
             $('#sidebar-nav').show();
         }
-        var position = $("#wrapper").width() / 2 + sideBarWidth / 2 - colorScaleWidth / 3;
-        $('#colorScale').css("left", position + "px");
 
         div_footer.width(newWidth);
     });
@@ -634,6 +641,12 @@
         if (settingsShown) {
             showHideSettingsPanel("hide");
         }
+
+        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            $("#rf").empty();
+            $("#spr").empty();
+            $("#eucl").empty();
+        }
     });
 
     /*
@@ -678,6 +691,12 @@
 
         if (settingsShown) {
             showHideSettingsPanel("hide");
+        }
+
+        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            $("#rf").empty();
+            $("#spr").empty();
+            $("#eucl").empty();
         }
     });
 
@@ -763,6 +782,11 @@
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
+            if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+                $("#rf").empty();
+                $("#spr").empty();
+                $("#eucl").empty();
+            }
             try {
                 //$("#page-content-wrapper").empty();
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
@@ -793,8 +817,10 @@
                     $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
                 }
             }
-        } else if (mode === "view-btn") {
+//            if
+//            $("#distancesList").style.display="none";
 
+        } else if (mode === "view-btn") {
             // init & enable undo
             //$("#undoBtn").data('undoIdx', undoIndex);
 
@@ -866,7 +892,22 @@
         treecomp.exportBothTrees("vis-container1", "vis-container2");
     });
 
+    /*------
+     /
+     /    Calculate Distance
+     /
+     ------*/
+    $("#distance").click(function(e){
+        var distances = treecomp.calcDist();
+        var rf = distances[0][0];
+        var rf_norm = distances[0][1];
+        var eucl = distances[1];
+        var spr = distances[2];
+        d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
+        d3.select("#eucl").text("Euclidean: " + eucl);
+        d3.select("#spr").text("SPR: " + spr);
 
+    });
 
     /*------
      /
@@ -879,7 +920,6 @@
             ($(this).hide().next().hide())
         });
     }
-
 
     var settingsShown = false;
 

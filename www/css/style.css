@@ -6,9 +6,11 @@ html {
 
 
 #colorScale {
-    position: fixed;
+    width: 50%;
+    margin: auto;
+    position: absolute;
     bottom: 0;
-    padding-right: 10px;
+    right: 25px;
 }
 
 .logo {
@@ -510,12 +512,30 @@ circle.node.select{
     fill: green !important;
 }
 
+circle.node.search {
+    fill: orange !important;
+}
+
+circle.node.search:hover {
+    fill: green !important;
+}
+
 text.node{
     fill: black;
     font-family: sans-serif;
 }
 
 text.node.select{
+    fill: green !important;
+    font-weight: bold;
+}
+
+text.node.search{
+    fill: orange !important;
+    font-weight: bold;
+}
+
+text.node.search:hover{
     fill: green !important;
     font-weight: bold;
 }
@@ -770,12 +790,21 @@ treeToolsMenuContent {
 }
 
 .searchResultsList li {
+    display: block;
     margin-left: -35px;
     list-style-type: none;
     cursor: pointer;
 }
 
-.searchResultsList li:hover {
+.searchResultsList a{
+    color: black;
+    text-decoration: none;
+    display: block;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.searchResultsList a:hover {
     background-color: orange;
 }
 
