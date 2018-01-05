@@ -63,6 +63,7 @@ var TreeCompare = function() {
         },
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
+        enableCloudShare: false,
         enableLadderizeTreeButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
@@ -148,6 +149,7 @@ var TreeCompare = function() {
     function changeCanvasSettings(settingsIn) {
         settings.enableZoomSliders = getSetting(settingsIn.enableZoomSliders,settings.enableZoomSliders);
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
+        settings.enableCloudShare = getSetting(settingsIn.enableCloudShare,settings.enableCloudShare);
         settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
         settings.enableFixedButtons = getSetting(settingsIn.enableFixedButtons,settings.enableFixedButtons);
         settings.enableSizeControls = getSetting(settingsIn.enableSizeControls,settings.enableSizeControls);
@@ -2458,18 +2460,21 @@ var TreeCompare = function() {
                 .attr("class", "exportMenu");
             // .append("ul")
             // .attr("class", "treeToolsMenuContent");
+            if (settings.enableDownloadButtons) {
+                exportMenu.append("li")
+                    .attr("class", "exportText")
+                    .append("div")
+                    .attr("class", "export")
+                    .text("Export");
+            }
 
-            exportMenu.append("li")
-                .attr("class", "exportText")
-                .append("div")
-                .attr("class", "export")
-                .text("Export");
-
-            exportMenu.append("li")
-                .attr("class", "exportText")
-                .append("div")
-                .attr("class", "share")
-                .text("Share");
+            if (settings.enableCloudShare) {
+                exportMenu.append("li")
+                    .attr("class", "exportText")
+                    .append("div")
+                    .attr("class", "share")
+                    .text("Share");
+            }
         }
         buildExportBar(canvasId);
 
@@ -2477,7 +2482,7 @@ var TreeCompare = function() {
             createTreeDownload(canvasId, "export");
         }
 
-        if (settings.enableDownloadButtons) {
+        if (settings.enableCloudShare) {
             createSharing(canvasId, "share");
         }
 
