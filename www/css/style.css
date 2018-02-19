@@ -4,6 +4,9 @@ html {
     overflow:hidden;
 }
 
+body#manual {
+    overflow: auto;
+}
 
 #colorScale {
     width: 50%;
