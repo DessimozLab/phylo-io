@@ -1008,7 +1008,7 @@ var TreeCompare = function() {
                     break;
                 }
             }
-            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(1);
+            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
             scaleText.text(text);
         }
     }
@@ -3828,7 +3828,7 @@ var TreeCompare = function() {
                 .text("png");
         }
 
-        var width = 300, height = 300;
+        //var width = 900, height = 900;
         // draws download buttons
         if (settings.enableDownloadButtons) {
 
@@ -3841,7 +3841,11 @@ var TreeCompare = function() {
                 .on('click', function () {
                     var svg = d3.select("#" + canvasId + " svg");
                     addLogo(svg);
+                    var name = svg.attr("id");
                     var svgString = getSVGString(svg.node());
+                    var exportElement = svg.node();
+                    var width = exportElement.getBoundingClientRect().width;
+                    var height = exportElement.getBoundingClientRect().height;
                     svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
                     function save(dataBlob, filesize) {
                         saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
@@ -3875,6 +3879,7 @@ var TreeCompare = function() {
             // Below are the functions that handle actual exporting:
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
             // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
+/*
             function getSVGString( svgNode ) {
                 svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
                 //var cssStyleText = getCSSStyles( svgNode );
@@ -3887,6 +3892,80 @@ var TreeCompare = function() {
 
                 return svgString;
 
+            }
+*/
+
+            // Below are the functions that handle actual exporting:
+            // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
+            function getSVGString( svgNode ) {
+                svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+                var cssStyleText = getCSSStyles( svgNode );
+                appendCSS( cssStyleText, svgNode );
+
+                var serializer = new XMLSerializer();
+                var svgString = serializer.serializeToString(svgNode);
+                svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+                svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+                return svgString;
+
+                function getCSSStyles( parentElement ) {
+                    var selectorTextArr = [];
+
+                    // Add Parent element Id and Classes to the list
+                    selectorTextArr.push( '#'+parentElement.id );
+                    for (var c = 0; c < parentElement.classList.length; c++)
+                            if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
+                                selectorTextArr.push( '.'+parentElement.classList[c] );
+
+                    // Add Children element Ids and Classes to the list
+                    var nodes = parentElement.getElementsByTagName("*");
+                    for (var i = 0; i < nodes.length; i++) {
+                        var id = nodes[i].id;
+                        if ( !contains('#'+id, selectorTextArr) )
+                            selectorTextArr.push( '#'+id );
+
+                        var classes = nodes[i].classList;
+                        for (var c = 0; c < classes.length; c++)
+                            if ( !contains('.'+classes[c], selectorTextArr) )
+                                selectorTextArr.push( '.'+classes[c] );
+                    }
+
+                    // Extract CSS Rules
+                    var extractedCSSText = "";
+                    for (var i = 0; i < document.styleSheets.length; i++) {
+                        var s = document.styleSheets[i];
+
+                        try {
+                            if(!s.cssRules) continue;
+                        } catch( e ) {
+                                if(e.name !== 'SecurityError') throw e; // for Firefox
+                                continue;
+                            }
+
+                        var cssRules = s.cssRules;
+                        for (var r = 0; r < cssRules.length; r++) {
+                            if ( contains( cssRules[r].selectorText, selectorTextArr ) )
+                                extractedCSSText += cssRules[r].cssText;
+                        }
+                    }
+
+
+                    return extractedCSSText;
+
+                    function contains(str,arr) {
+                        return arr.indexOf( str ) === -1 ? false : true;
+                    }
+
+                }
+
+                function appendCSS( cssText, element ) {
+                    var styleElement = document.createElement("style");
+                    styleElement.setAttribute("type","text/css");
+                    styleElement.innerHTML = cssText;
+                    var refNode = element.hasChildNodes() ? element.children[0] : null;
+                    element.insertBefore( styleElement, refNode );
+                }
             }
 
             function svgString2Image( svgString, width, height, format, callback ) {

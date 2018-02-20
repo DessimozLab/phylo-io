@@ -530,7 +530,7 @@ circle.node.search:hover {
 
 text.node{
     fill: black;
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 text.node.select{
@@ -549,7 +549,7 @@ text.node.search:hover{
 }
 
 text.triangleText {
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     opacity: 1;
     fill: black;
 }
