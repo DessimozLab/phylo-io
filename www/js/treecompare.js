@@ -3828,13 +3828,12 @@ var TreeCompare = function() {
                 .text("png");
         }
 
-        //var width = 900, height = 900;
+        //var width = 300, height = 300;
         // draws download buttons
         if (settings.enableDownloadButtons) {
 
             // draw button
             buildDownloadButton(canvasId, downloadClass);
-
 
             // PNG
             d3.select("#"+canvasId).select(".png")
@@ -3848,7 +3847,8 @@ var TreeCompare = function() {
                     var height = exportElement.getBoundingClientRect().height;
                     svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
                     function save(dataBlob, filesize) {
-                        saveAs(dataBlob, 'phylo.io.png'); // FileSaver.js function
+                        var filename = (name) ? name+"." : "";
+                        saveAs(dataBlob, filename+'phylo.io.png'); // FileSaver.js function
                     }
                     svg.select("#exportLogo").remove();
                 });
