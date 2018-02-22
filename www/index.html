@@ -131,7 +131,7 @@
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <div id="menu-toggle">
-            <i class="fa fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;"></i>
+            <i class="fa fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;z-index: 99;"></i>
         </div>
         <div id="sidebar-wrapper-wrapper">
             <ul class="sidebar-nav">
@@ -582,18 +582,25 @@
         $("#wrapper").toggleClass("toggled");
 
         var div_footer = $("#footer_div");
-        var newWidth, sideBarWidth = 420;
+        var newWidth;
         var colorScaleWidth = 75;
 
         if ($("#collapse-sidebar-span").hasClass("fa fa-2x fa-arrow-circle-left")) {
+            $('#sidebar-wrapper').css("width", "");
             $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-left");
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-right");
             newWidth = 30;
+            $('#sidebar-wrapper').css("overflow-y", "hidden");
             $('#sidebar-nav').hide();
         }
         else {
             $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-right");
             $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
+
+            $('#sidebar-wrapper').css("overflow-y", "auto");
+            if(isScrollBar()){
+                $('#sidebar-wrapper').css("width", "440");
+            }
             $('#sidebar-nav').show();
         }
 
@@ -938,13 +945,39 @@
         }
     });
 
+    function isScrollBar(){
+
+        console.log("ul.sidebar-nav: " + $("ul.sidebar-nav").height());
+        console.log("doc: " + ($(document).height() - 50));
+
+        // sidebarheight taller than document height - nav bar height -> scroll bar is visible
+        if($("ul.sidebar-nav").height() > ($(document).height() - 50)){
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     function showHideSettingsPanel(mode) {
+
         if (mode == "show") {
-            $("#settingsPanel").slideDown(300);
-            settingsShown = true;
-            $("#sidebar-wrapper").css({
-                "overflow-y": "scroll"
+            $("#settingsPanel").slideDown(300, function() {
+
+                settingsShown = true;
+                $("#sidebar-wrapper").css({
+                    "overflow-y": "auto"
+                });
+
+                // hardcode the value, it's close enough
+                if(isScrollBar()) {
+                    $('#sidebar-wrapper').width(440);
+                } else {
+                    $('#sidebar-wrapper').width(420);
+                }
+
             });
+
         } else if (mode == "hide") {
             $("#settingsPanel").slideUp(300, function () {
                 settingsShown = false;
@@ -952,14 +985,20 @@
                     "display": "none"
                 });
 
-                //$("#sidebar-wrapper").css({
-                //    "overflow-y": "hidden"
-                //});
+                // hardcode the value, it's close enough
+                if(isScrollBar()) {
+                    $('#sidebar-wrapper').width(440);
+                } else {
+                    $('#sidebar-wrapper').width(420);
+                }
+
             });
         } else {
             console.log("You should not be able to see this!!!!");
         }
     }
+
+
 
     $(".sizeAdjust").change(function () {
         treecomp.changeTreeSettings({
