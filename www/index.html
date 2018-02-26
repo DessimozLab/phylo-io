@@ -14,14 +14,12 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
-    <script src="https://use.fontawesome.com/28dcb2432d.js"></script>
-
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
     <script>
         (function (i, s, o, g, r, a, m) {
@@ -131,7 +129,7 @@
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <div id="menu-toggle">
-            <i class="fa fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;z-index: 99;"></i>
+            <i class="fas fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;z-index: 99;"></i>
         </div>
         <div id="sidebar-wrapper-wrapper">
             <ul class="sidebar-nav">
@@ -153,7 +151,7 @@
                                 <input class="fileIn" id="newickInSingleFile" type="file" style="display:none">
                                 <button class="btn btn-default btn-xs fileIn pull-right" id="newickInSingleButton"
                                         type="button">
-                                    Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
+                                    Upload&nbsp;<i class="fas fa-upload" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -182,7 +180,7 @@
                                 <input class="fileIn" id="newickIn1File" type="file" style="display:none">
                                 <button class="btn btn-default btn-xs fileIn pull-right" id="newickIn1Button"
                                         type="button">
-                                    Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
+                                    Upload&nbsp;<i class="fas fa-upload" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -199,7 +197,7 @@
                                 <input class="fileIn" id="newickIn2File" type="file" style="display:none">
                                 <button class="btn btn-default btn-xs fileIn pull-right" id="newickIn2Button"
                                         type="button">
-                                    Upload&nbsp;<i class="fa fa-upload" aria-hidden="true"></i>
+                                    Upload&nbsp;<i class="fas fa-upload" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -234,9 +232,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;"
-                                                                                                   class="fa fa-pencil-square-o"
-                                                                                                   aria-hidden="true"></i>
+                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;" class="far fa-edit" aria-hidden="true"></i>
                         Settings&nbsp;
                     </a>
                     <div id="settingsPanel">
@@ -248,12 +244,12 @@
                                 <div id="autoCollapseButtons">
                                     <button type="button" id="collapseDec"
                                             class="btn btn-default btn-xs collapseButton">
-                                        <i style="margin-left: 2px; vertical-align: middle;" class="fa fa-minus"
+                                        <i style="margin-left: 2px; vertical-align: middle;" class="fas fa-minus"
                                            aria-hidden="true"></i>
                                     </button>
                                     <span id="collapseAmount" class="collapseElem">3</span>
                                     <button type="button" id="collapseInc" class="btn btn-default btn-xs collapseButton">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <i class="fas fa-plus" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
@@ -585,23 +581,27 @@
         var newWidth;
         var colorScaleWidth = 75;
 
-        if ($("#collapse-sidebar-span").hasClass("fa fa-2x fa-arrow-circle-left")) {
-            $('#sidebar-wrapper').css("width", "");
-            $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-left");
-            $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-right");
-            newWidth = 30;
-            $('#sidebar-wrapper').css("overflow-y", "hidden");
-            $('#sidebar-nav').hide();
-        }
-        else {
-            $("#collapse-sidebar-span").removeClass("fa fa-2x fa-arrow-circle-right");
-            $("#collapse-sidebar-span").addClass("fa fa-2x fa-arrow-circle-left");
+        var sidebar_icon = $('#collapse-sidebar-span');
 
+        var sb_indicator = sidebar_icon.attr('data-icon');
+
+        if (sb_indicator === "arrow-circle-left") {
+            $('#sidebar-nav').hide();
+            sidebar_icon.attr('data-icon', 'arrow-circle-right');
+            newWidth = 30;
+            $('#sidebar-wrapper').css("width", "");
+            $('#sidebar-wrapper').css("overflow-y", "hidden");
+
+        } else {
+            $('#sidebar-nav').show();
+            sidebar_icon.attr('data-icon', 'arrow-circle-left');
             $('#sidebar-wrapper').css("overflow-y", "auto");
             if(isScrollBar()){
-                $('#sidebar-wrapper').css("width", "440");
+                $('#sidebar-wrapper').css("width", "437");
+            } else {
+                $('#sidebar-wrapper').css("width", "420");
             }
-            $('#sidebar-nav').show();
+
         }
 
         div_footer.width(newWidth);
@@ -947,9 +947,6 @@
 
     function isScrollBar(){
 
-        console.log("ul.sidebar-nav: " + $("ul.sidebar-nav").height());
-        console.log("doc: " + ($(document).height() - 50));
-
         // sidebarheight taller than document height - nav bar height -> scroll bar is visible
         if($("ul.sidebar-nav").height() > ($(document).height() - 50)){
             return true;
@@ -962,7 +959,7 @@
     function showHideSettingsPanel(mode) {
 
         if (mode == "show") {
-            $("#settingsPanel").slideDown(300, function() {
+            $("#settingsPanel").slideDown(200, function() {
 
                 settingsShown = true;
                 $("#sidebar-wrapper").css({
@@ -971,7 +968,7 @@
 
                 // hardcode the value, it's close enough
                 if(isScrollBar()) {
-                    $('#sidebar-wrapper').width(440);
+                    $('#sidebar-wrapper').width(437);
                 } else {
                     $('#sidebar-wrapper').width(420);
                 }
@@ -979,7 +976,7 @@
             });
 
         } else if (mode == "hide") {
-            $("#settingsPanel").slideUp(300, function () {
+            $("#settingsPanel").slideUp(100, function () {
                 settingsShown = false;
                 $(this).css({
                     "display": "none"
@@ -987,7 +984,7 @@
 
                 // hardcode the value, it's close enough
                 if(isScrollBar()) {
-                    $('#sidebar-wrapper').width(440);
+                    $('#sidebar-wrapper').width(437);
                 } else {
                     $('#sidebar-wrapper').width(420);
                 }
