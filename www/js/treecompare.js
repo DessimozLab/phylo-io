@@ -1325,7 +1325,7 @@ var TreeCompare = function() {
 
 
     function getTreeFromCanvasId(id) {
-        var name = d3.select("#" + id + " svg").attr("id");
+        var name = $("#" + id + " > svg").attr('id');
         return trees[findTreeIndex(name)];
 
     }
