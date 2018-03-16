@@ -4,6 +4,9 @@ html {
     overflow:hidden;
 }
 
+body#manual {
+    overflow: auto;
+}
 
 #colorScale {
     width: 50%;
@@ -103,7 +106,7 @@ svg {
     position: absolute;
     width: 100%;
     overflow: scroll !important;
-    top: 50px;
+    top: 55px;
 }
 
 /*.vis-scale {*/
@@ -144,7 +147,7 @@ svg {
     border-color: #e7e7e7;
     border-width: thin;
     border-bottom: 0px;
-    top: 50px;
+    top: 55px;
 }
 
 #vis-container2 {
@@ -153,7 +156,7 @@ svg {
 }
 
 #page-content-wrapper {
-    padding: 0px;
+    padding: 0;
     height: 100%;
 }
 
@@ -457,20 +460,22 @@ input.treename::-webkit-input-placeholder{
 .tooltipElem{
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    /* border-bottom: 1px dotted black;*/
     opacity: 0.9;
 }
 
 .tooltipElemText{
     fill: white;
-    font-size: 9pt;
+    font-size: 1em;
     /*font-weight: bold;*/
+    opacity: 1;
 }
 
 .tooltipElemInfoText{
     fill: white;
-    font-size: 9pt;
+    font-size: 1.1em;
     /*font-weight: bold;*/
+    opacity: 1;
 }
 
 
@@ -527,7 +532,7 @@ circle.node.search:hover {
 
 text.node{
     fill: black;
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 text.node.select{
@@ -546,7 +551,7 @@ text.node.search:hover{
 }
 
 text.triangleText {
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     opacity: 1;
     fill: black;
 }
@@ -573,7 +578,7 @@ rect.node {
 .undo {
     padding: 5px;
     right: 5px;
-    top: 5px;
+    top: 0;
     position: absolute;
 }
 
@@ -604,7 +609,7 @@ rect.node {
 .exportTools {
     padding: 5px;
     right: 31px;
-    top: 5px;
+    top: 0;
     position: absolute;
 }
 
@@ -699,7 +704,7 @@ rect.node {
     position: absolute;
     padding: 5px;
     right: 57px;
-    top: 5px;
+    top: 0;
 }
 
 
@@ -756,7 +761,7 @@ treeToolsMenuContent {
 .searchBox {
     padding: 5px;
     right: 83px;
-    top: 5px;
+    top: 0;
     position: absolute;
 }
 

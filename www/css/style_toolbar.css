@@ -559,7 +559,7 @@ circle.node.select{
 
 text.node{
     fill: black;
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 text.node.select{
@@ -568,7 +568,7 @@ text.node.select{
 }
 
 text.triangleText {
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     opacity: 1;
     fill: black;
 }
