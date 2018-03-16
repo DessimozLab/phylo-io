@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <!--<script type="text/javascript" src="js/nexus.js"></script>-->
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -803,6 +804,7 @@
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
                 var tree1 = treecomp.addTree($("#newickIn1").val(), undefined, "left");
                 var tree2 = treecomp.addTree($("#newickIn2").val(), undefined, "right");
+
                 treecomp.changeCanvasSettings({
                     autoCollapse: tree1.data.autoCollapseDepth
                 })
@@ -819,13 +821,13 @@
                 $("#action").css({"display": "block"});
             } catch (e) {
                 if (e === "TooLittle)") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
                 } else if (e === "TooLittle(") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little "("</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Tree file not correct: too little "("</div>')).hide().slideDown(300);
                 } else if (e === "NoTree") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
                 } else if (e === "") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
                 }
             }
 //            if
@@ -853,13 +855,13 @@
                 $("#action").css({"display": "none"});
             } catch (e) {
                 if (e === "TooLittle)") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Tree file not correct: too little ")"</div>')).hide().slideDown(300);
                 } else if (e === "TooLittle(") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Tree file not correct: too little "("</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Tree file not correct: too little "("</div>')).hide().slideDown(300);
                 } else if (e === "NoTree") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Please add tree</div>')).hide().slideDown(300);
                 } else if (e === "") {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
+                    $("#renderErrorMessage").append($('<div style="width: 100%" class="alert alert-danger" role="alert">Empty</div>')).hide().slideDown(300);
                 }
             }
         }
