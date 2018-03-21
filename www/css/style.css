@@ -9,11 +9,11 @@ body#manual {
 }
 
 #colorScale {
-    width: 50%;
-    margin: auto;
-    position: absolute;
+position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-left: 10px; /*magic number */
     bottom: 0;
-    right: 25px;
 }
 
 .logo {
