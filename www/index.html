@@ -224,7 +224,7 @@
                     <!-- Centered btn + link group within the div -->
                     <div>
                         <div style="padding-top: 40px; padding-bottom: 10px; width: 100%; margin: 0 auto;">
-                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;">
+                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;"data-condition="haveUndo" data-toggle="modal-confirm" data-message="Rendering will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="render">
                                 <i class="icon-phyloio-01" aria-hidden="true"></i>
                                 Render
                             </button>
@@ -396,9 +396,77 @@
 </div>
 <!-- /#wrapper -->
 
+<!-- Modal -->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="confirmok" type="button" data-dismiss="modal" class="btn btn-danger btn-ok" data-target="">Continue</button>
+            </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+function haveUndo(){
+
+    return $(".undoButton").attr("data-count") > 0;
+
+}
+$(document).ready(function(){
+
+	$("#confirmok").on('click', function(event) {
+        if($("#confirmok").data('target')){
+            var action = $("#confirmok").data('target');
+            window[action]();
+        }
+    })
+
+     $('button[data-toggle="modal-confirm"]').click(function(event) {
+
+        event.preventDefault();
+        var self = $(this);
+        var message = self.data('message');
+        var title = self.data('title');
+        var target = $(self.data('target'));
+        var condition = self.data('condition');
+        var action = self.data('action');
+        if( target.length == 1) {
+            target.find('.modal-title').html(title);
+            target.find('.modal-body').html(message);
+            var showModal = true;
+            var fn = window[condition];
+            if(typeof fn === 'function') {
+                showModal = fn(condition);
+            }
+            if( showModal ) {
+
+                $("#confirmok").data('target', action);
+                target.on('shown.bs.modal', function(e) {
+                    target.find('button[data-confirm="modal"]').click(function(e){
+                        e.preventDefault();
+                    });
+                });
+                target.modal({ show: true });
+            } else {
+                window[action]();
+            };
+        };
+    });
+
+
+
+});
+</script>
 
 <!-- Menu Toggle Script -->
 <script>
+
     //new ui
 
     // Ensures that the acknowledgment footer is correctly placed in the sidebar
@@ -788,14 +856,15 @@
      /    RENDER BUTTON
      /
      ------*/
-    $("#renderButton").click(function (e) {
+    //$("#renderButton").click(function (e) {
+    function render() {
         $("#renderErrorMessage").empty();
         hideOptionalSettings();
         $("#menu-toggle").click();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
-            if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            if (!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
                 $("#rf").empty();
                 $("#spr").empty();
                 $("#eucl").empty();
@@ -866,7 +935,8 @@
                 }
             }
         }
-    });
+//    });
+    }
 
     /*------
      /

@@ -1723,15 +1723,8 @@ var TreeCompare = function() {
         // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
-        //TODO: the drag and drop of the tree doesn't work properly
-        // if ($("#vis-container2").length !== 0){
-        //     var lengthMult = treeData.treeWidth + 90 + 200;
-        // } else {
-        //     var lengthMult = treeData.treeWidth + 90 + 400;
-        // }
 
         var lengthMult = treeData.treeWidth + 90;
-
 
         //calculate horizontal position of nodes
         var newLenghtMult = 0;
@@ -1823,7 +1816,7 @@ var TreeCompare = function() {
         //perform the actual drawing
         nodeEnter.append("circle")
             .attr("class", "node")
-            .attr("r", settings.nodeSize);
+            .attr("r", settings.nodeSize * 2);
 
         nodeEnter.append("rect")
             .attr("class", "node")
@@ -2393,7 +2386,8 @@ var TreeCompare = function() {
             undo.append("a")
                 .attr("class", "btn btn-sm sharp undoButton")
                 .attr("title", "undo last tree manipulation")
-                .attr("id", "undobtn")
+                .attr("id", "undobtn" + canvasId)
+                .attr("data-count", 0)
                 .append("span")
                 .attr("class", "fa fa-undo")
                 .attr("aria-hidden", "true");
@@ -2401,7 +2395,7 @@ var TreeCompare = function() {
 
         buildUndoButton(canvasId);
 
-        undo(canvasId, "undobtn");
+        undo(canvasId, "undobtn" + canvasId);
     }
 
 
@@ -5736,13 +5730,14 @@ var TreeCompare = function() {
         undoActionData.push(treeActionData);
         var tmpTree = clone(trees[treeIndex].data);
         undoFullTreeData.push(tmpTree);
+        $(".undoButton").attr("data-count", undoIndex);
 
     }
 
     /*-----------------------------------
      * External function that allows to add an undo functionality on tree operations
      * input:
-     *  buttonId: id element of the button that will perfom the und functionality
+     *  buttonId: id element of the button that will perform the und functionality
      */
     function undo(canvasId, buttonId){
 
@@ -5909,7 +5904,10 @@ var TreeCompare = function() {
                     undoFullTreeData = [];
                 }
 
+                $(".undoButton").attr("data-count", undoIndex);
+
             })
+
 
 
     }
