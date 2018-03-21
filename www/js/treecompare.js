@@ -5382,9 +5382,12 @@ var TreeCompare = function() {
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
+            var parent = d3.select(this.parentNode.parentNode);
+            var maxX = parseInt(parent.style("width"), 10);
             var x = coordinates[0];
             var y = coordinates[1];
             var triangleY = y - triHeight;
+            var triangleX = x;
             triangleType = "triangle-down";
             // menu above node by the height of the rectangle and triangle
             menuTop = triangleY - rectHeight;
@@ -5398,6 +5401,13 @@ var TreeCompare = function() {
 
             }
 
+            /* make sure the menu appears inside the svg container */
+            if(x < rectWidth/2 + 5) {
+                x = rectWidth/2 + 10;
+            } else if(x + rectWidth > maxX - 5) {
+                x = maxX - (rectWidth/2 + 10);
+            }
+
             //draw the little triangle
             var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
                 .attr("class", "tooltipElem")
@@ -5409,7 +5419,7 @@ var TreeCompare = function() {
 
             tooltipContainer.append('path')
             .attr("d", d3.svg.symbol().type(triangleType).size(400))
-            .attr("transform", function(d) { return "translate(" + x + "," + triangleY + ")"; })
+            .attr("transform", function(d) { return "translate(" + triangleX + "," + triangleY + ")"; })
             .style("fill", "black")
 
             tooltipContainer.append("rect")
