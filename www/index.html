@@ -15,8 +15,10 @@
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
     <!--<script type="text/javascript" src="js/nexus.js"></script>-->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <!--<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>-->
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
@@ -131,7 +133,7 @@
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <div id="menu-toggle">
-            <i class="fas fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;z-index: 99;"></i>
+            <i class="fas fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 5px; padding-left: 6px;"></i>
         </div>
         <div id="sidebar-wrapper-wrapper">
             <ul class="sidebar-nav">
@@ -234,7 +236,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;" class="far fa-edit" aria-hidden="true"></i>
+                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;" class="fas fa-edit" aria-hidden="true"></i>
                         Settings&nbsp;
                     </a>
                     <div id="settingsPanel">
@@ -477,6 +479,7 @@ $(document).ready(function(){
         var div_footer = $("#footer_div");
         var divdiv = $("#sidebar-wrapper-wrapper");
         div_footer.width(divdiv.width());
+        $('#collapse-sidebar-span').attr('data-icon', 'arrow-circle-left');
 
     })();
 
@@ -661,13 +664,15 @@ $(document).ready(function(){
         if (sb_indicator === "arrow-circle-left") {
             $('#sidebar-nav').hide();
             sidebar_icon.attr('data-icon', 'arrow-circle-right');
+            sidebar_icon.removeClass('fa-arrow-circle-left').addClass('fa-arrow-circle-right');
             newWidth = 30;
-            $('#sidebar-wrapper').css("width", "");
+            $('#sidebar-wrapper').css("width", "30");
             $('#sidebar-wrapper').css("overflow-y", "hidden");
 
         } else {
             $('#sidebar-nav').show();
             sidebar_icon.attr('data-icon', 'arrow-circle-left');
+            sidebar_icon.removeClass('fa-arrow-circle-right').addClass('fa-arrow-circle-left');
             $('#sidebar-wrapper').css("overflow-y", "auto");
             if(isScrollBar()){
                 $('#sidebar-wrapper').css("width", "437");

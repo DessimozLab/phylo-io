@@ -3380,7 +3380,7 @@ var TreeCompare = function() {
 
         d3.select("#exportLogo").attr("width", "75px")
             .attr("x", 20)
-            .attr("y", -height / 2 - 60)
+            .attr("y", -height / 2 - 45)
             .style("position", "absolute")
             .style("bottom", "5px")
             .style("right", "27px");
@@ -5740,7 +5740,6 @@ var TreeCompare = function() {
         undoActionData.push(treeActionData);
         var tmpTree = clone(trees[treeIndex].data);
         undoFullTreeData.push(tmpTree);
-        $(".undoButton").attr("data-count", undoIndex);
 
     }
 
@@ -5913,8 +5912,6 @@ var TreeCompare = function() {
                     undoTreeDataIndex = [];
                     undoFullTreeData = [];
                 }
-
-                $(".undoButton").attr("data-count", undoIndex);
 
             })
 
