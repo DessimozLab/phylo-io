@@ -2416,7 +2416,7 @@ var TreeCompare = function() {
                 .attr("title", "share tree as gist in the cloud")
                 .attr("type", "button")
                 .append("span")
-                .attr("class", "fa fa-cloud-upload")
+                .attr("class", "fas fa-cloud-upload-alt")
                 .attr("aria-hidden","true");
 
         }
