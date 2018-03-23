@@ -45,6 +45,7 @@ var TreeCompare = function() {
     var maxHighlightedNodes = 20;
 
     var settings = {
+        gistSaveServerURL: "http://phylo.io/server/gist.php",
         useLengths: true,
         alignTipLables: false,
         selectMultipleSearch: false,
@@ -64,7 +65,7 @@ var TreeCompare = function() {
         },
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
-        enableCloudShare: false,
+        enableCloudShare: true,
         enableLadderizeTreeButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
@@ -181,6 +182,7 @@ var TreeCompare = function() {
         settings.internalLabels = getSetting(settingsIn.internalLabels, settings.internalLabels);
         settings.zoomMode = getSetting(settingsIn.zoomMode, settings.zoomMode);
         settings.fitTree = getSetting(settingsIn.fitTree, settings.fitTree);
+        settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -1374,14 +1376,17 @@ var TreeCompare = function() {
                 "public": true,
                 "files": {"file1.json": {"content": dataOut}}
             };
+
             return $.ajax({
                 async: false,
-                url: 'https://api.github.com/gists',
+                url: settings.gistSaveServerURL,
                 type: 'POST',
                 dataType: 'json',
-                data: JSON.stringify(tmp),
+                data: {jsondata: JSON.stringify(tmp)},
                 success: callback
+
             });
+
         }
 
         var tmpURL = window.location.href.split("#");
@@ -3380,7 +3385,7 @@ var TreeCompare = function() {
 
         d3.select("#exportLogo").attr("width", "75px")
             .attr("x", 20)
-            .attr("y", -height / 2 - 60)
+            .attr("y", -height / 2 - 45)
             .style("position", "absolute")
             .style("bottom", "5px")
             .style("right", "27px");
@@ -5188,9 +5193,9 @@ var TreeCompare = function() {
             var rectHeight = 90;
 
             var rpad = 10;
-            var tpad = 15;
+            var tpad = 18;
             var textDone = 0;
-            var textInc = 15;
+            var textInc = 18;
 
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
@@ -5202,10 +5207,13 @@ var TreeCompare = function() {
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
+            var parent = d3.select(this.parentNode.parentNode);
+            var maxX = parseInt(parent.style("width"), 10);
             var x = coordinates[0];
             var y = coordinates[1];
 
             var triangleY = y - triHeight;
+            var triangleX = x;
             triangleType = "triangle-down";
             // menu above node by the height of the rectangle and triangle
             menuTop = triangleY - rectHeight;
@@ -5219,6 +5227,12 @@ var TreeCompare = function() {
 
             }
 
+            /* make sure the menu appears inside the svg container */
+            if(x < rectWidth/2 + 5) {
+                x = rectWidth/2 + 10;
+            } else if(x + rectWidth > maxX - 5) {
+                x = maxX - (rectWidth/2 + 10);
+            }
 
             //draw the little triangle
             var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
@@ -5232,7 +5246,7 @@ var TreeCompare = function() {
 
             tooltipContainer.append('path')
             .attr("d", d3.svg.symbol().type(triangleType).size(400))
-            .attr("transform", function(d) { return "translate(" + x + "," + triangleY + ")"; })
+            .attr("transform", function(d) { return "translate(" + triangleX + "," + triangleY + ")"; })
             .style("fill", "black")
 
             tooltipContainer.append("rect")
