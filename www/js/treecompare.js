@@ -4121,7 +4121,6 @@ var TreeCompare = function() {
         //render the scale if we have somewhere to put it
         if (scaleId && settings.enableScale) {
             var translatewidth = 100;
-            //var translateheight = height - 100;
             var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
@@ -5211,7 +5210,6 @@ var TreeCompare = function() {
             var maxX = parseInt(parent.style("width"), 10);
             var x = coordinates[0];
             var y = coordinates[1];
-
             var triangleY = y - triHeight;
             var triangleX = x;
             triangleType = "triangle-down";
@@ -5418,7 +5416,7 @@ var TreeCompare = function() {
             /* make sure the menu appears inside the svg container */
             if(x < rectWidth/2 + 5) {
                 x = rectWidth/2 + 10;
-            } else if(x + rectWidth > maxX - 5) {
+            } else if(x + rectWidth/2 > maxX - 5) {
                 x = maxX - (rectWidth/2 + 10);
             }
 
