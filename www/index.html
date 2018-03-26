@@ -4,7 +4,7 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
-    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+    <script src="//peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
     <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
@@ -14,8 +14,6 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
-    <!--<script type="text/javascript" src="js/nexus.js"></script>-->
-    <!--<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>-->
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
@@ -68,15 +66,28 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h5 class="modal-title">Link to share tree visualisation</h5>
+                <h5 class="modal-title" id="modalTitle">Link to share tree visualisation</h5>
             </div>
             <div class="modal-body">
-                <a href="" id="exportURLInSingle"></a>
+                <span id="modalBody"></span>
             </div>
         </div>
     </div>
 </div>
 
+<div id="myErrorModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h5 class="modal-title" id="modalTitleError"></h5>
+            </div>
+            <div class="modal-body">
+                <span id="modalBodyError" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="">
@@ -113,7 +124,6 @@
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <!--<li><a href="#" id="cloudShare"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>-->
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
                         <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
 
@@ -531,7 +541,8 @@ $(document).ready(function(){
 
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
-        gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+        //gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+        gistSaveServerURL: "http://sandbox/phylo-io-server/www/gist.php",
         scaleColor: "black",
         loadingCallback: function () {
             $('#spinner-container').show();
@@ -612,15 +623,20 @@ $(document).ready(function(){
         });
 
         var tree1 = treecomp.addTreeGistURL(gistID[1]);
-        $("#newickInSingle").val(tree1.nwk);
-        $("#page-content-wrapper").empty();
-        $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
 
-        var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
-        treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
+        if(tree1){
 
-        $("#colorScale").empty();
-        $("#action").css({"display": "none"});
+            $("#newickInSingle").val(tree1.nwk);
+            $("#page-content-wrapper").empty();
+            $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
+
+            var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
+            treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
+
+            $("#colorScale").empty();
+            $("#action").css({"display": "none"});
+
+        }
 
     } else if (gistID.length === 3) { //compare mode
 
@@ -638,16 +654,22 @@ $(document).ready(function(){
         $("#page-content-wrapper").empty();
 
         $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
-        $("#newickIn1").val(tree1.nwk);
-        $("#newickIn2").val(tree2.nwk);
-        var tree1 = treecomp.addTree($("#newickIn1").val(), undefined, "left");
-        var tree2 = treecomp.addTree($("#newickIn2").val(), undefined, "right");
-        treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
 
-        $("#colorScale").empty();
-        treecomp.renderColorScale("colorScale");
+        if(tree1 && tree2) {
 
-        $("#action").css({"display": "block"});
+            $("#newickIn1").val(tree1.nwk);
+            $("#newickIn2").val(tree2.nwk);
+            var tree1 = treecomp.addTree($("#newickIn1").val(), undefined, "left");
+            var tree2 = treecomp.addTree($("#newickIn2").val(), undefined, "right");
+            treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
+
+            $("#colorScale").empty();
+            treecomp.renderColorScale("colorScale");
+
+            $("#action").css({"display": "block"});
+
+        }
+
     } //end of gist id part
 
     $("#menu-toggle").click(function (e) {
@@ -946,37 +968,6 @@ $(document).ready(function(){
         }
 //    });
     }
-
-    /*------
-     /
-     /    SHARE BUTTON
-     /
-     / !!! currently not working
-     /
-     ------*/
-    $("#cloudShare").click(function (e) {
-        var mode = $("#mode-buttons .active").attr('id');
-        if (mode === "compare-btn") {
-            try {
-                var exportURLGist = treecomp.exportTreeToGist(true);
-                $("#exportURLInSingle").attr('href', exportURLGist);
-                $("#exportURLInSingle").html(exportURLGist);
-                $('#myModal').modal('show');
-            } catch (e) {
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-            }
-        } else if (mode === "view-btn") {
-            try {
-                var exportURLGist = treecomp.exportTreeToGist(false);
-                $("#exportURLInSingle").attr('href', exportURLGist);
-                $("#exportURLInSingle").html(exportURLGist);
-                $('#myModal').modal('show');
-            } catch (e) {
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-            }
-
-        }
-    });
 
     /*------
      /

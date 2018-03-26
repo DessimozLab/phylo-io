@@ -1407,17 +1407,27 @@ var TreeCompare = function() {
                 gistID2 = data.id;
             });
 
+            if(gistID1 === undefined || gistID2 === undefined){
+                return "Error: Gists could not be created";
+            }
+
             outURL += encodeURIComponent(gistID1 + "-" + gistID2);
 
         } else {
             tree1 = trees[trees.length - 1];
-
+            var gistID;
             writeJSONtoGist(tree1, function (data) {
                 gistID = data.id;
             });
 
+            if(gistID === undefined){
+                return "Error: Gist could not be created";
+            }
+
             outURL += encodeURIComponent(gistID);
         }
+
+
         return outURL;
 
     }
@@ -1432,13 +1442,27 @@ var TreeCompare = function() {
 
         var newTree;
 
-        var request = new XMLHttpRequest();
-        request.open('GET', 'https://api.github.com/gists/' + gistID, false);
-        request.send(null);
+        try {
 
-        if (request.status === 200) {
-            newTree = JSON.parse(request.responseText).files['file1.json'].content;
+            var request = new XMLHttpRequest();
+            request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
+            request.send(null);
+
+            if (request.status === 200) {
+                newTree = JSON.parse(request.responseText).files['file1.json'].content;
+            } else {
+                throw "Error: Github Gist was not found! ("+request.status+")";
+            }
+
+        } catch (e){
+
+            $('#modalTitleError').html('Github Error');
+            $('#modalBodyError').html(e);
+            $('#myErrorModal').modal('show');
+            return false;
+
         }
+
 
         var idCounter = 0;
         settings.autoCollapse = null;
@@ -2428,22 +2452,40 @@ var TreeCompare = function() {
             if (mode === "compare-btn") {
                 try {
                     var exportURLGist = treecomp.exportTreeToGist(true);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
+                    if(exportURLGist.indexOf("ERROR") !== -1){
+                        throw(exportURLGist)
+                    }
+                    $('#modalBody').empty();
+                    $('#modalBody').append("<a href='" + exportURLGist  + "'>"+exportURLGist+"</a>");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                    $('#modalTitleError').html('Error!');
+                    $('#modalBodyError').empty();
+                    $('#modalBodyError').html(e);
+                    $('#myErrorModal').modal('show');
+                    return false;
+
                 }
             } else if (mode === "view-btn"){
                 try{
                     var exportURLGist = treecomp.exportTreeToGist(false);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
+
+                    if(exportURLGist.indexOf("ERROR") !== -1){
+
+                        throw(exportURLGist)
+                    }
+                    $('#modalBody').empty();
+                    $('#modalBody').append("<a href='" + exportURLGist  + "'>"+exportURLGist+"</a>");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                    $('#modalTitleError').html(e);
+                    $('#modalBodyError').empty();
+                    $('#modalBodyError').html(e);
+                    $('#myErrorModal').modal('show');
+                    return false;
                 }
             }
+
+            $('#myModal').modal('show');
+
         });
     }
 
