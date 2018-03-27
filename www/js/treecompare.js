@@ -2441,7 +2441,7 @@ var TreeCompare = function() {
                 .attr("type", "button")
                 .append("span")
                 .attr("class", "fas fa-cloud-upload-alt")
-                .attr("aria-hidden","true");
+                /*.attr("aria-hidden","true");*/
 
         }
 
@@ -5551,7 +5551,7 @@ var TreeCompare = function() {
             if (d.parent && (d._children || d.children)) {
                 add_menu_item(".tooltipElem",
                     function () { // text function
-                        if (d._children !== undefined) { // children invisible
+                        if (d._children !== undefined && !d.children) { // children invisible
                             return "expand >";
                         } else if (d.children) { //children visible
                             return "collapse >";
