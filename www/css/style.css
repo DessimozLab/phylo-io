@@ -142,11 +142,7 @@ svg {
     padding: 0px;
     width: 50%;
     border-width: 0px;
-    border-style: solid;
-    border-right-width: 2px;
-    border-color: #e7e7e7;
-    border-width: thin;
-    border-bottom: 0px;
+    border-right: #e7e7e7 solid 2px;
     top: 55px;
 }
 
@@ -156,7 +152,7 @@ svg {
 }
 
 #page-content-wrapper {
-    padding: 0;
+    /*padding: 20px; */
     height: 100%;
 }
 
@@ -532,7 +528,7 @@ circle.node.search:hover {
 
 text.node{
     fill: black;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 text.node.select{
@@ -551,7 +547,7 @@ text.node.search:hover{
 }
 
 text.triangleText {
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     opacity: 1;
     fill: black;
 }
