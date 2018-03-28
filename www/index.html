@@ -124,6 +124,7 @@
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
+                        <li><a href="#" id="cloudShare"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
                         <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
 
@@ -363,7 +364,7 @@
                         <input type="range" class="sizeAdjust" id="nodeSize" min="0" max="10" value="4">
                         <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Font
                             Size</label>
-                        <input type="range" class="sizeAdjust" id="fontSize" min="5" max="40" value="14">
+                        <input type="range" class="sizeAdjust" id="fontSize" min="5" max="40" value="15">
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="useLengths" checked>Use
                                 Lengths</label>
@@ -627,7 +628,7 @@ $(document).ready(function(){
 
             $("#newickInSingle").val(tree1.nwk);
             $("#page-content-wrapper").empty();
-            $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
+            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1" style="height: 100%;"></div><div class="vis-scale" id="vis-scale1"></div>');
 
             var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
             treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
@@ -941,7 +942,6 @@ $(document).ready(function(){
                 //
                 var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
                 treecomp.changeCanvasSettings({
-
                     autoCollapse: tree1.data.autoCollapseDepth
                 });
                 var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
