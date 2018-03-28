@@ -843,7 +843,8 @@ var TreeCompare = function() {
             return null;
         } else {
             //return (Math.floor(Math.log(leafCount)) + 1);
-            return (Math.floor(Math.log(leafCount)) > 7 ? 9 : (Math.floor(Math.log(leafCount) + 2)));
+            // how many levels will be expanded, 10 is pushing it
+            return (Math.floor(Math.log(leafCount)) > 8 ? 10 : (Math.floor(Math.log(leafCount) + 3)));
         }
 
     }
@@ -1619,7 +1620,7 @@ var TreeCompare = function() {
         postorderTraverse(treeData.root, function (d) {
             if (d._children) {
                 leavesHidden += d.leaves.length;
-                triangles += 1; // changed from 1
+                triangles += 1;
             }
         }, false);
 
@@ -1682,7 +1683,7 @@ var TreeCompare = function() {
             var leavesHiddenInner = 0;
 
             function getCollapsedHeight(d) {
-                if (d._children) {
+                if (d._children && !d.children) {
                     var offset = leafHeight / triangleHeightDivisor * d.leaves.length;
                     if (offset < amendedLeafHeight) { //condition ensures the right spacing if the triangle is smaller than the distance between two leaves
                         collapsedHeightInner += amendedLeafHeight;
@@ -1753,6 +1754,7 @@ var TreeCompare = function() {
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
 
+        // magic number?
         var lengthMult = treeData.treeWidth + 90;
 
         //calculate horizontal position of nodes
@@ -2447,12 +2449,12 @@ var TreeCompare = function() {
 
         buildShareButton(canvasId, downloadClass);
 
-        $("#shareButton").click(function(e) {
+        $("#shareButton, #cloudShare").click(function(e) {
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
                     var exportURLGist = treecomp.exportTreeToGist(true);
-                    if(exportURLGist.indexOf("ERROR") !== -1){
+                    if(exportURLGist.toLowerCase().indexOf("error") !== -1){
                         throw(exportURLGist)
                     }
                     $('#modalBody').empty();
@@ -4163,6 +4165,7 @@ var TreeCompare = function() {
         //render the scale if we have somewhere to put it
         if (scaleId && settings.enableScale) {
             var translatewidth = 100;
+            // TODO magic number?
             var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
@@ -4178,7 +4181,7 @@ var TreeCompare = function() {
             var scaleText = d3.select("#" + canvasId + " svg").append("text")
                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
-                .attr("y", 35)
+                .attr("y", 36)
                 .attr("font-family", "sans-serif")
                 .text("0")
                 .attr("font-size", "14px")
@@ -4252,16 +4255,19 @@ var TreeCompare = function() {
             // returns length from root to farthest leaf in branch lengths
             maxLength = getMaxLengthVisible(baseTree.data.root);
             baseTree.data.maxLength = getLength(longestNode);
-            baseTree.data.treeWidth = width - (2 * paddingHorizontal);
+            /* baseTree.data.treeWidth = width - (2 * paddingHorizontal); */
+            baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
         }
 
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
-        baseTree.data.zoomBehaviour.translate([100, 100]);
+        // where zoom centers
+        baseTree.data.zoomBehaviour.translate([90, 25]);
         baseTree.data.zoomBehaviour.scale(0.8);
+        // move the tree to the coordinates and scale it smaller
         d3.select("#" + baseTree.data.canvasId + " svg g")
-            .attr("transform", "translate(" + [100, 30] + ") scale(0.8)");
+            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)");
 
         d3.select(self.frameElement).style("height", "500px");
 
@@ -4410,7 +4416,7 @@ var TreeCompare = function() {
         }
     }
 
-    /*
+    /**
      Expand all collapsed nodes on path to internal node
      */
     function expandPathToNode(node) {
@@ -4424,9 +4430,9 @@ var TreeCompare = function() {
     }
 
 
-    /*
+    /**
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
-     if recalculate==false, doesn't calculate for a node if it aleady has a value
+     if recalculate==false, doesn't calculate for a node if it already has a value
      Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
      */
     function getVisibleBCNs(tree1, tree2, recalculate) {
@@ -4456,7 +4462,7 @@ var TreeCompare = function() {
         getAllBCNs(tree2, tree1);
     }
 
-    /*
+    /**
      Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
      if recalculate==false, doesn't calculate for a node if it already has a value
@@ -4551,7 +4557,7 @@ var TreeCompare = function() {
         });
     }
 
-    /*
+    /**
      Description:
      Calculates some stuff needed for calculating BCNs later on
      First associate via parameter correspondingLeaf all the leaves from tree1 with a common leaf (= same name)
@@ -4600,7 +4606,7 @@ var TreeCompare = function() {
 
     }
 
-    /*
+    /**
      Spanning tree: if a node in the opposite tree is common with a given leaf (same name),
      then all the nodes are associated to the leaf.
 
@@ -4667,7 +4673,7 @@ var TreeCompare = function() {
         v.elementS = maxElementS;
     }
 
-    /*
+    /**
      Description:
      Creates list of leaves of each node in subtree rooted at v
 
@@ -4688,7 +4694,7 @@ var TreeCompare = function() {
         });
     }
 
-    /*
+    /**
      Description:
      Get the comparison score between two nodes
      First gets all the leaves from the 2 nodes/trees
@@ -4719,7 +4725,7 @@ var TreeCompare = function() {
         return intersect / (lvlen + lnlen - intersect);
     }
 
-    /*
+    /**
      get index of a tree in trees by its name
      */
     function findTreeIndex(name) {
@@ -5102,7 +5108,10 @@ var TreeCompare = function() {
                         colorLinkNodeOver(d, true);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
-                        if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
+                        if (settings.moveOnClick && (d[currentBCN].y && d[currentBCN].x)) { // this part is
+                            // responsible to move the
+                            // opposite highlighted
+                            // node to the center
                             var currentScale = otherTreeData.zoomBehaviour.scale();
 
                             var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
@@ -5801,7 +5810,7 @@ var TreeCompare = function() {
     /*-----------------------------------
      * External function that allows to add an undo functionality on tree operations
      * input:
-     *  buttonId: id element of the button that will perform the und functionality
+     * buttonId: id element of the button that will perform the undo functionality
      */
     function undo(canvasId, buttonId){
 
