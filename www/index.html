@@ -150,10 +150,11 @@
             <ul class="sidebar-nav">
                 <div id="mode-buttons" class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
-                        <button type="button" id="view-btn" class="btn btn-default active">View</button>
+                        <button type="button" id="view-btn" class="btn btn-default active" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Changing to view will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="view">View</button>
                     </div>
+
                     <div class="btn-group" role="group">
-                        <button type="button" id="compare-btn" class="btn btn-default">Compare</button>
+                        <button type="button" id="compare-btn" class="btn btn-default" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Changing to compare will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="compare">Compare</button>
                     </div>
                 </div>
                 <li>
@@ -238,7 +239,7 @@
                     <!-- Centered btn + link group within the div -->
                     <div>
                         <div style="padding-top: 40px; padding-bottom: 10px; width: 100%; margin: 0 auto;">
-                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;"data-condition="haveUndo" data-toggle="modal-confirm" data-message="Rendering will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="render">
+                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Rendering will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="render">
                                 <i class="icon-phyloio-01" aria-hidden="true"></i>
                                 Render
                             </button>
@@ -543,6 +544,7 @@ $(document).ready(function(){
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
         gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+
         scaleColor: "black",
         loadingCallback: function () {
             $('#spinner-container').show();
@@ -716,57 +718,58 @@ $(document).ready(function(){
      */
     $("#best_corresponding_tree").hide();
 
-    $("#view-btn").click(function (e) {
+   function view() {
 
-        if ($(window).height() < 550) {
-            $("#sidebar-wrapper").css({
-                "overflow-y": "scroll"
-            });
-        }
+       if ($(window).height() < 550) {
+           $("#sidebar-wrapper").css({
+               "overflow-y": "scroll"
+           });
+       }
 
-        $("#colorScale").empty();
-        $("#action").css({"display": "none"});
+       $("#colorScale").empty();
+       $("#action").css({"display": "none"});
 
-        $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
-        $("#newickInSingle").val('');
-        $("#compare-btn").removeClass("active");
-        $("#view-btn").addClass("active");
-        $(".compareIn").css({
-            "display": "none"
-        });
-        $("#best_corresponding_tree").hide();
-        $("#newickInputs").css({
-            "padding-bottom": "0px"
-        });
-        $("#cmp-trees-params").css({
-            "display": "none"
-        });
-        $("#view-tree-params").css({
-            "display": "block"
-        });
-        $("#renderErrorMessage").empty();
+       $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+       $("#newickInSingle").val('');
+       $("#compare-btn").removeClass("active");
+       $("#view-btn").addClass("active");
+       $(".compareIn").css({
+           "display": "none"
+       });
+       $("#best_corresponding_tree").hide();
+       $("#newickInputs").css({
+           "padding-bottom": "0px"
+       });
+       $("#cmp-trees-params").css({
+           "display": "none"
+       });
+       $("#view-tree-params").css({
+           "display": "block"
+       });
+       $("#renderErrorMessage").empty();
 
-        treecomp.changeCanvasSettings({
-            enableFixedButtons: false
-        });
+       treecomp.changeCanvasSettings({
+           enableFixedButtons: false
+       });
 
-        if (settingsShown) {
-            showHideSettingsPanel("hide");
-        }
+       if (settingsShown) {
+           showHideSettingsPanel("hide");
+       }
 
-        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
-            $("#rf").empty();
-            $("#spr").empty();
-            $("#eucl").empty();
-        }
-    });
+       if (!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+           $("#rf").empty();
+           $("#spr").empty();
+           $("#eucl").empty();
+       }
+   }
 
     /*
      /
      /    COMPARE MODE: active windows in sidebar
      /
      */
-    $("#compare-btn").click(function (e) {
+    //$("#compare-btn").click(function (e) {
+    function compare() {
 
         if ($(window).height() < 750) {
             $("#sidebar-wrapper").css({
@@ -810,8 +813,7 @@ $(document).ready(function(){
             $("#spr").empty();
             $("#eucl").empty();
         }
-    });
-
+    }
 
     /*------------
      /
