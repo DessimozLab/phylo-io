@@ -89,7 +89,7 @@
     width: 30px;
 }
 #page-content-wrapper {
-    padding: 20px;
+    padding: 19px 0 0 0;
     position: relative;
 }
 #wrapper.toggled #page-content-wrapper {

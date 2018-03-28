@@ -105,7 +105,7 @@ svg {
     padding: 0px;
     position: absolute;
     width: 100%;
-    overflow: scroll !important;
+    /*overflow: scroll !important;*/
     top: 55px;
 }
 
@@ -152,7 +152,7 @@ svg {
 }
 
 #page-content-wrapper {
-    /*padding: 20px; */
+    padding: 0;
     height: 100%;
 }
 
@@ -783,7 +783,8 @@ treeToolsMenuContent {
     position: absolute;
     /*margin-right: 10px;*/
     max-height: 200px;
-    overflow: scroll;
+    overflow: hidden;
+    overflow-y: scroll;
     margin-top: 30px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     background-color: white;
