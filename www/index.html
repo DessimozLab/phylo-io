@@ -56,6 +56,57 @@
             display: none;
 
         }
+
+        /* multilevel dropdown */
+        .dropdown-submenu {
+            position:relative;
+        }
+        .dropdown-submenu>.dropdown-menu {
+            top:0;
+            left:100%;
+            margin-top:-6px;
+            margin-left:-1px;
+            -webkit-border-radius:0 6px 6px 6px;
+            -moz-border-radius:0 6px 6px 6px;
+            border-radius:0 6px 6px 6px;
+        }
+        .dropdown-submenu>a:after {
+            display:block;
+            content:" ";
+            float:right;
+            width:0;
+            height:0;
+            border-color:transparent;
+            border-style:solid;
+            border-width:5px 0 5px 5px;
+            border-left-color:#cccccc;
+            margin-top:5px;
+            margin-right:-10px;
+        }
+        .dropdown-submenu:hover>a:after {
+            border-left-color:#555;
+        }
+        .dropdown-submenu.pull-left {
+            float:none;
+        }
+        .dropdown-submenu.pull-left>.dropdown-menu {
+            left:-100%;
+            margin-left:10px;
+            -webkit-border-radius:6px 0 6px 6px;
+            -moz-border-radius:6px 0 6px 6px;
+            border-radius:6px 0 6px 6px;
+        }
+        /* multilevel dropdown */
+
+        .flipped {
+            -moz-transform: scaleX(-1);
+            -o-transform: scaleX(-1);
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            filter: FlipH;
+            -ms-filter: "FlipH";
+        }
+
     </style>
 </head>
 
@@ -110,8 +161,92 @@
             </div>
         </div>
 
+        <!-- multilevel nav -->
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">File<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Open</a>
+                        </li>
+                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Save as...</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">SVG</a>
+                                </li>
+                                <li><a href="#">PNG</a>
+                                </li>
+                                <li><a href="#">NWK</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
+
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
+                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Calculate distance</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#" id="find"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Find</a></li>
+                        <li><a href="#" id="undo"><span class="glyphicon glyphicon-share-alt flipped" aria-hidden="true"></span> Undo</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="action" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Compare <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
+                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Minimise differences</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Reorder left tree</a></li>
+                                <li><a href="#">Reorder right tree</a></li>
+                                <li><a href="#">Reroot left tree</a></li>
+                                <li><a href="#">Reroot right tree</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
+                <li class="dist">
+                    <ul>
+                        <li id = "rf"></li>
+                        <li id = "eucl"></li>
+                        <li id = "spr"></li>
+
+                    </ul>
+                </li>
+
+                <li><a href="manual.html" class="homelinks">Help</a></li>
+                <li><a href="about.html" class="homelinks">About</a></li>
+            </ul>
+
+        </div>
+        <!-- /multilevel nav -->
+
         <!-- menu navigation bar -->
+        <!--
         <div id="navbar" class="navbar-collapse collapse list-inline">
+
+            <ul class="nav navbar-nav navbar-left list-inline" style="margin-right: 60px">
+                <li class="dropdown" id="action">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
+                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
+                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
+
+                    </ul>
+                </li>
+
+            </ul>
+
+
             <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
                 <li class="dist">
                     <ul>
@@ -124,7 +259,7 @@
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#" id="cloudShare"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>
+                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
                         <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
 
@@ -134,6 +269,7 @@
                 <li><a href="about.html" class="homelinks">About</a></li>
             </ul>
         </div>
+        -->
         <!-- END menu navigation bar -->
     </div>
 </nav>
@@ -435,7 +571,27 @@ function haveUndo(){
     return $(".undoButton").attr("data-count") > 0;
 
 }
+
 $(document).ready(function(){
+
+    jQuery.fn.d3Click = function () {
+        this.each(function (i, e) {
+            var evt = new MouseEvent("click");
+            e.dispatchEvent(evt);
+        });
+    };
+
+    $("#find").on("click", function(){
+        $("#vis-container1 > .searchButton").d3click();
+    });
+
+    $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).parent().siblings().removeClass('open');
+        $(this).parent().toggleClass('open');
+    });
+
 
 	$("#confirmok").on('click', function(event) {
         if($("#confirmok").data('target')){
