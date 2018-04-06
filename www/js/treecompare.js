@@ -3027,7 +3027,8 @@ var TreeCompare = function() {
 
         // ensures that searchbar is removed when clicking on canvas
         $(document).click(function(event) {
-            if(!$(event.target).closest('.searchBox').length && $('.searchInput').is(":visible")) {
+            // exclude find menuitem click
+            if(!$(event.target).closest('.searchBox').length && $('.searchInput').is(":visible") && event.target.id != 'find' ) {
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
                     if(d.parent){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
