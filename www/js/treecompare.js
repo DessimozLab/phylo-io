@@ -3830,6 +3830,15 @@ var TreeCompare = function() {
         var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
         var leftTree = trees[leftIdx];
         var rightTree = trees[rightIdx];
+        if((leftTree.root.deepLeafList.length > 100 || rightTree.root.deepLeafList.length > 100) ){
+
+            $('#modalTitleError').html('Too complex tree');
+            $('#modalBodyError').html("One or both trees have too many leaves. 100 leaves is the maximum.");
+            $('#myErrorModal').modal('show');
+            return false;
+
+        }
+
         var leftLeaves = leftTree.root.deepLeafList.sort();
         var rightLeaves = rightTree.root.deepLeafList.sort();
         var commonLeaves = getIntersectionOfLeaves(leftLeaves, rightLeaves);
