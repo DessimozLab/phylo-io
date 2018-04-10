@@ -226,49 +226,6 @@
             </ul>
 
         </div>
-        <!-- /multilevel nav -->
-
-        <!-- menu navigation bar -->
-        <!--
-        <div id="navbar" class="navbar-collapse collapse list-inline">
-
-            <ul class="nav navbar-nav navbar-left list-inline" style="margin-right: 60px">
-                <li class="dropdown" id="action">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
-                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
-                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
-
-                    </ul>
-                </li>
-
-            </ul>
-
-
-            <ul class="nav navbar-nav navbar-right list-inline" style="margin-right: 60px">
-                <li class="dist">
-                    <ul>
-                        <li id = "rf"></li>
-                        <li id = "eucl"></li>
-                        <li id = "spr"></li>
-
-                    </ul>
-                </li>
-                <li class="dropdown" id="action">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
-                        <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
-                        <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
-
-                    </ul>
-                </li>
-                <li><a href="manual.html" class="homelinks">Help</a></li>
-                <li><a href="about.html" class="homelinks">About</a></li>
-            </ul>
-        </div>
-        -->
         <!-- END menu navigation bar -->
     </div>
 </nav>
@@ -647,21 +604,6 @@ function fireEvent(node, eventName) {
 
 
 $(document).ready(function(){
-/*
-
-    jQuery.fn.d3Click = function () {
-        this.each(function (i, e) {
-            var evt = new MouseEvent("click");
-            e.dispatchEvent(evt);
-        });
-    };
-
-    $("#find").on("click", function(){
-        $("#vis-container1 > .searchButton").d3click();
-    });
-
-*/
-
 
     $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
         event.preventDefault();
