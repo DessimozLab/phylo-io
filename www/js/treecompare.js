@@ -3831,6 +3831,15 @@ var TreeCompare = function() {
         var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
         var leftTree = trees[leftIdx];
         var rightTree = trees[rightIdx];
+        if((leftTree.root.deepLeafList.length > 100 || rightTree.root.deepLeafList.length > 100) ){
+
+            $('#modalTitleError').html('Too complex tree');
+            $('#modalBodyError').html("One or both trees have too many leaves. 100 leaves is the maximum.");
+            $('#myErrorModal').modal('show');
+            return false;
+
+        }
+
         var leftLeaves = leftTree.root.deepLeafList.sort();
         var rightLeaves = rightTree.root.deepLeafList.sort();
         var commonLeaves = getIntersectionOfLeaves(leftLeaves, rightLeaves);
@@ -3891,7 +3900,7 @@ var TreeCompare = function() {
             d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
                     var svg = d3.select("#" + canvasId + " svg");
-                    addLogo(svg);
+                    //addLogo(svg);
                     var name = svg.attr("id");
                     var svgString = getSVGString(svg.node());
                     var exportElement = svg.node();
@@ -3927,25 +3936,6 @@ var TreeCompare = function() {
                     saveAs(blob, "phylo.io.nwk");
                 });
 
-
-            // Below are the functions that handle actual exporting:
-            // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
-            // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
-/*
-            function getSVGString( svgNode ) {
-                svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                //var cssStyleText = getCSSStyles( svgNode );
-                // appendCSS( cssStyleText, svgNode );
-
-                var serializer = new XMLSerializer();
-                var svgString = serializer.serializeToString(svgNode);
-                svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-                svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
-
-                return svgString;
-
-            }
-*/
 
             // Below are the functions that handle actual exporting:
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
