@@ -14,6 +14,7 @@ position: absolute;
     transform: translate(-50%, 0);
     margin-left: 10px; /*magic number */
     bottom: 0;
+    z-index:99;
 }
 
 .logo {
