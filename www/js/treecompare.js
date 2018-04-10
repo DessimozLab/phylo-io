@@ -1,4 +1,4 @@
-var TreeCompare = function() {
+    var TreeCompare = function() {
 
     var trees = [];
     var longestNode = {};
@@ -3900,7 +3900,7 @@ var TreeCompare = function() {
             d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
                     var svg = d3.select("#" + canvasId + " svg");
-                    //addLogo(svg);
+                    addLogo(svg);
                     var name = svg.attr("id");
                     var svgString = getSVGString(svg.node());
                     var exportElement = svg.node();
