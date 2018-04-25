@@ -757,6 +757,42 @@
         return avg;
     }
 
+    /**
+     *
+     * check if string is jsonstring
+     *
+     * @param str
+     * @returns {boolean}
+     * @constructor
+     */
+    function IsJsonString(str) {
+        /* version to not return json object
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    */
+
+        try {
+            var o = JSON.parse(str);
+
+            // Handle non-exception-throwing cases:
+            // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+            // but... JSON.parse(null) returns null, and typeof null === "object",
+            // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+            if (o && typeof o === "object") {
+                return o;
+            }
+        }
+        catch (e) { }
+
+        return false;
+    };
+
     /*
      Called externally to convert a tree and add to internal tree structure
      */
@@ -767,18 +803,29 @@
 
         var tmpNewicks;
         var newicks = [];
-        // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
-        if (newick.indexOf(";") !== -1) {
-            tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "").split(";");
-            if (tmpNewicks.length > 1) {
-                newicks = tmpNewicks.slice(0, -1);
+        var noJsonConversion = false;
+        var tree = IsJsonString(newick);
+        // if the string is already json, don't convert it
+        // json can have only one tree, at least for now
+        if(tree == false){
+
+            // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
+            if (newick.indexOf(";") !== -1) {
+                tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "").split(";");
+                if (tmpNewicks.length > 1) {
+                    newicks = tmpNewicks.slice(0, -1);
+                }
+            } else {
+                tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
+                if (tmpNewicks.length > 1) {
+                    newicks = tmpNewicks.slice(0, -1);
+                }
             }
+
         } else {
-            tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
-            if (tmpNewicks.length > 1) {
-                newicks = tmpNewicks.slice(0, -1);
-            }
+            newicks[0] = tree;
         }
+
         // reset settings radiobuttons
         updateSettingsLabels();
 
@@ -790,7 +837,13 @@
             var count = (num + i);
             var name = "Tree_" + count;
 
-            var tree = convertTree(newicks[i]);
+            if(tree){
+                tree.length = 0.1;
+                tree.collapsed = false;
+             } else {
+                tree = convertTree(newicks[i]);
+            }
+
 
             var leaves = getChildLeaves(tree).sort();
             for (var j = 0; j < leaves.length; j++) {
@@ -1821,10 +1874,13 @@
             .attr("id", function (d) {
                 return d.ID;
             });
+
         // Enter any new nodes at the parent's previous position.
         // Perform the actual drawing
         var nodeEnter = node.enter().append("g")
-            .filter(function(d){return d.keep})
+            .filter(function(d){
+                return d.keep
+            })
             .attr("class", "node")
             .attr("transform", function (d) {
                 if (source === treeData.root) {
@@ -1906,6 +1962,12 @@
             .attr("d", function (d) {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
+
+        d3.selectAll('g.node')
+            .filter(function(d){
+                return d.evolutionaryEvents != false
+            })
+            .each(addStack);
 
         //instant node changes
         node.select("text")
@@ -3438,7 +3500,127 @@
             .style("bottom", "5px")
             .style("right", "27px");*/
     }
+    function addStack(d, i){
 
+        if(!d.evolutionaryEvents || d.evolutionaryEvents == false) {
+            return "";
+        }
+
+        var svg = d3.select(this);
+        var xpos = -100;
+        var data = [[{}], [{}], [{}], [{}]];
+        var stackHeight = 100;
+        var h = 150;
+        var w = 20;
+        var margin = 5;
+        var color = d3.scale.category10();
+
+        data = barStack(d, stackHeight, data);
+
+        var y = d3.scale.linear().range([h-margin, 0+margin]);
+
+        y.domain(data.extent);
+
+        svg.selectAll(".stacks")
+            .data(data)
+            .enter()
+            .append("g")
+            .classed("stacks", true)
+            .style("fill", function(d, i) { return color(i) })
+            .style("opacity", 0.8)
+            .selectAll("rect")
+            .data(Object)
+            .enter()
+            .append("rect")
+                .attr("x", function () {
+                    return xpos;
+                })
+                .attr("y", function(d) {
+                    return 0 - d.y0; 
+                })
+                .attr("height", function(d) { return d.size })
+                .attr("width", w)
+                .on("mouseover", function(d) {
+                    tooltip.style("display", null);
+                    tooltip.attr("transform", "translate(" + (xpos) + "," + (y(0) - 260) + ")");
+                    tooltip.select("text").text(d.sizelbl+": "+d.realsize);
+                })
+                .on("mouseout", function() { tooltip.style("display", "none"); })
+
+        var tooltip = svg.append("g")
+          .attr("class", "tt")
+          .style("display", "none");
+
+        tooltip.append("rect")
+          .attr("width", 100)
+          .attr("height", 20)
+          .attr("fill", "white")
+          .style("opacity", 0.5);
+
+        tooltip.append("text")
+          .attr("x", 4)
+          .attr("dy", "1.2em")
+          .style("text-anchor", "middle")
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold")
+          .attr("color", "#4a4a4a");
+    }
+
+    function barStack(seriesDataAll, stackHeight, data) {
+
+        var size = 0;
+        var seriesIndex = 0;
+        var d = seriesDataAll.evolutionaryEvents;
+        var posBase = 0; // positive base
+        var seriesIndex = 0;
+
+        var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+
+        realSize = Math.abs(d.identical);
+        size = scale(Math.abs(d.identical), normalizer);
+        var posBase = posBase + size;
+        data[0][seriesIndex] = new seriesElement('Identical', realSize, size, size, posBase)
+
+        realSize = Math.abs(d.duplicated);
+        size = scale(Math.abs(d.duplicated), normalizer);
+        var posBase = posBase + size
+        data[1][seriesIndex] = new seriesElement('Duplicated', realSize, size, size, posBase)
+
+        realSize = Math.abs(d.gained);
+        size = scale(Math.abs(d.gained), normalizer);
+        var posBase = posBase + size
+        data[2][seriesIndex] = new seriesElement('Gained', realSize, size, size, posBase)
+
+        realSize = Math.abs(d.lost);
+        size = scale(Math.abs(d.lost), normalizer);
+        data[3][seriesIndex] = new seriesElement('Lost', realSize, size, -size, 0)
+
+        function seriesElement(sizeLbl, realSize, size, y, y0){
+            this.sizelbl = sizeLbl
+            this.realsize = realSize
+            this.size = size
+            this.y = y
+            this.y0 = y0
+        }
+
+        function scale(val, normalizer){
+            return val * normalizer;
+        }
+
+        data.extent = d3.extent(
+            d3.merge(
+                d3.merge(
+                    data.map(function(e) {
+                        return e.map(function(f) {
+                            return [f.y0,f.y0-f.size]
+                        })
+                    })
+                )
+            )
+        )
+
+        return data;
+    }
 
     function createLadderizedTree(canvasId, ladderizeClass, baseTree) {
         //renders the manual zoom slider if turned on
@@ -4303,18 +4485,24 @@
         }
 
         function zoom() {
-            var scale = d3.event.scale;
-            var translation = d3.event.translate;
-            zoomBehaviour.translate(translation);
-            zoomBehaviour.scale(scale);
+
+            var height = this.getBBox().height;
+            var width = this.getBBox().width;
+            var scale =  Math.pow(d3.event.scale,.1);
+            var translateY = (height - (height * scale))/2;
+            var translateX = (width - (width * scale))/2;
+
+            d3.select("#" + canvasId + " svg g").attr("transform", "translate(" + [translateX,translateY] + ")" + " scale(" +scale+ ")");
+
             if(settings.enableScale){
                 applyScaleText(scaleText, scale, root);
             }
+
             if (settings.enableZoomSliders) {
                 $("#zoomSlider" + baseTree.data.id).val(scale);
             }
-            d3.select("#" + canvasId + " svg g")
-                .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
+            //d3.select("#" + canvasId + " svg g")
+            //    .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             d3.selectAll(".tooltipElem").remove();
 
             var tooltips = $("[id$=tooltipElem]	");
