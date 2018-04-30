@@ -20,6 +20,18 @@
     var undoActionData = [];
     var undoFullTreeData = [];
 
+    /**
+     * possible values to decide stack normalization
+     * ratio: stackheight value is used to calculate ratio to fit stack into stackheight
+     * max: maximum amount of genomes is used as stackheight normalizer
+     * number: numeric value for the normalizer
+     *
+    */
+
+    //var maxStackHeight = "ratio";
+    var maxStackHeight = "max";
+    var largestGenome = 0;
+    var stackHeight = 100;
 
     /*
      colors for the color scale for comparing nodes to best common node
@@ -57,7 +69,7 @@
         moveOnClick: true,
         enableZoomSliders: true,
         scaleMin: 0.05,
-        scaleMax: 5,
+        scaleMax: 15,
         scaleColor: "black",
         loadingCallback: function () {
         },
@@ -766,16 +778,6 @@
      * @constructor
      */
     function IsJsonString(str) {
-        /* version to not return json object
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
-    */
 
         try {
             var o = JSON.parse(str);
@@ -837,12 +839,10 @@
             var count = (num + i);
             var name = "Tree_" + count;
 
-            if(tree){
-                tree.length = 0.1;
-                tree.collapsed = false;
-             } else {
+            if(!tree){
                 tree = convertTree(newicks[i]);
             }
+
 
 
             var leaves = getChildLeaves(tree).sort();
@@ -861,6 +861,9 @@
                 d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
                 d.correspondingHighlight = false;
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+                if(!d.length){ d.length = 0.1; }
+
+                if(maxStackHeight == "max" && d.numberGenes > largestGenome) { largestGenome = d.numberGenes; }
                 idCounter++;
             });
 
@@ -3500,6 +3503,7 @@
             .style("bottom", "5px")
             .style("right", "27px");*/
     }
+
     function addStack(d, i){
 
         if(!d.evolutionaryEvents || d.evolutionaryEvents == false) {
@@ -3509,15 +3513,17 @@
         var svg = d3.select(this);
         var xpos = -100;
         var data = [[{}], [{}], [{}], [{}]];
-        var stackHeight = 100;
         var h = 150;
         var w = 20;
         var margin = 5;
         var color = d3.scale.category10();
 
-        data = barStack(d, stackHeight, data);
+        data = barStack(d, data);
 
-        var y = d3.scale.linear().range([h-margin, 0+margin]);
+        //var y = d3.scale.linear().range([h-margin, 0+margin]);
+
+        var y = d3.scale.linear().domain([0, d3.max(data, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
+  .range([h, 0]);
 
         y.domain(data.extent);
 
@@ -3535,11 +3541,16 @@
                 .attr("x", function () {
                     return xpos;
                 })
-                .attr("y", function(d) {
-                    return 0 - d.y0; 
-                })
-                .attr("height", function(d) { return d.size })
-                .attr("width", w)
+            //.attr("y", function(d) { console.log(d); return y(d.y0 + d.y); })
+            //.attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+            //.attr("y",function(d) { return y(d.y0)})
+            //.attr("height",function(d) { return y(0)-y(d.size)})
+            .attr("y", function(d) {
+                return 0 - d.y0; 
+            })
+            .attr("height", function(d) { return d.size })
+
+            .attr("width", w)
                 .on("mouseover", function(d) {
                     tooltip.style("display", null);
                     tooltip.attr("transform", "translate(" + (xpos) + "," + (y(0) - 260) + ")");
@@ -3566,7 +3577,7 @@
           .attr("color", "#4a4a4a");
     }
 
-    function barStack(seriesDataAll, stackHeight, data) {
+    function barStack(seriesDataAll, data) {
 
         var size = 0;
         var seriesIndex = 0;
@@ -3574,33 +3585,47 @@
         var posBase = 0; // positive base
         var seriesIndex = 0;
 
-        var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+
+        if(maxStackHeight == "max" && largestGenome > 0){
+            var normalizer = stackHeight / largestGenome;
+            //var normalizer = seriesDataAll.numberGenes / (largestGenome * 10);
+        } else if(Number.isInteger(maxStackHeight)){
+            var normalizer = maxStackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+        } else {
+            var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+        }
+
+        //console.log("Normalizer for "+seriesDataAll.name+"("+seriesDataAll.numberGenes+"): "+normalizer);
+
+        var StackSizeIdentical = scale(d.identical, normalizer);
+        var StackSizeDuplicated = scale(d.duplicated, normalizer);
+        var StackSizeGained = scale(d.gained, normalizer);
+        var StackSizeLost = scale(d.lost, normalizer);
+        var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeIdentical;
 
         realSize = Math.abs(d.identical);
-        size = scale(Math.abs(d.identical), normalizer);
-        var posBase = posBase + size;
-        data[0][seriesIndex] = new seriesElement('Identical', realSize, size, size, posBase)
+        var posBase = posBase + StackSizeIdentical;
+        data[0][seriesIndex] = new seriesElement('Identical', realSize, StackSizeIdentical, posBase, posStackSize)
 
         realSize = Math.abs(d.duplicated);
-        size = scale(Math.abs(d.duplicated), normalizer);
-        var posBase = posBase + size
-        data[1][seriesIndex] = new seriesElement('Duplicated', realSize, size, size, posBase)
+        var posBase = posBase + StackSizeDuplicated
+        data[1][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
 
         realSize = Math.abs(d.gained);
-        size = scale(Math.abs(d.gained), normalizer);
-        var posBase = posBase + size
-        data[2][seriesIndex] = new seriesElement('Gained', realSize, size, size, posBase)
+        var posBase = posBase + StackSizeGained
+        data[2][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
 
         realSize = Math.abs(d.lost);
-        size = scale(Math.abs(d.lost), normalizer);
-        data[3][seriesIndex] = new seriesElement('Lost', realSize, size, -size, 0)
+        /* move lost down a little to make it easier to hover it and not the node line */
+        data[3][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
 
-        function seriesElement(sizeLbl, realSize, size, y, y0){
+        function seriesElement(sizeLbl, realSize, size, y0, posStackSize){
             this.sizelbl = sizeLbl
             this.realsize = realSize
-            this.size = size
-            this.y = y
+            this.size = Math.abs(size)
+            this.y = size
             this.y0 = y0
+            this.posStackSize = posStackSize;
         }
 
         function scale(val, normalizer){
@@ -3612,7 +3637,7 @@
                 d3.merge(
                     data.map(function(e) {
                         return e.map(function(f) {
-                            return [f.y0,f.y0-f.size]
+                            return [f.y0, f.y0 - f.size]
                         })
                     })
                 )
@@ -4488,7 +4513,7 @@
 
             var height = this.getBBox().height;
             var width = this.getBBox().width;
-            var scale =  Math.pow(d3.event.scale,.1);
+            var scale =  Math.pow(d3.event.scale, .2);
             var translateY = (height - (height * scale))/2;
             var translateX = (width - (width * scale))/2;
 
