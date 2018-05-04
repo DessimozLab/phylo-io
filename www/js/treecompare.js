@@ -28,8 +28,8 @@
      *
     */
 
-    //var maxStackHeight = "ratio";
-    var maxStackHeight = "max";
+    var maxStackHeight = "ratio";
+    //var maxStackHeight = "max";
     var largestGenome = 0;
     var stackHeight = 100;
 
@@ -3517,64 +3517,94 @@
         var w = 20;
         var margin = 5;
         var color = d3.scale.category10();
+        var xDistanceFromNode = 60;
+        var txtDistanceFromBar = w + margin;
+        var legendTxtSize = 11;
 
         data = barStack(d, data);
 
         //var y = d3.scale.linear().range([h-margin, 0+margin]);
 
-        var y = d3.scale.linear().domain([0, d3.max(data, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
-  .range([h, 0]);
+        var y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) {
+                return d3.max(d, function(d) {
+                    return d.y0 + d.y;
+                });
+            })])
+            .range([h, 0]);
 
-        y.domain(data.extent);
+        var stackDrag = d3.behavior.drag()
+             .origin(function() {
+                var g = this;
+                return {x: d3.transform(g.getAttribute("transform")).translate[0],
+                        y: d3.transform(g.getAttribute("transform")).translate[1]};
+            })
+            .on('dragstart', function(){
+                // we don't want to move the whole tree
+                d3.event.sourceEvent.stopPropagation();
+            })
+            .on("drag", function(d,i) {
 
-        svg.selectAll(".stacks")
+                g = this;
+                translate = d3.transform(g.getAttribute("transform")).translate;
+                x = d3.event.dx + translate[0],
+                y = d3.event.dy + translate[1];
+                // keep it vertically aligned
+                d3.select(g).attr("transform", "translate(" + x + ", 0)");
+            });
+
+        var stackGroup =  svg.append("g").classed("stackGroup", true).call(stackDrag);
+
+        var legends = stackGroup.selectAll("text")
             .data(data)
             .enter()
-            .append("g")
-            .classed("stacks", true)
-            .style("fill", function(d, i) { return color(i) })
-            .style("opacity", 0.8)
-            .selectAll("rect")
-            .data(Object)
+            .append("text")
+            .classed("legendtxt", true)
+            .text(function(d){
+                return d[0].realsize;
+            }).attr("x", function() {
+                return (0 - xDistanceFromNode) + txtDistanceFromBar;
+            }).attr("y", function(d) {
+                return (5 - d[0].y0) + (d[0].y / 2)
+            }).attr("font-size","12").attr("stroke","black")
+
+        var summaryLegend = stackGroup.selectAll(".stackGroup")
+            .data(function(d) {return [d];})
             .enter()
-            .append("rect")
-                .attr("x", function () {
-                    return xpos;
-                })
-            //.attr("y", function(d) { console.log(d); return y(d.y0 + d.y); })
-            //.attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-            //.attr("y",function(d) { return y(d.y0)})
-            //.attr("height",function(d) { return y(0)-y(d.size)})
-            .attr("y", function(d) {
-                return 0 - d.y0; 
+            .append("text")
+            .classed("legendtxt", true)
+            .text(function(d){
+                return d.numberGenes
+            }).attr("x", function() {
+                return 0 - (txtDistanceFromBar + xDistanceFromNode)
+            }).attr("y", function(d) {
+                return 0 - margin;
+            }).attr("font-size", legendTxtSize).attr("stroke","black")
+
+        var stackSlices = stackGroup.selectAll("rect")
+            .data(data)
+            .enter()
+            .append("rect");
+
+        var slices = stackSlices
+            .style("fill", function(d, i) {
+                return color(i)
             })
-            .attr("height", function(d) { return d.size })
+            .style("opacity", 0.8)
+            .attr("y", function(d) {
+                return 0 - d[0].y0; 
+            })
+            .attr("x", function(d) {
+                return 0 - xDistanceFromNode; 
+            })
+            .attr("height", function(d) {
+                return d[0].size
+            })
 
             .attr("width", w)
-                .on("mouseover", function(d) {
-                    tooltip.style("display", null);
-                    tooltip.attr("transform", "translate(" + (xpos) + "," + (y(0) - 260) + ")");
-                    tooltip.select("text").text(d.sizelbl+": "+d.realsize);
-                })
-                .on("mouseout", function() { tooltip.style("display", "none"); })
 
-        var tooltip = svg.append("g")
-          .attr("class", "tt")
-          .style("display", "none");
+        d3.selectAll(".stackGroup").moveToFront();
 
-        tooltip.append("rect")
-          .attr("width", 100)
-          .attr("height", 20)
-          .attr("fill", "white")
-          .style("opacity", 0.5);
-
-        tooltip.append("text")
-          .attr("x", 4)
-          .attr("dy", "1.2em")
-          .style("text-anchor", "middle")
-          .attr("font-size", "12px")
-          .attr("font-weight", "bold")
-          .attr("color", "#4a4a4a");
     }
 
     function barStack(seriesDataAll, data) {
@@ -3588,14 +3618,11 @@
 
         if(maxStackHeight == "max" && largestGenome > 0){
             var normalizer = stackHeight / largestGenome;
-            //var normalizer = seriesDataAll.numberGenes / (largestGenome * 10);
         } else if(Number.isInteger(maxStackHeight)){
             var normalizer = maxStackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
         } else {
             var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
         }
-
-        //console.log("Normalizer for "+seriesDataAll.name+"("+seriesDataAll.numberGenes+"): "+normalizer);
 
         var StackSizeIdentical = scale(d.identical, normalizer);
         var StackSizeDuplicated = scale(d.duplicated, normalizer);
@@ -3646,6 +3673,12 @@
 
         return data;
     }
+
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function() {
+            this.parentNode.appendChild(this);
+        });
+    };
 
     function createLadderizedTree(canvasId, ladderizeClass, baseTree) {
         //renders the manual zoom slider if turned on
@@ -4106,7 +4139,7 @@
             // PNG
             d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
-                    var svg = d3.select("#" + canvasId + " svg");
+                    var svg = d3.select("#" + canvasId + " > svg");
                     addLogo(svg);
                     var name = svg.attr("id");
                     var svgString = getSVGString(svg.node());
@@ -4511,13 +4544,19 @@
 
         function zoom() {
 
-            var height = this.getBBox().height;
-            var width = this.getBBox().width;
-            var scale =  Math.pow(d3.event.scale, .2);
-            var translateY = (height - (height * scale))/2;
-            var translateX = (width - (width * scale))/2;
+            //var height = this.getBBox().height;
+            //var width = this.getBBox().width;
+            //var scale =  Math.pow(d3.event.scale, .2);
+            //var translateY = (height - (height * scale))/2;
+            //var translateX = (width - (width * scale))/2;
 
-            d3.select("#" + canvasId + " svg g").attr("transform", "translate(" + [translateX,translateY] + ")" + " scale(" +scale+ ")");
+            //d3.select("#" + canvasId + " svg > g").attr("transform", "translate(" + [translateX,translateY] + ")"
+            // + " scale(" +scale+ ")");
+
+            var scale = d3.event.scale;
+            var translation = d3.event.translate;
+            zoomBehaviour.translate(translation);
+            zoomBehaviour.scale(scale);
 
             if(settings.enableScale){
                 applyScaleText(scaleText, scale, root);
@@ -4526,8 +4565,7 @@
             if (settings.enableZoomSliders) {
                 $("#zoomSlider" + baseTree.data.id).val(scale);
             }
-            //d3.select("#" + canvasId + " svg g")
-            //    .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
+            d3.select("#" + canvasId + " svg > g").attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             d3.selectAll(".tooltipElem").remove();
 
             var tooltips = $("[id$=tooltipElem]	");
@@ -6198,7 +6236,7 @@
      /
      ------*/
     function exportBothTrees(canvasIDLeft, canvasIDRight){
-        var svg = d3.select("#" + canvasIDLeft + " svg");
+        var svg = d3.select("#" + canvasIDLeft + " > svg");
         addLogo(svg);
 
         // Copy left tree
