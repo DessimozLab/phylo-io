@@ -3512,12 +3512,20 @@
 
     function addStack(d, i){
 
+        // don't draw histograms more than once
+        // TODO find more d3 way of doing this
+        try {
+            if(d3.select("#"+d.ID+" g").classed("stackGroup")){
+                return "";
+            };
+        }
+        catch(err){ }
+
         if(!d.evolutionaryEvents || d.evolutionaryEvents == false) {
             return "";
         }
 
         var svg = d3.select(this);
-        var xpos = -100;
         var data = [[{}], [{}], [{}], [{}]];
         var h = 150;
         var w = 20;
@@ -3528,8 +3536,6 @@
         var legendTxtSize = 11;
 
         data = barStack(d, data);
-
-        //var y = d3.scale.linear().range([h-margin, 0+margin]);
 
         var y = d3.scale.linear()
             .domain([0, d3.max(data, function(d) {
