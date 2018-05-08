@@ -86,7 +86,9 @@
         fitTree: "scale", //none, scale
         enableSizeControls: true,
         enableSearch: true,
-        autoCollapse: null
+        autoCollapse: null,
+        showHistogramSummaryValue: true,
+        showHistogramValues: true
     };
 
 
@@ -195,6 +197,8 @@
         settings.zoomMode = getSetting(settingsIn.zoomMode, settings.zoomMode);
         settings.fitTree = getSetting(settingsIn.fitTree, settings.fitTree);
         settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
+        settings.showHistogramSummaryValue = getSetting(settingsIn.showHistogramSummaryValue, settings.showHistogramSummaryValue);
+        settings.showHistogramValues = getSetting(settingsIn.showHistogramValues, settings.showHistogramValues);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -1057,6 +1061,8 @@
     Changes text in the length scale according to changes in vis
      */
     function applyScaleText(scaleText, zoomScale, root) {
+        // no scaletext if it's supressed
+        if(!scaleText){ return false; }
         if (root.children || root._children) {
             var children = getChildren(root);
             var length = 0;
@@ -3555,31 +3561,44 @@
 
         var stackGroup =  svg.append("g").classed("stackGroup", true).call(stackDrag);
 
-        var legends = stackGroup.selectAll("text")
-            .data(data)
-            .enter()
-            .append("text")
-            .classed("legendtxt", true)
-            .text(function(d){
-                return d[0].realsize;
-            }).attr("x", function() {
-                return (0 - xDistanceFromNode) + txtDistanceFromBar;
-            }).attr("y", function(d) {
-                return (5 - d[0].y0) + (d[0].y / 2)
-            }).attr("font-size","12").attr("stroke","black")
+        if(settings.showHistogramValues) {
+            var legends = stackGroup.selectAll("text")
+                .data(data)
+                .enter()
+                .append("text")
+                .classed("legendtxt", true)
+                .text(function (d) {
+                    return d[0].realsize;
+                }).attr("x", function () {
+                    return (0 - xDistanceFromNode) + txtDistanceFromBar;
+                }).attr("y", function (d) {
+                    // TODO adjust based on feedback
+                    var yPos = d[0].y < legendTxtSize ? legendTxtSize : d[0].y;
+                    var posAdj = d[0].y0 < 0 || d[0].y > legendTxtSize ? 0 : legendTxtSize / 2;
+                    return (5 - d[0].y0) + ((yPos / 2) - posAdj);
+                }).attr("font-size", legendTxtSize).attr("stroke", "black")
 
-        var summaryLegend = stackGroup.selectAll(".stackGroup")
-            .data(function(d) {return [d];})
-            .enter()
-            .append("text")
-            .classed("legendtxt", true)
-            .text(function(d){
-                return d.numberGenes
-            }).attr("x", function() {
-                return 0 - (txtDistanceFromBar + xDistanceFromNode)
-            }).attr("y", function(d) {
-                return 0 - margin;
-            }).attr("font-size", legendTxtSize).attr("stroke","black")
+        }
+
+        if(settings.showHistogramSummaryValue) {
+
+
+            var summaryLegend = stackGroup.selectAll(".stackGroup")
+                .data(function (d) {
+                    return [d];
+                })
+                .enter()
+                .append("text")
+                .classed("legendtxt", true)
+                .text(function (d) {
+                    return d.numberGenes
+                }).attr("x", function () {
+                    return 0 - (txtDistanceFromBar + xDistanceFromNode)
+                }).attr("y", function (d) {
+                    return 0 - margin;
+                }).attr("font-size", legendTxtSize).attr("stroke", "black")
+
+        }
 
         var stackSlices = stackGroup.selectAll("rect")
             .data(data)
@@ -3592,10 +3611,10 @@
             })
             .style("opacity", 0.8)
             .attr("y", function(d) {
-                return 0 - d[0].y0; 
+                return 0 - d[0].y0;
             })
             .attr("x", function(d) {
-                return 0 - xDistanceFromNode; 
+                return 0 - xDistanceFromNode;
             })
             .attr("height", function(d) {
                 return d[0].size
@@ -4175,7 +4194,6 @@
                     var blob = new Blob([nwkString], {"type": "text/plain;charset=utf-8," + encodeURIComponent(nwkString)});
                     saveAs(blob, "phylo.io.nwk");
                 });
-
 
             // Below are the functions that handle actual exporting:
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
