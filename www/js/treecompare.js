@@ -33,6 +33,16 @@
     var largestGenome = 0;
     var stackHeight = 100;
 
+    var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
+
+    var color = {};
+
+    for(var i = 0; i < colors.length; i++){
+        color[labels[i]] = colors[i];
+    }
+
+
     /*
      colors for the color scale for comparing nodes to best common node
 
@@ -1133,30 +1143,6 @@
             addParents(children[i]);
         }
     }
-
-    /*
-
-     ! THIS FUNCTION BREAKS THE DISPLAY OF THE TREE (SHRUNK)
-     ! REPLACED BY A OLD VERSION:
-     ! https://github.com/DessimozLab/phylo-io/blob/8c7596b04c3b602b7da915f0d62675f684fd3744/www/js/treecompare.js
-
-     function getMaxLengthVisible(root) {
-     var max = 0;
-     function getMax_internal(d,distfromroot) {
-     distfromroot+=d.length;
-     if (d.children) {
-     var children = getChildren(d);
-     for (var i = 0, ilim=children.length; i < ilim; i++) {
-     getMax_internal(children[i],distfromroot);
-     }
-     } else {
-     if (distfromroot>max) max = distfromroot;
-     }
-     }
-     getMax_internal(root,0);
-     return max;
-     }*/
-
 
     /*
      returns longest visible branch or triangle
@@ -3510,6 +3496,84 @@
             .style("right", "27px");*/
     }
 
+    function addMainLegend(svgId) {
+
+        var width = 220;
+        var height = 80;
+        var svgHeight = height + 25;
+        var legendRectSize = 18;
+        var margin = 25;
+        var legendTxtSize = 12;
+        var dataLabels = ["Gained", "Duplicated", "Identical", "Lost" ]
+        var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+        var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
+
+        var color = {};
+
+        for(var i = 0; i < colors.length; i++){
+
+            color[labels[i]] = colors[i];
+        }
+
+        var legendSvg = d3.select("#" + svgId).append("svg")
+             .attr("x", margin)
+             .attr("y", margin)
+             .attr("width", width + "px")
+             .attr("height", svgHeight + "px")
+             .append("g");
+
+        legendSvg.append("line")
+            .attr("x1", -75)
+            .attr("y1", 3 * legendRectSize)
+            .attr("x2", 200)
+            .attr("y2", 3 * legendRectSize)
+            .attr("class", "divline")
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+        legendSvg.selectAll('rect')
+            .data(dataLabels)
+            .enter()
+            .append('rect')
+            .attr('x', 100)
+            .attr('y', function(d, i){
+                return i * legendRectSize;
+            })
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .attr('fill', function(d, i){
+                return color[d];
+            });
+
+        legendSvg.selectAll('text')
+            .data(dataLabels)
+            .enter()
+            .append('text')
+            .text(function(d){
+                return d;
+            })
+            .attr('x', 100 + legendRectSize + 5)
+            .attr('y', function(d, i){
+                return i * legendRectSize + 12;
+            })
+            .attr('text-anchor', 'start')
+            .attr('alignment-baseline', 'hanging')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+
+        legendSvg
+            .append('text')
+            .attr("class", "legendGeneTotal")
+            .text("Total # of genes")
+            .attr('x', 0)
+            .attr('y', 3 * legendRectSize - 5)
+            .attr('text-anchor', 'start')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+        d3.selectAll(".legendGeneTotal").moveToFront();
+
+    }
+
     function addStack(d, i){
 
         // don't draw histograms more than once
@@ -3530,10 +3594,19 @@
         var h = 150;
         var w = 20;
         var margin = 5;
-        var color = d3.scale.category10();
         var xDistanceFromNode = 60;
         var txtDistanceFromBar = w + margin;
-        var legendTxtSize = 11;
+        var legendTxtSize = 12;
+
+        var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+        var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
+
+        var color = {};
+
+        for(var i = 0; i < colors.length; i++){
+
+            color[labels[i]] = colors[i];
+        }
 
         data = barStack(d, data);
 
@@ -3556,7 +3629,6 @@
                 d3.event.sourceEvent.stopPropagation();
             })
             .on("drag", function(d,i) {
-
                 g = this;
                 translate = d3.transform(g.getAttribute("transform")).translate;
                 x = d3.event.dx + translate[0],
@@ -3588,7 +3660,6 @@
 
         if(settings.showHistogramSummaryValue) {
 
-
             var summaryLegend = stackGroup.selectAll(".stackGroup")
                 .data(function (d) {
                     return [d];
@@ -3613,7 +3684,7 @@
 
         var slices = stackSlices
             .style("fill", function(d, i) {
-                return color(i)
+                return color[d[0].sizelbl];
             })
             .style("opacity", 0.8)
             .attr("y", function(d) {
@@ -3629,6 +3700,7 @@
             .attr("width", w)
 
         d3.selectAll(".stackGroup").moveToFront();
+
 
     }
 
@@ -6317,7 +6389,8 @@
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth,
-        calcDist: calcDist
+        calcDist: calcDist,
+        addMainLegend: addMainLegend
 
     }
 };
