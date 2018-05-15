@@ -1,69 +1,81 @@
 # Phylo.io
 A web app and library for visualising and comparing phylogenetic trees.
 
-##Demo
+## Demo
 The app can be accessed at [phylo.io](http://phylo.io).
 
-##Dependencies
-Phylo.IO requires JQuery, D3js and UnderscoreJS:
+## Dependencies
+Phylo.IO requires JQuery, D3js, UnderscoreJS, canvas-toBlob, FileSavier, circular-json and spin:
 ```html
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="//peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/treecompare.js"></script>
+<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+<script type="text/javascript" src="js/spin.min.js"></script>
+<script type="text/javascript" src="js/d3.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/circular-json.js"></script>
+<script type="text/javascript" src="js/canvas-toBlob.js"></script>
+<script type="text/javascript" src="js/FileSaver.min.js"></script>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
 ```
 
-##Initialisation
+## Initialisation
 An instance of Phylo.IO is created using the init method:
 ```js
-    var treecomp = TreeCompare.init();
+    var treecomp = TreeCompare().init();
 ```
 
 Settings can be assigned at initilisation by passing a settings object with any settings set to desired values (see the 'Settings' section below for more info):
 ```js
-    var treecomp = TreeCompare.init({
+    var treecomp = TreeCompare().init({
         treeHeight: 765,
+        ...
     });
 ```
 
-##Adding Trees
+## Adding Trees
 Add trees in Newick format to your TreeCompare object:
 ```js
-treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);");
+var tree1 = treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);", undefined, "single");
 ```
-You can add trees with a name too:
+You can add trees with a name too and add left and right as indicators for the compare functionality:
 ```js
-treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);", "My tree name");
+var tree1 = treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);", "my name1", "left");
+var tree2 = treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);", "my name2", "right");
 ```
 Names must be unique, this method throws an exception if a tree is added with a non-unique name.
 The method also throws an exception if the newick is invalid.
 
 If no name is provided, the tree is given a default name of "Tree 1", "Tree 2", "Tree 3" etc.
 
-##Visualising Trees
+## Visualising Trees
 There are two visualisation styles, viewing and comparison:
 
-###Viewing Trees
+### Viewing Trees
 A single tree can be visualised using the viewTree method:
 ```js
-treecomp.viewTree("Tree 1", "canvas-container-div", "scale-container-div");
+treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
 ```
 This renders the tree with name "Tree 1" in the div with the id "canvas-container-div".
 The third parameter is optional and is the id of the div where the tree's length scale will be rendered.
 
-###Comparing Trees
+### Comparing Trees
 Two trees can be compared using a comparison visualisation using the compareTrees method:
 ```js
-treecomp.compareTrees("Tree 1", "canvas-container-div", "Tree 2", "canvas-container-div2", "scale-div1", "scale-div2") 
+treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
 ```
 The tree named "Tree 1" is rendered in the div with id "canvas-container-div" and the tree named "Tree 2" is rendered in the div with id "canvas-container-div2". The scale div ids are optional and scales for each tree will be rendered in these divs if ids are provided.
 
-##Settings
+## Settings
 There are a number of settings available to manipulate the visualisations in real time. Settings can be changed with the changeSettings method by passing an object containing the setting names and their new values:
 
 ```js
-    treecomp.changeSettings({
+treecomp.changeSettings({
         useLengths: false
-    });
+   });
 ```
 
 The available settings and their default values are as follows:
@@ -112,6 +124,20 @@ The available settings and their default values are as follows:
         enableSearch: true,
         //depth to which nodes are automatically collapsed e.g 3 collapses all nodes deeper than depth 3
         autoCollapse: null // 0,1,2,3... etc
+        //enable reroot functionality to find best root based on opposite tree in compare mode
+        enableRerootFixedButtons: true,
+        //swaps bipartitions until best resembles to opposite tree is found
+        enableSwapFixedButtons: true,
+        //enables to share tree as gist
+        enableCloudShare: true,
+        //enables buttons to ladderize trees
+        enableLadderizeTreeButton: true,
+        //enables all opposite tree actiosn
+        enableOppositeTreeActions: true,
+        //allows to align tiplabels
+        alignTipLables: false,
+        //allows to search for multiple leaves
+        selectMultipleSearch: false,
     }
 ```
 
