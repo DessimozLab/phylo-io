@@ -4,7 +4,7 @@
 <head>
     <title>Phylo.io</title>
     <meta charset="UTF-8">
-    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+    <script src="//peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/treecompare.js"></script>
     <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
@@ -14,9 +14,9 @@
     <script type="text/javascript" src="js/circular-json.js"></script>
     <script type="text/javascript" src="js/canvas-toBlob.js"></script>
     <script type="text/javascript" src="js/FileSaver.min.js"></script>
-    <!--<script type="text/javascript" src="js/nexus.js"></script>-->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
@@ -66,15 +66,28 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h5 class="modal-title">Link to share tree visualisation</h5>
+                <h5 class="modal-title" id="modalTitle">Link to share tree visualisation</h5>
             </div>
             <div class="modal-body">
-                <a href="" id="exportURLInSingle"></a>
+                <span id="modalBody"></span>
             </div>
         </div>
     </div>
 </div>
 
+<div id="myErrorModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h5 class="modal-title" id="modalTitleError"></h5>
+            </div>
+            <div class="modal-body">
+                <span id="modalBodyError" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="">
@@ -111,7 +124,7 @@
                 <li class="dropdown" id="action">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <!--<li><a href="#" id="cloudShare"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Share</a></li>-->
+                        <li><a href="#" id="cloudShare"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Share</a></li>
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
                         <li><a href="#" id="distance"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Calculate distance</a></li>
 
@@ -127,19 +140,21 @@
 
 
 <div id="wrapper">
+    <div id="colorScale"></div>
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <div id="menu-toggle">
-            <i class="fas fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 2px; padding-left: 2px;z-index: 99;"></i>
+            <i class="fas fa-2x fa-arrow-circle-left" id="collapse-sidebar-span" style="color: #e7e7e7; padding-top: 5px; padding-left: 6px;"></i>
         </div>
         <div id="sidebar-wrapper-wrapper">
             <ul class="sidebar-nav">
                 <div id="mode-buttons" class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
-                        <button type="button" id="view-btn" class="btn btn-default active">View</button>
+                        <button type="button" id="view-btn" class="btn btn-default active" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Changing to view will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="view">View</button>
                     </div>
+
                     <div class="btn-group" role="group">
-                        <button type="button" id="compare-btn" class="btn btn-default">Compare</button>
+                        <button type="button" id="compare-btn" class="btn btn-default" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Changing to compare will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="compare">Compare</button>
                     </div>
                 </div>
                 <li>
@@ -224,7 +239,7 @@
                     <!-- Centered btn + link group within the div -->
                     <div>
                         <div style="padding-top: 40px; padding-bottom: 10px; width: 100%; margin: 0 auto;">
-                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;">
+                            <button type="button" id="renderButton" class="btn btn-info" style="width: 200px;" data-condition="haveUndo" data-toggle="modal-confirm" data-message="Rendering will clear your changes to current tree!" data-title="Please confirm" data-target="#confirmModal" data-action="render">
                                 <i class="icon-phyloio-01" aria-hidden="true"></i>
                                 Render
                             </button>
@@ -233,7 +248,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;" class="far fa-edit" aria-hidden="true"></i>
+                    <a href="#" id="settings" style="line-height: 25px; text-decoration: none;"><i style="vertical-align: middle; text-align: center; margin: 0;" class="fas fa-edit" aria-hidden="true"></i>
                         Settings&nbsp;
                     </a>
                     <div id="settingsPanel">
@@ -347,10 +362,10 @@
                         <input type="range" class="sizeAdjust" id="lineThickness" min="1" max="10" value="3">
                         <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Node
                             Size</label>
-                        <input type="range" class="sizeAdjust" id="nodeSize" min="0" max="10" value="3">
+                        <input type="range" class="sizeAdjust" id="nodeSize" min="0" max="10" value="4">
                         <label class="settingsCheckboxLabel" style="padding-left: 10px; padding-top: 10px;">Font
                             Size</label>
-                        <input type="range" class="sizeAdjust" id="fontSize" min="5" max="40" value="14">
+                        <input type="range" class="sizeAdjust" id="fontSize" min="5" max="40" value="15">
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="useLengths" checked>Use
                                 Lengths</label>
@@ -368,6 +383,7 @@
                         <div class="checkbox">
                             <label class="settingsCheckboxLabel"><input type="checkbox" id="selectMultipleSearch">Select
                                 multiple search results</label>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -389,15 +405,85 @@
                 <p>3. Click "Render"</p>
             </div>
         </div>
+
     </div>
     <!-- /#page-content-wrapper -->
-    <div id="colorScale"></div>
+
+
 </div>
 <!-- /#wrapper -->
 
+<!-- Modal -->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="confirmok" type="button" data-dismiss="modal" class="btn btn-danger btn-ok" data-target="">Continue</button>
+            </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+function haveUndo(){
+
+    return $(".undoButton").attr("data-count") > 0;
+
+}
+$(document).ready(function(){
+
+	$("#confirmok").on('click', function(event) {
+        if($("#confirmok").data('target')){
+            var action = $("#confirmok").data('target');
+            window[action]();
+        }
+    })
+
+     $('button[data-toggle="modal-confirm"]').click(function(event) {
+
+        event.preventDefault();
+        var self = $(this);
+        var message = self.data('message');
+        var title = self.data('title');
+        var target = $(self.data('target'));
+        var condition = self.data('condition');
+        var action = self.data('action');
+        if( target.length == 1) {
+            target.find('.modal-title').html(title);
+            target.find('.modal-body').html(message);
+            var showModal = true;
+            var fn = window[condition];
+            if(typeof fn === 'function') {
+                showModal = fn(condition);
+            }
+            if( showModal ) {
+
+                $("#confirmok").data('target', action);
+                target.on('shown.bs.modal', function(e) {
+                    target.find('button[data-confirm="modal"]').click(function(e){
+                        e.preventDefault();
+                    });
+                });
+                target.modal({ show: true });
+            } else {
+                window[action]();
+            };
+        };
+    });
+
+
+
+});
+</script>
 
 <!-- Menu Toggle Script -->
 <script>
+
     //new ui
 
     // Ensures that the acknowledgment footer is correctly placed in the sidebar
@@ -405,6 +491,7 @@
         var div_footer = $("#footer_div");
         var divdiv = $("#sidebar-wrapper-wrapper");
         div_footer.width(divdiv.width());
+        $('#collapse-sidebar-span').attr('data-icon', 'arrow-circle-left');
 
     })();
 
@@ -456,6 +543,8 @@
 
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
+        gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+
         scaleColor: "black",
         loadingCallback: function () {
             $('#spinner-container').show();
@@ -536,15 +625,20 @@
         });
 
         var tree1 = treecomp.addTreeGistURL(gistID[1]);
-        $("#newickInSingle").val(tree1.nwk);
-        $("#page-content-wrapper").empty();
-        $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div><div class="vis-scale" id="vis-scale1"></div>');
 
-        var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
-        treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
+        if(tree1){
 
-        $("#colorScale").empty();
-        $("#action").css({"display": "none"});
+            $("#newickInSingle").val(tree1.nwk);
+            $("#page-content-wrapper").empty();
+            $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1" style="height: 100%;"></div><div class="vis-scale" id="vis-scale1"></div>');
+
+            var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
+            treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
+
+            $("#colorScale").empty();
+            $("#action").css({"display": "none"});
+
+        }
 
     } else if (gistID.length === 3) { //compare mode
 
@@ -562,16 +656,22 @@
         $("#page-content-wrapper").empty();
 
         $("#page-content-wrapper").html('<div class="container-fluid vis-container-2" id="vis-container1"></div><div class="container-fluid vis-container-2" id="vis-container2"></div>');
-        $("#newickIn1").val(tree1.nwk);
-        $("#newickIn2").val(tree2.nwk);
-        var tree1 = treecomp.addTree($("#newickIn1").val(), undefined, "left");
-        var tree2 = treecomp.addTree($("#newickIn2").val(), undefined, "right");
-        treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
 
-        $("#colorScale").empty();
-        treecomp.renderColorScale("colorScale");
+        if(tree1 && tree2) {
 
-        $("#action").css({"display": "block"});
+            $("#newickIn1").val(tree1.nwk);
+            $("#newickIn2").val(tree2.nwk);
+            var tree1 = treecomp.addTree($("#newickIn1").val(), undefined, "left");
+            var tree2 = treecomp.addTree($("#newickIn2").val(), undefined, "right");
+            treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
+
+            $("#colorScale").empty();
+            treecomp.renderColorScale("colorScale");
+
+            $("#action").css({"display": "block"});
+
+        }
+
     } //end of gist id part
 
     $("#menu-toggle").click(function (e) {
@@ -589,13 +689,15 @@
         if (sb_indicator === "arrow-circle-left") {
             $('#sidebar-nav').hide();
             sidebar_icon.attr('data-icon', 'arrow-circle-right');
+            sidebar_icon.removeClass('fa-arrow-circle-left').addClass('fa-arrow-circle-right');
             newWidth = 30;
-            $('#sidebar-wrapper').css("width", "");
+            $('#sidebar-wrapper').css("width", "30");
             $('#sidebar-wrapper').css("overflow-y", "hidden");
 
         } else {
             $('#sidebar-nav').show();
             sidebar_icon.attr('data-icon', 'arrow-circle-left');
+            sidebar_icon.removeClass('fa-arrow-circle-right').addClass('fa-arrow-circle-left');
             $('#sidebar-wrapper').css("overflow-y", "auto");
             if(isScrollBar()){
                 $('#sidebar-wrapper').css("width", "437");
@@ -616,57 +718,58 @@
      */
     $("#best_corresponding_tree").hide();
 
-    $("#view-btn").click(function (e) {
+   function view() {
 
-        if ($(window).height() < 550) {
-            $("#sidebar-wrapper").css({
-                "overflow-y": "scroll"
-            });
-        }
+       if ($(window).height() < 550) {
+           $("#sidebar-wrapper").css({
+               "overflow-y": "scroll"
+           });
+       }
 
-        $("#colorScale").empty();
-        $("#action").css({"display": "none"});
+       $("#colorScale").empty();
+       $("#action").css({"display": "none"});
 
-        $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
-        $("#newickInSingle").val('');
-        $("#compare-btn").removeClass("active");
-        $("#view-btn").addClass("active");
-        $(".compareIn").css({
-            "display": "none"
-        });
-        $("#best_corresponding_tree").hide();
-        $("#newickInputs").css({
-            "padding-bottom": "0px"
-        });
-        $("#cmp-trees-params").css({
-            "display": "none"
-        });
-        $("#view-tree-params").css({
-            "display": "block"
-        });
-        $("#renderErrorMessage").empty();
+       $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+       $("#newickInSingle").val('');
+       $("#compare-btn").removeClass("active");
+       $("#view-btn").addClass("active");
+       $(".compareIn").css({
+           "display": "none"
+       });
+       $("#best_corresponding_tree").hide();
+       $("#newickInputs").css({
+           "padding-bottom": "0px"
+       });
+       $("#cmp-trees-params").css({
+           "display": "none"
+       });
+       $("#view-tree-params").css({
+           "display": "block"
+       });
+       $("#renderErrorMessage").empty();
 
-        treecomp.changeCanvasSettings({
-            enableFixedButtons: false
-        });
+       treecomp.changeCanvasSettings({
+           enableFixedButtons: false
+       });
 
-        if (settingsShown) {
-            showHideSettingsPanel("hide");
-        }
+       if (settingsShown) {
+           showHideSettingsPanel("hide");
+       }
 
-        if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
-            $("#rf").empty();
-            $("#spr").empty();
-            $("#eucl").empty();
-        }
-    });
+       if (!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+           $("#rf").empty();
+           $("#spr").empty();
+           $("#eucl").empty();
+       }
+   }
 
     /*
      /
      /    COMPARE MODE: active windows in sidebar
      /
      */
-    $("#compare-btn").click(function (e) {
+    //$("#compare-btn").click(function (e) {
+    function compare() {
 
         if ($(window).height() < 750) {
             $("#sidebar-wrapper").css({
@@ -710,8 +813,7 @@
             $("#spr").empty();
             $("#eucl").empty();
         }
-    });
-
+    }
 
     /*------------
      /
@@ -787,14 +889,15 @@
      /    RENDER BUTTON
      /
      ------*/
-    $("#renderButton").click(function (e) {
+    //$("#renderButton").click(function (e) {
+    function render() {
         $("#renderErrorMessage").empty();
         hideOptionalSettings();
         $("#menu-toggle").click();
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
-            if(!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
+            if (!$("#rf").is(":empty") || !$("#spr").is(":empty") || !$("#eucl").is(":empty")) {
                 $("#rf").empty();
                 $("#spr").empty();
                 $("#eucl").empty();
@@ -841,7 +944,6 @@
                 //
                 var tree1 = treecomp.addTree($("#newickInSingle").val(), undefined, "single");
                 treecomp.changeCanvasSettings({
-
                     autoCollapse: tree1.data.autoCollapseDepth
                 });
                 var collapseText = tree1.data.autoCollapseDepth === null ? "OFF" : tree1.data.autoCollapseDepth.toString();
@@ -865,38 +967,8 @@
                 }
             }
         }
-    });
-
-    /*------
-     /
-     /    SHARE BUTTON
-     /
-     / !!! currently not working
-     /
-     ------*/
-    // $("#cloudShare").click(function (e) {
-    //     var mode = $("#mode-buttons .active").attr('id');
-    //     if (mode === "compare-btn") {
-    //         try {
-    //             var exportURLGist = treecomp.exportTreeToGist(true);
-    //             $("#exportURLInSingle").attr('href', exportURLGist);
-    //             $("#exportURLInSingle").html(exportURLGist);
-    //             $('#myModal').modal('show');
-    //         } catch (e) {
-    //             $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-    //         }
-    //     } else if (mode === "view-btn") {
-    //         try {
-    //             var exportURLGist = treecomp.exportTreeToGist(false);
-    //             $("#exportURLInSingle").attr('href', exportURLGist);
-    //             $("#exportURLInSingle").html(exportURLGist);
-    //             $('#myModal').modal('show');
-    //         } catch (e) {
-    //             $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
-    //         }
-    //
-    //     }
-    // });
+//    });
+    }
 
     /*------
      /
@@ -914,14 +986,15 @@
      ------*/
     $("#distance").click(function(e){
         var distances = treecomp.calcDist();
-        var rf = distances[0][0];
-        var rf_norm = distances[0][1];
-        var eucl = distances[1];
-        var spr = distances[2];
-        d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
-        d3.select("#eucl").text("Euclidean: " + eucl);
-        d3.select("#spr").text("SPR: " + spr);
-
+        if(distances) {
+            var rf = distances[0][0];
+            var rf_norm = distances[0][1];
+            var eucl = distances[1];
+            var spr = distances[2];
+            d3.select("#rf").text("Robinson-Foulds: "+rf+"/"+rf_norm);
+            d3.select("#eucl").text("Euclidean: " + eucl);
+            d3.select("#spr").text("SPR: " + spr);
+        }
     });
 
     /*------

@@ -9,11 +9,12 @@ body#manual {
 }
 
 #colorScale {
-    width: 50%;
-    margin: auto;
-    position: absolute;
+position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-left: 10px; /*magic number */
     bottom: 0;
-    right: 25px;
+    z-index: 99;
 }
 
 .logo {
@@ -105,7 +106,7 @@ svg {
     padding: 0px;
     position: absolute;
     width: 100%;
-    overflow: scroll !important;
+    /*overflow: scroll !important;*/
     top: 55px;
 }
 
@@ -142,11 +143,7 @@ svg {
     padding: 0px;
     width: 50%;
     border-width: 0px;
-    border-style: solid;
-    border-right-width: 2px;
-    border-color: #e7e7e7;
-    border-width: thin;
-    border-bottom: 0px;
+    border-right: #e7e7e7 solid 2px;
     top: 55px;
 }
 
@@ -532,7 +529,7 @@ circle.node.search:hover {
 
 text.node{
     fill: black;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 text.node.select{
@@ -551,7 +548,7 @@ text.node.search:hover{
 }
 
 text.triangleText {
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     opacity: 1;
     fill: black;
 }
@@ -787,7 +784,8 @@ treeToolsMenuContent {
     position: absolute;
     /*margin-right: 10px;*/
     max-height: 200px;
-    overflow: scroll;
+    overflow: hidden;
+    overflow-y: scroll;
     margin-top: 30px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     background-color: white;

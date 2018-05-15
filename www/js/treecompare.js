@@ -45,6 +45,7 @@ var TreeCompare = function() {
     var maxHighlightedNodes = 20;
 
     var settings = {
+        gistSaveServerURL: "http://phylo.io/server/gist.php",
         useLengths: true,
         alignTipLables: false,
         selectMultipleSearch: false,
@@ -64,7 +65,7 @@ var TreeCompare = function() {
         },
         internalLabels: "none", //none, name, length, similarity
         enableDownloadButtons: true,
-        enableCloudShare: false,
+        enableCloudShare: true,
         enableLadderizeTreeButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
@@ -181,6 +182,7 @@ var TreeCompare = function() {
         settings.internalLabels = getSetting(settingsIn.internalLabels, settings.internalLabels);
         settings.zoomMode = getSetting(settingsIn.zoomMode, settings.zoomMode);
         settings.fitTree = getSetting(settingsIn.fitTree, settings.fitTree);
+        settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -841,7 +843,8 @@ var TreeCompare = function() {
             return null;
         } else {
             //return (Math.floor(Math.log(leafCount)) + 1);
-            return (Math.floor(Math.log(leafCount)) > 7 ? 9 : (Math.floor(Math.log(leafCount) + 2)));
+            // how many levels will be expanded, 10 is pushing it
+            return (Math.floor(Math.log(leafCount)) > 8 ? 10 : (Math.floor(Math.log(leafCount) + 3)));
         }
 
     }
@@ -1374,14 +1377,17 @@ var TreeCompare = function() {
                 "public": true,
                 "files": {"file1.json": {"content": dataOut}}
             };
+
             return $.ajax({
                 async: false,
-                url: 'https://api.github.com/gists',
+                url: settings.gistSaveServerURL,
                 type: 'POST',
                 dataType: 'json',
-                data: JSON.stringify(tmp),
+                data: {jsondata: JSON.stringify(tmp)},
                 success: callback
+
             });
+
         }
 
         var tmpURL = window.location.href.split("#");
@@ -1402,17 +1408,27 @@ var TreeCompare = function() {
                 gistID2 = data.id;
             });
 
+            if(gistID1 === undefined || gistID2 === undefined){
+                return "Error: Gists could not be created";
+            }
+
             outURL += encodeURIComponent(gistID1 + "-" + gistID2);
 
         } else {
             tree1 = trees[trees.length - 1];
-
+            var gistID;
             writeJSONtoGist(tree1, function (data) {
                 gistID = data.id;
             });
 
+            if(gistID === undefined){
+                return "Error: Gist could not be created";
+            }
+
             outURL += encodeURIComponent(gistID);
         }
+
+
         return outURL;
 
     }
@@ -1427,13 +1443,27 @@ var TreeCompare = function() {
 
         var newTree;
 
-        var request = new XMLHttpRequest();
-        request.open('GET', 'https://api.github.com/gists/' + gistID, false);
-        request.send(null);
+        try {
 
-        if (request.status === 200) {
-            newTree = JSON.parse(request.responseText).files['file1.json'].content;
+            var request = new XMLHttpRequest();
+            request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
+            request.send(null);
+
+            if (request.status === 200) {
+                newTree = JSON.parse(request.responseText).files['file1.json'].content;
+            } else {
+                throw "Error: Github Gist was not found! ("+request.status+")";
+            }
+
+        } catch (e){
+
+            $('#modalTitleError').html('Github Error');
+            $('#modalBodyError').html(e);
+            $('#myErrorModal').modal('show');
+            return false;
+
         }
+
 
         var idCounter = 0;
         settings.autoCollapse = null;
@@ -1590,7 +1620,7 @@ var TreeCompare = function() {
         postorderTraverse(treeData.root, function (d) {
             if (d._children) {
                 leavesHidden += d.leaves.length;
-                triangles += 1; // changed from 1
+                triangles += 1;
             }
         }, false);
 
@@ -1653,7 +1683,7 @@ var TreeCompare = function() {
             var leavesHiddenInner = 0;
 
             function getCollapsedHeight(d) {
-                if (d._children) {
+                if (d._children && !d.children) {
                     var offset = leafHeight / triangleHeightDivisor * d.leaves.length;
                     if (offset < amendedLeafHeight) { //condition ensures the right spacing if the triangle is smaller than the distance between two leaves
                         collapsedHeightInner += amendedLeafHeight;
@@ -1723,15 +1753,9 @@ var TreeCompare = function() {
         // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
-        //TODO: the drag and drop of the tree doesn't work properly
-        // if ($("#vis-container2").length !== 0){
-        //     var lengthMult = treeData.treeWidth + 90 + 200;
-        // } else {
-        //     var lengthMult = treeData.treeWidth + 90 + 400;
-        // }
 
+        // magic number?
         var lengthMult = treeData.treeWidth + 90;
-
 
         //calculate horizontal position of nodes
         var newLenghtMult = 0;
@@ -1823,7 +1847,7 @@ var TreeCompare = function() {
         //perform the actual drawing
         nodeEnter.append("circle")
             .attr("class", "node")
-            .attr("r", settings.nodeSize);
+            .attr("r", settings.nodeSize * 2);
 
         nodeEnter.append("rect")
             .attr("class", "node")
@@ -2393,7 +2417,8 @@ var TreeCompare = function() {
             undo.append("a")
                 .attr("class", "btn btn-sm sharp undoButton")
                 .attr("title", "undo last tree manipulation")
-                .attr("id", "undobtn")
+                .attr("id", "undobtn" + canvasId)
+                .attr("data-count", 0)
                 .append("span")
                 .attr("class", "fa fa-undo")
                 .attr("aria-hidden", "true");
@@ -2401,7 +2426,7 @@ var TreeCompare = function() {
 
         buildUndoButton(canvasId);
 
-        undo(canvasId, "undobtn");
+        undo(canvasId, "undobtn" + canvasId);
     }
 
 
@@ -2417,34 +2442,52 @@ var TreeCompare = function() {
                 .attr("title", "share tree as gist in the cloud")
                 .attr("type", "button")
                 .append("span")
-                .attr("class", "fa fa-cloud-upload")
-                .attr("aria-hidden","true");
+                .attr("class", "fas fa-cloud-upload-alt")
+                /*.attr("aria-hidden","true");*/
 
         }
 
         buildShareButton(canvasId, downloadClass);
 
-        $("#shareButton").click(function(e) {
+        $("#shareButton, #cloudShare").click(function(e) {
             var mode = $("#mode-buttons .active").attr('id');
             if (mode === "compare-btn") {
                 try {
                     var exportURLGist = treecomp.exportTreeToGist(true);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
+                    if(exportURLGist.toLowerCase().indexOf("error") !== -1){
+                        throw(exportURLGist)
+                    }
+                    $('#modalBody').empty();
+                    $('#modalBody').append("<a href='" + exportURLGist  + "'>"+exportURLGist+"</a>");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                    $('#modalTitleError').html('Error!');
+                    $('#modalBodyError').empty();
+                    $('#modalBodyError').html(e);
+                    $('#myErrorModal').modal('show');
+                    return false;
+
                 }
             } else if (mode === "view-btn"){
                 try{
                     var exportURLGist = treecomp.exportTreeToGist(false);
-                    $("#exportURLInSingle").attr('href', exportURLGist);
-                    $("#exportURLInSingle").html(exportURLGist);
-                    $('#myModal').modal('show');
+
+                    if(exportURLGist.indexOf("ERROR") !== -1){
+
+                        throw(exportURLGist)
+                    }
+                    $('#modalBody').empty();
+                    $('#modalBody').append("<a href='" + exportURLGist  + "'>"+exportURLGist+"</a>");
                 } catch (e) {
-                    $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Nothing to share</div>')).hide().slideDown(300);
+                    $('#modalTitleError').html(e);
+                    $('#modalBodyError').empty();
+                    $('#modalBodyError').html(e);
+                    $('#myErrorModal').modal('show');
+                    return false;
                 }
             }
+
+            $('#myModal').modal('show');
+
         });
     }
 
@@ -3375,18 +3418,18 @@ var TreeCompare = function() {
     }
 
     function addLogo(svg) {
+        // TODO load with ajax
         var logo_xml = '<svg id="exportLogo" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 107.35 22.23"><defs><style>.cls-1{fill:#808285;}.cls-2{fill:#939598;}.cls-3{fill:#bcbec0;}</style></defs><path class="cls-1" d="M17.17,22.23V5.72H21a6.55,6.55,0,0,1,4.53,1.45,5.16,5.16,0,0,1,1.62,4.05,5.58,5.58,0,0,1-1.52,4,5.16,5.16,0,0,1-3.88,1.58,6.81,6.81,0,0,1-2.31-.46v5.84H17.17ZM20.91,7.74H19.38v6.72a4.51,4.51,0,0,0,2.09.51A3.21,3.21,0,0,0,24,13.92a3.88,3.88,0,0,0,1-2.72,3.82,3.82,0,0,0-.46-1.89,2.76,2.76,0,0,0-1.24-1.19A5.54,5.54,0,0,0,20.91,7.74Z"/><path class="cls-1" d="M29.43,0.06H31.6v7.1A4.18,4.18,0,0,1,35,5.51a3.6,3.6,0,0,1,2,.55,3.31,3.31,0,0,1,1.29,1.51,7.46,7.46,0,0,1,.42,2.86v6.22H36.47V9.89A3,3,0,0,0,35.88,8a1.9,1.9,0,0,0-1.55-.73A2.62,2.62,0,0,0,33,7.6,6.1,6.1,0,0,0,31.6,8.83v7.83H29.43V0.06Z"/><path class="cls-1" d="M47.5,5.72h2.43l-7.74,16.5H39.77l3.71-7.92L39.26,5.72h2.46l3,6.17Z"/><path class="cls-1" d="M51.49,0.06h2.16v16.6H51.49V0.06Z"/><path class="cls-1" d="M62,5.7a5.7,5.7,0,0,1,4.15,1.61,5.41,5.41,0,0,1,1.65,4,5.14,5.14,0,0,1-1.68,3.93,5.94,5.94,0,0,1-4.22,1.56,5.7,5.7,0,0,1-4.11-1.59,5.26,5.26,0,0,1-1.65-4,5.31,5.31,0,0,1,1.67-4A5.82,5.82,0,0,1,62,5.7ZM61.89,7.65a3.42,3.42,0,0,0-2.55,1,3.57,3.57,0,0,0-1,2.6,3.41,3.41,0,0,0,1,2.56,3.61,3.61,0,0,0,2.63,1,3.55,3.55,0,0,0,2.61-1,3.46,3.46,0,0,0,1-2.57,3.43,3.43,0,0,0-1.06-2.58A3.68,3.68,0,0,0,61.89,7.65Z"/><path class="cls-1" d="M71.62,14.29v2.36H70V14.29h1.58Z"/><path class="cls-1" d="M75.85,0.06v2H74.67v-2h1.18Zm0,5.67V16.65H74.67V5.72h1.18Z"/><path class="cls-1" d="M84.14,5.51a5.3,5.3,0,0,1,4,1.63,5.59,5.59,0,0,1,1.59,4.06,5.56,5.56,0,0,1-1.59,4,5.67,5.67,0,0,1-7.94,0,5.54,5.54,0,0,1-1.6-4,5.57,5.57,0,0,1,1.6-4.06A5.34,5.34,0,0,1,84.14,5.51Zm0,10.22a4.09,4.09,0,0,0,3.08-1.29,4.49,4.49,0,0,0,1.24-3.24A4.53,4.53,0,0,0,87.21,8a4.07,4.07,0,0,0-3.07-1.31A4.11,4.11,0,0,0,81,7.95,4.52,4.52,0,0,0,79.8,11.2,4.48,4.48,0,0,0,81,14.44,4.12,4.12,0,0,0,84.14,15.73Z"/><polygon class="cls-2" points="101.29 12.33 94.93 12.33 94.93 10.91 99.87 10.91 99.87 6.46 94.93 6.46 94.93 5.04 101.29 5.04 101.29 12.33"/><polygon class="cls-2" points="106.29 17.36 94.72 17.36 94.72 15.94 104.87 15.94 104.9 5.41 102.74 5.41 102.74 3.99 106.32 3.99 106.29 17.36"/><polygon class="cls-2" points="103.45 4.7 102.03 4.7 102.03 1.42 95.51 1.42 95.51 0 103.45 0 103.45 4.7"/><polygon class="cls-3" points="103.45 9.39 100.65 9.39 100.65 7.97 102.03 7.97 102.03 4.7 103.45 4.7 103.45 9.39"/><polygon class="cls-2" points="11.86 7.46 5.7 7.46 5.7 0.23 11.86 0.23 11.86 1.65 7.12 1.65 7.12 6.04 11.86 6.04 11.86 7.46"/><polygon class="cls-2" points="12.68 17.26 0.04 17.26 0 7.08 3.51 7.08 3.51 8.49 1.43 8.49 1.45 15.84 12.68 15.84 12.68 17.26"/><polygon class="cls-2" points="10.49 12.44 2.84 12.44 2.84 7.79 4.26 7.79 4.26 11.02 10.49 11.02 10.49 12.44"/><polygon class="cls-3" points="4.26 7.79 2.84 7.79 2.84 3.13 6.41 3.13 6.41 4.55 4.26 4.55 4.26 7.79"/></svg>';
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(logo_xml, "image/svg+xml");
-        svg.node().appendChild(doc.documentElement);
-        //svg.append("g").append(doc.documentElement);
+
+        svg.append("g").html(logo_xml);
 
         var width = d3.select("svg").select("g").node().getBoundingClientRect().width;
+        // TODO height is not right for comparison
         var height = d3.select("svg").select("g").node().getBoundingClientRect().height;
 
         d3.select("#exportLogo").attr("width", "75px")
             .attr("x", 20)
-            .attr("y", -height / 2 - 60)
+            .attr("y", -height / 2 - 45)
             .style("position", "absolute")
             .style("bottom", "5px")
             .style("right", "27px");
@@ -3784,6 +3827,15 @@ var TreeCompare = function() {
         var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
         var leftTree = trees[leftIdx];
         var rightTree = trees[rightIdx];
+        if((leftTree.root.deepLeafList.length > 100 || rightTree.root.deepLeafList.length > 100) ){
+
+            $('#modalTitleError').html('Too complex tree');
+            $('#modalBodyError').html("One or both trees have too many leaves. 100 leaves is the maximum.");
+            $('#myErrorModal').modal('show');
+            return false;
+
+        }
+
         var leftLeaves = leftTree.root.deepLeafList.sort();
         var rightLeaves = rightTree.root.deepLeafList.sort();
         var commonLeaves = getIntersectionOfLeaves(leftLeaves, rightLeaves);
@@ -3843,7 +3895,7 @@ var TreeCompare = function() {
             // PNG
             d3.select("#"+canvasId).select(".png")
                 .on('click', function () {
-                    var svg = d3.select("#" + canvasId + " svg");
+                    var svg = d3.select("#" + canvasId + " > svg");
                     addLogo(svg);
                     var name = svg.attr("id");
                     var svgString = getSVGString(svg.node());
@@ -3904,8 +3956,8 @@ var TreeCompare = function() {
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
             function getSVGString( svgNode ) {
                 svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                var cssStyleText = getCSSStyles( svgNode );
-                appendCSS( cssStyleText, svgNode );
+                //var cssStyleText = getCSSStyles( svgNode );
+                //appendCSS( cssStyleText, svgNode );
 
                 var serializer = new XMLSerializer();
                 var svgString = serializer.serializeToString(svgNode);
@@ -4122,7 +4174,7 @@ var TreeCompare = function() {
         //render the scale if we have somewhere to put it
         if (scaleId && settings.enableScale) {
             var translatewidth = 100;
-            //var translateheight = height - 100;
+            // TODO magic number?
             var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
@@ -4138,7 +4190,7 @@ var TreeCompare = function() {
             var scaleText = d3.select("#" + canvasId + " svg").append("text")
                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .attr("x", scaleLineWidth / 2 + scaleLinePadding)
-                .attr("y", 35)
+                .attr("y", 36)
                 .attr("font-family", "sans-serif")
                 .text("0")
                 .attr("font-size", "14px")
@@ -4212,16 +4264,19 @@ var TreeCompare = function() {
             // returns length from root to farthest leaf in branch lengths
             maxLength = getMaxLengthVisible(baseTree.data.root);
             baseTree.data.maxLength = getLength(longestNode);
-            baseTree.data.treeWidth = width - (2 * paddingHorizontal);
+            /* baseTree.data.treeWidth = width - (2 * paddingHorizontal); */
+            baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
         }
 
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
-        baseTree.data.zoomBehaviour.translate([100, 100]);
+        // where zoom centers
+        baseTree.data.zoomBehaviour.translate([90, 25]);
         baseTree.data.zoomBehaviour.scale(0.8);
+        // move the tree to the coordinates and scale it smaller
         d3.select("#" + baseTree.data.canvasId + " svg g")
-            .attr("transform", "translate(" + [100, 30] + ") scale(0.8)");
+            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)");
 
         d3.select(self.frameElement).style("height", "500px");
 
@@ -4370,7 +4425,7 @@ var TreeCompare = function() {
         }
     }
 
-    /*
+    /**
      Expand all collapsed nodes on path to internal node
      */
     function expandPathToNode(node) {
@@ -4384,9 +4439,9 @@ var TreeCompare = function() {
     }
 
 
-    /*
+    /**
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
-     if recalculate==false, doesn't calculate for a node if it aleady has a value
+     if recalculate==false, doesn't calculate for a node if it already has a value
      Algorithm adapted from: TreeJuxtaposer: Scalable Tree Comparison Using Focus+Context with Guaranteed Visibility, Munzner et al. 2003
      */
     function getVisibleBCNs(tree1, tree2, recalculate) {
@@ -4416,7 +4471,7 @@ var TreeCompare = function() {
         getAllBCNs(tree2, tree1);
     }
 
-    /*
+    /**
      Description:
      Calculate the Best Corresponding Node (BCN) for all visible nodes (not collapsed) in the tree
      if recalculate==false, doesn't calculate for a node if it already has a value
@@ -4511,7 +4566,7 @@ var TreeCompare = function() {
         });
     }
 
-    /*
+    /**
      Description:
      Calculates some stuff needed for calculating BCNs later on
      First associate via parameter correspondingLeaf all the leaves from tree1 with a common leaf (= same name)
@@ -4560,7 +4615,7 @@ var TreeCompare = function() {
 
     }
 
-    /*
+    /**
      Spanning tree: if a node in the opposite tree is common with a given leaf (same name),
      then all the nodes are associated to the leaf.
 
@@ -4627,7 +4682,7 @@ var TreeCompare = function() {
         v.elementS = maxElementS;
     }
 
-    /*
+    /**
      Description:
      Creates list of leaves of each node in subtree rooted at v
 
@@ -4648,7 +4703,7 @@ var TreeCompare = function() {
         });
     }
 
-    /*
+    /**
      Description:
      Get the comparison score between two nodes
      First gets all the leaves from the 2 nodes/trees
@@ -4679,7 +4734,7 @@ var TreeCompare = function() {
         return intersect / (lvlen + lnlen - intersect);
     }
 
-    /*
+    /**
      get index of a tree in trees by its name
      */
     function findTreeIndex(name) {
@@ -5062,7 +5117,10 @@ var TreeCompare = function() {
                         colorLinkNodeOver(d, true);
                         update(d, tree.data);
                         update(otherTreeData.root, otherTreeData);
-                        if (settings.moveOnClick) { // this part is responsible to move the opposite highlighted node to the center
+                        if (settings.moveOnClick && (d[currentBCN].y && d[currentBCN].x)) { // this part is
+                            // responsible to move the
+                            // opposite highlighted
+                            // node to the center
                             var currentScale = otherTreeData.zoomBehaviour.scale();
 
                             var y = (-d[currentBCN].y + ($("#" + otherTreeData.canvasId).width() / 2) / currentScale);
@@ -5194,9 +5252,9 @@ var TreeCompare = function() {
             var rectHeight = 90;
 
             var rpad = 10;
-            var tpad = 15;
+            var tpad = 18;
             var textDone = 0;
-            var textInc = 15;
+            var textInc = 18;
 
 
             // ensures that operations on branches and nodes are displayed on top of links and nodes
@@ -5208,10 +5266,12 @@ var TreeCompare = function() {
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
+            var parent = d3.select(this.parentNode.parentNode);
+            var maxX = parseInt(parent.style("width"), 10);
             var x = coordinates[0];
             var y = coordinates[1];
-
             var triangleY = y - triHeight;
+            var triangleX = x;
             triangleType = "triangle-down";
             // menu above node by the height of the rectangle and triangle
             menuTop = triangleY - rectHeight;
@@ -5225,6 +5285,12 @@ var TreeCompare = function() {
 
             }
 
+            /* make sure the menu appears inside the svg container */
+            if(x < rectWidth/2 + 5) {
+                x = rectWidth/2 + 10;
+            } else if(x + rectWidth > maxX - 5) {
+                x = maxX - (rectWidth/2 + 10);
+            }
 
             //draw the little triangle
             var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
@@ -5238,7 +5304,7 @@ var TreeCompare = function() {
 
             tooltipContainer.append('path')
             .attr("d", d3.svg.symbol().type(triangleType).size(400))
-            .attr("transform", function(d) { return "translate(" + x + "," + triangleY + ")"; })
+            .attr("transform", function(d) { return "translate(" + triangleX + "," + triangleY + ")"; })
             .style("fill", "black")
 
             tooltipContainer.append("rect")
@@ -5388,9 +5454,12 @@ var TreeCompare = function() {
 
             d3.selectAll(".tooltipElem").remove(); // ensures that not multiple reactangles are open when clicking on another node
             var coordinates = d3.mouse(this.parentNode.parentNode);
+            var parent = d3.select(this.parentNode.parentNode);
+            var maxX = parseInt(parent.style("width"), 10);
             var x = coordinates[0];
             var y = coordinates[1];
             var triangleY = y - triHeight;
+            var triangleX = x;
             triangleType = "triangle-down";
             // menu above node by the height of the rectangle and triangle
             menuTop = triangleY - rectHeight;
@@ -5404,6 +5473,13 @@ var TreeCompare = function() {
 
             }
 
+            /* make sure the menu appears inside the svg container */
+            if(x < rectWidth/2 + 5) {
+                x = rectWidth/2 + 10;
+            } else if(x + rectWidth/2 > maxX - 5) {
+                x = maxX - (rectWidth/2 + 10);
+            }
+
             //draw the little triangle
             var tooltipContainer = d3.select(this.parentNode.parentNode).append("g")
                 .attr("class", "tooltipElem")
@@ -5415,7 +5491,7 @@ var TreeCompare = function() {
 
             tooltipContainer.append('path')
             .attr("d", d3.svg.symbol().type(triangleType).size(400))
-            .attr("transform", function(d) { return "translate(" + x + "," + triangleY + ")"; })
+            .attr("transform", function(d) { return "translate(" + triangleX + "," + triangleY + ")"; })
             .style("fill", "black")
 
             tooltipContainer.append("rect")
@@ -5493,7 +5569,7 @@ var TreeCompare = function() {
             if (d.parent && (d._children || d.children)) {
                 add_menu_item(".tooltipElem",
                     function () { // text function
-                        if (d._children !== undefined) { // children invisible
+                        if (d._children !== undefined && !d.children) { // children invisible
                             return "expand >";
                         } else if (d.children) { //children visible
                             return "collapse >";
@@ -5736,13 +5812,14 @@ var TreeCompare = function() {
         undoActionData.push(treeActionData);
         var tmpTree = clone(trees[treeIndex].data);
         undoFullTreeData.push(tmpTree);
+        $(".undoButton").attr("data-count", undoIndex);
 
     }
 
     /*-----------------------------------
      * External function that allows to add an undo functionality on tree operations
      * input:
-     *  buttonId: id element of the button that will perfom the und functionality
+     * buttonId: id element of the button that will perform the undo functionality
      */
     function undo(canvasId, buttonId){
 
@@ -5909,7 +5986,10 @@ var TreeCompare = function() {
                     undoFullTreeData = [];
                 }
 
+                $(".undoButton").attr("data-count", undoIndex);
+
             })
+
 
 
     }
@@ -5920,7 +6000,7 @@ var TreeCompare = function() {
      /
      ------*/
     function exportBothTrees(canvasIDLeft, canvasIDRight){
-        var svg = d3.select("#" + canvasIDLeft + " svg");
+        var svg = d3.select("#" + canvasIDLeft + " > svg");
         addLogo(svg);
 
         // Copy left tree
