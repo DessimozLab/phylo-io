@@ -88,11 +88,6 @@ position: absolute;
 
 }
 
-/*.sidebar-nav li {*/
-    /*text-indent: 20px;*/
-    /*line-height: 40px;*/
-/*}*/
-
 #wrapper {
     height: 100%;
 }
@@ -110,22 +105,6 @@ svg {
     top: 55px;
 }
 
-/*.vis-scale {*/
-    /*!*height: 60px;*!*/
-    /*width: 100%;*/
-    /*background-color: gray;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
-
-/*.vis-scale-2 {*/
-    /*!*height: 60px;*!*/
-    /*width: 50%;*/
-    /*background-color: gray;*/
-    /*float: left;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
 .dist li {
     font-size: x-small;
     list-style-type: none;
@@ -593,13 +572,13 @@ rect.node {
 
 /*Styles for sharing*/
 
-#shareButton {
-    width: 97.5px;
+#shareButton, #histLblShowBtn, #exportButton {
+    width: 100%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
-#shareButton:hover{
+#shareButton:hover, #histLblShowBtn:hover, #exportButton:hover{
     opacity: 1.0;
 }
 
@@ -610,16 +589,6 @@ rect.node {
     position: absolute;
 }
 
-.exportButton {
-    width: 26px;
-    float: right;
-    opacity: 0.3
-}
-
-.exportButton:hover {
-    opacity: 1;
-}
-
 .exportMenu {
     background-color: whitesmoke;
     text-align: left;
@@ -627,7 +596,7 @@ rect.node {
     padding: 2px;
     right: 10px;
     top: 38px;
-    width: 104px;
+    width: 130px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
@@ -659,17 +628,13 @@ rect.node {
 .export-group {
     margin: 0 auto;
     text-align: center;
+    width: 100%;
 }
 
 #exportButton {
-    width: 32.5px;
+    width: 33%;
     margin-left: 0px;
-    opacity: 0.3;
-}
-
-
-#exportButton:hover{
-    opacity: 1.0;
+    opacity: 0.6;
 }
 
 #exportPanel {
@@ -680,38 +645,31 @@ rect.node {
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
-/*.dropdown-menu {*/
-/*min-width: 60px;*/
-/*font-size: 11px;*/
-/*margin: 1px 0px 1px 0px;*/
-/*text-align: center;*/
-/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-/*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-/*padding: 1px 0px 1px 0px;*/
-/*}*/
-
 /*--end export----------------------------------------------*/
 
 /*Styles for toolbar*/
 
-.treeTools {
+.treeTools, .stackTools {
     position: absolute;
     padding: 5px;
     right: 57px;
     top: 0;
 }
 
+.stackTools {
+    position: absolute;
+    padding: 5px;
+    right: 83px;
+    top: 0;
+}
 
-.treeToolsButton {
+.treeToolsButton, .stackToolsButton, .exportButton {
     width: 26px;
     /*float: right;*/
     opacity: 0.3;
 }
 
-.treeToolsButton:hover {
+.treeToolsButton:hover, .stackToolsButton:hover, .exportButton:hover {
     opacity: 1;
 }
 
@@ -719,14 +677,14 @@ rect.node {
     opacity: 1 !important;
 }
 
-.treeToolsMenu {
+.treeToolsMenu, .stackToolsMenu {
     background-color: whitesmoke;
     text-align: left;
     position: absolute;
     padding: 2px;
     right: 10px;
     top: 38px;
-    width: 104px;
+    width: 130px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
@@ -735,19 +693,20 @@ rect.node {
     display: none;
 }
 
-treeToolsMenuContent {
+treeToolsMenuContent, stackToolsMenuContent {
     text-align: left;
 }
 
-.treeToolsMenu li {
+.treeToolsMenu li, .stackToolsMenu li {
     list-style:none;
     /*border-bottom: 1px;*/
     font-size: 8pt;
     text-align: left;
 }
 
-.treeToolsText {
+.treeToolsText, .stackToolsText {
     margin: auto;
+    margin-top: 5px;
     text-align: left;
 }
 
@@ -757,7 +716,7 @@ treeToolsMenuContent {
 
 .searchBox {
     padding: 5px;
-    right: 83px;
+    right: 109px;
     top: 0;
     position: absolute;
 }
@@ -834,7 +793,7 @@ button.treeToggleButton {
     width: 26px;
     height: 26px;
     vertical-align: top;
-    opacity:0.3;
+    opacity:0.6;
 }
 
 button.treeToggleButton:hover {
@@ -914,9 +873,9 @@ button.treeToggleButton span{
 
 
 #ladderizeDescButton {
-    width: 48.75px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -929,9 +888,9 @@ button.treeToggleButton span{
 }
 
 #ladderizeAscButton {
-    width: 48.75px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -947,9 +906,9 @@ button.treeToggleButton span{
 }
 
 #opTreeAcButton {
-    width: 49px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -964,19 +923,6 @@ button.treeToggleButton span{
     -moz-box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
-
-/*.dropdown-menu {*/
-/*min-width: 60px;*/
-/*font-size: 11px;*/
-/*margin: 1px 0px 1px 0px;*/
-/*text-align: center;*/
-/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-/*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-/*padding: 1px 0px 1px 0px;*/
-/*}*/
 
 /*--end export----------------------------------------------*/
 
@@ -1031,27 +977,11 @@ button.rescaleButton:hover{
 /*Styles for zooming buttons*/
 
 .zoomSliderContainer {
-    /*position: absolute;*/
     margin: 0 auto;
     color: black;
     width: 90px;
-    /*margin-left: -55px;*/
-    /*margin-top: 400px;*/
-    /*top: 50%;*/
-    /*bottom:0;*/
     left: 5px;
-    /*right: 0;*/
-    /*margin: auto;*/
-    /*vertical-align: middle;*/
-
 }
-/*.zoomSlider {*/
-    /*-webkit-transform: rotate(90deg);*/
-    /*-ms-transform: rotate(90deg);*/
-    /*-moz-transform: rotate(90deg);*/
-    /*-o-transform: rotate(90deg);*/
-    /*transform: rotate(90deg);*/
-/*}*/
 
 /*--end zoom----------------------------------------------*/
 
