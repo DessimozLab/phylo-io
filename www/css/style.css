@@ -551,12 +551,14 @@ rect.node {
 
 /*Styles for undobutton*/
 
+/*
 .undo {
     padding: 5px;
     right: 5px;
     top: 0;
     position: absolute;
 }
+*/
 
 .undoButton {
     width: 26px;
@@ -570,6 +572,19 @@ rect.node {
 
 /*--end undo----------------------------------------------*/
 
+/*-- Menu Button Group -----------------------------------*/
+
+.btn-group-menu{
+    display: flex;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    align-items: center;
+
+}
+
+
+
 /*Styles for sharing*/
 
 #shareButton, #histLblShowBtn, #exportButton {
@@ -582,12 +597,12 @@ rect.node {
     opacity: 1.0;
 }
 
-.exportTools {
+/*.exportTools {
     padding: 5px;
     right: 31px;
     top: 0;
     position: absolute;
-}
+}*/
 
 .exportMenu {
     background-color: whitesmoke;
@@ -649,12 +664,13 @@ rect.node {
 
 /*Styles for toolbar*/
 
-.treeTools, .stackTools {
+/*.treeTools, .stackTools {
     position: absolute;
     padding: 5px;
     right: 57px;
     top: 0;
-}
+}*/
+/*
 
 .stackTools {
     position: absolute;
@@ -662,6 +678,7 @@ rect.node {
     right: 83px;
     top: 0;
 }
+*/
 
 .treeToolsButton, .stackToolsButton, .exportButton {
     width: 26px;
@@ -714,23 +731,19 @@ treeToolsMenuContent, stackToolsMenuContent {
 
 /*Styles for leaf searching*/
 
-.searchBox {
-    padding: 5px;
-    right: 109px;
-    top: 0;
-    position: absolute;
+.search {
+    order: -1;
+    height: 26px;
 }
 
 .searchInput {
-    float: right;
-    width: 0px;
+    width: 150px;
     margin-left: 0px;
     display: none;
 }
 
 .searchButton {
     width: 26px;
-    float: right;
     opacity: 0.3;
 }
 
@@ -741,16 +754,15 @@ treeToolsMenuContent, stackToolsMenuContent {
 .searchResultsBox {
     width: 150px;
     position: absolute;
-    /*margin-right: 10px;*/
     max-height: 200px;
     overflow: hidden;
-    overflow-y: scroll;
-    margin-top: 31px;
+    overflow-y: auto;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.2);
     background-color: white;
     display: none;
-    padding-top: 6px;
-    text-algin: left;
+    padding: 0;
+    margin: 0;
+    text-align: left;
 }
 
 .searchResultsList li {
@@ -766,6 +778,8 @@ treeToolsMenuContent, stackToolsMenuContent {
     display: block;
     font-size: 10pt;
     cursor: pointer;
+    padding: 0;
+    margin: 0;
     padding-left: 15px;
 }
 
@@ -858,7 +872,6 @@ button.treeToggleButton span{
 
 .treeToggleDropdown-content li{
     color: black;
-    /*padding: 6px 16px;*/
     text-decoration: none;
     display: block;
     font-size: 10pt;
@@ -901,6 +914,7 @@ button.treeToggleButton span{
 /*styles for opposite Tree action functionality*/
 
 .opTreeAcGroup {
+    width: 100%;
     margin: 0 auto;
     text-align: center;
 }
@@ -932,8 +946,8 @@ button.treeToggleButton span{
 div.rescaleButtons {
     width: 66px;
     margin: 0 auto;
-    /*top: 10px;*/
-    /*left: 10px;*/
+    top: 10px;
+    left: 10px;
     /*position: absolute;*/
 }
 
@@ -979,8 +993,7 @@ button.rescaleButton:hover{
 .zoomSliderContainer {
     margin: 0 auto;
     color: black;
-    width: 90px;
-    left: 5px;
+    width: 95%;
 }
 
 /*--end zoom----------------------------------------------*/
