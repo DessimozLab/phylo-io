@@ -31,7 +31,27 @@
     var maxStackHeight = "ratio";
     //var maxStackHeight = "max";
     var largestGenome = 0;
+
+    // initial stack histogram dimensions
     var stackHeight = 100;
+    var stackWidth = 20;
+
+    // histogram zoom extents
+    var stackMinWidth = 10;
+    var stackMaxWidth = 150;
+    var stackMinHeight = 30;
+    var stackMaxHeight = 250;
+    var stackStep = 10;
+    var hasHistogramData = false;
+
+    var maxTreeHeight = 500;
+    var maxTreeWidth = 1500;
+    var minTreeHeight = 20;
+    var minTreeWidth = 200;
+
+
+    var initTreeHeight = null;
+    var initTreeWidth = null;
 
     var labels = ["Identical", "Duplicated", "Gained", "Lost"]
     var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
@@ -78,6 +98,7 @@
         treeHeight: 15,
         moveOnClick: true,
         enableZoomSliders: true,
+        enableStackZoomSliders: true,
         scaleMin: 0.05,
         scaleMax: 15,
         scaleColor: "black",
@@ -174,6 +195,7 @@
      */
     function changeCanvasSettings(settingsIn) {
         settings.enableZoomSliders = getSetting(settingsIn.enableZoomSliders,settings.enableZoomSliders);
+        settings.enableStackZoomSliders = getSetting(settingsIn.enableStackZoomSliders,settings.enableStackZoomSliders);
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
         settings.enableCloudShare = getSetting(settingsIn.enableCloudShare,settings.enableCloudShare);
         settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
@@ -1512,7 +1534,6 @@
 
         }
 
-
         var idCounter = 0;
         settings.autoCollapse = null;
         if (name === undefined) {
@@ -1688,6 +1709,7 @@
             newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
             treeData.treeHeight = newHeight;
         }
+
         if (leavesVisible > 0) {
             treeData.prevNoLeavesVisible = false;
         } else {
@@ -1839,7 +1861,6 @@
             var treeName = treeNameElements[0]+"_"+treeNameElements[1];
             var oppositeTreeName = d3.select("#vis-container2 svg").attr("id");
             var treeIdx = findTreeIndex(oppositeTreeName);
-
 
             nodes.forEach(function(d) {
                 if (treeName === trees[treeIdx].name && settings.mirrorRightTree){
@@ -2109,7 +2130,7 @@
             .duration(duration)
             .attr("transform", function (d) {
                 if (source === treeData.root) {
-                    var e = findHeighestCollapsed(d);
+                    var e = findHighestCollapsed(d);
                     return "translate(" + e.y + "," + e.x + ")";
                 } else {
                     return "translate(" + source.y + "," + source.x + ")";
@@ -2331,7 +2352,7 @@
                 .attr("d", function (d) {
                     d = d.source;
                     if (source === treeData.root) {
-                        var e = findHeighestCollapsed(d);
+                        var e = findHighestCollapsed(d);
                         return "M" + e.y + "," + e.x + "L" + e.y + "," + e.x + "L" + e.y + "," + e.x;
                     } else {
                         return "M" + source.y + "," + source.x + "L" + source.y + "," + source.x + "L" + source.y + "," + source.x;
@@ -2399,7 +2420,6 @@
             colorLinkNodeOver(d);
         }
 
-
         // this part ensures that when clicking on a node or elsewhere in the screen the tooltip disappears
         $('html').click(function (d) {
             if (compareMode) {
@@ -2418,10 +2438,11 @@
      Hook up the zoom slider on the vis to zoomEvent
      */
     function applyEventListeners(treeData) {
-        $("#zoomSlider" + treeData.id).on("input change", function () {
+        $("input#zoomSlider" + treeData.id + ".zoomSlider").on("input change", function () {
             treeData.zoomBehaviour.scale($("#zoomSlider" + treeData.id).val());
             treeData.zoomBehaviour.event(treeData.svg);
         });
+
     }
 
     /*
@@ -2449,16 +2470,52 @@
         }
     }
 
-
-    /*
-     Find the heighest collapsed node in the parents of a node
+    /**
+     *
+     * Sizes trees vertical and horizontal lengths by given amount
+     *
+     * @param treeData
+     * @param increase
      */
-    function findHeighestCollapsed(d) {
+    function sizeSetVertical(treeData, newHeight) {
+
+        if (!(initTreeHeight)) {
+            initTreeHeight = treeData.treeHeight;
+        }
+
+        if (newHeight) {
+            newHeight = ((parseInt(newHeight) + initTreeHeight) > maxTreeHeight) ? maxTreeHeight : (initTreeHeight + parseInt(newHeight));
+            treeData.treeHeight = (newHeight > minTreeHeight) ? newHeight : minTreeHeight;
+        }
+    }
+
+    function sizeSetHorizontal(treeData, newWidth) {
+
+        if (!(initTreeWidth)) {
+            initTreeWidth = treeData.treeWidth;
+        }
+
+        if (newWidth) {
+            newWidth = ((parseInt(newWidth) + initTreeWidth) > maxTreeWidth) ? maxTreeWidth : (initTreeWidth + parseInt(newWidth));
+            treeData.treeWidth = (newWidth > minTreeWidth) ? newWidth : minTreeWidth;
+        }
+
+    }
+
+
+
+    /**
+     * Find the highest collapsed node in the parents of a node
+     *
+     * @param d
+     * @returns {*}
+     */
+    function findHighestCollapsed(d) {
         if (d.parent) {
             if (d._children && d.parent.children) {
                 return d;
             } else {
-                return (findHeighestCollapsed(d.parent));
+                return (findHighestCollapsed(d.parent));
             }
         } else {
             return d;
@@ -2468,7 +2525,7 @@
     function createUndoButton(canvasId) {
 
         function buildUndoButton(canvasId) {
-            var undo = d3.select("#" + canvasId).append("div")
+            var undo = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "undo");
 
             undo.append("a")
@@ -2551,7 +2608,7 @@
     function createExportBar(canvasId, baseTree, compareMode){
 
         function buildExportBar(canvasId) {
-            var exportTools = d3.select("#" + canvasId).append("div")
+            var exportTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "exportTools");
 
             exportTools.append("a")
@@ -2562,9 +2619,7 @@
                 .attr("aria-hidden","true");
 
             var exportMenu = d3.select("#" + canvasId).append("div")
-                .attr("class", "exportMenu");
-            // .append("ul")
-            // .attr("class", "treeToolsMenuContent");
+                .attr("class", "exportMenu toolmenu");
             if (settings.enableDownloadButtons) {
                 exportMenu.append("li")
                     .attr("class", "exportText")
@@ -2592,21 +2647,22 @@
         }
 
         d3.select("#" + canvasId).select(".exportButton")
-            .on("click", function(){
-                $("#" + canvasId + " .exportButton").toggleClass("opacity");
-                $("#" + canvasId + " .exportMenu").slideToggle(200);
-                if (d3.select("#" + canvasId + " .treeToolsMenu").style("display") !== "none"){
-                    $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
-                    $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
 
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".exportMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .exportMenu").slideToggle(200);
+                if($("#" + canvasId + " .exportMenu").is(':hidden')){
+                    $("#" + canvasId + " .exportButton").addClass("opacity");
                 }
+
             });
     }
 
     function createToolbar(canvasId, baseTree, compareMode){
 
         function buildToolbar(canvasId) {
-            var treeTools = d3.select("#" + canvasId).append("div")
+            var treeTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "treeTools");
 
             treeTools.append("a")
@@ -2617,9 +2673,7 @@
                 .attr("aria-hidden", "true");
 
             var treeToolsMenu = d3.select("#" + canvasId).append("div")
-                .attr("class", "treeToolsMenu");
-            // .append("ul")
-            // .attr("class", "treeToolsMenuContent");
+                .attr("class", "treeToolsMenu toolmenu");
 
             treeToolsMenu.append("li")
                 .attr("class", "treeToolsText")
@@ -2670,26 +2724,105 @@
         }
 
         d3.select("#" + canvasId).select(".treeToolsButton")
-            .on("click", function () {
-                $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
-                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
-                if (d3.select("#" + canvasId + " .exportMenu").style("display") !== "none"){
-                    $("#" + canvasId + " .exportButton").toggleClass("opacity");
-                    $("#" + canvasId + " .exportMenu").slideToggle(200);
 
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".treeToolsMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+                if($("#" + canvasId + " .treeToolsMenu").is(':hidden')){
+                    $("#" + canvasId + " .treeToolsButton").addClass("opacity");
+                }
+
+            });
+    }
+
+    function createStackToolbar(canvasId, baseTree, compareMode){
+
+        function buildStackToolbar(canvasId) {
+            //var stackTools = d3.select("#" + canvasId).append("div")
+            var stackTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
+                .attr("class", "stackTools");
+
+            stackTools.append("a")
+                .attr("class", "btn btn-sm sharp stackToolsButton")
+                .attr("title", "tools for histogram manipulation")
+                .append("span")
+                .attr("class", "fa fa-chart-bar")
+                .attr("aria-hidden", "true");
+
+            var stackToolsMenu = d3.select("#" + canvasId).append("div")
+                .attr("class", "stackToolsMenu toolmenu");
+
+            /*stackToolsMenu.append("li")
+                .attr("class", "stackToolsText")
+                .append("div")
+                .attr("class", "treewidthzoom")
+                .text("Tree Width");
+
+            stackToolsMenu.append("li")
+                .attr("class", "stackToolsText")
+                .append("div")
+                .attr("class", "treeheighthzoom")
+                .text("Tree Height");*/
+
+            if(hasHistogramData){
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackwidthzoom")
+                    .text("Stack Width");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackheightzoom")
+                    .text("Stack Height");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stacklabelswitch")
+                    .text("Histogram Labels");
+            }
+        }
+
+
+        if (settings.enableStackZoomSliders) {
+            //createStackZoomSlider(canvasId, "treewidthzoom", baseTree, -minTreeWidth, maxTreeWidth, 10,
+            // baseTree.data.treeWidth);
+            //createStackZoomSlider(canvasId, "treeheighthzoom", baseTree, -minTreeHeight, maxTreeHeight, 10,
+            // baseTree.data.treeHeight);
+            if(hasHistogramData) {
+
+                buildStackToolbar(canvasId);
+
+                createStackZoomSlider(canvasId, "stackwidthzoom", baseTree, stackMinWidth, stackMaxWidth, stackStep, stackWidth);
+                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
+                createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
+            }
+        }
+
+        d3.select("#" + canvasId).select(".stackToolsButton")
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".stackToolsMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .stackToolsMenu").slideToggle(200);
+                if($("#" + canvasId + " .stackToolsMenu").is(':hidden')){
+                    $("#" + canvasId + " .stackToolsButton").addClass("opacity");
                 }
 
             });
     }
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
-        /*---------------
-         /
-         /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
-         /      works only in "compare mode" and needs the canvasId to know which tree will
-         /      be manipulated
-         /
-         ---------------*/
+        /***************************************************************************
+         *
+         * Function to find best corresponding root in opposite tree and
+         * automatically perform re-rooting on that root works only
+         * in "compare mode" and needs the canvasId to know which tree will
+         * be manipulated
+         *
+         ****************************************************************************/
         function findBestCorrespondingTree(canvasId) {
             var isCompared = true;
             var canvasLeft = "vis-container1";
@@ -2839,7 +2972,7 @@
 
         function buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass) {
             var oppositeTreeActionButton = d3.select("#" + canvasId).select("." + oppositeTreeActionsClass).append("div")
-                .attr("class", "btn-group opTreeAc-group");
+                .attr("class", "btn-group opTreeAcGroup");
             oppositeTreeActionButton.append("button")
                 .attr("id", "opTreeAcButton")
                 .attr("class", "btn btn-sm sharp opTreeAcButtonReroot")
@@ -2907,8 +3040,23 @@
             return does;
         }
 
+        function createToolbarContainer(canvasId){
+
+            d3.select("#" + canvasId).append("div").attr("class", "btn-group-menu");
+
+        }
+
         function buildSearchBox(canvasId) {
-            var searchDiv = d3.select("#" + canvasId).append("div")
+
+            d3.select("#" + canvasId + " .btn-group-menu").append("div")
+                .attr("class", "search")
+                .append("input")
+                .attr("class", "searchInput")
+                .attr("type", "text")
+                .attr("placeholder", "search")
+                .attr("autofocus");
+
+            var searchDiv = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "searchBox");
 
             var searchDivA = searchDiv.append("a")
@@ -2919,13 +3067,7 @@
                 .attr("class", "glyphicon glyphicon-search")
                 .attr("aria-hidden", "true");
 
-            searchDiv.append("input")
-                .attr("class", "searchInput")
-                .attr("type", "text")
-                .attr("placeholder", "search")
-                .attr("autofocus");
-
-            var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
+            var searchBox = d3.select("#" + canvasId + " .search").append("div")
                 .attr("class", "searchResultsBox")
                 .append("ul")
                 .attr("class", "searchResultsList");
@@ -2986,9 +3128,10 @@
 
         function showSearchBar(canvasId) {
             d3.select("#" + canvasId).select(".searchInput")
-                .style("display", "inline")
                 .transition().duration(600)
-                .style("width", "150px").node().focus();
+                .style("width", "150px")
+                .style("display", "inline-block")
+                .node().focus();
 
         }
 
@@ -3008,9 +3151,18 @@
             $("#" + canvasId + " .searchInput").val("");
         }
 
+        createToolbarContainer(canvasId);
         buildSearchBox(canvasId);
 
         d3.select("#" + canvasId).select(".searchButton").on("click", function () {
+
+
+            $("#" + canvasId + " .toolmenu").not(".search").hide()
+            $("#" + canvasId + " .opacity").removeClass("opacity")
+            if($("#" + canvasId + " .searchInput").is(':hidden')){
+                $("#" + canvasId + " .search").addClass("opacity");
+            }
+
             var searchInput = $("#" + canvasId + ' .searchInput');
             if (searchInput.is(":visible")) {
 
@@ -3085,7 +3237,7 @@
         // ensures that searchbar is removed when clicking on canvas
         $(document).click(function(event) {
             // exclude find menuitem click
-            if(!$(event.target).closest('.searchBox').length && $('.searchInput').is(":visible") && event.target.id != 'find' ) {
+            if(!$(event.target).closest('.search').length && $('.searchInput').is(":visible") && event.target.id != 'find' ) {
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
                     if(d.parent){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
@@ -3380,7 +3532,6 @@
     function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
         function buildRescaleButtons(canvasId) {
-
             var rescaleDiv = d3.select("#" + canvasId).select("." + rescaleClass).append("div")
                 .attr("class", "rescaleButtons");
 
@@ -3419,7 +3570,6 @@
 
 
         buildRescaleButtons(canvasId);
-        //buildRescaleButtonsStyle(canvasId);
 
         // set up function for buttons on left top corner
         function actionUp() {
@@ -3481,19 +3631,7 @@
 
 
         svg.append("g").html(logo_xml);
-/*
-        var width = d3.select("svg").select("g").node().getBoundingClientRect().width;
-        var height = d3.select("svg").select("g").node().getBoundingClientRect().height;
-        var element_x = element.getBBox().x;
-        var element_y = element.getBBox().y;
-        var offset = element.getBoundingClientRect();
 
-        d3.select("#exportLogo").attr("width", "75px")
-            .attr("x", 20)
-            .attr("y", -height / 2 - 45)
-            .style("position", "absolute")
-            .style("bottom", "5px")
-            .style("right", "27px");*/
     }
 
     function addMainLegend(svgId) {
@@ -3515,7 +3653,26 @@
             color[labels[i]] = colors[i];
         }
 
-        var legendSvg = d3.select("#" + svgId).append("svg")
+        var legendDrag = d3.behavior.drag()
+            .origin(function() {
+                var g = this;
+                return {x: d3.transform(g.getAttribute("transform")).translate[0],
+                    y: d3.transform(g.getAttribute("transform")).translate[1]};
+            })
+            .on('dragstart', function(){
+                // we don't want to move the whole tree
+                d3.event.sourceEvent.stopPropagation();
+            })
+            .on("drag", function(d,i) {
+                g = this;
+                translate = d3.transform(g.getAttribute("transform")).translate;
+                x = d3.event.dx + translate[0],
+                y = d3.event.dy + translate[1];
+                // keep it vertically aligned
+                d3.select(g).attr("transform", "translate(" + x + ", "+ y +")");
+            });
+
+        var legendSvg = d3.select("#" + svgId).append("svg").call(legendDrag)
              .attr("x", margin)
              .attr("y", margin)
              .attr("width", width + "px")
@@ -3591,10 +3748,10 @@
 
         var svg = d3.select(this);
         var data = [[{}], [{}], [{}], [{}]];
-        var h = 150;
-        var w = 20;
-        var margin = 5;
-        var xDistanceFromNode = 60;
+        var h = stackHeight;
+        var w = stackWidth;
+        var margin = 8;
+        var xDistanceFromNode = w + 30;
         var txtDistanceFromBar = w + margin;
         var legendTxtSize = 12;
 
@@ -3666,11 +3823,11 @@
                 })
                 .enter()
                 .append("text")
-                .classed("legendtxt", true)
+                .classed("legendsummarytxt", true)
                 .text(function (d) {
                     return d.numberGenes
                 }).attr("x", function () {
-                    return 0 - (txtDistanceFromBar + xDistanceFromNode)
+                    return 0 - (xDistanceFromNode + 30)
                 }).attr("y", function (d) {
                     return 0 - margin;
                 }).attr("font-size", legendTxtSize).attr("stroke", "black")
@@ -3806,6 +3963,41 @@
             .on('click', function () {
                 ladderizeTree(baseTree, "descending")
             });
+    }
+
+    function createHistogramLabelVisibilityBtn(canvasId, histVisClass) {
+        var histLabels = d3.select("#" + canvasId).select("." + histVisClass);
+        if (histLabels.attr("opacity") == 1){
+            histLabels.active = true;
+            var histLblShowBtnTxt = "Show";
+        } else {
+            histLabels.active = false;
+            var histLblShowBtnTxt = "Hide";
+        }
+
+        var histVisLblBtn = d3.select("#" + canvasId).select("." + histVisClass).append("div");
+        histVisLblBtn.append("button")
+            .attr("id", "histLblShowBtn")
+            .attr("class", "btn btn-sm sharp")
+            .attr("title", "Visibility of all values")
+            .attr("type", "button")
+            .append("span")
+            .attr("id", "histLblShowBtnTxt")
+            .text(histLblShowBtnTxt)
+
+        d3.select("#" + canvasId).select("#histLblShowBtn")
+            .on('click', function () {
+                var active = histLabels.active ? false : true,
+                newOpacity = active ? 0 : 1;
+                d3.selectAll(".legendtxt, .legendsummarytxt").style("opacity", newOpacity);
+                histLabels.active = active;
+                if(active){
+                    d3.select(this).text("Show");
+                } else {
+                    d3.select(this).text("Hide");
+                }
+        });
+
     }
 
     function splitsToBitString(tree, funcType) {
@@ -4025,17 +4217,6 @@
 
     // construct disagreement split matrix
     function matrixBuilder (leftSplits, rightSplits) {
-        //     var xorStrDict = {};
-        //     for (var i = 0; i < leftSplits.length; i++) {
-        //         for (var j = 0; j < rightSplits.length; j++) {
-        //             var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
-        //             var tmpNum = counter(tmpStr)[1];
-        //             xorStrDict[tmpStr] = tmpNum;
-        //         }
-        //     }
-        //     console.log('xorStrDict', xorStrDict);
-        //     return xorStrDict
-        // }
 
         //fill in the matrix and determine number of '1'
         var dsMatrix = [];
@@ -4059,9 +4240,6 @@
         }
         return [dsMatrix, tmpDsMatrix]
     }
-
-
-
 
     // cut the leaves in disagreement
     function minStrSplicer(minimumString, myList) {
@@ -4198,7 +4376,6 @@
 
     function createTreeDownload(canvasId, downloadClass){
 
-
         function buildDownloadButton(canvasId, downloadClass) {
 
             var downloadButton = d3.select("#"+canvasId).select("."+downloadClass).append("div")
@@ -4226,7 +4403,6 @@
                 .text("png");
         }
 
-        //var width = 300, height = 300;
         // draws download buttons
         if (settings.enableDownloadButtons) {
 
@@ -4394,6 +4570,41 @@
         }
     }
 
+    function createStackZoomSlider(canvasId, stackZoomClass, baseTree, min, max, step, def){
+        var name = baseTree.name;
+        //renders the manual histogram and tree size sliders if turned on
+        if (settings.enableStackZoomSliders) {
+            d3.select("#"+canvasId).select("."+stackZoomClass).append("div")
+                .attr("class", "stackZoomSliderContainer")
+                .append("input")
+                .attr("type", "range")
+                .attr("class", "stackZoomSlider")
+                .attr("id", stackZoomClass)
+                .attr("min", min)
+                .attr("max", max)
+                .attr("value", def)
+                .attr("step", step)
+                .on('change', function(d, i) {
+                    var rangeval = +this.value;
+                    if(this.id == 'treeheighthzoom'){
+                        sizeSetVertical(baseTree.data, rangeval);
+                    } else if(this.id == 'treewidthzoom'){
+                        sizeSetHorizontal(baseTree.data, rangeval);
+                    } else if(this.id == 'stackwidthzoom'){
+                        stackWidth = rangeval;
+                        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+                    } else if(this.id == 'stackheightzoom'){
+                        stackHeight = rangeval;
+                        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+                    }
+
+                    update(baseTree.root, baseTree.data, 0);
+
+                })
+
+        }
+    }
+
     // helper function to set up canvas to place the tree inside
     function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
 
@@ -4437,17 +4648,12 @@
         $("#"+canvasId+" .treeTools").remove();
         $("#"+canvasId+" .treeToolsMenu").remove();
         $("#"+canvasId+" .exportTools").remove();
+        $("#"+canvasId+" .stackTools").remove();
         $("#"+canvasId+" .undo").remove();
         $("#"+canvasId+" .searchBox").remove();
+        $("#"+canvasId+" .search").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
         $("#"+canvasId+" .zoomSlider").remove();
-
-        createLeafSearch(canvasId, name);
-        createToolbar(canvasId, baseTree, compareMode);
-        createExportBar(canvasId);
-        // createShareButton(canvasId);
-        createUndoButton(canvasId);
-        //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
         if (scaleId  && settings.enableScale){
@@ -4536,12 +4742,26 @@
         });
 
         postorderTraverse(baseTree.data.root, function(d) {
+            if(!hasHistogramData && d.evolutionaryEvents &&  _.isObject(d.evolutionaryEvents) ) {
+                hasHistogramData = true;
+            }
+
             d.leaves = getChildLeaves(d);
             d.mouseoverHighlight = false;
             if (d.children || d._children){
                 d.triangleLength = getCollapsedTriangleLength(d);
             }
         });
+
+
+        createLeafSearch(canvasId, name);
+        createToolbar(canvasId, baseTree, compareMode);
+        createStackToolbar(canvasId, baseTree, compareMode);
+        createExportBar(canvasId);
+        createUndoButton(canvasId);
+
+        // make toolmenu as wide as button group
+        $('.toolmenu').css("width" , d3.select('.btn-group-menu').node().getBoundingClientRect().width);
 
         applyEventListeners(baseTree.data);
         jQuery.extend(baseTree.data, {
@@ -4585,12 +4805,14 @@
             // returns length from root to farthest leaf in branch lengths
             maxLength = getMaxLengthVisible(baseTree.data.root);
             baseTree.data.maxLength = getLength(longestNode);
-            /* baseTree.data.treeWidth = width - (2 * paddingHorizontal); */
             baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
         }
 
+
         update(baseTree.root, baseTree.data, undefined, treeToggle);
+
+
 
         // where zoom centers
         baseTree.data.zoomBehaviour.translate([90, 25]);
@@ -4639,15 +4861,6 @@
         }
 
         function zoom() {
-
-            //var height = this.getBBox().height;
-            //var width = this.getBBox().width;
-            //var scale =  Math.pow(d3.event.scale, .2);
-            //var translateY = (height - (height * scale))/2;
-            //var translateX = (width - (width * scale))/2;
-
-            //d3.select("#" + canvasId + " svg > g").attr("transform", "translate(" + [translateX,translateY] + ")"
-            // + " scale(" +scale+ ")");
 
             var scale = d3.event.scale;
             var translation = d3.event.translate;
@@ -6369,7 +6582,6 @@
 
         svg.select("#exportLogo").remove();
     }
-
 
     //return all the externalised functions
     return {
