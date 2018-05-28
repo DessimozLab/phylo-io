@@ -460,7 +460,7 @@ function haveUndo(){
 
 document.getElementById("find").onclick = function() {
     console.log("find clicked");
-    var x = document.getElementsByClassName("searchButton, globalUndoBtn");
+    var x = document.getElementsByClassName("searchButton");
     var i;
     for (i = 0; i < x.length; i++) {
         triggerEvent(x[i], "click");
