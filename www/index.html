@@ -5,15 +5,15 @@
     <title>Phylo.io</title>
     <meta charset="UTF-8">
     <script src="//peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
-    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="js/treecompare.js"></script>
-    <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
-    <script type="text/javascript" src="js/spin.min.js"></script>
-    <script type="text/javascript" src="js/d3.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/circular-json.js"></script>
-    <script type="text/javascript" src="js/canvas-toBlob.js"></script>
-    <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/treecompare.js"></script>
+    <script src="//underscorejs.org/underscore-min.js"></script>
+    <script src="js/spin.min.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/circular-json.js"></script>
+    <script src="js/canvas-toBlob.js"></script>
+    <script src="js/FileSaver.min.js"></script>
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
@@ -22,7 +22,7 @@
     <link rel="stylesheet" type="text/css" href="css/simple-sidebar.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/ol.css">
-    <script>
+    <!--<script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
             i[r] = i[r] || function () {
@@ -36,81 +36,11 @@
         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
         ga('create', 'UA-105586-10', 'auto');
         ga('send', 'pageview');
-    </script>
+    </script>-->
 
-    <style>
-        .extraMargin + span:after {
-            content: "\000A";
-            white-space: pre;
-        }
-
-        .modal-container {
-            z-index: 3;
-            right: 50px;
-            top: 75px;
-            position: absolute;
-            padding: 5px 20px 15px 20px;
-            width: 180px;
-            height: 60px;
-            border-radius: 8px;
-            display: none;
-
-        }
-
-        /* multilevel dropdown */
-        .dropdown-submenu {
-            position:relative;
-        }
-        .dropdown-submenu>.dropdown-menu {
-            top:0;
-            left:100%;
-            margin-top:-6px;
-            margin-left:-1px;
-            -webkit-border-radius:0 6px 6px 6px;
-            -moz-border-radius:0 6px 6px 6px;
-            border-radius:0 6px 6px 6px;
-        }
-        .dropdown-submenu>a:after {
-            display:block;
-            content:" ";
-            float:right;
-            width:0;
-            height:0;
-            border-color:transparent;
-            border-style:solid;
-            border-width:5px 0 5px 5px;
-            border-left-color:#cccccc;
-            margin-top:5px;
-            margin-right:-10px;
-        }
-        .dropdown-submenu:hover>a:after {
-            border-left-color:#555;
-        }
-        .dropdown-submenu.pull-left {
-            float:none;
-        }
-        .dropdown-submenu.pull-left>.dropdown-menu {
-            left:-100%;
-            margin-left:10px;
-            -webkit-border-radius:6px 0 6px 6px;
-            -moz-border-radius:6px 0 6px 6px;
-            border-radius:6px 0 6px 6px;
-        }
-        /* multilevel dropdown */
-
-        .flipped {
-            -moz-transform: scaleX(-1);
-            -o-transform: scaleX(-1);
-            -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
-            filter: FlipH;
-            -ms-filter: "FlipH";
-        }
-
-    </style>
 </head>
 
-<body>
+<body id="phylo">
 
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
@@ -191,7 +121,7 @@
                         <li><a href="#" id="svgExport"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export both trees</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="#" id="find"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Find</a></li>
-                        <li><a href="#" id="undo"><span class="glyphicon glyphicon-share-alt flipped" aria-hidden="true"></span> Undo</a></li>
+                        <li><a href="#" id="undo"><span class="glyphicon glyphicon-share-alt flipped globalUndoBtn" aria-hidden="true"></span> Undo</a></li>
                     </ul>
                 </li>
 
@@ -491,7 +421,7 @@
         <div id="placeholder">
             <div id="arrow">
             </div>
-            <div id="text">
+            <div id="infotext">
                 <p>1. Choose view for a single tree, Compare for two trees</p>
                 <p>2. Add your trees into the text boxes in newick format</p>
                 <p>3. Click "Render"</p>
@@ -530,7 +460,7 @@ function haveUndo(){
 
 document.getElementById("find").onclick = function() {
     console.log("find clicked");
-    var x = document.getElementsByClassName("searchButton");
+    var x = document.getElementsByClassName("searchButton, globalUndoBtn");
     var i;
     for (i = 0; i < x.length; i++) {
         triggerEvent(x[i], "click");
@@ -905,7 +835,7 @@ $(document).ready(function(){
        $("#colorScale").empty();
        $("#action").css({"display": "none"});
 
-       $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+       $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div class="infotext"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
        $("#newickInSingle").val('');
        $("#compare-btn").removeClass("active");
        $("#view-btn").addClass("active");
@@ -956,7 +886,7 @@ $(document).ready(function(){
         $("#colorScale").empty();
         $("#action").css({"display": "block"});
 
-        $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+        $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="infotext"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
         $("#newickIn1").val('');
         $("#newickIn2").val('');
         $("#view-btn").removeClass("active");
@@ -1050,11 +980,11 @@ $(document).ready(function(){
 
         var mode = $("#mode-buttons .active").attr('id');
         if (mode === "compare-btn") {
-            $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+            $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="infotext"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickIn1").val('');
             $("#newickIn2").val('');
         } else if (mode === "view-btn") {
-            $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="text"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
+            $("#page-content-wrapper").html('<div id="placeholder"><div id="arrow"></div><div id="infotext"><p>1. Choose view for a single tree, Compare for two trees</p><p>2. Add your trees into the text boxes in newick format</p><p>3. Click "Render"</p></div></div>');
             $("#newickInSingle").val('');
         }
 
@@ -1092,7 +1022,7 @@ $(document).ready(function(){
                 //TODO: change this
 
                 treecomp.compareTrees(tree1.name, "vis-container1", tree2.name, "vis-container2", "vis-scale1", "vis-scale2");
-                treecomp.undo("undoBtn");
+                //treecomp.undo("undoBtn");
 
                 $("#colorScale").empty();
                 treecomp.renderColorScale("colorScale");
@@ -1127,7 +1057,7 @@ $(document).ready(function(){
                 //$("#page-content-wrapper").empty();
                 $("#page-content-wrapper").html('<div class="container-fluid vis-container" id="vis-container1"></div>');
                 treecomp.viewTree(tree1.name, "vis-container1", "vis-scale1");
-                treecomp.undo("undoBtn");
+                //treecomp.undo("undoBtn");
 
                 $("#colorScale").empty();
                 $("#action").css({"display": "none"});
