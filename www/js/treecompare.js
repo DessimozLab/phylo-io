@@ -2522,6 +2522,12 @@
         }
     }
 
+    /********************************************************************************
+     * creates undo button for given canvas
+     *
+     * @param canvasId id of the canvas, "global" creates global undo button that always undo the last change
+     */
+
     function createUndoButton(canvasId) {
 
         function buildUndoButton(canvasId) {
@@ -2538,9 +2544,13 @@
                 .attr("aria-hidden", "true");
         }
 
-        buildUndoButton(canvasId);
+        if(canvasId == "global"){
+            undo("phylo", "undo")
+        } else {
+            buildUndoButton(canvasId);
+            undo(canvasId, "undobtn" + canvasId);
+        }
 
-        undo(canvasId, "undobtn" + canvasId);
     }
 
 
@@ -2652,7 +2662,7 @@
                 $("#" + canvasId + " .toolmenu").not(".exportMenu").hide()
                 $("#" + canvasId + " .opacity").removeClass("opacity")
                 $("#" + canvasId + " .exportMenu").slideToggle(200);
-                if($("#" + canvasId + " .exportMenu").is(':hidden')){
+                if($("#" + canvasId + " .exportMenu").is(':visible')){
                     $("#" + canvasId + " .exportButton").addClass("opacity");
                 }
 
@@ -2729,7 +2739,7 @@
                 $("#" + canvasId + " .toolmenu").not(".treeToolsMenu").hide()
                 $("#" + canvasId + " .opacity").removeClass("opacity")
                 $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
-                if($("#" + canvasId + " .treeToolsMenu").is(':hidden')){
+                if($("#" + canvasId + " .treeToolsMenu").is(':visible')){
                     $("#" + canvasId + " .treeToolsButton").addClass("opacity");
                 }
 
@@ -2807,7 +2817,7 @@
                 $("#" + canvasId + " .toolmenu").not(".stackToolsMenu").hide()
                 $("#" + canvasId + " .opacity").removeClass("opacity")
                 $("#" + canvasId + " .stackToolsMenu").slideToggle(200);
-                if($("#" + canvasId + " .stackToolsMenu").is(':hidden')){
+                if($("#" + canvasId + " .stackToolsMenu").is(':visible')){
                     $("#" + canvasId + " .stackToolsButton").addClass("opacity");
                 }
 
@@ -3159,7 +3169,7 @@
 
             $("#" + canvasId + " .toolmenu").not(".search").hide()
             $("#" + canvasId + " .opacity").removeClass("opacity")
-            if($("#" + canvasId + " .searchInput").is(':hidden')){
+            if($("#" + canvasId + " .searchInput").is(':visible')){
                 $("#" + canvasId + " .search").addClass("opacity");
             }
 
@@ -4381,21 +4391,21 @@
             var downloadButton = d3.select("#"+canvasId).select("."+downloadClass).append("div")
                 .attr("class", "btn-group export-group");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp nwk")
                 .attr("title", "export tree as nwk string")
                 .attr("type", "button")
                 .append("span")
                 .text("nwk");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp svg")
                 .attr("title", "export tree as svg")
                 .attr("type", "button")
                 .append("span")
                 .text("svg");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp png")
                 .attr("title", "export tree as png")
                 .attr("type", "button")
@@ -4759,6 +4769,9 @@
         createStackToolbar(canvasId, baseTree, compareMode);
         createExportBar(canvasId);
         createUndoButton(canvasId);
+
+        // just create it many times
+        createUndoButton("global");
 
         // make toolmenu as wide as button group
         $('.toolmenu').css("width" , d3.select('.btn-group-menu').node().getBoundingClientRect().width);
@@ -5925,8 +5938,6 @@
                 },
                 function () {
                     d = e.target;
-                    // undo functionality
-                    //updateUndo(treeIndex, "collapse_expand", d);
 
                     // action function
                     postorderTraverse(d, function (e) {
@@ -6205,7 +6216,7 @@
                         return "swap subtrees >";
                     },
                     function () {
-                        updateUndo(treeIndex,"swap",d);
+                        updateUndo(treeIndex, "swap", d);
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -6230,7 +6241,7 @@
                         }
                     },
                     function () {
-                        updateUndo(treeIndex,{"highlight":d});
+                        updateUndo(treeIndex, {"highlight":d});
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
@@ -6357,7 +6368,7 @@
         undoActionData.push(treeActionData);
         var tmpTree = clone(trees[treeIndex].data);
         undoFullTreeData.push(tmpTree);
-        $(".undoButton").attr("data-count", undoIndex);
+        $(".undoButton, .globalUndoBtn").attr("data-count", undoIndex);
 
     }
 
@@ -6365,6 +6376,8 @@
      * External function that allows to add an undo functionality on tree operations
      * input:
      * buttonId: id element of the button that will perform the undo functionality
+     * canvasId: canvas where the button is in, to which canvas' tree the undo effects, "phylo" is special case and
+     * undos the last change always
      */
     function undo(canvasId, buttonId){
 
@@ -6379,7 +6392,7 @@
                     return id;
                 }
 
-                if ($("#vis-container2").length !== 0){ // compare mode
+                if ($("#vis-container2").length !== 0 && canvasId != "phylo"){ // compare mode
 
                     // find tree in the right canvas
                     var slice_index = undefined;
@@ -6531,7 +6544,7 @@
                     undoFullTreeData = [];
                 }
 
-                $(".undoButton").attr("data-count", undoIndex);
+                $(".undoButton, .globalUndoBtn").attr("data-count", undoIndex);
 
             })
 
@@ -6563,7 +6576,7 @@
         var scaleTextIndex = svg2.childNodes.length - 2;
 
         if (lastElementIndex > -1) {
-            g.setAttribute('transform', 'translate(' + l_w + ',0)');
+            g.setAttribute('transform', 'translate(' + l_w + ', 0)');
             main = svg2.childNodes[lastElementIndex];
             scale = svg2.childNodes[scaleTextIndex];
             scaleText = svg2.lastElementChild;
