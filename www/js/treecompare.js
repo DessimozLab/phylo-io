@@ -1,4 +1,4 @@
-    var TreeCompare = function() {
+var TreeCompare = function() {
 
     var trees = [];
     var longestNode = {};
@@ -2798,10 +2798,7 @@
 
 
         if (settings.enableStackZoomSliders) {
-            //createStackZoomSlider(canvasId, "treewidthzoom", baseTree, -minTreeWidth, maxTreeWidth, 10,
-            // baseTree.data.treeWidth);
-            //createStackZoomSlider(canvasId, "treeheighthzoom", baseTree, -minTreeHeight, maxTreeHeight, 10,
-            // baseTree.data.treeHeight);
+
             if(hasHistogramData) {
 
                 buildStackToolbar(canvasId);
@@ -3165,7 +3162,6 @@
         buildSearchBox(canvasId);
 
         d3.select("#" + canvasId).select(".searchButton").on("click", function () {
-
 
             $("#" + canvasId + " .toolmenu").not(".search").hide()
             $("#" + canvasId + " .opacity").removeClass("opacity")
@@ -4822,10 +4818,7 @@
             baseTree.data.treeHeight = newHeight;
         }
 
-
         update(baseTree.root, baseTree.data, undefined, treeToggle);
-
-
 
         // where zoom centers
         baseTree.data.zoomBehaviour.translate([90, 25]);
