@@ -2,6 +2,8 @@ var TreeCompare = function() {
 
     var trees = [];
     var longestNode = {};
+    var maxBranchLength = 0;
+    var longestBranch = {};
 
     var backupRoot = [];
     var renderedTrees = [];
@@ -63,16 +65,7 @@ var TreeCompare = function() {
     }
 
 
-    /*
-     colors for the color scale for comparing nodes to best common node
 
-     blue - green - yellow - red
-     ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
-
-     red - blue
-     ['rgb(0,33,229)', 'rgb(70,8,225)', 'rgb(162,16,221)', 'rgb(218,24,190)', 'rgb(214,31,110)', 'rgb(210,39,39)'];
-     */
-    //grey - black
     var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
     var colorScaleRangeRest = ['rgb(179,0,0)', 'rgb(227,74,51)', 'rgb(252,141,89)', 'rgb(253,187,132)', 'rgb(253,212,158)', 'rgb(254,240,217)'];
 
@@ -1048,41 +1041,6 @@ var TreeCompare = function() {
     }
 
     /*
-     Can be called externally to render the color scale for tree comparison in a div
-     */
-    // function renderColorScale(scaleId) {
-    //     var colorScale = d3.scale.linear()
-    //         .domain(colorScaleDomain)
-    //         .range(colorScaleRange);
-    //     var width = 200;
-    //     var steps = 100;
-    //     var height = 30;
-    //     var svgHeight = height + 25;
-    //     var svg = d3.select("#" + scaleId).append("svg")
-    //         .attr("width", width + "px")
-    //         .attr("height", svgHeight + "px")
-    //         .append("g");
-    //     for (var i = 0; i < steps; i++) {
-    //         svg.append("rect")
-    //             .attr("width", (width / steps) + "px")
-    //             .attr("height", height + "px")
-    //             .attr("fill", colorScale(i / steps))
-    //             .attr("x", ((width / steps) * i) + "px")
-    //     }
-    //     svg.append("text")
-    //         .text("0")
-    //         .attr("x", 0)
-    //         .attr("y", height + 20)
-    //         .attr("fill", "white");
-    //     svg.append("text")
-    //         .text("1")
-    //         .attr("x", width - 10)
-    //         .attr("y", height + 20)
-    //         .attr("fill", "white")
-    //
-    // }
-
-    /*
     Function that returns unvisible children or visible children if one or the other are given as input
      */
     function getChildren(d) {
@@ -1181,10 +1139,12 @@ var TreeCompare = function() {
                 return max;
             } else {
                 var maxLength = (typeof d.triangleLength == 'undefined' || d.length > d.triangleLength) ? d.length : d.triangleLength;
+
                 if(maxLength > max) {
                     longestNode = d;
                     return maxLength;
                 }
+
                 return max;
             }
         }
@@ -1231,6 +1191,52 @@ var TreeCompare = function() {
         } else {
             return 0;
         }
+    }
+
+    function getLongestBranchLength(root){
+
+        var max = 0;
+        var prosessCollapsed = false;
+
+        function getMax_internal(d, max) {
+            var children = getChildren(d);
+
+            // visible children or or first level of collapsed branch
+            if (children.length == 0 || prosessCollapsed) {
+
+                prosessCollapsed = false;
+
+                var branchLength = getLength(d);
+                if(max < branchLength){
+                    max = branchLength;
+                    longestBranch = d;
+                }
+
+                return max;
+
+            } else {
+
+                if(!prosessCollapsed) {
+
+                    if(d._children) {
+                        prosessCollapsed = true;
+                    }
+
+                    for (var i = 0; i < children.length; i++) {
+                        max = Math.max(getMax_internal(children[i], max), max)
+                    }
+
+
+                }
+
+                return max;
+
+            }
+
+        }
+
+        return getMax_internal(root, max);
+
     }
 
     /*
@@ -1820,18 +1826,18 @@ var TreeCompare = function() {
             }
         }
 
-        // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
 
         // magic number?
-        var lengthMult = treeData.treeWidth + 90;
+        var lengthMult = treeData.treeWidth + 10;
 
         //calculate horizontal position of nodes
         var newLenghtMult = 0;
+        var lengthMultiplier = lengthMult/maxLength;
         nodes.forEach(function (d) {
             if (settings.useLengths) { //setting selected by user
-                d.y = getLength(d) * (lengthMult / maxLength); //adjust position to screen size
+                d.y = getLength(d) * lengthMultiplier; //adjust position to screen size
                 d.baseY = d.y;
             } else {
                 d.y = d.depth * lengthMult / 10;
@@ -1840,6 +1846,7 @@ var TreeCompare = function() {
                     newLenghtMult = d.y
                 }
             }
+            // pull the whole tree up
             d.y = d.y - 90;
         });
 
@@ -2762,18 +2769,6 @@ var TreeCompare = function() {
 
             var stackToolsMenu = d3.select("#" + canvasId).append("div")
                 .attr("class", "stackToolsMenu toolmenu");
-
-            /*stackToolsMenu.append("li")
-                .attr("class", "stackToolsText")
-                .append("div")
-                .attr("class", "treewidthzoom")
-                .text("Tree Width");
-
-            stackToolsMenu.append("li")
-                .attr("class", "stackToolsText")
-                .append("div")
-                .attr("class", "treeheighthzoom")
-                .text("Tree Height");*/
 
             if(hasHistogramData){
                 stackToolsMenu.append("li")
@@ -4668,7 +4663,14 @@ var TreeCompare = function() {
         }
 
         //set up the d3 vis
-        var width = $("#" + canvasId).width();
+        //var width = $("#" + canvasId).width();
+        // use whole window width - collapsed sidebar width for tree vis
+        if(compareMode){
+            var width = ($(window).width() - paddingHorizontal) / 2;
+        } else {
+            var width = $(window).width() - paddingHorizontal;
+        }
+
         var height = $("#" + canvasId).height();
         var tree = d3.layout.tree()
             .size([height, width]);
@@ -4811,9 +4813,9 @@ var TreeCompare = function() {
                 }
             });
 
-            // returns length from root to farthest leaf in branch lengths
-            maxLength = getMaxLengthVisible(baseTree.data.root);
-            baseTree.data.maxLength = getLength(longestNode);
+            // returns length of longest node
+            //maxLength = getMaxLengthVisible(baseTree.data.root);
+            baseTree.data.maxLength = getLongestBranchLength(baseTree.data.root);
             baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
         }
