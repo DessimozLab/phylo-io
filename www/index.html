@@ -596,6 +596,7 @@ $(document).ready(function(){
                 });
                 target.modal({ show: true });
             } else {
+                // call the function from elements data-action
                 window[action]();
             };
         };
