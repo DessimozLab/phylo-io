@@ -55,7 +55,7 @@ var TreeCompare = function() {
     var initTreeHeight = null;
     var initTreeWidth = null;
 
-    var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+    var labels = ["Retained", "Duplicated", "Gained", "Lost"]
     var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
 
     var color = {};
@@ -3643,8 +3643,8 @@ var TreeCompare = function() {
         var legendRectSize = 18;
         var margin = 25;
         var legendTxtSize = 12;
-        var dataLabels = ["Gained", "Duplicated", "Identical", "Lost" ]
-        var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+        var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
+        var labels = ["Retained", "Duplicated", "Gained", "Lost"]
         var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
 
         var color = {};
@@ -3756,7 +3756,7 @@ var TreeCompare = function() {
         var txtDistanceFromBar = w + margin;
         var legendTxtSize = 12;
 
-        var labels = ["Identical", "Duplicated", "Gained", "Lost"]
+        var labels = ["Retained", "Duplicated", "Gained", "Lost"]
         var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
 
         var color = {};
@@ -3804,7 +3804,7 @@ var TreeCompare = function() {
                 .append("text")
                 .classed("legendtxt", true)
                 .text(function (d) {
-                    return d[0].realsize;
+                    return d[0].realsize != 0 ? d[0].realsize : "";
                 }).attr("x", function () {
                     return (0 - xDistanceFromNode) + txtDistanceFromBar;
                 }).attr("y", function (d) {
@@ -3826,7 +3826,7 @@ var TreeCompare = function() {
                 .append("text")
                 .classed("legendsummarytxt", true)
                 .text(function (d) {
-                    return d.numberGenes
+                    return d.numberGenes > 0 ? d.numberGenes : "";
                 }).attr("x", function () {
                     return 0 - (xDistanceFromNode + 30)
                 }).attr("y", function (d) {
@@ -3879,15 +3879,18 @@ var TreeCompare = function() {
             var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
         }
 
-        var StackSizeIdentical = scale(d.identical, normalizer);
-        var StackSizeDuplicated = scale(d.duplicated, normalizer);
-        var StackSizeGained = scale(d.gained, normalizer);
-        var StackSizeLost = scale(d.lost, normalizer);
+        /* in case there's no eveolutionary events */
+        normalizer = !isFinite(normalizer) ? 1 : normalizer;
+
+        var StackSizeIdentical = (d.identical) ? scale(d.identical, normalizer) : 0;
+        var StackSizeDuplicated = (d.duplicated) ? scale(d.duplicated, normalizer) : 0;
+        var StackSizeGained = (d.gained) ? scale(d.gained, normalizer) : 0;
+        var StackSizeLost = (d.lost) ? scale(d.lost, normalizer) : 0;
         var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeIdentical;
 
         realSize = Math.abs(d.identical);
         var posBase = posBase + StackSizeIdentical;
-        data[0][seriesIndex] = new seriesElement('Identical', realSize, StackSizeIdentical, posBase, posStackSize)
+        data[0][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
 
         realSize = Math.abs(d.duplicated);
         var posBase = posBase + StackSizeDuplicated
@@ -3987,6 +3990,34 @@ var TreeCompare = function() {
             .text(histLblShowBtnTxt)
 
         d3.select("#" + canvasId).select("#histLblShowBtn")
+            .on('click', function () {
+                var active = histLabels.active ? false : true,
+                newOpacity = active ? 0 : 1;
+                d3.selectAll(".legendtxt, .legendsummarytxt").style("opacity", newOpacity);
+                histLabels.active = active;
+                if(active){
+                    d3.select(this).text("Show");
+                } else {
+                    d3.select(this).text("Hide");
+                }
+        });
+
+    }
+
+
+    function createHistogramLegendVisibilityBtn(canvasId, legendVisClass) {
+
+        var histLegendVisLblBtn = d3.select("#" + canvasId).select("." + legendVisClass).append("div");
+        histLegendVisLblBtn.append("button")
+            .attr("id", "histLegendLblShowBtn")
+            .attr("class", "btn btn-sm sharp")
+            .attr("title", "Visibility of legend")
+            .attr("type", "button")
+            .append("span")
+            .attr("id", "histLegendLblShowBtnTxt")
+            .text(histLegendLblShowBtnTxt)
+
+        d3.select("#" + canvasId).select("#histLegendLblShowBtn")
             .on('click', function () {
                 var active = histLabels.active ? false : true,
                 newOpacity = active ? 0 : 1;
