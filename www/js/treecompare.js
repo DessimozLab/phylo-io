@@ -3882,10 +3882,10 @@ var TreeCompare = function() {
         /* in case there's no eveolutionary events */
         normalizer = !isFinite(normalizer) ? 1 : normalizer;
 
-        var StackSizeIdentical = (d.identical) ? scale(d.identical, normalizer) : 0;
-        var StackSizeDuplicated = (d.duplicated) ? scale(d.duplicated, normalizer) : 0;
-        var StackSizeGained = (d.gained) ? scale(d.gained, normalizer) : 0;
-        var StackSizeLost = (d.lost) ? scale(d.lost, normalizer) : 0;
+        var StackSizeIdentical = (d.identical) ? stackScale(d.identical, normalizer) : 0;
+        var StackSizeDuplicated = (d.duplicated) ? stackScale(d.duplicated, normalizer) : 0;
+        var StackSizeGained = (d.gained) ? stackScale(d.gained, normalizer) : 0;
+        var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
         var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeIdentical;
 
         realSize = Math.abs(d.identical);
@@ -3913,7 +3913,7 @@ var TreeCompare = function() {
             this.posStackSize = posStackSize;
         }
 
-        function scale(val, normalizer){
+        function stackScale(val, normalizer){
             return val * normalizer;
         }
 
