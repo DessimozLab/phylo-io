@@ -354,7 +354,7 @@ var TreeCompare = function() {
         function nested(nest) {
             var subtree = "";
 
-            if (nest.hasOwnProperty('children')) {
+            if (nest.hasOwnProperty('children') && nest.children.length) {
                 var children = [];
                 nest.children.forEach(function (child) {
                     var subsubtree = nested(child);
@@ -368,7 +368,7 @@ var TreeCompare = function() {
                     subtree = subtree + ":" + nest.length;
                 }
             }
-            else if(nest.hasOwnProperty('_children')){
+            else if(nest.hasOwnProperty('_children') && nest._children.length){
                 var _children = [];
                 nest._children.forEach(function(child){
                     var subsubtree = nested(child);
