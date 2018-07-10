@@ -2788,6 +2788,12 @@ var TreeCompare = function() {
                     .append("div")
                     .attr("class", "stacklabelswitch")
                     .text("Histogram Labels");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stacklegendswitch")
+                    .text("Histogram Legend");
             }
         }
 
@@ -2801,6 +2807,7 @@ var TreeCompare = function() {
                 createStackZoomSlider(canvasId, "stackwidthzoom", baseTree, stackMinWidth, stackMaxWidth, stackStep, stackWidth);
                 createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
                 createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
+                createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
             }
         }
 
@@ -3664,16 +3671,17 @@ var TreeCompare = function() {
                 // we don't want to move the whole tree
                 d3.event.sourceEvent.stopPropagation();
             })
-            .on("drag", function(d,i) {
+
+            .on("drag", function(d, i) {
                 g = this;
                 translate = d3.transform(g.getAttribute("transform")).translate;
                 x = d3.event.dx + translate[0],
                 y = d3.event.dy + translate[1];
-                // keep it vertically aligned
                 d3.select(g).attr("transform", "translate(" + x + ", "+ y +")");
             });
 
         var legendSvg = d3.select("#" + svgId).append("svg").call(legendDrag)
+             .attr("id", "histogram-legend")
              .attr("x", margin)
              .attr("y", margin)
              .attr("width", width + "px")
@@ -3791,7 +3799,8 @@ var TreeCompare = function() {
                 translate = d3.transform(g.getAttribute("transform")).translate;
                 x = d3.event.dx + translate[0],
                 y = d3.event.dy + translate[1];
-                // keep it vertically aligned
+
+                // keep it vertically aligned, TODO restrict X to parents parent width
                 d3.select(g).attr("transform", "translate(" + x + ", 0)");
             });
 
@@ -4007,22 +4016,32 @@ var TreeCompare = function() {
 
     function createHistogramLegendVisibilityBtn(canvasId, legendVisClass) {
 
+        var histLegendLabels = d3.select("#" + canvasId).select("." + legendVisClass);
+
+        if (histLegendLabels.attr("opacity") == 1){
+            histLegendLabels.active = true;
+            var histLegendShowBtnTxt = "Show";
+        } else {
+            histLegendLabels.active = false;
+            var histLegendShowBtnTxt = "Hide";
+        }
+
         var histLegendVisLblBtn = d3.select("#" + canvasId).select("." + legendVisClass).append("div");
         histLegendVisLblBtn.append("button")
-            .attr("id", "histLegendLblShowBtn")
+            .attr("id", "histLegendShowBtn")
             .attr("class", "btn btn-sm sharp")
             .attr("title", "Visibility of legend")
             .attr("type", "button")
             .append("span")
-            .attr("id", "histLegendLblShowBtnTxt")
-            .text(histLegendLblShowBtnTxt)
+            .attr("id", "histLegendShowBtnTxt")
+            .text(histLegendShowBtnTxt)
 
-        d3.select("#" + canvasId).select("#histLegendLblShowBtn")
+        d3.select("#" + canvasId).select("#histLegendShowBtn")
             .on('click', function () {
-                var active = histLabels.active ? false : true,
+                var active = histLegendVisLblBtn.active ? false : true,
                 newOpacity = active ? 0 : 1;
-                d3.selectAll(".legendtxt, .legendsummarytxt").style("opacity", newOpacity);
-                histLabels.active = active;
+                d3.selectAll("#histogram-legend").style("opacity", newOpacity);
+                histLegendVisLblBtn.active = active;
                 if(active){
                     d3.select(this).text("Show");
                 } else {
