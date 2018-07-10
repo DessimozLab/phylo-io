@@ -892,7 +892,9 @@ var TreeCompare = function() {
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
                 if(!d.length){ d.length = 0.1; }
 
-                if(maxStackHeight == "max" && d.numberGenes > largestGenome) { largestGenome = d.numberGenes; }
+                if(d.numberGenes > largestGenome) {
+                    largestGenome = d.numberGenes;
+                }
                 idCounter++;
             });
 
@@ -2794,6 +2796,12 @@ var TreeCompare = function() {
                     .append("div")
                     .attr("class", "stacklegendswitch")
                     .text("Histogram Legend");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackscaleswitch")
+                    .text("Histogram scale");
             }
         }
 
@@ -2808,6 +2816,7 @@ var TreeCompare = function() {
                 createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
                 createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
                 createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
+                createHistogramScaleSwitchBtn(canvasId, "stackscaleswitch", baseTree);
             }
         }
 
@@ -3742,6 +3751,7 @@ var TreeCompare = function() {
 
     function addStack(d, i){
 
+
         // don't draw histograms more than once
         // TODO find more d3 way of doing this
         try {
@@ -4050,6 +4060,57 @@ var TreeCompare = function() {
         });
 
     }
+
+    function createHistogramScaleSwitchBtn(canvasId, scaleSwitchClass, baseTree) {
+
+        function buildScaleButton(canvasId, scaleSwitchClass) {
+
+            var scaleButton = d3.select("#" + canvasId).select("." + scaleSwitchClass).append("div")
+                .attr("class", "btn-group export-group");
+            scaleButton.append("button")
+            /*.attr("id", "exportButton") */
+                .attr("class", "btn btn-sm sharp normalised")
+                .attr("title", "Scale histograms as normalised")
+                .attr("type", "button")
+                .append("span")
+                .text("Ratio");
+            scaleButton.append("button")
+                .attr("class", "btn btn-sm sharp fixed")
+                .attr("title", "Scale histograms as fixed")
+                .attr("type", "button")
+                .append("span")
+                .text("Fixed");
+
+        }
+
+        // draws download buttons
+
+        // draw button
+        buildScaleButton(canvasId, scaleSwitchClass);
+
+        // normalised ratio
+        d3.select("#" + canvasId).select(".normalised")
+            .on('click', function () {
+                maxStackHeight = "ratio";
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+        // max ratio
+        d3.select("#" + canvasId).select(".fixed")
+            .on("click", function () {
+                maxStackHeight = "max";
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+    }
+
+
+    function updateHistogramScale(canvasId, baseTree){
+        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+        update(baseTree.root, baseTree.data, 0);
+
+    }
+
 
     function splitsToBitString(tree, funcType) {
 
@@ -5440,7 +5501,7 @@ var TreeCompare = function() {
             initialiseTree(firstTree.root, settings.autoCollapse);
             firstTree.data.clickEvent = getClickEventListenerNode(firstTree, false, {});
             firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
-            renderTree(firstTree,newName,canvasId,scaleId);
+            renderTree(firstTree, newName, canvasId, scaleId);
 
             createTreeToggle(name, canvasId, scaleId);
 
@@ -5449,7 +5510,7 @@ var TreeCompare = function() {
             initialiseTree(trees[index].root, settings.autoCollapse);
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-            renderTree(trees[index],name,canvasId,scaleId);
+            renderTree(trees[index], name, canvasId, scaleId);
 
         }
     }
