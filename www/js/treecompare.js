@@ -1944,7 +1944,7 @@ var TreeCompare = function() {
             .attr("x", function(d) {
                 if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){
                     return -13 - getTextWidth(d.name);
-                } else if ((d.children || d._children)) {
+                } else if ((d.children || d._children) && !d.evolutionaryEvents) {
                     return -13;
                 } else {
                     return 13;
@@ -1952,7 +1952,9 @@ var TreeCompare = function() {
 
             })
             .attr("dy", function (d) {
-                if (!(d.children || d._children)) { //ensures that length labels are on top of branch
+                //ensures that length labels are on top of branch
+                if (!(d.children || d._children) || d.evolutionaryEvents)  {
+                //if (!(d.children || d._children) || isDefined(d.evolutionaryEvents))  {
                     return ".3em";
                 } else {
                     return "-.3em";
@@ -1966,7 +1968,7 @@ var TreeCompare = function() {
                 }
             })
             .attr("text-anchor", function (d) {
-                return d.children || d._children ? "end" : "start";
+                return ((d.children || d._children) && !d.evolutionaryEvents) ? "end" : "start";
             })
             .style("fill-opacity", 1e-6)
             .attr("font-size", function (d) {
@@ -2061,7 +2063,7 @@ var TreeCompare = function() {
             .attr("x", function(d) {
                 if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){ //mirrored right tree
                     return -13 - getTextWidth(d.name);
-                } else if (!d.children && !d._children) { //leaves left tree
+                } else if ((!d.children && !d._children) || d.evolutionaryEvents) { //leaves left tree
                     return 13
                 } else { //internal nodes
                     if (treeName === trees[treeIdx].name && settings.mirrorRightTree){ //internal nodes right tree
@@ -2073,7 +2075,7 @@ var TreeCompare = function() {
                 }
             })
             .text(function (d) {
-                if (!d.children && !d._children) { //print leaf names
+                if ((!d.children && !d._children) || d.evolutionaryEvents) { //print leaf names
                     return d.name
                 } else {
                     if (settings.internalLabels === "none") {
@@ -3770,7 +3772,8 @@ var TreeCompare = function() {
         var h = stackHeight;
         var w = stackWidth;
         var margin = 8;
-        var xDistanceFromNode = w + 30;
+        var xInitialRightMargin = 30;
+        var xDistanceFromNode = w + xInitialRightMargin;
         var txtDistanceFromBar = w + margin;
         var legendTxtSize = 12;
 
@@ -3807,12 +3810,34 @@ var TreeCompare = function() {
             .on("drag", function(d,i) {
                 g = this;
                 translate = d3.transform(g.getAttribute("transform")).translate;
+                // todo leftmargin needs width of the "parent"
+                //translate[0] = (translate[0] < -48) ? -48 : translate[0];
+                translate[0] = (translate[0] > xInitialRightMargin - 4) ? xInitialRightMargin - 4 : translate[0];
                 x = d3.event.dx + translate[0],
                 y = d3.event.dy + translate[1];
 
-                // keep it vertically aligned, TODO restrict X to parents parent width
+                // keep it vertically aligned
+                // TODO restrict X to parents "parent" width, we just don't know the
+                // width of the parent
+                var parentId = '#'+g.parentNode.previousSibling.id
+
                 d3.select(g).attr("transform", "translate(" + x + ", 0)");
             });
+/*
+
+        function computeDimensions(selection) {
+          var dimensions = null;
+          var node = selection.node();
+
+          if (node instanceof SVGElement) { // check if node is svg element
+            dimensions = node.getBBox();
+          } else { // else is html element
+            dimensions = node.getBoundingClientRect();
+          }
+          console.log(dimensions);
+          return dimensions;
+        }
+*/
 
         var stackGroup =  svg.append("g").classed("stackGroup", true).call(stackDrag);
 
@@ -3887,7 +3912,7 @@ var TreeCompare = function() {
         var seriesIndex = 0;
         var d = seriesDataAll.evolutionaryEvents;
         var posBase = 0; // positive base
-        var seriesIndex = 0;
+        var stackIndex = 0;
 
 
         if(maxStackHeight == "max" && largestGenome > 0){
@@ -3909,19 +3934,23 @@ var TreeCompare = function() {
 
         realSize = Math.abs(d.identical);
         var posBase = posBase + StackSizeIdentical;
-        data[0][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
+        data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
+        stackIndex++;
 
         realSize = Math.abs(d.duplicated);
         var posBase = posBase + StackSizeDuplicated
-        data[1][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
+        data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
+        stackIndex++;
 
         realSize = Math.abs(d.gained);
         var posBase = posBase + StackSizeGained
-        data[2][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
+        data[stackIndex][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
+        stackIndex++;
 
         realSize = Math.abs(d.lost);
         /* move lost down a little to make it easier to hover it and not the node line */
-        data[3][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
+        data[stackIndex][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
+        stackIndex++;
 
         function seriesElement(sizeLbl, realSize, size, y0, posStackSize){
             this.sizelbl = sizeLbl
@@ -4861,7 +4890,8 @@ var TreeCompare = function() {
         });
 
         postorderTraverse(baseTree.data.root, function(d) {
-            if(!hasHistogramData && d.evolutionaryEvents &&  _.isObject(d.evolutionaryEvents) ) {
+            // if node has non empty evolutionaryEvents object we have histogram data
+            if(!hasHistogramData && d.evolutionaryEvents && _.isObject(d.evolutionaryEvents) ) {
                 hasHistogramData = true;
             }
 
@@ -4938,7 +4968,8 @@ var TreeCompare = function() {
         baseTree.data.zoomBehaviour.scale(0.8);
         // move the tree to the coordinates and scale it smaller
         d3.select("#" + baseTree.data.canvasId + " svg g")
-            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)");
+            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)")
+            .attr("class", "treegroup");
 
         d3.select(self.frameElement).style("height", "500px");
 
@@ -6700,6 +6731,11 @@ var TreeCompare = function() {
         svgExport.setAttribute("download", "Phylo.io-cmp.svg");
 
         svg.select("#exportLogo").remove();
+    }
+
+    function isDefined(o) {
+        var undefined;
+        return o !== undefined;
     }
 
     //return all the externalised functions
