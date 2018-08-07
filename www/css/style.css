@@ -318,7 +318,7 @@ rect.node {
 
 /*Styles for sharing*/
 
-#shareButton, #histLblShowBtn, #exportButton {
+#shareButton, #histLblShowBtn, #exportButton, #histLegendShowBtn {
     width: 100%;
     margin-left: 0px;
     opacity: 0.6;
@@ -376,7 +376,13 @@ rect.node {
     opacity: 0.6;
 }
 
-#phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover {
+#phylo .btn.normalised, #phylo .btn.fixed {
+    width: 50%;
+    margin-left: 0px;
+    opacity: 0.6;
+}
+
+#phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover {
     opacity: 1.0;
 }
 
