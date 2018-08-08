@@ -55,6 +55,9 @@ var TreeCompare = function() {
     var initTreeHeight = null;
     var initTreeWidth = null;
 
+    // values genes or events
+    var infoStack = 'genes';
+
     var labels = ["Retained", "Duplicated", "Gained", "Lost"]
     var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
 
@@ -63,7 +66,6 @@ var TreeCompare = function() {
     for(var i = 0; i < colors.length; i++){
         color[labels[i]] = colors[i];
     }
-
 
 
     var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
@@ -2804,6 +2806,12 @@ var TreeCompare = function() {
                     .append("div")
                     .attr("class", "stackscaleswitch")
                     .text("Histogram scale");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackinfoswitch")
+                    .text("Displayed info");
             }
         }
 
@@ -2819,6 +2827,7 @@ var TreeCompare = function() {
                 createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
                 createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
                 createHistogramScaleSwitchBtn(canvasId, "stackscaleswitch", baseTree);
+                createHistogramInfoSwitchBtn(canvasId, "stackinfoswitch", baseTree);
             }
         }
 
@@ -4112,8 +4121,6 @@ var TreeCompare = function() {
 
         }
 
-        // draws download buttons
-
         // draw button
         buildScaleButton(canvasId, scaleSwitchClass);
 
@@ -4137,6 +4144,47 @@ var TreeCompare = function() {
     function updateHistogramScale(canvasId, baseTree){
         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
         update(baseTree.root, baseTree.data, 0);
+
+    }
+
+    function createHistogramInfoSwitchBtn(canvasId, infoSwitchClass, baseTree) {
+
+        function buildInfoButton(canvasId, infoSwitchClass) {
+
+            var scaleButton = d3.select("#" + canvasId).select("." + infoSwitchClass).append("div")
+                .attr("class", "btn-group export-group");
+            scaleButton.append("button")
+            /*.attr("id", "exportButton") */
+                .attr("class", "btn btn-sm sharp normalised")
+                .attr("title", "Show events")
+                .attr("type", "button")
+                .append("span")
+                .text("Events");
+            scaleButton.append("button")
+                .attr("class", "btn btn-sm sharp fixed")
+                .attr("title", "Show genes")
+                .attr("type", "button")
+                .append("span")
+                .text("Genes");
+
+        }
+
+        // draw button
+        buildInfoButton(canvasId, infoSwitchClass);
+
+        // normalised ratio
+        d3.select("#" + canvasId).select(".events")
+            .on('click', function () {
+                infoStack = "events";
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+        // max ratio
+        d3.select("#" + canvasId).select(".genes")
+            .on("click", function () {
+                infoStack = "genes";
+                updateHistogramScale(canvasId, baseTree);
+            });
 
     }
 
