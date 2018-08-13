@@ -294,6 +294,10 @@ rect.node {
     border-radius:0;
 }
 
+#phylo .btn.sharp.activebtn {
+    opacity: 0.8;
+}
+
 #phylo .btn {
     border: 0 none;
 }
@@ -376,13 +380,13 @@ rect.node {
     opacity: 0.6;
 }
 
-#phylo .btn.normalised, #phylo .btn.fixed {
+#phylo .btn.normalised, #phylo .btn.fixed, #phylo .btn.events, #phylo .btn.genes {
     width: 50%;
     margin-left: 0px;
     opacity: 0.6;
 }
 
-#phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover {
+#phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover, #phylo .btn.genes:hover, #phylo .btn.events:hover {
     opacity: 1.0;
 }
 
@@ -825,4 +829,10 @@ button.rescaleButton:hover{
     transform: scaleX(-1);
     filter: FlipH;
     -ms-filter: "FlipH";
+}
+
+#histogram-legend text, .legendtxt, .legendsummarytxt {
+    font-family: 'Open Sans', sans-serif;
+    text-rendering: optimizeLegibility;
+    stroke: none;
 }
