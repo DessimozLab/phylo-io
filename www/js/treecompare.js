@@ -33,6 +33,7 @@ var TreeCompare = function() {
     var maxStackHeight = "ratio";
     //var maxStackHeight = "max";
     var largestGenome = 0;
+    var largestEvents = 0;
 
     // initial stack histogram dimensions
     var stackHeight = 100;
@@ -45,6 +46,7 @@ var TreeCompare = function() {
     var stackMaxHeight = 250;
     var stackStep = 10;
     var hasHistogramData = false;
+    var showHistogramLegend = true;
 
     var maxTreeHeight = 500;
     var maxTreeWidth = 1500;
@@ -58,8 +60,8 @@ var TreeCompare = function() {
     // values genes or events
     var infoStack = 'genes';
 
-    var labels = ["Retained", "Duplicated", "Gained", "Lost"]
-    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
+    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplication"]
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e"];
 
     var color = {};
 
@@ -831,6 +833,9 @@ var TreeCompare = function() {
      */
     function addTree(newick, myName, mode) {
 
+        // when adding new tree the default is not to have evolotionary events
+        hasHistogramData = false;
+
         var num = trees.length;
         var idCounter = 0;
 
@@ -897,6 +902,11 @@ var TreeCompare = function() {
                 if(d.numberGenes > largestGenome) {
                     largestGenome = d.numberGenes;
                 }
+
+                if(d.numberEvents > largestEvents) {
+                    largestEvents = d.numberEvents;
+                }
+
                 idCounter++;
             });
 
@@ -1696,6 +1706,13 @@ var TreeCompare = function() {
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
+        var treeName = getTreeName(treeData);
+
+        function getTreeName(treeData){
+            var treeNameElements = treeData.root.ID.split("_");
+            return treeNameElements[0]+"_"+treeNameElements[1];
+        }
+
         postorderTraverse(treeData.root, function (d) {
             if (d._children) {
                 leavesHidden += d.leaves.length;
@@ -1997,6 +2014,11 @@ var TreeCompare = function() {
                 return d.evolutionaryEvents != false
             })
             .each(addStack);
+
+        if(showHistogramLegend && hasHistogramData){
+            d3.select('#histogram-legend').remove();
+            addMainLegend(treeName);
+        }
 
         //instant node changes
         node.select("text")
@@ -2445,6 +2467,7 @@ var TreeCompare = function() {
                 }
             }
         });
+
     }
 
     /*
@@ -3664,22 +3687,20 @@ var TreeCompare = function() {
 
     function addMainLegend(svgId) {
 
-        var width = 220;
+        var width = 230;
         var height = 80;
         var svgHeight = height + 25;
-        var legendRectSize = 18;
+        var legendRectSize = 20;
         var margin = 25;
         var legendTxtSize = 12;
-        var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
-        var labels = ["Retained", "Duplicated", "Gained", "Lost"]
-        var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
-
-        var color = {};
-
-        for(var i = 0; i < colors.length; i++){
-
-            color[labels[i]] = colors[i];
+        if(infoStack == "genes"){
+            var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
+        } else {
+            var dataLabels = ["Gained", "Duplication", "Lost" ]
         }
+
+        // to position legends correctly
+        var rects = dataLabels.length - 1;
 
         var legendDrag = d3.behavior.drag()
             .origin(function() {
@@ -3710,9 +3731,9 @@ var TreeCompare = function() {
 
         legendSvg.append("line")
             .attr("x1", -75)
-            .attr("y1", 3 * legendRectSize)
+            .attr("y1", rects * legendRectSize)
             .attr("x2", 200)
-            .attr("y2", 3 * legendRectSize)
+            .attr("y2", rects * legendRectSize)
             .attr("class", "divline")
             .attr("stroke-width", 2)
             .attr("stroke", "black");
@@ -3721,7 +3742,7 @@ var TreeCompare = function() {
             .data(dataLabels)
             .enter()
             .append('rect')
-            .attr('x', 100)
+            .attr('x', 110)
             .attr('y', function(d, i){
                 return i * legendRectSize;
             })
@@ -3738,7 +3759,7 @@ var TreeCompare = function() {
             .text(function(d){
                 return d;
             })
-            .attr('x', 100 + legendRectSize + 5)
+            .attr('x', 110 + legendRectSize + 5)
             .attr('y', function(d, i){
                 return i * legendRectSize + 12;
             })
@@ -3750,9 +3771,9 @@ var TreeCompare = function() {
         legendSvg
             .append('text')
             .attr("class", "legendGeneTotal")
-            .text("Total # of genes")
+            .text("Total # of "+infoStack)
             .attr('x', 0)
-            .attr('y', 3 * legendRectSize - 5)
+            .attr('y', rects * legendRectSize - 5)
             .attr('text-anchor', 'start')
             .attr("font-size", legendTxtSize).attr("stroke", "black");
 
@@ -3761,7 +3782,6 @@ var TreeCompare = function() {
     }
 
     function addStack(d, i){
-
 
         // don't draw histograms more than once
         // TODO find more d3 way of doing this
@@ -3777,179 +3797,227 @@ var TreeCompare = function() {
         }
 
         var svg = d3.select(this);
-        var data = [[{}], [{}], [{}], [{}]];
         var h = stackHeight;
         var w = stackWidth;
         var margin = 8;
-        var xInitialRightMargin = 30;
+        var xInitialRightMargin = 35;
         var xDistanceFromNode = w + xInitialRightMargin;
         var txtDistanceFromBar = w + margin;
         var legendTxtSize = 12;
 
-        var labels = ["Retained", "Duplicated", "Gained", "Lost"]
-        var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"];
+        var stackData = [];
 
-        var color = {};
+        stackData[infoStack] = barStack(d, infoStack);
 
-        for(var i = 0; i < colors.length; i++){
+        for (var key in stackData) {
 
-            color[labels[i]] = colors[i];
+            if (key == infoStack) {
+                var data = stackData[key];
+
+                var y = d3.scale.linear()
+                    .domain([0, d3.max(data, function (d) {
+                        return d3.max(d, function (d) {
+                            return d.y0 + d.y;
+                        });
+                    })])
+                    .range([h, 0]);
+
+                var stackDrag = d3.behavior.drag()
+                    .origin(function () {
+                        var g = this;
+                        return {
+                            x: d3.transform(g.getAttribute("transform")).translate[0],
+                            y: d3.transform(g.getAttribute("transform")).translate[1]
+                        };
+                    })
+                    .on('dragstart', function () {
+                        // we don't want to move the whole tree
+                        d3.event.sourceEvent.stopPropagation();
+                    })
+                    .on("drag", function (d, i) {
+                        g = this;
+                        translate = d3.transform(g.getAttribute("transform")).translate;
+                        // todo leftmargin needs width of the "parent"
+                        //translate[0] = (translate[0] < -48) ? -48 : translate[0];
+                        translate[0] = (translate[0] > xInitialRightMargin - 4) ? xInitialRightMargin - 4 : translate[0];
+                        x = d3.event.dx + translate[0],
+                            y = d3.event.dy + translate[1];
+
+                        // keep it vertically aligned
+                        // TODO restrict X to parents "parent" width, we just don't know the
+                        // width of the parent
+                        var parentId = '#' + g.parentNode.previousSibling.id
+
+                        d3.select(g).attr("transform", "translate(" + x + ", 0)");
+                    });
+                /*
+
+                        function computeDimensions(selection) {
+                          var dimensions = null;
+                          var node = selection.node();
+
+                          if (node instanceof SVGElement) { // check if node is svg element
+                            dimensions = node.getBBox();
+                          } else { // else is html element
+                            dimensions = node.getBoundingClientRect();
+                          }
+                          console.log(dimensions);
+                          return dimensions;
+                        }
+                */
+
+                var stackGroup = svg.append("g").classed("stackGroup", true).call(stackDrag);
+
+                if (settings.showHistogramValues) {
+                    var legends = stackGroup.selectAll("text")
+                        .data(data)
+                        .enter()
+                        .append("text")
+                        .classed("legendtxt", true)
+                        .text(function (d) {
+                            return d[0].realsize != 0 ? d[0].realsize : "";
+                        }).attr("x", function () {
+                            return (0 - xDistanceFromNode) + txtDistanceFromBar;
+                        }).attr("y", function (d) {
+                            // TODO adjust based on feedback
+                            if(d[0].y0 < 0){
+                                // legend below zero line
+                                return legendTxtSize+2;
+                            }
+
+                            // if bar height smaller than text size, put text on bottom
+                            if(d[0].y < legendTxtSize && d[0].y0 > 0) {
+                                return -(d[0].y0 - d[0].y);
+                            }
+
+                            // center legend text vertically with some extra padding
+                            return -(d[0].y0 - ((d[0].y + legendTxtSize)/2));
+                        }).attr("font-size", legendTxtSize).attr("stroke", "black")
+
+                }
+
+                if (settings.showHistogramSummaryValue) {
+
+                    var summaryLegend = stackGroup.selectAll(".stackGroup")
+                        .data(function (d) {
+                            return [d];
+                        })
+                        .enter()
+                        .append("text")
+                        .classed("legendsummarytxt", true)
+                        .text(function (d) {
+                            return d.numberGenes > 0 ? d.numberGenes : "";
+                        }).attr("x", function () {
+                            return 0 - (xDistanceFromNode + 30)
+                        }).attr("y", function (d) {
+                            return 0 - margin;
+                        }).attr("font-size", legendTxtSize).attr("stroke", "black")
+
+                }
+
+                var stackSlices = stackGroup.selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect");
+
+                var slices = stackSlices
+                    .style("fill", function (d, i) {
+                        return color[d[0].sizelbl];
+                    })
+                    .style("opacity", 0.8)
+                    .attr("y", function (d) {
+                        return 0 - d[0].y0;
+                    })
+                    .attr("x", function (d) {
+                        return 0 - xDistanceFromNode;
+                    })
+                    .attr("height", function (d) {
+                        return d[0].size
+                    })
+
+                    .attr("width", w)
+
+                d3.selectAll(".stackGroup").moveToFront();
+
+            }
+
         }
-
-        data = barStack(d, data);
-
-        var y = d3.scale.linear()
-            .domain([0, d3.max(data, function(d) {
-                return d3.max(d, function(d) {
-                    return d.y0 + d.y;
-                });
-            })])
-            .range([h, 0]);
-
-        var stackDrag = d3.behavior.drag()
-             .origin(function() {
-                var g = this;
-                return {x: d3.transform(g.getAttribute("transform")).translate[0],
-                        y: d3.transform(g.getAttribute("transform")).translate[1]};
-            })
-            .on('dragstart', function(){
-                // we don't want to move the whole tree
-                d3.event.sourceEvent.stopPropagation();
-            })
-            .on("drag", function(d,i) {
-                g = this;
-                translate = d3.transform(g.getAttribute("transform")).translate;
-                // todo leftmargin needs width of the "parent"
-                //translate[0] = (translate[0] < -48) ? -48 : translate[0];
-                translate[0] = (translate[0] > xInitialRightMargin - 4) ? xInitialRightMargin - 4 : translate[0];
-                x = d3.event.dx + translate[0],
-                y = d3.event.dy + translate[1];
-
-                // keep it vertically aligned
-                // TODO restrict X to parents "parent" width, we just don't know the
-                // width of the parent
-                var parentId = '#'+g.parentNode.previousSibling.id
-
-                d3.select(g).attr("transform", "translate(" + x + ", 0)");
-            });
-/*
-
-        function computeDimensions(selection) {
-          var dimensions = null;
-          var node = selection.node();
-
-          if (node instanceof SVGElement) { // check if node is svg element
-            dimensions = node.getBBox();
-          } else { // else is html element
-            dimensions = node.getBoundingClientRect();
-          }
-          console.log(dimensions);
-          return dimensions;
-        }
-*/
-
-        var stackGroup =  svg.append("g").classed("stackGroup", true).call(stackDrag);
-
-        if(settings.showHistogramValues) {
-            var legends = stackGroup.selectAll("text")
-                .data(data)
-                .enter()
-                .append("text")
-                .classed("legendtxt", true)
-                .text(function (d) {
-                    return d[0].realsize != 0 ? d[0].realsize : "";
-                }).attr("x", function () {
-                    return (0 - xDistanceFromNode) + txtDistanceFromBar;
-                }).attr("y", function (d) {
-                    // TODO adjust based on feedback
-                    var yPos = d[0].y < legendTxtSize ? legendTxtSize : d[0].y;
-                    var posAdj = d[0].y0 < 0 || d[0].y > legendTxtSize ? 0 : legendTxtSize / 2;
-                    return (5 - d[0].y0) + ((yPos / 2) - posAdj);
-                }).attr("font-size", legendTxtSize).attr("stroke", "black")
-
-        }
-
-        if(settings.showHistogramSummaryValue) {
-
-            var summaryLegend = stackGroup.selectAll(".stackGroup")
-                .data(function (d) {
-                    return [d];
-                })
-                .enter()
-                .append("text")
-                .classed("legendsummarytxt", true)
-                .text(function (d) {
-                    return d.numberGenes > 0 ? d.numberGenes : "";
-                }).attr("x", function () {
-                    return 0 - (xDistanceFromNode + 30)
-                }).attr("y", function (d) {
-                    return 0 - margin;
-                }).attr("font-size", legendTxtSize).attr("stroke", "black")
-
-        }
-
-        var stackSlices = stackGroup.selectAll("rect")
-            .data(data)
-            .enter()
-            .append("rect");
-
-        var slices = stackSlices
-            .style("fill", function(d, i) {
-                return color[d[0].sizelbl];
-            })
-            .style("opacity", 0.8)
-            .attr("y", function(d) {
-                return 0 - d[0].y0;
-            })
-            .attr("x", function(d) {
-                return 0 - xDistanceFromNode;
-            })
-            .attr("height", function(d) {
-                return d[0].size
-            })
-
-            .attr("width", w)
-
-        d3.selectAll(".stackGroup").moveToFront();
-
 
     }
 
-    function barStack(seriesDataAll, data) {
+    function getStackNormalizer(d, type){
 
+        if(type == 'genes' || !type){
+
+            if(maxStackHeight == "max" && largestGenome > 0){
+                var normalizer = stackHeight / largestGenome;
+            } else if(Number.isInteger(maxStackHeight)){
+                var normalizer = maxStackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+            } else {
+                var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+            }
+
+        } else {
+
+            if(maxStackHeight == "max" && largestEvents > 0){
+                var normalizer = stackHeight / largestEvents;
+            } else if(Number.isInteger(maxStackHeight)){
+                var normalizer = maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+            } else {
+                var normalizer = stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+            }
+
+        }
+
+        return normalizer;
+
+    }
+
+    function barStack(seriesDataAll, type) {
+
+        if(type == 'genes' || !type) {
+            var data = [[{}], [{}], [{}], [{}]];
+        } else {
+            var data = [[{}], [{}], [{}]];
+        }
         var size = 0;
-        var seriesIndex = 0;
         var d = seriesDataAll.evolutionaryEvents;
         var posBase = 0; // positive base
         var stackIndex = 0;
+        var seriesIndex = 0;
 
-
-        if(maxStackHeight == "max" && largestGenome > 0){
-            var normalizer = stackHeight / largestGenome;
-        } else if(Number.isInteger(maxStackHeight)){
-            var normalizer = maxStackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
-        } else {
-            var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
-        }
+        var normalizer = getStackNormalizer(d, type);
 
         /* in case there's no eveolutionary events */
         normalizer = !isFinite(normalizer) ? 1 : normalizer;
 
         var StackSizeIdentical = (d.identical) ? stackScale(d.identical, normalizer) : 0;
         var StackSizeDuplicated = (d.duplicated) ? stackScale(d.duplicated, normalizer) : 0;
+        var StackSizeDuplication = (d.duplication) ? stackScale(d.duplication, normalizer) : 0;
         var StackSizeGained = (d.gained) ? stackScale(d.gained, normalizer) : 0;
         var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
         var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeIdentical;
 
-        realSize = Math.abs(d.identical);
-        var posBase = posBase + StackSizeIdentical;
-        data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
-        stackIndex++;
+        if(type == 'genes' || !type){
 
-        realSize = Math.abs(d.duplicated);
-        var posBase = posBase + StackSizeDuplicated
-        data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
-        stackIndex++;
+            realSize = Math.abs(d.identical);
+            var posBase = posBase + StackSizeIdentical;
+            data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
+            stackIndex++;
+
+            realSize = Math.abs(d.duplicated);
+            var posBase = posBase + StackSizeDuplicated
+            data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
+            stackIndex++;
+
+        } else {
+
+            realSize = Math.abs(d.duplication);
+            var posBase = posBase + StackSizeDuplication
+            data[stackIndex][seriesIndex] = new seriesElement('Duplication', realSize, StackSizeDuplication, posBase, posStackSize)
+            stackIndex++;
+
+        }
 
         realSize = Math.abs(d.gained);
         var posBase = posBase + StackSizeGained
@@ -3959,7 +4027,6 @@ var TreeCompare = function() {
         realSize = Math.abs(d.lost);
         /* move lost down a little to make it easier to hover it and not the node line */
         data[stackIndex][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
-        stackIndex++;
 
         function seriesElement(sizeLbl, realSize, size, y0, posStackSize){
             this.sizelbl = sizeLbl
@@ -4008,6 +4075,7 @@ var TreeCompare = function() {
 
         d3.select("#" + canvasId).select(".asc")
             .on('click', function () {
+                toggleActiveBtn("asc", "ladderize");
                 ladderizeTree(baseTree, "ascending")
             });
 
@@ -4022,8 +4090,17 @@ var TreeCompare = function() {
 
         d3.select("#" + canvasId).select(".desc")
             .on('click', function () {
+                toggleActiveBtn("desc", "ladderize");
                 ladderizeTree(baseTree, "descending")
             });
+    }
+
+    function toggleActiveBtn(activateElem, parentClass){
+
+          var activeClass = "activebtn";
+          d3.selectAll("."+parentClass+" .btn").classed(activeClass, false);
+          d3.select("."+activateElem).classed(activeClass, true);
+
     }
 
     function createHistogramLabelVisibilityBtn(canvasId, histVisClass) {
@@ -4128,6 +4205,7 @@ var TreeCompare = function() {
         d3.select("#" + canvasId).select(".normalised")
             .on('click', function () {
                 maxStackHeight = "ratio";
+                toggleActiveBtn("normalised", "stackscaleswitch");
                 updateHistogramScale(canvasId, baseTree);
             });
 
@@ -4135,6 +4213,7 @@ var TreeCompare = function() {
         d3.select("#" + canvasId).select(".fixed")
             .on("click", function () {
                 maxStackHeight = "max";
+                toggleActiveBtn("fixed", "stackscaleswitch");
                 updateHistogramScale(canvasId, baseTree);
             });
 
@@ -4155,13 +4234,13 @@ var TreeCompare = function() {
                 .attr("class", "btn-group export-group");
             scaleButton.append("button")
             /*.attr("id", "exportButton") */
-                .attr("class", "btn btn-sm sharp normalised")
+                .attr("class", "btn btn-sm sharp events")
                 .attr("title", "Show events")
                 .attr("type", "button")
                 .append("span")
                 .text("Events");
             scaleButton.append("button")
-                .attr("class", "btn btn-sm sharp fixed")
+                .attr("class", "btn btn-sm sharp genes")
                 .attr("title", "Show genes")
                 .attr("type", "button")
                 .append("span")
@@ -4176,6 +4255,7 @@ var TreeCompare = function() {
         d3.select("#" + canvasId).select(".events")
             .on('click', function () {
                 infoStack = "events";
+                toggleActiveBtn("events", "stackinfoswitch");
                 updateHistogramScale(canvasId, baseTree);
             });
 
@@ -4183,6 +4263,7 @@ var TreeCompare = function() {
         d3.select("#" + canvasId).select(".genes")
             .on("click", function () {
                 infoStack = "genes";
+                toggleActiveBtn("genes", "stackinfoswitch");
                 updateHistogramScale(canvasId, baseTree);
             });
 
@@ -5087,6 +5168,10 @@ var TreeCompare = function() {
             }
 
         }
+
+        toggleActiveBtn("genes", "stackinfoswitch");
+        toggleActiveBtn("normalised", "stackscaleswitch");
+        toggleActiveBtn("desc", "ladderize");
 
     }
 
