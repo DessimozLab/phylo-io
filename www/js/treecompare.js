@@ -329,21 +329,24 @@ var TreeCompare = function() {
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/);
         var outError = "";
 
-        function returnNumElementInArray(inArray, element) {
-            var numOfTrue = 0;
-            for (var i = 0; i < inArray.length; i++) {
-                if (inArray[i] === element)
-                    numOfTrue++;
-            }
-            return numOfTrue;
+        function isNextTokenNbr(tokens, divider){
+            var isNumber = true;
+            jQuery.each( tokens, function( i, val ) {
+                if (val == divider && isNaN(tokens[i + 1])) {
+                    isNumber = false;
+                    return false;
+                }
+            })
+            return isNumber;
         }
 
-        if (returnNumElementInArray(tokens, "(") > returnNumElementInArray(tokens, ")")) {
+        if (s.split('(').length > s.split(')').length) {
             outError = "TooLittle)";
-        } else if (returnNumElementInArray(tokens, "(") < returnNumElementInArray(tokens, ")")) {
+        } else if ((s.split('(').length < s.split(')').length)) {
             outError = "TooLittle(";
-        } else if (tokens.indexOf(":") === -1 || tokens.indexOf("(") === -1 || tokens.indexOf(")") === -1 || isNaN(tokens[tokens.indexOf(":") + 1])) {
-            outError = "NotNwk"
+        } else if (s.split(':').length == 0 || s.split('(').length == 0 || s.split(')').length == 0 || !isNextTokenNbr(tokens, ":")) {
+            // TODO this error is not catched
+            outError = "NotNwk";
         }
 
         return outError;
@@ -461,6 +464,16 @@ var TreeCompare = function() {
         } catch (err) {
             throw "TooLittle)"
         }
+
+        try {
+            if (checkTreeInput(s) === "TooLittle(") {
+                throw "empty";
+            } // TODO:change this to &&NHX and not []
+        } catch (err) {
+            throw "TooLittle("
+        }
+
+        // there's no check for "NotNwk"
 
         function is_nhx_tag_found(nhx_tags, tag_to_check) {
             // prepend with : to differentiate :S=, :Sw= and :SO=
@@ -847,8 +860,12 @@ var TreeCompare = function() {
         // json can have only one tree, at least for now
         if(tree == false){
 
-            // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
-            if (newick.indexOf(";") !== -1) {
+            // special tree, don't split it
+            if (newick.indexOf(";:") !== -1) {
+                newicks[0] = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+
+                // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
+            } else if (newick.indexOf(";") !== -1 && newick.indexOf(";:") == -1) {
                 tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "").split(";");
                 if (tmpNewicks.length > 1) {
                     newicks = tmpNewicks.slice(0, -1);
@@ -878,8 +895,6 @@ var TreeCompare = function() {
             if(!tree){
                 tree = convertTree(newicks[i]);
             }
-
-
 
             var leaves = getChildLeaves(tree).sort();
             for (var j = 0; j < leaves.length; j++) {
@@ -3952,9 +3967,9 @@ var TreeCompare = function() {
             if(maxStackHeight == "max" && largestGenome > 0){
                 var normalizer = stackHeight / largestGenome;
             } else if(Number.isInteger(maxStackHeight)){
-                var normalizer = maxStackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+                var normalizer = maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.identical + d.duplicated + d.gained + Math.abs(d.lost));
+                var normalizer = stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             }
 
         } else {
@@ -3991,18 +4006,18 @@ var TreeCompare = function() {
         /* in case there's no eveolutionary events */
         normalizer = !isFinite(normalizer) ? 1 : normalizer;
 
-        var StackSizeIdentical = (d.identical) ? stackScale(d.identical, normalizer) : 0;
+        var StackSizeretained = (d.retained) ? stackScale(d.retained, normalizer) : 0;
         var StackSizeDuplicated = (d.duplicated) ? stackScale(d.duplicated, normalizer) : 0;
         var StackSizeDuplication = (d.duplication) ? stackScale(d.duplication, normalizer) : 0;
         var StackSizeGained = (d.gained) ? stackScale(d.gained, normalizer) : 0;
         var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
-        var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeIdentical;
+        var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeretained;
 
         if(type == 'genes' || !type){
 
-            realSize = Math.abs(d.identical);
-            var posBase = posBase + StackSizeIdentical;
-            data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeIdentical, posBase, posStackSize)
+            realSize = Math.abs(d.retained);
+            var posBase = posBase + StackSizeretained;
+            data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeretained, posBase, posStackSize)
             stackIndex++;
 
             realSize = Math.abs(d.duplicated);
@@ -4181,9 +4196,8 @@ var TreeCompare = function() {
         function buildScaleButton(canvasId, scaleSwitchClass) {
 
             var scaleButton = d3.select("#" + canvasId).select("." + scaleSwitchClass).append("div")
-                .attr("class", "btn-group export-group");
+                .attr("class", "btn-group histogram-group");
             scaleButton.append("button")
-            /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp normalised")
                 .attr("title", "Scale histograms as normalised")
                 .attr("type", "button")
