@@ -60,7 +60,7 @@ var TreeCompare = function() {
     // values genes or events
     var infoStack = 'genes';
 
-    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplication"]
+    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplication"];
     var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e"];
 
     var color = {};
@@ -3776,7 +3776,7 @@ var TreeCompare = function() {
             })
             .attr('x', 110 + legendRectSize + 5)
             .attr('y', function(d, i){
-                return i * legendRectSize + 12;
+                return i * legendRectSize + 0.25 * legendRectSize;
             })
             .attr('text-anchor', 'start')
             .attr('alignment-baseline', 'hanging')
@@ -3921,7 +3921,8 @@ var TreeCompare = function() {
                         .append("text")
                         .classed("legendsummarytxt", true)
                         .text(function (d) {
-                            return d.numberGenes > 0 ? d.numberGenes : "";
+                            summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
+                            return summary_number > 0 ? summary_number : "";
                         }).attr("x", function () {
                             return 0 - (xDistanceFromNode + 30)
                         }).attr("y", function (d) {
@@ -4153,7 +4154,6 @@ var TreeCompare = function() {
 
     }
 
-
     function createHistogramLegendVisibilityBtn(canvasId, legendVisClass) {
 
         var histLegendLabels = d3.select("#" + canvasId).select("." + legendVisClass);
@@ -4235,6 +4235,7 @@ var TreeCompare = function() {
 
 
     function updateHistogramScale(canvasId, baseTree){
+        d3.select("#histogram-legend").remove();
         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
         update(baseTree.root, baseTree.data, 0);
 
