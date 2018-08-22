@@ -60,8 +60,8 @@ var TreeCompare = function() {
     // values genes or events
     var infoStack = 'genes';
 
-    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplication"];
-    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e"];
+    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplications", "Gains", "Losses",];
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e", "#2ca02c", "#d62728"];
 
     var color = {};
 
@@ -3711,7 +3711,7 @@ var TreeCompare = function() {
         if(infoStack == "genes"){
             var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
         } else {
-            var dataLabels = ["Gained", "Duplication", "Lost" ]
+            var dataLabels = ["Gains", "Duplications", "Losses" ]
         }
 
         // to position legends correctly
