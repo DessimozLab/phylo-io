@@ -856,7 +856,7 @@ var TreeCompare = function() {
         } else {
             newicks[0] = tree;
         }
-
+        console.log(newicks)
         // reset settings radiobuttons
         updateSettingsLabels();
 
@@ -868,9 +868,9 @@ var TreeCompare = function() {
             var count = (num + i);
             var name = "Tree_" + count;
 
-            if(!tree){
-                tree = convertTree(newicks[i]);
-            }
+            // if(!tree){
+            tree = convertTree(newicks[i]);
+            // }
 
 
 
@@ -895,6 +895,7 @@ var TreeCompare = function() {
                 if(maxStackHeight == "max" && d.numberGenes > largestGenome) { largestGenome = d.numberGenes; }
                 idCounter++;
             });
+            console.log(tree)
 
             var fullTree = {
                 root: tree,
