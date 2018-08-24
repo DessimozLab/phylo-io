@@ -320,6 +320,12 @@ rect.node {
     border-radius: 0px;
 }
 
+.export-group, .histogram-group {
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+}
+
 /*Styles for sharing*/
 
 #shareButton, #histLblShowBtn, #exportButton, #histLegendShowBtn {
@@ -368,11 +374,6 @@ rect.node {
 
 /*styles for export functionality*/
 
-.export-group {
-    margin: 0 auto;
-    text-align: center;
-    width: 100%;
-}
 
 #phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg {
     width: 33%;
