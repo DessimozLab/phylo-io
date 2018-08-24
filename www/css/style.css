@@ -9,7 +9,7 @@ body#manual {
 }
 
 #colorScale {
-position: absolute;
+    position: absolute;
     left: 50%;
     transform: translate(-50%, 0);
     margin-left: 10px; /*magic number */
@@ -31,27 +31,7 @@ position: absolute;
     z-index: -1000;
 }
 
-#placeholder {
-    padding-top: 100px;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    /*input: focus: -webkit-input-placeholder { color:transparent; };*/
-    background: -webkit-linear-gradient(#ddd, #aaa);
-    /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(#ddd, #aaa);
-    /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(#ddd, #aaa);
-    /* For Firefox 3.6 to 15 */
-    background: linear-gradient(#ddd, #aaa);
-    /* Standard syntax */
-}
-
-#placeholder p {
-    width: 200px;
-}
-
-#text {
+#infotext {
     position: absolute;
     width: 200px;
     left: 250px;
@@ -68,35 +48,6 @@ position: absolute;
     background-size: contain;
 }
 
-#sidebar-wrapper {
-    background: -webkit-linear-gradient(black, #555);
-    /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(black, #555);
-    /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(black, #555);
-    /* For Firefox 3.6 to 15 */
-    background: linear-gradient(black, #555);
-    /* Standard syntax */
-    position: absolute;
-}
-
-#sidebar-wrapper-wrapper {
-    margin: 0 auto -60px;
-    padding: 0 0 60px;
-    overflow: hidden;
-    margin-bottom: 30px;
-
-}
-
-/*.sidebar-nav li {*/
-    /*text-indent: 20px;*/
-    /*line-height: 40px;*/
-/*}*/
-
-#wrapper {
-    height: 100%;
-}
-
 svg {
     width: 100%;
 }
@@ -110,22 +61,6 @@ svg {
     top: 55px;
 }
 
-/*.vis-scale {*/
-    /*!*height: 60px;*!*/
-    /*width: 100%;*/
-    /*background-color: gray;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
-
-/*.vis-scale-2 {*/
-    /*!*height: 60px;*!*/
-    /*width: 50%;*/
-    /*background-color: gray;*/
-    /*float: left;*/
-    /*position: absolute;*/
-    /*bottom: 0px;*/
-/*}*/
 .dist li {
     font-size: x-small;
     list-style-type: none;
@@ -156,246 +91,6 @@ svg {
     padding: 0;
     height: 100%;
 }
-
-.sidebar-brand {
-    font-weight: bold;
-    font-size: 26px !important;
-}
-
-.sidebar-version {
-    font-size: 12px;
-    margin-top: -30px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-    color: #999;
-}
-
-
-#mode-buttons {
-    width: 200px;
-    margin-left: 20px;
-    /*display: hidden;*/
-}
-
-input[type=file]{
-    color:transparent;
-}
-
-label {
-    padding-top: -40px;
-    color: lightgrey;
-    font-weight: 500;
-}
-
-#renderButton {
-    margin-left: 20px;
-}
-
-.icon-flipped {
-    transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
-}
-
-input[type=file]{
-    color:transparent;
-}
-
-.dropdown-menu li a{
-    /*padding: 1px 0px 1px 0px;*/
-}
-
-.alert {
-    width: 200px;
-    margin-left: 20px;
-    line-height: 1.2;
-}
-
-.btn {
-    border: 0 none;
-}
-
-.btn.sharp {
-    border-radius:0;
-}
-
-
-.btn:focus, .btn:active:focus, .btn.active:focus {
-    outline: 0 none;
-}
-
-.btn-primary {
-    background: #0099cc;
-    color: #ffffff;
-}
-
-.btn-sm {
-    background: #9d9d9d;
-    color: #ffffff;
-    padding: 5px 8px;
-    font-size: 11px;
-    border-radius: 0px;
-}
-
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
-    background: #33a6cc;
-}
-
-.btn-primary:active, .btn-primary.active {
-    background: #007299;
-    box-shadow: none;
-}
-
-.dropbtn{
-   background-color: #2b542c;
-   border: none;
-   cursor: pointer;
-}
-.dropbtn:hover, .dropbtn:focus {
-     background-color: #999;
- }
-
-#settingsPanel {
-    display: none;
-
-    background: rgb(79,79,79);
-    background: -moz-linear-gradient(-45deg,  rgba(79,79,79,1) 0%, rgba(68,68,68,1) 20%, rgba(14,14,14,1) 100%);
-    background: -webkit-linear-gradient(-45deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
-    background: linear-gradient(135deg,  rgba(79,79,79,1) 0%,rgba(68,68,68,1) 20%,rgba(14,14,14,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#0e0e0e',GradientType=1 );
-
-    padding: 15px;
-    border-radius: 3px;
-    margin-top: 5px;
-    margin-bottom: 50px;
-
-}
-
-.sizeAdjust {
-    width: 200px !important;
-}
-
-/*#settingsPanel [type=checkbox], b {*/
-    /*margin-left: 20px;*/
-/*}*/
-
-input[type=radio] {
-    margin-right: 5px;
-}
-
-input[type=checkbox] {
-    margin-right: 5px;
-}
-
-.noExtraMargin {
-    margin-left: 0px !important;
-}
-
-.extraMargin {
-    margin-left: 20px !important;
-}
-
-#autoCollapseButtons {
-    width: 200px;
-    height: 70px;
-}
-
-.collapseElem {
-    line-height: 30px;
-    vertical-align: middle;
-    text-align: center;
-    color: whitesmoke;
-    text-align: center;
-    width: 40px;
-    display: inline-block;
-
-
-}
-
-.singleIn {
-    margin-top: 4px;
-}
-
-.newickIn {
-    width: 100%;
-    margin-top: 4px;
-    height: 200px;
-    line-height: 20px;
-    padding: 4px;
-    border-radius: 4px;
-
-}
-
-#newickInputs p {
-    color: white;
-    margin-top: 10px;
-    margin-bottom: -10px;
-}
-
-#newickInputs b {
-    margin: 0px;
-    color: #999;
-}
-
-#newickInputs {
-    min-height: 260px;
-}
-
-.exampleBtn {
-    display: block;
-}
-
-.compareIn {
-    width: 200px;
-    margin-top: 4px;
-    display: none;
-}
-
-.exampleBtn a {
-    color: #999;
-    font-size: 12px;
-    margin: 0px;
-}
-
-.smallText {
-    margin-top: -40px;
-    width: 170px;
-    margin-left: 40px;
-    line-height: 14px;
-    text-align: left;
-}
-
-.footer {
-    position: fixed;
-    text-align: center;
-    bottom: 0;
-}
-
-::-webkit-input-placeholder { /* WebKit; Blink; Edge */
-    color:    rgba(37, 36, 45, 0.57);
-    font-style: italic;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    rgba(37, 36, 45, 0.57);
-    opacity:  0.6;
-    font-style: italic;
-}
-::-moz-placeholder { /* Mozilla Firefox 19 */
-    color:    rgba(37, 36, 45, 0.57);
-    opacity:  0.6;
-    font-style: italic;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color:    rgba(37, 36, 45, 0.57);
-    font-style: italic;
-}
-:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
-    color: rgba(37, 36, 45, 0.57);
-    font-style: italic;
-}
-
-/*--end sidebar and general styles----------------------------------------------*/
 
 
 /*Styles for middle table compare mode for reorder and reroot*/
@@ -572,17 +267,10 @@ rect.node {
 
 /*Styles for undobutton*/
 
-.undo {
-    padding: 5px;
-    right: 5px;
-    top: 0;
-    position: absolute;
-}
-
 .undoButton {
     width: 26px;
     float: right;
-    opacity: 0.3
+    opacity: 0.6
 }
 
 .undoButton:hover {
@@ -591,33 +279,57 @@ rect.node {
 
 /*--end undo----------------------------------------------*/
 
+/*-- Menu Button Group -----------------------------------*/
+
+#phylo .btn-group-menu{
+    display: flex;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    align-items: center;
+
+}
+
+#phylo .btn.sharp {
+    border-radius:0;
+}
+
+#phylo .btn.sharp.activebtn {
+    opacity: 0.8;
+}
+
+#phylo .btn {
+    border: 0 none;
+}
+
+
+#phylo .btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+#phylo .btn-primary {
+    background: #0099cc;
+    color: #ffffff;
+}
+
+#phylo .btn-sm {
+    background: #9d9d9d;
+    color: #ffffff;
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 0px;
+}
+
 /*Styles for sharing*/
 
-#shareButton {
-    width: 97.5px;
+#shareButton, #histLblShowBtn, #exportButton, #histLegendShowBtn {
+    width: 100%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
-#shareButton:hover{
+#shareButton:hover, #histLblShowBtn:hover, #exportButton:hover{
     opacity: 1.0;
-}
-
-.exportTools {
-    padding: 5px;
-    right: 31px;
-    top: 0;
-    position: absolute;
-}
-
-.exportButton {
-    width: 26px;
-    float: right;
-    opacity: 0.3
-}
-
-.exportButton:hover {
-    opacity: 1;
 }
 
 .exportMenu {
@@ -627,7 +339,7 @@ rect.node {
     padding: 2px;
     right: 10px;
     top: 38px;
-    width: 104px;
+    width: 130px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
@@ -659,16 +371,22 @@ rect.node {
 .export-group {
     margin: 0 auto;
     text-align: center;
+    width: 100%;
 }
 
-#exportButton {
-    width: 32.5px;
+#phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg {
+    width: 33%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
+#phylo .btn.normalised, #phylo .btn.fixed, #phylo .btn.events, #phylo .btn.genes {
+    width: 50%;
+    margin-left: 0px;
+    opacity: 0.6;
+}
 
-#exportButton:hover{
+#phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover, #phylo .btn.genes:hover, #phylo .btn.events:hover {
     opacity: 1.0;
 }
 
@@ -680,38 +398,17 @@ rect.node {
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
-/*.dropdown-menu {*/
-/*min-width: 60px;*/
-/*font-size: 11px;*/
-/*margin: 1px 0px 1px 0px;*/
-/*text-align: center;*/
-/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-/*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-/*padding: 1px 0px 1px 0px;*/
-/*}*/
-
 /*--end export----------------------------------------------*/
 
 /*Styles for toolbar*/
 
-.treeTools {
-    position: absolute;
-    padding: 5px;
-    right: 57px;
-    top: 0;
-}
-
-
-.treeToolsButton {
+.treeToolsButton, .stackToolsButton, .exportButton {
     width: 26px;
     /*float: right;*/
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
-.treeToolsButton:hover {
+.treeToolsButton:hover, .stackToolsButton:hover, .exportButton:hover {
     opacity: 1;
 }
 
@@ -719,14 +416,14 @@ rect.node {
     opacity: 1 !important;
 }
 
-.treeToolsMenu {
+.treeToolsMenu, .stackToolsMenu {
     background-color: whitesmoke;
     text-align: left;
     position: absolute;
     padding: 2px;
     right: 10px;
     top: 38px;
-    width: 104px;
+    width: 130px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
@@ -735,19 +432,20 @@ rect.node {
     display: none;
 }
 
-treeToolsMenuContent {
+treeToolsMenuContent, stackToolsMenuContent {
     text-align: left;
 }
 
-.treeToolsMenu li {
+.treeToolsMenu li, .stackToolsMenu li {
     list-style:none;
     /*border-bottom: 1px;*/
     font-size: 8pt;
     text-align: left;
 }
 
-.treeToolsText {
+.treeToolsText, .stackToolsText {
     margin: auto;
+    margin-top: 5px;
     text-align: left;
 }
 
@@ -755,24 +453,20 @@ treeToolsMenuContent {
 
 /*Styles for leaf searching*/
 
-.searchBox {
-    padding: 5px;
-    right: 83px;
-    top: 0;
-    position: absolute;
+.search {
+    order: -1;
+    height: 26px;
 }
 
 .searchInput {
-    float: right;
-    width: 0px;
+    width: 150px;
     margin-left: 0px;
     display: none;
 }
 
 .searchButton {
     width: 26px;
-    float: right;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 .searchButton:hover {
@@ -782,24 +476,20 @@ treeToolsMenuContent {
 .searchResultsBox {
     width: 150px;
     position: absolute;
-    /*margin-right: 10px;*/
     max-height: 200px;
     overflow: hidden;
-    overflow-y: scroll;
-    margin-top: 30px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.2);
     background-color: white;
-    /*-webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
-    /*-moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
-    /*box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.75);*/
     display: none;
-    padding-top: 10px;
-    text-algin: left;
+    padding: 0;
+    margin: 0;
+    text-align: left;
 }
 
 .searchResultsList li {
     display: block;
-    margin-left: -35px;
+    margin-left: -40px;
     list-style-type: none;
     cursor: pointer;
 }
@@ -810,6 +500,9 @@ treeToolsMenuContent {
     display: block;
     font-size: 10pt;
     cursor: pointer;
+    padding: 0;
+    margin: 0;
+    padding-left: 15px;
 }
 
 .searchResultsList a:hover {
@@ -836,7 +529,7 @@ button.treeToggleButton {
     width: 26px;
     height: 26px;
     vertical-align: top;
-    opacity:0.3;
+    opacity:0.6;
 }
 
 button.treeToggleButton:hover {
@@ -901,7 +594,6 @@ button.treeToggleButton span{
 
 .treeToggleDropdown-content li{
     color: black;
-    /*padding: 6px 16px;*/
     text-decoration: none;
     display: block;
     font-size: 10pt;
@@ -916,9 +608,9 @@ button.treeToggleButton span{
 
 
 #ladderizeDescButton {
-    width: 48.75px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -931,9 +623,9 @@ button.treeToggleButton span{
 }
 
 #ladderizeAscButton {
-    width: 48.75px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -944,14 +636,15 @@ button.treeToggleButton span{
 /*styles for opposite Tree action functionality*/
 
 .opTreeAcGroup {
+    width: 100%;
     margin: 0 auto;
     text-align: center;
 }
 
 #opTreeAcButton {
-    width: 49px;
+    width: 50%;
     margin-left: 0px;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 
@@ -967,19 +660,6 @@ button.treeToggleButton span{
     box-shadow: inset 0px 0px 22px -4px rgba(0, 0, 0, 0.74);
 }
 
-/*.dropdown-menu {*/
-/*min-width: 60px;*/
-/*font-size: 11px;*/
-/*margin: 1px 0px 1px 0px;*/
-/*text-align: center;*/
-/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
-/*background-color: white;*/
-/*}*/
-
-/*.dropdown-menu li a{*/
-/*padding: 1px 0px 1px 0px;*/
-/*}*/
-
 /*--end export----------------------------------------------*/
 
 
@@ -988,8 +668,8 @@ button.treeToggleButton span{
 div.rescaleButtons {
     width: 66px;
     margin: 0 auto;
-    /*top: 10px;*/
-    /*left: 10px;*/
+    top: 10px;
+    left: 10px;
     /*position: absolute;*/
 }
 
@@ -998,7 +678,7 @@ button.rescaleButton {
     width: 22px;
     height: 22px;
     vertical-align: top;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 button.rescaleButton.span{
@@ -1033,27 +713,10 @@ button.rescaleButton:hover{
 /*Styles for zooming buttons*/
 
 .zoomSliderContainer {
-    /*position: absolute;*/
     margin: 0 auto;
     color: black;
-    width: 90px;
-    /*margin-left: -55px;*/
-    /*margin-top: 400px;*/
-    /*top: 50%;*/
-    /*bottom:0;*/
-    left: 5px;
-    /*right: 0;*/
-    /*margin: auto;*/
-    /*vertical-align: middle;*/
-
+    width: 95%;
 }
-/*.zoomSlider {*/
-    /*-webkit-transform: rotate(90deg);*/
-    /*-ms-transform: rotate(90deg);*/
-    /*-moz-transform: rotate(90deg);*/
-    /*-o-transform: rotate(90deg);*/
-    /*transform: rotate(90deg);*/
-/*}*/
 
 /*--end zoom----------------------------------------------*/
 
@@ -1094,4 +757,82 @@ button.rescaleButton:hover{
 
 .icon-phyloio-01:before {
     content: "\e900";
+}
+
+
+.extraMargin + span:after {
+    content: "\000A";
+    white-space: pre;
+}
+
+.modal-container {
+    z-index: 3;
+    right: 50px;
+    top: 75px;
+    position: absolute;
+    padding: 5px 20px 15px 20px;
+    width: 180px;
+    height: 60px;
+    border-radius: 8px;
+    display: none;
+
+}
+
+/* ----- menu styles ----- */
+
+
+/* multilevel dropdown */
+.dropdown-submenu {
+    position:relative;
+}
+.dropdown-submenu>.dropdown-menu {
+    top:0;
+    left:100%;
+    margin-top:-6px;
+    margin-left:-1px;
+    -webkit-border-radius:0 6px 6px 6px;
+    -moz-border-radius:0 6px 6px 6px;
+    border-radius:0 6px 6px 6px;
+}
+.dropdown-submenu>a:after {
+    display:block;
+    content:" ";
+    float:right;
+    width:0;
+    height:0;
+    border-color:transparent;
+    border-style:solid;
+    border-width:5px 0 5px 5px;
+    border-left-color:#cccccc;
+    margin-top:5px;
+    margin-right:-10px;
+}
+.dropdown-submenu:hover>a:after {
+    border-left-color:#555;
+}
+.dropdown-submenu.pull-left {
+    float:none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left:-100%;
+    margin-left:10px;
+    -webkit-border-radius:6px 0 6px 6px;
+    -moz-border-radius:6px 0 6px 6px;
+    border-radius:6px 0 6px 6px;
+}
+/* multilevel dropdown */
+
+.flipped {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
+#histogram-legend text, .legendtxt, .legendsummarytxt {
+    font-family: 'Open Sans', sans-serif;
+    text-rendering: optimizeLegibility;
+    stroke: none;
 }

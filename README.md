@@ -16,6 +16,7 @@ Phylo.IO requires JQuery, D3js and UnderscoreJS:
 An instance of Phylo.IO is created using the init method:
 ```js
     var treecomp = TreeCompare.init();
+
 ```
 
 Settings can be assigned at initilisation by passing a settings object with any settings set to desired values (see the 'Settings' section below for more info):
@@ -24,6 +25,10 @@ Settings can be assigned at initilisation by passing a settings object with any 
         treeHeight: 765,
     });
 ```
+
+##Embedding phylo.io to existing page
+phylo.io uses bootstrap css for basic styling and overrides some bootstrap styles like btn. Set id of the container for 
+phylo-io to "phylo" to take changes from style.css and simple-sidebar.css into account
 
 ##Adding Trees
 Add trees in Newick format to your TreeCompare object:
@@ -34,10 +39,18 @@ You can add trees with a name too:
 ```js
 treecomp.addTree("(D:0.3,(C:0.2,(A:0.1,B:0.1):0.1):0.1);", "My tree name");
 ```
+
 Names must be unique, this method throws an exception if a tree is added with a non-unique name.
 The method also throws an exception if the newick is invalid.
 
 If no name is provided, the tree is given a default name of "Tree 1", "Tree 2", "Tree 3" etc.
+
+
+You can add trees in json format (only way for now to get histograms) for full example look at histogram_example.html:
+```js
+treecomp.addTree("{\"name\": \"Ancestor A/B/C\", "\"numberGenes\": 600, " \"evolutionaryEvents\": false, "\"length\":
+ 0.1,"\"collapsed\": \"false\",\"children\": [{}]}");
+```
 
 ##Visualising Trees
 There are two visualisation styles, viewing and comparison:
@@ -111,7 +124,14 @@ The available settings and their default values are as follows:
         //whether search overlay is enabled
         enableSearch: true,
         //depth to which nodes are automatically collapsed e.g 3 collapses all nodes deeper than depth 3
-        autoCollapse: null // 0,1,2,3... etc
+        // 0,1,2,3... etc
+        autoCollapse: null,
+        // histogram values are visible tru/false
+        showHistogramValues: true,
+        // histogram summary value is visible true/false
+        showHistogramSummaryValue: true,
+        // tree toolbar shows histogram zoom sliders true/false
+        enableStackZoomSliders: true
     }
 ```
 

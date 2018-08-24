@@ -2,6 +2,8 @@ var TreeCompare = function() {
 
     var trees = [];
     var longestNode = {};
+    var maxBranchLength = 0;
+    var longestBranch = {};
 
     var backupRoot = [];
     var renderedTrees = [];
@@ -20,17 +22,54 @@ var TreeCompare = function() {
     var undoActionData = [];
     var undoFullTreeData = [];
 
+    /**
+     * possible values to decide stack normalization
+     * ratio: stackheight value is used to calculate ratio to fit stack into stackheight
+     * max: maximum amount of genomes is used as stackheight normalizer
+     * number: numeric value for the normalizer
+     *
+    */
 
-    /*
-     colors for the color scale for comparing nodes to best common node
+    var maxStackHeight = "ratio";
+    //var maxStackHeight = "max";
+    var largestGenome = 0;
+    var largestEvents = 0;
 
-     blue - green - yellow - red
-     ['rgb(255,51,51)', 'rgb(255,255,51)', 'rgb(153,255,51)', 'rgb(51,255,51)', 'rgb(51,255,255)', 'rgb(51,51,255)'];
+    // initial stack histogram dimensions
+    var stackHeight = 100;
+    var stackWidth = 20;
 
-     red - blue
-     ['rgb(0,33,229)', 'rgb(70,8,225)', 'rgb(162,16,221)', 'rgb(218,24,190)', 'rgb(214,31,110)', 'rgb(210,39,39)'];
-     */
-    //grey - black
+    // histogram zoom extents
+    var stackMinWidth = 10;
+    var stackMaxWidth = 150;
+    var stackMinHeight = 30;
+    var stackMaxHeight = 250;
+    var stackStep = 10;
+    var hasHistogramData = false;
+    var showHistogramLegend = true;
+
+    var maxTreeHeight = 500;
+    var maxTreeWidth = 1500;
+    var minTreeHeight = 20;
+    var minTreeWidth = 200;
+
+
+    var initTreeHeight = null;
+    var initTreeWidth = null;
+
+    // values genes or events
+    var infoStack = 'genes';
+
+    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplications", "Gains", "Losses"];
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e", "#2ca02c", "#d62728"];
+
+    var color = {};
+
+    for(var i = 0; i < colors.length; i++){
+        color[labels[i]] = colors[i];
+    }
+
+
     var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
     var colorScaleRangeRest = ['rgb(179,0,0)', 'rgb(227,74,51)', 'rgb(252,141,89)', 'rgb(253,187,132)', 'rgb(253,212,158)', 'rgb(254,240,217)'];
 
@@ -56,8 +95,9 @@ var TreeCompare = function() {
         treeHeight: 15,
         moveOnClick: true,
         enableZoomSliders: true,
+        enableStackZoomSliders: true,
         scaleMin: 0.05,
-        scaleMax: 5,
+        scaleMax: 15,
         scaleColor: "black",
         loadingCallback: function () {
         },
@@ -74,7 +114,9 @@ var TreeCompare = function() {
         fitTree: "scale", //none, scale
         enableSizeControls: true,
         enableSearch: true,
-        autoCollapse: null
+        autoCollapse: null,
+        showHistogramSummaryValue: true,
+        showHistogramValues: true
     };
 
 
@@ -150,6 +192,7 @@ var TreeCompare = function() {
      */
     function changeCanvasSettings(settingsIn) {
         settings.enableZoomSliders = getSetting(settingsIn.enableZoomSliders,settings.enableZoomSliders);
+        settings.enableStackZoomSliders = getSetting(settingsIn.enableStackZoomSliders,settings.enableStackZoomSliders);
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
         settings.enableCloudShare = getSetting(settingsIn.enableCloudShare,settings.enableCloudShare);
         settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
@@ -183,6 +226,8 @@ var TreeCompare = function() {
         settings.zoomMode = getSetting(settingsIn.zoomMode, settings.zoomMode);
         settings.fitTree = getSetting(settingsIn.fitTree, settings.fitTree);
         settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
+        settings.showHistogramSummaryValue = getSetting(settingsIn.showHistogramSummaryValue, settings.showHistogramSummaryValue);
+        settings.showHistogramValues = getSetting(settingsIn.showHistogramValues, settings.showHistogramValues);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -284,21 +329,24 @@ var TreeCompare = function() {
         var tokens = s.split(/\s*(;|\(|\[|\]|\)|,|:)\s*/);
         var outError = "";
 
-        function returnNumElementInArray(inArray, element) {
-            var numOfTrue = 0;
-            for (var i = 0; i < inArray.length; i++) {
-                if (inArray[i] === element)
-                    numOfTrue++;
-            }
-            return numOfTrue;
+        function isNextTokenNbr(tokens, divider){
+            var isNumber = true;
+            jQuery.each( tokens, function( i, val ) {
+                if (val == divider && isNaN(tokens[i + 1])) {
+                    isNumber = false;
+                    return false;
+                }
+            })
+            return isNumber;
         }
 
-        if (returnNumElementInArray(tokens, "(") > returnNumElementInArray(tokens, ")")) {
+        if (s.split('(').length > s.split(')').length) {
             outError = "TooLittle)";
-        } else if (returnNumElementInArray(tokens, "(") < returnNumElementInArray(tokens, ")")) {
+        } else if ((s.split('(').length < s.split(')').length)) {
             outError = "TooLittle(";
-        } else if (tokens.indexOf(":") === -1 || tokens.indexOf("(") === -1 || tokens.indexOf(")") === -1 || isNaN(tokens[tokens.indexOf(":") + 1])) {
-            outError = "NotNwk"
+        } else if (s.split(':').length == 0 || s.split('(').length == 0 || s.split(')').length == 0 || !isNextTokenNbr(tokens, ":")) {
+            // TODO this error is not catched
+            outError = "NotNwk";
         }
 
         return outError;
@@ -313,7 +361,7 @@ var TreeCompare = function() {
         function nested(nest) {
             var subtree = "";
 
-            if (nest.hasOwnProperty('children')) {
+            if (nest.hasOwnProperty('children') && nest.children !== null) {
                 var children = [];
                 nest.children.forEach(function (child) {
                     var subsubtree = nested(child);
@@ -327,7 +375,7 @@ var TreeCompare = function() {
                     subtree = subtree + ":" + nest.length;
                 }
             }
-            else if(nest.hasOwnProperty('_children')){
+            else if(nest.hasOwnProperty('_children') && nest._children !== null){
                 var _children = [];
                 nest._children.forEach(function(child){
                     var subsubtree = nested(child);
@@ -416,6 +464,16 @@ var TreeCompare = function() {
         } catch (err) {
             throw "TooLittle)"
         }
+
+        try {
+            if (checkTreeInput(s) === "TooLittle(") {
+                throw "empty";
+            } // TODO:change this to &&NHX and not []
+        } catch (err) {
+            throw "TooLittle("
+        }
+
+        // there's no check for "NotNwk"
 
         function is_nhx_tag_found(nhx_tags, tag_to_check) {
             // prepend with : to differentiate :S=, :Sw= and :SO=
@@ -757,28 +815,72 @@ var TreeCompare = function() {
         return avg;
     }
 
+    /**
+     *
+     * check if string is jsonstring
+     *
+     * @param str
+     * @returns {boolean}
+     * @constructor
+     */
+    function IsJsonString(str) {
+
+        try {
+            var o = JSON.parse(str);
+
+            // Handle non-exception-throwing cases:
+            // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+            // but... JSON.parse(null) returns null, and typeof null === "object",
+            // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+            if (o && typeof o === "object") {
+                return o;
+            }
+        }
+        catch (e) { }
+
+        return false;
+    };
+
     /*
      Called externally to convert a tree and add to internal tree structure
      */
     function addTree(newick, myName, mode) {
+
+        // when adding new tree the default is not to have evolotionary events
+        hasHistogramData = false;
 
         var num = trees.length;
         var idCounter = 0;
 
         var tmpNewicks;
         var newicks = [];
-        // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
-        if (newick.indexOf(";") !== -1) {
-            tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "").split(";");
-            if (tmpNewicks.length > 1) {
-                newicks = tmpNewicks.slice(0, -1);
+        var noJsonConversion = false;
+        var tree = IsJsonString(newick);
+        // if the string is already json, don't convert it
+        // json can have only one tree, at least for now
+        if(tree == false){
+
+            // special tree, don't split it
+            if (newick.indexOf(";:") !== -1) {
+                newicks[0] = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+
+                // this is important to allow trees to be separated by ";", or "\n" and also to have black lines
+            } else if (newick.indexOf(";") !== -1 && newick.indexOf(";:") == -1) {
+                tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, "").split(";");
+                if (tmpNewicks.length > 1) {
+                    newicks = tmpNewicks.slice(0, -1);
+                }
+            } else {
+                tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
+                if (tmpNewicks.length > 1) {
+                    newicks = tmpNewicks.slice(0, -1);
+                }
             }
+
         } else {
-            tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
-            if (tmpNewicks.length > 1) {
-                newicks = tmpNewicks.slice(0, -1);
-            }
+            newicks[0] = tree;
         }
+
         // reset settings radiobuttons
         updateSettingsLabels();
 
@@ -790,7 +892,9 @@ var TreeCompare = function() {
             var count = (num + i);
             var name = "Tree_" + count;
 
-            var tree = convertTree(newicks[i]);
+            if(!tree){
+                tree = convertTree(newicks[i]);
+            }
 
             var leaves = getChildLeaves(tree).sort();
             for (var j = 0; j < leaves.length; j++) {
@@ -808,6 +912,16 @@ var TreeCompare = function() {
                 d.mouseoverLinkHighlight = false; //when mouse is over branch between two nodes
                 d.correspondingHighlight = false;
                 d.collapsed = false; //variable to obtain the node/nodes where collapsing starts
+                if(!d.length){ d.length = 0.1; }
+
+                if(d.numberGenes > largestGenome) {
+                    largestGenome = d.numberGenes;
+                }
+
+                if(d.numberEvents > largestEvents) {
+                    largestEvents = d.numberEvents;
+                }
+
                 idCounter++;
             });
 
@@ -944,51 +1058,16 @@ var TreeCompare = function() {
         svg.append("text")
             .text("0")
             .attr("x", 0)
-            .attr("y", height + 10)
+            .attr("y", height + 13)
             .attr("fill", "black");
         // .attr("font-weight", 600);
         svg.append("text")
             .text("1")
             .attr("x", width - 8)
-            .attr("y", height + 10)
+            .attr("y", height + 13)
             .attr("fill", "black");
         // .attr("font-weight", 600);
     }
-
-    /*
-     Can be called externally to render the color scale for tree comparison in a div
-     */
-    // function renderColorScale(scaleId) {
-    //     var colorScale = d3.scale.linear()
-    //         .domain(colorScaleDomain)
-    //         .range(colorScaleRange);
-    //     var width = 200;
-    //     var steps = 100;
-    //     var height = 30;
-    //     var svgHeight = height + 25;
-    //     var svg = d3.select("#" + scaleId).append("svg")
-    //         .attr("width", width + "px")
-    //         .attr("height", svgHeight + "px")
-    //         .append("g");
-    //     for (var i = 0; i < steps; i++) {
-    //         svg.append("rect")
-    //             .attr("width", (width / steps) + "px")
-    //             .attr("height", height + "px")
-    //             .attr("fill", colorScale(i / steps))
-    //             .attr("x", ((width / steps) * i) + "px")
-    //     }
-    //     svg.append("text")
-    //         .text("0")
-    //         .attr("x", 0)
-    //         .attr("y", height + 20)
-    //         .attr("fill", "white");
-    //     svg.append("text")
-    //         .text("1")
-    //         .attr("x", width - 10)
-    //         .attr("y", height + 20)
-    //         .attr("fill", "white")
-    //
-    // }
 
     /*
     Function that returns unvisible children or visible children if one or the other are given as input
@@ -1001,6 +1080,8 @@ var TreeCompare = function() {
     Changes text in the length scale according to changes in vis
      */
     function applyScaleText(scaleText, zoomScale, root) {
+        // no scaletext if it's supressed
+        if(!scaleText){ return false; }
         if (root.children || root._children) {
             var children = getChildren(root);
             var length = 0;
@@ -1073,30 +1154,6 @@ var TreeCompare = function() {
     }
 
     /*
-
-     ! THIS FUNCTION BREAKS THE DISPLAY OF THE TREE (SHRUNK)
-     ! REPLACED BY A OLD VERSION:
-     ! https://github.com/DessimozLab/phylo-io/blob/8c7596b04c3b602b7da915f0d62675f684fd3744/www/js/treecompare.js
-
-     function getMaxLengthVisible(root) {
-     var max = 0;
-     function getMax_internal(d,distfromroot) {
-     distfromroot+=d.length;
-     if (d.children) {
-     var children = getChildren(d);
-     for (var i = 0, ilim=children.length; i < ilim; i++) {
-     getMax_internal(children[i],distfromroot);
-     }
-     } else {
-     if (distfromroot>max) max = distfromroot;
-     }
-     }
-     getMax_internal(root,0);
-     return max;
-     }*/
-
-
-    /*
      returns longest visible branch or triangle
      */
     function getMaxLengthVisible(root) {
@@ -1111,10 +1168,12 @@ var TreeCompare = function() {
                 return max;
             } else {
                 var maxLength = (typeof d.triangleLength == 'undefined' || d.length > d.triangleLength) ? d.length : d.triangleLength;
+
                 if(maxLength > max) {
                     longestNode = d;
                     return maxLength;
                 }
+
                 return max;
             }
         }
@@ -1161,6 +1220,52 @@ var TreeCompare = function() {
         } else {
             return 0;
         }
+    }
+
+    function getLongestBranchLength(root){
+
+        var max = 0;
+        var prosessCollapsed = false;
+
+        function getMax_internal(d, max) {
+            var children = getChildren(d);
+
+            // visible children or or first level of collapsed branch
+            if (children.length == 0 || prosessCollapsed) {
+
+                prosessCollapsed = false;
+
+                var branchLength = getLength(d);
+                if(max < branchLength){
+                    max = branchLength;
+                    longestBranch = d;
+                }
+
+                return max;
+
+            } else {
+
+                if(!prosessCollapsed) {
+
+                    if(d._children) {
+                        prosessCollapsed = true;
+                    }
+
+                    for (var i = 0; i < children.length; i++) {
+                        max = Math.max(getMax_internal(children[i], max), max)
+                    }
+
+
+                }
+
+                return max;
+
+            }
+
+        }
+
+        return getMax_internal(root, max);
+
     }
 
     /*
@@ -1464,7 +1569,6 @@ var TreeCompare = function() {
 
         }
 
-
         var idCounter = 0;
         settings.autoCollapse = null;
         if (name === undefined) {
@@ -1617,6 +1721,13 @@ var TreeCompare = function() {
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
+        var treeName = getTreeName(treeData);
+
+        function getTreeName(treeData){
+            var treeNameElements = treeData.root.ID.split("_");
+            return treeNameElements[0]+"_"+treeNameElements[1];
+        }
+
         postorderTraverse(treeData.root, function (d) {
             if (d._children) {
                 leavesHidden += d.leaves.length;
@@ -1640,6 +1751,7 @@ var TreeCompare = function() {
             newHeight = newHeight - (newHeight / triangleHeightDivisor / 2);
             treeData.treeHeight = newHeight;
         }
+
         if (leavesVisible > 0) {
             treeData.prevNoLeavesVisible = false;
         } else {
@@ -1750,18 +1862,18 @@ var TreeCompare = function() {
             }
         }
 
-        // returns maxLength of tree
         var maxLength = treeData.maxLength;
         // returns length in absolute coordinates of the whole tree
 
         // magic number?
-        var lengthMult = treeData.treeWidth + 90;
+        var lengthMult = treeData.treeWidth + 10;
 
         //calculate horizontal position of nodes
         var newLenghtMult = 0;
+        var lengthMultiplier = lengthMult/maxLength;
         nodes.forEach(function (d) {
             if (settings.useLengths) { //setting selected by user
-                d.y = getLength(d) * (lengthMult / maxLength); //adjust position to screen size
+                d.y = getLength(d) * lengthMultiplier; //adjust position to screen size
                 d.baseY = d.y;
             } else {
                 d.y = d.depth * lengthMult / 10;
@@ -1770,6 +1882,7 @@ var TreeCompare = function() {
                     newLenghtMult = d.y
                 }
             }
+            // pull the whole tree up
             d.y = d.y - 90;
         });
 
@@ -1791,7 +1904,6 @@ var TreeCompare = function() {
             var treeName = treeNameElements[0]+"_"+treeNameElements[1];
             var oppositeTreeName = d3.select("#vis-container2 svg").attr("id");
             var treeIdx = findTreeIndex(oppositeTreeName);
-
 
             nodes.forEach(function(d) {
                 if (treeName === trees[treeIdx].name && settings.mirrorRightTree){
@@ -1821,10 +1933,13 @@ var TreeCompare = function() {
             .attr("id", function (d) {
                 return d.ID;
             });
+
         // Enter any new nodes at the parent's previous position.
         // Perform the actual drawing
         var nodeEnter = node.enter().append("g")
-            .filter(function(d){return d.keep})
+            .filter(function(d){
+                return d.keep
+            })
             .attr("class", "node")
             .attr("transform", function (d) {
                 if (source === treeData.root) {
@@ -1863,7 +1978,7 @@ var TreeCompare = function() {
             .attr("x", function(d) {
                 if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){
                     return -13 - getTextWidth(d.name);
-                } else if ((d.children || d._children)) {
+                } else if ((d.children || d._children) && !d.evolutionaryEvents) {
                     return -13;
                 } else {
                     return 13;
@@ -1871,7 +1986,9 @@ var TreeCompare = function() {
 
             })
             .attr("dy", function (d) {
-                if (!(d.children || d._children)) { //ensures that length labels are on top of branch
+                //ensures that length labels are on top of branch
+                if (!(d.children || d._children) || d.evolutionaryEvents)  {
+                //if (!(d.children || d._children) || isDefined(d.evolutionaryEvents))  {
                     return ".3em";
                 } else {
                     return "-.3em";
@@ -1885,7 +2002,7 @@ var TreeCompare = function() {
                 }
             })
             .attr("text-anchor", function (d) {
-                return d.children || d._children ? "end" : "start";
+                return ((d.children || d._children) && !d.evolutionaryEvents) ? "end" : "start";
             })
             .style("fill-opacity", 1e-6)
             .attr("font-size", function (d) {
@@ -1906,6 +2023,17 @@ var TreeCompare = function() {
             .attr("d", function (d) {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
+
+        d3.selectAll('g.node')
+            .filter(function(d){
+                return d.evolutionaryEvents != false
+            })
+            .each(addStack);
+
+        if(showHistogramLegend && hasHistogramData){
+            d3.select('#histogram-legend').remove();
+            addMainLegend(treeName);
+        }
 
         //instant node changes
         node.select("text")
@@ -1974,7 +2102,7 @@ var TreeCompare = function() {
             .attr("x", function(d) {
                 if ((!d.children || d._children) && treeName === trees[treeIdx].name && settings.mirrorRightTree){ //mirrored right tree
                     return -13 - getTextWidth(d.name);
-                } else if (!d.children && !d._children) { //leaves left tree
+                } else if ((!d.children && !d._children) || d.evolutionaryEvents) { //leaves left tree
                     return 13
                 } else { //internal nodes
                     if (treeName === trees[treeIdx].name && settings.mirrorRightTree){ //internal nodes right tree
@@ -1986,7 +2114,7 @@ var TreeCompare = function() {
                 }
             })
             .text(function (d) {
-                if (!d.children && !d._children) { //print leaf names
+                if ((!d.children && !d._children) || d.evolutionaryEvents) { //print leaf names
                     return d.name
                 } else {
                     if (settings.internalLabels === "none") {
@@ -2052,7 +2180,7 @@ var TreeCompare = function() {
             .duration(duration)
             .attr("transform", function (d) {
                 if (source === treeData.root) {
-                    var e = findHeighestCollapsed(d);
+                    var e = findHighestCollapsed(d);
                     return "translate(" + e.y + "," + e.x + ")";
                 } else {
                     return "translate(" + source.y + "," + source.x + ")";
@@ -2274,7 +2402,7 @@ var TreeCompare = function() {
                 .attr("d", function (d) {
                     d = d.source;
                     if (source === treeData.root) {
-                        var e = findHeighestCollapsed(d);
+                        var e = findHighestCollapsed(d);
                         return "M" + e.y + "," + e.x + "L" + e.y + "," + e.x + "L" + e.y + "," + e.x;
                     } else {
                         return "M" + source.y + "," + source.x + "L" + source.y + "," + source.x + "L" + source.y + "," + source.x;
@@ -2342,7 +2470,6 @@ var TreeCompare = function() {
             colorLinkNodeOver(d);
         }
 
-
         // this part ensures that when clicking on a node or elsewhere in the screen the tooltip disappears
         $('html').click(function (d) {
             if (compareMode) {
@@ -2355,16 +2482,18 @@ var TreeCompare = function() {
                 }
             }
         });
+
     }
 
     /*
      Hook up the zoom slider on the vis to zoomEvent
      */
     function applyEventListeners(treeData) {
-        $("#zoomSlider" + treeData.id).on("input change", function () {
+        $("input#zoomSlider" + treeData.id + ".zoomSlider").on("input change", function () {
             treeData.zoomBehaviour.scale($("#zoomSlider" + treeData.id).val());
             treeData.zoomBehaviour.event(treeData.svg);
         });
+
     }
 
     /*
@@ -2392,26 +2521,68 @@ var TreeCompare = function() {
         }
     }
 
-
-    /*
-     Find the heighest collapsed node in the parents of a node
+    /**
+     *
+     * Sizes trees vertical and horizontal lengths by given amount
+     *
+     * @param treeData
+     * @param increase
      */
-    function findHeighestCollapsed(d) {
+    function sizeSetVertical(treeData, newHeight) {
+
+        if (!(initTreeHeight)) {
+            initTreeHeight = treeData.treeHeight;
+        }
+
+        if (newHeight) {
+            newHeight = ((parseInt(newHeight) + initTreeHeight) > maxTreeHeight) ? maxTreeHeight : (initTreeHeight + parseInt(newHeight));
+            treeData.treeHeight = (newHeight > minTreeHeight) ? newHeight : minTreeHeight;
+        }
+    }
+
+    function sizeSetHorizontal(treeData, newWidth) {
+
+        if (!(initTreeWidth)) {
+            initTreeWidth = treeData.treeWidth;
+        }
+
+        if (newWidth) {
+            newWidth = ((parseInt(newWidth) + initTreeWidth) > maxTreeWidth) ? maxTreeWidth : (initTreeWidth + parseInt(newWidth));
+            treeData.treeWidth = (newWidth > minTreeWidth) ? newWidth : minTreeWidth;
+        }
+
+    }
+
+
+
+    /**
+     * Find the highest collapsed node in the parents of a node
+     *
+     * @param d
+     * @returns {*}
+     */
+    function findHighestCollapsed(d) {
         if (d.parent) {
             if (d._children && d.parent.children) {
                 return d;
             } else {
-                return (findHeighestCollapsed(d.parent));
+                return (findHighestCollapsed(d.parent));
             }
         } else {
             return d;
         }
     }
 
+    /********************************************************************************
+     * creates undo button for given canvas
+     *
+     * @param canvasId id of the canvas, "global" creates global undo button that always undo the last change
+     */
+
     function createUndoButton(canvasId) {
 
         function buildUndoButton(canvasId) {
-            var undo = d3.select("#" + canvasId).append("div")
+            var undo = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "undo");
 
             undo.append("a")
@@ -2424,9 +2595,13 @@ var TreeCompare = function() {
                 .attr("aria-hidden", "true");
         }
 
-        buildUndoButton(canvasId);
+        if(canvasId == "global"){
+            undo("phylo", "undo")
+        } else {
+            buildUndoButton(canvasId);
+            undo(canvasId, "undobtn" + canvasId);
+        }
 
-        undo(canvasId, "undobtn" + canvasId);
     }
 
 
@@ -2494,7 +2669,7 @@ var TreeCompare = function() {
     function createExportBar(canvasId, baseTree, compareMode){
 
         function buildExportBar(canvasId) {
-            var exportTools = d3.select("#" + canvasId).append("div")
+            var exportTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "exportTools");
 
             exportTools.append("a")
@@ -2505,9 +2680,7 @@ var TreeCompare = function() {
                 .attr("aria-hidden","true");
 
             var exportMenu = d3.select("#" + canvasId).append("div")
-                .attr("class", "exportMenu");
-            // .append("ul")
-            // .attr("class", "treeToolsMenuContent");
+                .attr("class", "exportMenu toolmenu");
             if (settings.enableDownloadButtons) {
                 exportMenu.append("li")
                     .attr("class", "exportText")
@@ -2535,21 +2708,22 @@ var TreeCompare = function() {
         }
 
         d3.select("#" + canvasId).select(".exportButton")
-            .on("click", function(){
-                $("#" + canvasId + " .exportButton").toggleClass("opacity");
-                $("#" + canvasId + " .exportMenu").slideToggle(200);
-                if (d3.select("#" + canvasId + " .treeToolsMenu").style("display") !== "none"){
-                    $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
-                    $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
 
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".exportMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .exportMenu").slideToggle(200);
+                if($("#" + canvasId + " .exportMenu").is(':visible')){
+                    $("#" + canvasId + " .exportButton").addClass("opacity");
                 }
+
             });
     }
 
     function createToolbar(canvasId, baseTree, compareMode){
 
         function buildToolbar(canvasId) {
-            var treeTools = d3.select("#" + canvasId).append("div")
+            var treeTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "treeTools");
 
             treeTools.append("a")
@@ -2560,9 +2734,7 @@ var TreeCompare = function() {
                 .attr("aria-hidden", "true");
 
             var treeToolsMenu = d3.select("#" + canvasId).append("div")
-                .attr("class", "treeToolsMenu");
-            // .append("ul")
-            // .attr("class", "treeToolsMenuContent");
+                .attr("class", "treeToolsMenu toolmenu");
 
             treeToolsMenu.append("li")
                 .attr("class", "treeToolsText")
@@ -2613,26 +2785,111 @@ var TreeCompare = function() {
         }
 
         d3.select("#" + canvasId).select(".treeToolsButton")
-            .on("click", function () {
-                $("#" + canvasId + " .treeToolsButton").toggleClass("opacity");
-                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
-                if (d3.select("#" + canvasId + " .exportMenu").style("display") !== "none"){
-                    $("#" + canvasId + " .exportButton").toggleClass("opacity");
-                    $("#" + canvasId + " .exportMenu").slideToggle(200);
 
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".treeToolsMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .treeToolsMenu").slideToggle(200);
+                if($("#" + canvasId + " .treeToolsMenu").is(':visible')){
+                    $("#" + canvasId + " .treeToolsButton").addClass("opacity");
+                }
+
+            });
+    }
+
+    function createStackToolbar(canvasId, baseTree, compareMode){
+
+        function buildStackToolbar(canvasId) {
+            //var stackTools = d3.select("#" + canvasId).append("div")
+            var stackTools = d3.select("#" + canvasId + " .btn-group-menu").append("div")
+                .attr("class", "stackTools");
+
+            stackTools.append("a")
+                .attr("class", "btn btn-sm sharp stackToolsButton")
+                .attr("title", "tools for histogram manipulation")
+                .append("span")
+                .attr("class", "fa fa-chart-bar")
+                .attr("aria-hidden", "true");
+
+            var stackToolsMenu = d3.select("#" + canvasId).append("div")
+                .attr("class", "stackToolsMenu toolmenu");
+
+            if(hasHistogramData){
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackwidthzoom")
+                    .text("Stack Width");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackheightzoom")
+                    .text("Stack Height");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stacklabelswitch")
+                    .text("Histogram Labels");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stacklegendswitch")
+                    .text("Histogram Legend");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackscaleswitch")
+                    .text("Histogram scale");
+
+                stackToolsMenu.append("li")
+                    .attr("class", "stackToolsText")
+                    .append("div")
+                    .attr("class", "stackinfoswitch")
+                    .text("Displayed info");
+            }
+        }
+
+
+        if (settings.enableStackZoomSliders) {
+
+            if(hasHistogramData) {
+
+                buildStackToolbar(canvasId);
+
+                createStackZoomSlider(canvasId, "stackwidthzoom", baseTree, stackMinWidth, stackMaxWidth, stackStep, stackWidth);
+                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
+                createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
+                createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
+                createHistogramScaleSwitchBtn(canvasId, "stackscaleswitch", baseTree);
+                createHistogramInfoSwitchBtn(canvasId, "stackinfoswitch", baseTree);
+            }
+        }
+
+        d3.select("#" + canvasId).select(".stackToolsButton")
+            .on("click", function () {
+                $("#" + canvasId + " .toolmenu").not(".stackToolsMenu").hide()
+                $("#" + canvasId + " .opacity").removeClass("opacity")
+                $("#" + canvasId + " .stackToolsMenu").slideToggle(200);
+                if($("#" + canvasId + " .stackToolsMenu").is(':visible')){
+                    $("#" + canvasId + " .stackToolsButton").addClass("opacity");
                 }
 
             });
     }
 
     function createOppositeTreeActions(canvasId, oppositeTreeActionsClass) {
-        /*---------------
-         /
-         /  Function to find best corresponding root in opposite tree and automatically perform rerooting on that root
-         /      works only in "compare mode" and needs the canvasId to know which tree will
-         /      be manipulated
-         /
-         ---------------*/
+        /***************************************************************************
+         *
+         * Function to find best corresponding root in opposite tree and
+         * automatically perform re-rooting on that root works only
+         * in "compare mode" and needs the canvasId to know which tree will
+         * be manipulated
+         *
+         ****************************************************************************/
         function findBestCorrespondingTree(canvasId) {
             var isCompared = true;
             var canvasLeft = "vis-container1";
@@ -2782,7 +3039,7 @@ var TreeCompare = function() {
 
         function buildOppositeTreeActionsButtons(canvasId, oppositeTreeActionsClass) {
             var oppositeTreeActionButton = d3.select("#" + canvasId).select("." + oppositeTreeActionsClass).append("div")
-                .attr("class", "btn-group opTreeAc-group");
+                .attr("class", "btn-group opTreeAcGroup");
             oppositeTreeActionButton.append("button")
                 .attr("id", "opTreeAcButton")
                 .attr("class", "btn btn-sm sharp opTreeAcButtonReroot")
@@ -2850,8 +3107,23 @@ var TreeCompare = function() {
             return does;
         }
 
+        function createToolbarContainer(canvasId){
+
+            d3.select("#" + canvasId).append("div").attr("class", "btn-group-menu");
+
+        }
+
         function buildSearchBox(canvasId) {
-            var searchDiv = d3.select("#" + canvasId).append("div")
+
+            d3.select("#" + canvasId + " .btn-group-menu").append("div")
+                .attr("class", "search")
+                .append("input")
+                .attr("class", "searchInput")
+                .attr("type", "text")
+                .attr("placeholder", "search")
+                .attr("autofocus");
+
+            var searchDiv = d3.select("#" + canvasId + " .btn-group-menu").append("div")
                 .attr("class", "searchBox");
 
             var searchDivA = searchDiv.append("a")
@@ -2862,13 +3134,7 @@ var TreeCompare = function() {
                 .attr("class", "glyphicon glyphicon-search")
                 .attr("aria-hidden", "true");
 
-            searchDiv.append("input")
-                .attr("class", "searchInput")
-                .attr("type", "text")
-                .attr("placeholder", "search")
-                .attr("autofocus");
-
-            var searchBox = d3.select("#" + canvasId).select(".searchBox").append("div")
+            var searchBox = d3.select("#" + canvasId + " .search").append("div")
                 .attr("class", "searchResultsBox")
                 .append("ul")
                 .attr("class", "searchResultsList");
@@ -2929,9 +3195,10 @@ var TreeCompare = function() {
 
         function showSearchBar(canvasId) {
             d3.select("#" + canvasId).select(".searchInput")
-                .style("display", "inline")
                 .transition().duration(600)
-                .style("width", "150px").node().focus();
+                .style("width", "150px")
+                .style("display", "inline-block")
+                .node().focus();
 
         }
 
@@ -2951,9 +3218,17 @@ var TreeCompare = function() {
             $("#" + canvasId + " .searchInput").val("");
         }
 
+        createToolbarContainer(canvasId);
         buildSearchBox(canvasId);
 
         d3.select("#" + canvasId).select(".searchButton").on("click", function () {
+
+            $("#" + canvasId + " .toolmenu").not(".search").hide()
+            $("#" + canvasId + " .opacity").removeClass("opacity")
+            if($("#" + canvasId + " .searchInput").is(':visible')){
+                $("#" + canvasId + " .search").addClass("opacity");
+            }
+
             var searchInput = $("#" + canvasId + ' .searchInput');
             if (searchInput.is(":visible")) {
 
@@ -3027,7 +3302,8 @@ var TreeCompare = function() {
 
         // ensures that searchbar is removed when clicking on canvas
         $(document).click(function(event) {
-            if(!$(event.target).closest('.searchBox').length && $('.searchInput').is(":visible")) {
+            // exclude find menuitem click
+            if(!$(event.target).closest('.search').length && $('.searchInput').is(":visible") && event.target.id != 'find' ) {
                 postorderTraverse(baseTree.data.root, function(d) { // ensures that highlighted search is removed when button of search is inactivepyen
                     if(d.parent){
                         d3.select("#"+d.parent.ID+"_"+d.ID).classed("search", false)
@@ -3322,7 +3598,6 @@ var TreeCompare = function() {
     function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
         function buildRescaleButtons(canvasId) {
-
             var rescaleDiv = d3.select("#" + canvasId).select("." + rescaleClass).append("div")
                 .attr("class", "rescaleButtons");
 
@@ -3361,7 +3636,6 @@ var TreeCompare = function() {
 
 
         buildRescaleButtons(canvasId);
-        //buildRescaleButtonsStyle(canvasId);
 
         // set up function for buttons on left top corner
         function actionUp() {
@@ -3419,22 +3693,390 @@ var TreeCompare = function() {
 
     function addLogo(svg) {
         // TODO load with ajax
-        var logo_xml = '<svg id="exportLogo" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 107.35 22.23"><defs><style>.cls-1{fill:#808285;}.cls-2{fill:#939598;}.cls-3{fill:#bcbec0;}</style></defs><path class="cls-1" d="M17.17,22.23V5.72H21a6.55,6.55,0,0,1,4.53,1.45,5.16,5.16,0,0,1,1.62,4.05,5.58,5.58,0,0,1-1.52,4,5.16,5.16,0,0,1-3.88,1.58,6.81,6.81,0,0,1-2.31-.46v5.84H17.17ZM20.91,7.74H19.38v6.72a4.51,4.51,0,0,0,2.09.51A3.21,3.21,0,0,0,24,13.92a3.88,3.88,0,0,0,1-2.72,3.82,3.82,0,0,0-.46-1.89,2.76,2.76,0,0,0-1.24-1.19A5.54,5.54,0,0,0,20.91,7.74Z"/><path class="cls-1" d="M29.43,0.06H31.6v7.1A4.18,4.18,0,0,1,35,5.51a3.6,3.6,0,0,1,2,.55,3.31,3.31,0,0,1,1.29,1.51,7.46,7.46,0,0,1,.42,2.86v6.22H36.47V9.89A3,3,0,0,0,35.88,8a1.9,1.9,0,0,0-1.55-.73A2.62,2.62,0,0,0,33,7.6,6.1,6.1,0,0,0,31.6,8.83v7.83H29.43V0.06Z"/><path class="cls-1" d="M47.5,5.72h2.43l-7.74,16.5H39.77l3.71-7.92L39.26,5.72h2.46l3,6.17Z"/><path class="cls-1" d="M51.49,0.06h2.16v16.6H51.49V0.06Z"/><path class="cls-1" d="M62,5.7a5.7,5.7,0,0,1,4.15,1.61,5.41,5.41,0,0,1,1.65,4,5.14,5.14,0,0,1-1.68,3.93,5.94,5.94,0,0,1-4.22,1.56,5.7,5.7,0,0,1-4.11-1.59,5.26,5.26,0,0,1-1.65-4,5.31,5.31,0,0,1,1.67-4A5.82,5.82,0,0,1,62,5.7ZM61.89,7.65a3.42,3.42,0,0,0-2.55,1,3.57,3.57,0,0,0-1,2.6,3.41,3.41,0,0,0,1,2.56,3.61,3.61,0,0,0,2.63,1,3.55,3.55,0,0,0,2.61-1,3.46,3.46,0,0,0,1-2.57,3.43,3.43,0,0,0-1.06-2.58A3.68,3.68,0,0,0,61.89,7.65Z"/><path class="cls-1" d="M71.62,14.29v2.36H70V14.29h1.58Z"/><path class="cls-1" d="M75.85,0.06v2H74.67v-2h1.18Zm0,5.67V16.65H74.67V5.72h1.18Z"/><path class="cls-1" d="M84.14,5.51a5.3,5.3,0,0,1,4,1.63,5.59,5.59,0,0,1,1.59,4.06,5.56,5.56,0,0,1-1.59,4,5.67,5.67,0,0,1-7.94,0,5.54,5.54,0,0,1-1.6-4,5.57,5.57,0,0,1,1.6-4.06A5.34,5.34,0,0,1,84.14,5.51Zm0,10.22a4.09,4.09,0,0,0,3.08-1.29,4.49,4.49,0,0,0,1.24-3.24A4.53,4.53,0,0,0,87.21,8a4.07,4.07,0,0,0-3.07-1.31A4.11,4.11,0,0,0,81,7.95,4.52,4.52,0,0,0,79.8,11.2,4.48,4.48,0,0,0,81,14.44,4.12,4.12,0,0,0,84.14,15.73Z"/><polygon class="cls-2" points="101.29 12.33 94.93 12.33 94.93 10.91 99.87 10.91 99.87 6.46 94.93 6.46 94.93 5.04 101.29 5.04 101.29 12.33"/><polygon class="cls-2" points="106.29 17.36 94.72 17.36 94.72 15.94 104.87 15.94 104.9 5.41 102.74 5.41 102.74 3.99 106.32 3.99 106.29 17.36"/><polygon class="cls-2" points="103.45 4.7 102.03 4.7 102.03 1.42 95.51 1.42 95.51 0 103.45 0 103.45 4.7"/><polygon class="cls-3" points="103.45 9.39 100.65 9.39 100.65 7.97 102.03 7.97 102.03 4.7 103.45 4.7 103.45 9.39"/><polygon class="cls-2" points="11.86 7.46 5.7 7.46 5.7 0.23 11.86 0.23 11.86 1.65 7.12 1.65 7.12 6.04 11.86 6.04 11.86 7.46"/><polygon class="cls-2" points="12.68 17.26 0.04 17.26 0 7.08 3.51 7.08 3.51 8.49 1.43 8.49 1.45 15.84 12.68 15.84 12.68 17.26"/><polygon class="cls-2" points="10.49 12.44 2.84 12.44 2.84 7.79 4.26 7.79 4.26 11.02 10.49 11.02 10.49 12.44"/><polygon class="cls-3" points="4.26 7.79 2.84 7.79 2.84 3.13 6.41 3.13 6.41 4.55 4.26 4.55 4.26 7.79"/></svg>';
+        var logo_xml = '<svg id="exportLogo" x="0" y="0"><g id="g4169"> <path d="m 29.606259,23.679171 1.905511,0 c 0.193778,0.617882 0.290669,1.188505 0.290672,1.711869 0.466506,-0.545171 1.022728,-0.99222 1.668668,-1.341146 0.653108,-0.348904 1.295455,-0.523362 1.927043,-0.523373 0.976073,1.1e-5 1.86603,0.261698 2.669869,0.78506 0.810999,0.523383 1.442581,1.221215 1.894747,2.093495 0.459321,0.865028 0.688986,1.802739 0.688998,2.813134 -1.2e-5,1.010407 -0.229677,1.951752 -0.688998,2.824038 -0.452166,0.865023 -1.083748,1.559219 -1.894747,2.082592 -0.803839,0.516105 -1.693796,0.774156 -2.669869,0.774157 -0.638765,-1e-6 -1.284701,-0.163554 -1.937809,-0.490663 -0.653117,-0.334377 -1.20575,-0.770521 -1.657902,-1.308434 l 0,6.542172 -1.711731,0 0,-12.713622 c -2e-6,-0.552441 -0.04665,-1.170313 -0.139953,-1.853616 -0.08613,-0.683283 -0.20096,-1.148504 -0.344499,-1.395663 m 2.196183,5.539039 c -3e-6,1.133981 0.355261,2.093499 1.065795,2.878557 0.717702,0.777793 1.561006,1.166688 2.529916,1.166687 0.954543,10e-7 1.79067,-0.392528 2.508385,-1.177592 0.717697,-0.785056 1.07655,-1.740939 1.076561,-2.867652 -1.1e-5,-1.1267 -0.358864,-2.082583 -1.076561,-2.867652 -0.717715,-0.79232 -1.553842,-1.188485 -2.508385,-1.188495 -0.96891,10e-6 -1.812214,0.396175 -2.529916,1.188495 -0.710534,0.785069 -1.065798,1.740952 -1.065795,2.867652" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee Bold" id="path4145" /> <path d="m 43.224746,34.75725 0,-16.279106 1.711731,0 0,7.152775 c 0.437798,-0.610593 0.94378,-1.112159 1.517951,-1.504699 0.581337,-0.399789 1.151913,-0.599688 1.71173,-0.599699 0.602867,1.1e-5 1.141147,0.123585 1.614841,0.370723 0.473678,0.23989 0.854062,0.570633 1.141153,0.99223 0.287074,0.421615 0.502386,0.897739 0.645937,1.428373 0.143531,0.523382 0.215302,1.083101 0.215312,1.679158 l 0,6.760245 -1.6902,0 0,-6.760245 c -8e-6,-0.33437 -0.0323,-0.65421 -0.09689,-0.959518 -0.05742,-0.305294 -0.154315,-0.603326 -0.290672,-0.894097 -0.136371,-0.298024 -0.337329,-0.534268 -0.602873,-0.708736 -0.265559,-0.181718 -0.584938,-0.272581 -0.958139,-0.272591 -0.473692,10e-6 -0.96891,0.243524 -1.485653,0.730544 -0.509576,0.487036 -0.925846,1.05039 -1.24881,1.69006 -0.315795,0.632417 -0.47369,1.177598 -0.473687,1.635543 l 0,5.53904 -1.711731,0" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee Bold" id="path4147" /> <path d="m 53.581256,23.679171 1.776325,0 3.423461,8.472114 3.337338,-8.472114 1.797856,0 -6.4163,16.388142 -1.819387,0 2.22848,-5.658979 -4.327773,-10.729163" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee Bold" id="path4149" /> <path d="m 67.415055,34.75725 -1.71173,0 0,-16.279106 1.71173,0 0,16.279106" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee Bold" id="path4151" /> <path d="m 80.882824,26.361462 c 0.523914,0.872297 0.785877,1.824546 0.785889,2.856748 -1.2e-5,1.032215 -0.261975,1.984463 -0.785889,2.856749 -0.523937,0.872291 -1.234467,1.562854 -2.131589,2.071689 -0.897143,0.501566 -1.873223,0.752348 -2.928244,0.752349 -1.062213,-1e-6 -2.04547,-0.250783 -2.949776,-0.752349 -0.897136,-0.508835 -1.607665,-1.199398 -2.131589,-2.071689 -0.523928,-0.872286 -0.78589,-1.824534 -0.785889,-2.856749 -10e-7,-1.032202 0.261961,-1.984451 0.785889,-2.856748 0.523924,-0.87955 1.234453,-1.570111 2.131589,-2.071688 0.904306,-0.508825 1.887563,-0.763242 2.949776,-0.763253 1.055021,1.1e-5 2.031101,0.254428 2.928244,0.763253 0.897122,0.501577 1.607652,1.192138 2.131589,2.071688 m -9.20459,2.856748 c -3e-6,1.126713 0.405501,2.082596 1.216513,2.867652 0.811004,0.785064 1.794261,1.177593 2.949775,1.177592 1.1555,10e-7 2.142346,-0.392528 2.960541,-1.177592 0.818175,-0.792325 1.227268,-1.748208 1.227279,-2.867652 -1.1e-5,-1.112162 -0.409104,-2.060776 -1.227279,-2.845844 -0.818195,-0.792321 -1.805041,-1.188485 -2.960541,-1.188495 -1.155514,10e-6 -2.138771,0.396174 -2.949775,1.188495 -0.811012,0.785068 -1.216516,1.733682 -1.216513,2.845844" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee Bold" id="path4153" /> <path d="m 84.532366,34.0049 c -2e-6,-0.247148 0.08612,-0.457951 0.258374,-0.63241 0.172247,-0.181725 0.380382,-0.272588 0.624405,-0.27259 0.244018,2e-6 0.452152,0.09087 0.624405,0.27259 0.179424,0.174459 0.269137,0.385262 0.269141,0.63241 -4e-6,0.239881 -0.08972,0.454318 -0.269141,0.643314 -0.17943,0.181727 -0.387564,0.27259 -0.624405,0.27259 -0.236846,0 -0.444981,-0.09087 -0.624405,-0.27259 -0.172252,-0.188996 -0.258376,-0.403433 -0.258374,-0.643314" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee" id="path4155" /> <path d="m 89.527608,21.08411 c -10e-7,-0.239866 0.08253,-0.447035 0.247608,-0.621507 0.172248,-0.174444 0.380383,-0.261673 0.624406,-0.261687 0.23684,1.4e-5 0.437798,0.08724 0.602874,0.261687 0.172246,0.174472 0.258371,0.381641 0.258374,0.621507 -3e-6,0.247162 -0.08254,0.457964 -0.247609,0.632409 -0.165075,0.167203 -0.369621,0.250796 -0.613639,0.250783 -0.244023,1.3e-5 -0.452158,-0.08358 -0.624406,-0.250783 -0.165074,-0.174445 -0.247609,-0.385247 -0.247608,-0.632409 m 1.356465,13.67314 -0.968904,0 0,-11.056271 0.968904,0 0,11.056271" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee" id="path4157" /> <path d="m 99.593447,23.526521 c 0.753583,1.1e-5 1.474873,0.149027 2.163883,0.447048 0.68899,0.298043 1.28468,0.701476 1.78709,1.210302 0.50238,0.508844 0.90072,1.115812 1.19499,1.820905 0.29424,0.705108 0.44137,1.442918 0.44139,2.213434 -2e-5,0.777797 -0.14715,1.519242 -0.44139,2.224339 -0.29427,0.705104 -0.69261,1.312071 -1.19499,1.820905 -0.50241,0.501568 -1.0981,0.905001 -1.78709,1.210301 -0.68901,0.298033 -1.4103,0.447049 -2.163883,0.447049 -1.543077,0 -2.860068,-0.556084 -3.950979,-1.668254 -1.090916,-1.112166 -1.636373,-2.456945 -1.636372,-4.03434 -10e-7,-1.032202 0.247608,-1.984451 0.742827,-2.856748 0.502393,-0.87955 1.180625,-1.570111 2.0347,-2.071688 0.861243,-0.508825 1.797849,-0.763242 2.809824,-0.763253 m -4.629212,5.691689 c -2e-6,1.301171 0.452153,2.416973 1.356467,3.347412 0.911483,0.923175 2.009573,1.38476 3.294277,1.384759 1.284681,10e-7 2.379191,-0.461584 3.283511,-1.384759 0.91147,-0.930439 1.36721,-2.046241 1.36722,-3.347412 -1e-5,-1.293889 -0.45575,-2.402423 -1.36722,-3.325603 -0.90432,-0.923164 -1.99883,-1.38475 -3.283511,-1.38476 -1.284704,10e-6 -2.382794,0.461596 -3.294277,1.38476 -0.904314,0.92318 -1.356469,2.031714 -1.356467,3.325603" style="font-size:22.18883514px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sawasdee;-inkscape-font-specification:Sawasdee" id="path4159" /> </g> <g id="g4014" transform="translate(12.84,20.592727)"> <g transform="translate(0,-0.065)" id="g3992"> <polygon style="fill:#939598" id="polygon461" points="5.7,0.23 11.86,0.23 11.86,1.65 7.12,1.65 7.12,6.04 11.86,6.04 11.86,7.46 11.86,7.46 5.7,7.46 " class="cls-2" /> <polygon style="fill:#939598" id="polygon463" points="0,7.08 3.51,7.08 3.51,8.49 1.43,8.49 1.45,15.84 12.68,15.84 12.68,17.26 12.68,17.26 0.04,17.26 " class="cls-2" /> <polygon style="fill:#939598" id="polygon465" points="10.49,11.02 10.49,12.44 10.49,12.44 2.84,12.44 2.84,7.79 4.26,7.79 4.26,11.02 " class="cls-2" transform="translate(0,-0.15225398)" /> <polygon style="fill:#bcbec0" id="polygon467" points="4.26,4.55 4.26,7.79 4.26,7.79 2.84,7.79 2.84,3.13 6.41,3.13 6.41,4.55 " class="cls-3" transform="matrix(1,0,0,0.85463687,0,0.4549866)" /> <rect style="fill:#939598;fill-opacity:1" id="rect3926-3" width="1.4240631" height="1.7319686" x="2.8396611" y="7.0799503" /> <rect style="fill:#939598;fill-opacity:1" id="rect3926-6" width="1.3864813" height="1.6934805" x="5.7012329" y="2.9206221" /> </g> <g id="g4005"> <g id="g3984"> <polygon class="cls-2" points="94.93,12.33 94.93,10.91 99.87,10.91 99.87,6.46 94.93,6.46 94.93,5.04 101.29,5.04 101.29,12.33 101.29,12.33 " id="polygon453" style="fill:#939598" /> <polygon class="cls-2" points="94.72,17.36 94.72,15.94 104.87,15.94 104.9,5.41 102.74,5.41 102.74,3.99 106.32,3.99 106.29,17.36 106.29,17.36 " id="polygon455" style="fill:#939598" /> <polygon class="cls-2" points="95.51,1.42 95.51,0 103.45,0 103.45,4.7 103.45,4.7 102.03,4.7 102.03,1.42 " id="polygon457" style="fill:#939598" /> <polygon class="cls-3" points="102.03,7.97 102.03,4.7 103.45,4.7 103.45,9.39 103.45,9.39 100.65,9.39 100.65,7.97 " id="polygon459" style="fill:#bcbec0" /> <rect y="3.9876499" x="102.02941" height="1.4238259" width="1.4579451" id="rect3926" style="fill:#939598;fill-opacity:1" /> <rect y="7.884686" x="99.887817" height="1.6934805" width="1.397205" id="rect3926-7" style="fill:#939598;fill-opacity:1" /> </g> </g> </g> </g> </svg>';
+
 
         svg.append("g").html(logo_xml);
 
-        var width = d3.select("svg").select("g").node().getBoundingClientRect().width;
-        // TODO height is not right for comparison
-        var height = d3.select("svg").select("g").node().getBoundingClientRect().height;
-
-        d3.select("#exportLogo").attr("width", "75px")
-            .attr("x", 20)
-            .attr("y", -height / 2 - 45)
-            .style("position", "absolute")
-            .style("bottom", "5px")
-            .style("right", "27px");
     }
 
+    function addMainLegend(svgId) {
+
+        var width = 230;
+        var height = 80;
+        var svgHeight = height + 25;
+        var legendRectSize = 20;
+        var margin = 25;
+        var legendTxtSize = 12;
+        if(infoStack == "genes"){
+            var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
+        } else {
+            var dataLabels = ["Gains", "Duplications", "Losses" ]
+        }
+
+        // to position legends correctly
+        var rects = dataLabels.length - 1;
+
+        var legendDrag = d3.behavior.drag()
+            .origin(function() {
+                var g = this;
+                return {x: d3.transform(g.getAttribute("transform")).translate[0],
+                    y: d3.transform(g.getAttribute("transform")).translate[1]};
+            })
+            .on('dragstart', function(){
+                // we don't want to move the whole tree
+                d3.event.sourceEvent.stopPropagation();
+            })
+
+            .on("drag", function(d, i) {
+                g = this;
+                translate = d3.transform(g.getAttribute("transform")).translate;
+                x = d3.event.dx + translate[0],
+                y = d3.event.dy + translate[1];
+                d3.select(g).attr("transform", "translate(" + x + ", "+ y +")");
+            });
+
+        var legendSvg = d3.select("#" + svgId).append("svg").call(legendDrag)
+             .attr("id", "histogram-legend")
+             .attr("x", margin)
+             .attr("y", margin)
+             .attr("width", width + "px")
+             .attr("height", svgHeight + "px")
+             .append("g");
+
+        legendSvg.append("line")
+            .attr("x1", -75)
+            .attr("y1", rects * legendRectSize)
+            .attr("x2", 200)
+            .attr("y2", rects * legendRectSize)
+            .attr("class", "divline")
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+        legendSvg.selectAll('rect')
+            .data(dataLabels)
+            .enter()
+            .append('rect')
+            .attr('x', 110)
+            .attr('y', function(d, i){
+                return i * legendRectSize;
+            })
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .attr('fill', function(d, i){
+                return color[d];
+            });
+
+        legendSvg.selectAll('text')
+            .data(dataLabels)
+            .enter()
+            .append('text')
+            .text(function(d){
+                return d;
+            })
+            .attr('x', 110 + legendRectSize + 5)
+            .attr('y', function(d, i){
+                return i * legendRectSize + 0.25 * legendRectSize;
+            })
+            .attr('text-anchor', 'start')
+            .attr('alignment-baseline', 'hanging')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+
+        legendSvg
+            .append('text')
+            .attr("class", "legendGeneTotal")
+            .text("Total # of "+infoStack)
+            .attr('x', 0)
+            .attr('y', rects * legendRectSize - 5)
+            .attr('text-anchor', 'start')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+        d3.selectAll(".legendGeneTotal").moveToFront();
+
+    }
+
+    function addStack(d, i){
+
+        // don't draw histograms more than once
+        // TODO find more d3 way of doing this
+        try {
+            if(d3.select("#"+d.ID+" g").classed("stackGroup")){
+                return "";
+            };
+        }
+        catch(err){ }
+
+        if(!d.evolutionaryEvents || d.evolutionaryEvents == false) {
+            return "";
+        }
+
+        var svg = d3.select(this);
+        var h = stackHeight;
+        var w = stackWidth;
+        var margin = 8;
+        var xInitialRightMargin = 35;
+        var xDistanceFromNode = w + xInitialRightMargin;
+        var txtDistanceFromBar = w + margin;
+        var legendTxtSize = 12;
+
+        var stackData = [];
+
+        stackData[infoStack] = barStack(d, infoStack);
+
+        for (var key in stackData) {
+
+            if (key == infoStack) {
+                var data = stackData[key];
+
+                var y = d3.scale.linear()
+                    .domain([0, d3.max(data, function (d) {
+                        return d3.max(d, function (d) {
+                            return d.y0 + d.y;
+                        });
+                    })])
+                    .range([h, 0]);
+
+                var stackDrag = d3.behavior.drag()
+                    .origin(function () {
+                        var g = this;
+                        return {
+                            x: d3.transform(g.getAttribute("transform")).translate[0],
+                            y: d3.transform(g.getAttribute("transform")).translate[1]
+                        };
+                    })
+                    .on('dragstart', function () {
+                        // we don't want to move the whole tree
+                        d3.event.sourceEvent.stopPropagation();
+                    })
+                    .on("drag", function (d, i) {
+                        g = this;
+                        translate = d3.transform(g.getAttribute("transform")).translate;
+                        // todo leftmargin needs width of the "parent"
+                        //translate[0] = (translate[0] < -48) ? -48 : translate[0];
+                        translate[0] = (translate[0] > xInitialRightMargin - 4) ? xInitialRightMargin - 4 : translate[0];
+                        x = d3.event.dx + translate[0],
+                            y = d3.event.dy + translate[1];
+
+                        // keep it vertically aligned
+                        // TODO restrict X to parents "parent" width, we just don't know the
+                        // width of the parent
+                        var parentId = '#' + g.parentNode.previousSibling.id
+
+                        d3.select(g).attr("transform", "translate(" + x + ", 0)");
+                    });
+                /*
+
+                        function computeDimensions(selection) {
+                          var dimensions = null;
+                          var node = selection.node();
+
+                          if (node instanceof SVGElement) { // check if node is svg element
+                            dimensions = node.getBBox();
+                          } else { // else is html element
+                            dimensions = node.getBoundingClientRect();
+                          }
+                          console.log(dimensions);
+                          return dimensions;
+                        }
+                */
+
+                var stackGroup = svg.append("g").classed("stackGroup", true).call(stackDrag);
+
+                if (settings.showHistogramValues) {
+                    var legends = stackGroup.selectAll("text")
+                        .data(data)
+                        .enter()
+                        .append("text")
+                        .classed("legendtxt", true)
+                        .text(function (d) {
+                            return d[0].realsize != 0 ? d[0].realsize : "";
+                        }).attr("x", function () {
+                            return (0 - xDistanceFromNode) + txtDistanceFromBar;
+                        }).attr("y", function (d) {
+                            // TODO adjust based on feedback
+                            if(d[0].y0 < 0){
+                                // legend below zero line
+                                return legendTxtSize+2;
+                            }
+
+                            // if bar height smaller than text size, put text on bottom
+                            if(d[0].y < legendTxtSize && d[0].y0 > 0) {
+                                return -(d[0].y0 - d[0].y);
+                            }
+
+                            // center legend text vertically with some extra padding
+                            return -(d[0].y0 - ((d[0].y + legendTxtSize)/2));
+                        }).attr("font-size", legendTxtSize).attr("stroke", "black")
+
+                }
+
+                if (settings.showHistogramSummaryValue) {
+
+                    var summaryLegend = stackGroup.selectAll(".stackGroup")
+                        .data(function (d) {
+                            return [d];
+                        })
+                        .enter()
+                        .append("text")
+                        .classed("legendsummarytxt", true)
+                        .text(function (d) {
+                            summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
+                            return summary_number > 0 ? summary_number : "";
+                        }).attr("x", function () {
+                            return 0 - (xDistanceFromNode + 30)
+                        }).attr("y", function (d) {
+                            return 0 - margin;
+                        }).attr("font-size", legendTxtSize).attr("stroke", "black")
+
+                }
+
+                var stackSlices = stackGroup.selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect");
+
+                var slices = stackSlices
+                    .style("fill", function (d, i) {
+                        return color[d[0].sizelbl];
+                    })
+                    .style("opacity", 0.8)
+                    .attr("y", function (d) {
+                        return 0 - d[0].y0;
+                    })
+                    .attr("x", function (d) {
+                        return 0 - xDistanceFromNode;
+                    })
+                    .attr("height", function (d) {
+                        return d[0].size
+                    })
+
+                    .attr("width", w)
+
+                d3.selectAll(".stackGroup").moveToFront();
+
+            }
+
+        }
+
+    }
+
+    function getStackNormalizer(d, type){
+
+        if(type == 'genes' || !type){
+
+            if(maxStackHeight == "max" && largestGenome > 0){
+                var normalizer = stackHeight / largestGenome;
+            } else if(Number.isInteger(maxStackHeight)){
+                var normalizer = maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+            } else {
+                var normalizer = stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+            }
+
+        } else {
+
+            if(maxStackHeight == "max" && largestEvents > 0){
+                var normalizer = stackHeight / largestEvents;
+            } else if(Number.isInteger(maxStackHeight)){
+                var normalizer = maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+            } else {
+                var normalizer = stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+            }
+
+        }
+
+        return normalizer;
+
+    }
+
+    function barStack(seriesDataAll, type) {
+
+        if(type == 'genes' || !type) {
+            var data = [[{}], [{}], [{}], [{}]];
+        } else {
+            var data = [[{}], [{}], [{}]];
+        }
+        var size = 0;
+        var d = seriesDataAll.evolutionaryEvents;
+        var posBase = 0; // positive base
+        var stackIndex = 0;
+        var seriesIndex = 0;
+
+        var normalizer = getStackNormalizer(d, type);
+
+        /* in case there's no eveolutionary events */
+        normalizer = !isFinite(normalizer) ? 1 : normalizer;
+
+        var StackSizeretained = (d.retained) ? stackScale(d.retained, normalizer) : 0;
+        var StackSizeDuplicated = (d.duplicated) ? stackScale(d.duplicated, normalizer) : 0;
+        var StackSizeDuplication = (d.duplication) ? stackScale(d.duplication, normalizer) : 0;
+        var StackSizeGained = (d.gained) ? stackScale(d.gained, normalizer) : 0;
+        var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
+        var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeretained;
+
+        if(type == 'genes' || !type){
+
+            realSize = Math.abs(d.retained);
+            var posBase = posBase + StackSizeretained;
+            data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeretained, posBase, posStackSize)
+            stackIndex++;
+
+            realSize = Math.abs(d.duplicated);
+            var posBase = posBase + StackSizeDuplicated
+            data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
+            stackIndex++;
+
+        } else {
+
+            realSize = Math.abs(d.duplication);
+            var posBase = posBase + StackSizeDuplication
+            data[stackIndex][seriesIndex] = new seriesElement('Duplications', realSize, StackSizeDuplication, posBase, posStackSize)
+            stackIndex++;
+
+        }
+
+        realSize = Math.abs(d.gained);
+        var posBase = posBase + StackSizeGained
+        data[stackIndex][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
+        stackIndex++;
+
+        realSize = Math.abs(d.lost);
+        /* move lost down a little to make it easier to hover it and not the node line */
+        data[stackIndex][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
+
+        function seriesElement(sizeLbl, realSize, size, y0, posStackSize){
+            this.sizelbl = sizeLbl
+            this.realsize = realSize
+            this.size = Math.abs(size)
+            this.y = size
+            this.y0 = y0
+            this.posStackSize = posStackSize;
+        }
+
+        function stackScale(val, normalizer){
+            return val * normalizer;
+        }
+
+        data.extent = d3.extent(
+            d3.merge(
+                d3.merge(
+                    data.map(function(e) {
+                        return e.map(function(f) {
+                            return [f.y0, f.y0 - f.size]
+                        })
+                    })
+                )
+            )
+        )
+
+        return data;
+    }
+
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function() {
+            this.parentNode.appendChild(this);
+        });
+    };
 
     function createLadderizedTree(canvasId, ladderizeClass, baseTree) {
         //renders the manual zoom slider if turned on
@@ -3449,6 +4091,7 @@ var TreeCompare = function() {
 
         d3.select("#" + canvasId).select(".asc")
             .on('click', function () {
+                toggleActiveBtn("asc", "ladderize");
                 ladderizeTree(baseTree, "ascending")
             });
 
@@ -3463,9 +4106,184 @@ var TreeCompare = function() {
 
         d3.select("#" + canvasId).select(".desc")
             .on('click', function () {
+                toggleActiveBtn("desc", "ladderize");
                 ladderizeTree(baseTree, "descending")
             });
     }
+
+    function toggleActiveBtn(activateElem, parentClass){
+
+          var activeClass = "activebtn";
+          d3.selectAll("."+parentClass+" .btn").classed(activeClass, false);
+          d3.select("."+activateElem).classed(activeClass, true);
+
+    }
+
+    function createHistogramLabelVisibilityBtn(canvasId, histVisClass) {
+        var histLabels = d3.select("#" + canvasId).select("." + histVisClass);
+        if (histLabels.attr("opacity") == 1){
+            histLabels.active = true;
+            var histLblShowBtnTxt = "Show";
+        } else {
+            histLabels.active = false;
+            var histLblShowBtnTxt = "Hide";
+        }
+
+        var histVisLblBtn = d3.select("#" + canvasId).select("." + histVisClass).append("div");
+        histVisLblBtn.append("button")
+            .attr("id", "histLblShowBtn")
+            .attr("class", "btn btn-sm sharp")
+            .attr("title", "Visibility of all values")
+            .attr("type", "button")
+            .append("span")
+            .attr("id", "histLblShowBtnTxt")
+            .text(histLblShowBtnTxt)
+
+        d3.select("#" + canvasId).select("#histLblShowBtn")
+            .on('click', function () {
+                var active = histLabels.active ? false : true,
+                newOpacity = active ? 0 : 1;
+                d3.selectAll(".legendtxt, .legendsummarytxt").style("opacity", newOpacity);
+                histLabels.active = active;
+                if(active){
+                    d3.select(this).text("Show");
+                } else {
+                    d3.select(this).text("Hide");
+                }
+        });
+
+    }
+
+    function createHistogramLegendVisibilityBtn(canvasId, legendVisClass) {
+
+        var histLegendLabels = d3.select("#" + canvasId).select("." + legendVisClass);
+
+        if (histLegendLabels.attr("opacity") == 1){
+            histLegendLabels.active = true;
+            var histLegendShowBtnTxt = "Show";
+        } else {
+            histLegendLabels.active = false;
+            var histLegendShowBtnTxt = "Hide";
+        }
+
+        var histLegendVisLblBtn = d3.select("#" + canvasId).select("." + legendVisClass).append("div");
+        histLegendVisLblBtn.append("button")
+            .attr("id", "histLegendShowBtn")
+            .attr("class", "btn btn-sm sharp")
+            .attr("title", "Visibility of legend")
+            .attr("type", "button")
+            .append("span")
+            .attr("id", "histLegendShowBtnTxt")
+            .text(histLegendShowBtnTxt)
+
+        d3.select("#" + canvasId).select("#histLegendShowBtn")
+            .on('click', function () {
+                var active = histLegendVisLblBtn.active ? false : true,
+                newOpacity = active ? 0 : 1;
+                d3.selectAll("#histogram-legend").style("opacity", newOpacity);
+                histLegendVisLblBtn.active = active;
+                if(active){
+                    d3.select(this).text("Show");
+                } else {
+                    d3.select(this).text("Hide");
+                }
+        });
+
+    }
+
+    function createHistogramScaleSwitchBtn(canvasId, scaleSwitchClass, baseTree) {
+
+        function buildScaleButton(canvasId, scaleSwitchClass) {
+
+            var scaleButton = d3.select("#" + canvasId).select("." + scaleSwitchClass).append("div")
+                .attr("class", "btn-group histogram-group");
+            scaleButton.append("button")
+                .attr("class", "btn btn-sm sharp normalised")
+                .attr("title", "Scale histograms as normalised")
+                .attr("type", "button")
+                .append("span")
+                .text("Ratio");
+            scaleButton.append("button")
+                .attr("class", "btn btn-sm sharp fixed")
+                .attr("title", "Scale histograms as fixed")
+                .attr("type", "button")
+                .append("span")
+                .text("Fixed");
+
+        }
+
+        // draw button
+        buildScaleButton(canvasId, scaleSwitchClass);
+
+        // normalised ratio
+        d3.select("#" + canvasId).select(".normalised")
+            .on('click', function () {
+                maxStackHeight = "ratio";
+                toggleActiveBtn("normalised", "stackscaleswitch");
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+        // max ratio
+        d3.select("#" + canvasId).select(".fixed")
+            .on("click", function () {
+                maxStackHeight = "max";
+                toggleActiveBtn("fixed", "stackscaleswitch");
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+    }
+
+
+    function updateHistogramScale(canvasId, baseTree){
+        d3.select("#histogram-legend").remove();
+        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+        update(baseTree.root, baseTree.data, 0);
+
+    }
+
+    function createHistogramInfoSwitchBtn(canvasId, infoSwitchClass, baseTree) {
+
+        function buildInfoButton(canvasId, infoSwitchClass) {
+
+            var scaleButton = d3.select("#" + canvasId).select("." + infoSwitchClass).append("div")
+                .attr("class", "btn-group export-group");
+            scaleButton.append("button")
+            /*.attr("id", "exportButton") */
+                .attr("class", "btn btn-sm sharp events")
+                .attr("title", "Show events")
+                .attr("type", "button")
+                .append("span")
+                .text("Events");
+            scaleButton.append("button")
+                .attr("class", "btn btn-sm sharp genes")
+                .attr("title", "Show genes")
+                .attr("type", "button")
+                .append("span")
+                .text("Genes");
+
+        }
+
+        // draw button
+        buildInfoButton(canvasId, infoSwitchClass);
+
+        // normalised ratio
+        d3.select("#" + canvasId).select(".events")
+            .on('click', function () {
+                infoStack = "events";
+                toggleActiveBtn("events", "stackinfoswitch");
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+        // max ratio
+        d3.select("#" + canvasId).select(".genes")
+            .on("click", function () {
+                infoStack = "genes";
+                toggleActiveBtn("genes", "stackinfoswitch");
+                updateHistogramScale(canvasId, baseTree);
+            });
+
+    }
+
 
     function splitsToBitString(tree, funcType) {
 
@@ -3684,17 +4502,6 @@ var TreeCompare = function() {
 
     // construct disagreement split matrix
     function matrixBuilder (leftSplits, rightSplits) {
-        //     var xorStrDict = {};
-        //     for (var i = 0; i < leftSplits.length; i++) {
-        //         for (var j = 0; j < rightSplits.length; j++) {
-        //             var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
-        //             var tmpNum = counter(tmpStr)[1];
-        //             xorStrDict[tmpStr] = tmpNum;
-        //         }
-        //     }
-        //     console.log('xorStrDict', xorStrDict);
-        //     return xorStrDict
-        // }
 
         //fill in the matrix and determine number of '1'
         var dsMatrix = [];
@@ -3718,9 +4525,6 @@ var TreeCompare = function() {
         }
         return [dsMatrix, tmpDsMatrix]
     }
-
-
-
 
     // cut the leaves in disagreement
     function minStrSplicer(minimumString, myList) {
@@ -3857,27 +4661,26 @@ var TreeCompare = function() {
 
     function createTreeDownload(canvasId, downloadClass){
 
-
         function buildDownloadButton(canvasId, downloadClass) {
 
             var downloadButton = d3.select("#"+canvasId).select("."+downloadClass).append("div")
                 .attr("class", "btn-group export-group");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp nwk")
                 .attr("title", "export tree as nwk string")
                 .attr("type", "button")
                 .append("span")
                 .text("nwk");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp svg")
                 .attr("title", "export tree as svg")
                 .attr("type", "button")
                 .append("span")
                 .text("svg");
             downloadButton.append("button")
-                .attr("id", "exportButton")
+                /*.attr("id", "exportButton") */
                 .attr("class", "btn btn-sm sharp png")
                 .attr("title", "export tree as png")
                 .attr("type", "button")
@@ -3885,7 +4688,6 @@ var TreeCompare = function() {
                 .text("png");
         }
 
-        //var width = 300, height = 300;
         // draws download buttons
         if (settings.enableDownloadButtons) {
 
@@ -3932,32 +4734,12 @@ var TreeCompare = function() {
                     saveAs(blob, "phylo.io.nwk");
                 });
 
-
-            // Below are the functions that handle actual exporting:
-            // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
-            // Function taken from http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
-/*
-            function getSVGString( svgNode ) {
-                svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                //var cssStyleText = getCSSStyles( svgNode );
-                // appendCSS( cssStyleText, svgNode );
-
-                var serializer = new XMLSerializer();
-                var svgString = serializer.serializeToString(svgNode);
-                svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-                svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
-
-                return svgString;
-
-            }
-*/
-
             // Below are the functions that handle actual exporting:
             // getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
             function getSVGString( svgNode ) {
                 svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-                //var cssStyleText = getCSSStyles( svgNode );
-                //appendCSS( cssStyleText, svgNode );
+                var cssStyleText = getCSSStyles( svgNode );
+                appendCSS( cssStyleText, svgNode );
 
                 var serializer = new XMLSerializer();
                 var svgString = serializer.serializeToString(svgNode);
@@ -4073,6 +4855,41 @@ var TreeCompare = function() {
         }
     }
 
+    function createStackZoomSlider(canvasId, stackZoomClass, baseTree, min, max, step, def){
+        var name = baseTree.name;
+        //renders the manual histogram and tree size sliders if turned on
+        if (settings.enableStackZoomSliders) {
+            d3.select("#"+canvasId).select("."+stackZoomClass).append("div")
+                .attr("class", "stackZoomSliderContainer")
+                .append("input")
+                .attr("type", "range")
+                .attr("class", "stackZoomSlider")
+                .attr("id", stackZoomClass)
+                .attr("min", min)
+                .attr("max", max)
+                .attr("value", def)
+                .attr("step", step)
+                .on('change', function(d, i) {
+                    var rangeval = +this.value;
+                    if(this.id == 'treeheighthzoom'){
+                        sizeSetVertical(baseTree.data, rangeval);
+                    } else if(this.id == 'treewidthzoom'){
+                        sizeSetHorizontal(baseTree.data, rangeval);
+                    } else if(this.id == 'stackwidthzoom'){
+                        stackWidth = rangeval;
+                        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+                    } else if(this.id == 'stackheightzoom'){
+                        stackHeight = rangeval;
+                        d3.select("#" + canvasId).selectAll(".stackGroup").remove();
+                    }
+
+                    update(baseTree.root, baseTree.data, 0);
+
+                })
+
+        }
+    }
+
     // helper function to set up canvas to place the tree inside
     function initializeRenderTreeCanvas(name, canvasId, scaleId, otherTreeName){
 
@@ -4116,17 +4933,12 @@ var TreeCompare = function() {
         $("#"+canvasId+" .treeTools").remove();
         $("#"+canvasId+" .treeToolsMenu").remove();
         $("#"+canvasId+" .exportTools").remove();
+        $("#"+canvasId+" .stackTools").remove();
         $("#"+canvasId+" .undo").remove();
         $("#"+canvasId+" .searchBox").remove();
+        $("#"+canvasId+" .search").remove();
         $("#"+canvasId+" .rescaleButtons").remove();
         $("#"+canvasId+" .zoomSlider").remove();
-
-        createLeafSearch(canvasId, name);
-        createToolbar(canvasId, baseTree, compareMode);
-        createExportBar(canvasId);
-        // createShareButton(canvasId);
-        createUndoButton(canvasId);
-        //renderSearchBar(canvasId, baseTree);
 
         //clear the canvas of any previous visualisation
         if (scaleId  && settings.enableScale){
@@ -4135,7 +4947,14 @@ var TreeCompare = function() {
         }
 
         //set up the d3 vis
-        var width = $("#" + canvasId).width();
+        //var width = $("#" + canvasId).width();
+        // use whole window width - collapsed sidebar width for tree vis
+        if(compareMode){
+            var width = ($(window).width() - paddingHorizontal) / 2;
+        } else {
+            var width = $(window).width() - paddingHorizontal;
+        }
+
         var height = $("#" + canvasId).height();
         var tree = d3.layout.tree()
             .size([height, width]);
@@ -4215,12 +5034,30 @@ var TreeCompare = function() {
         });
 
         postorderTraverse(baseTree.data.root, function(d) {
+            // if node has non empty evolutionaryEvents object we have histogram data
+            if(!hasHistogramData && d.evolutionaryEvents && _.isObject(d.evolutionaryEvents) ) {
+                hasHistogramData = true;
+            }
+
             d.leaves = getChildLeaves(d);
             d.mouseoverHighlight = false;
             if (d.children || d._children){
                 d.triangleLength = getCollapsedTriangleLength(d);
             }
         });
+
+
+        createLeafSearch(canvasId, name);
+        createToolbar(canvasId, baseTree, compareMode);
+        createStackToolbar(canvasId, baseTree, compareMode);
+        createExportBar(canvasId);
+        createUndoButton(canvasId);
+
+        // just create it many times
+        createUndoButton("global");
+
+        // make toolmenu as wide as button group
+        $('.toolmenu').css("width" , d3.select('.btn-group-menu').node().getBoundingClientRect().width);
 
         applyEventListeners(baseTree.data);
         jQuery.extend(baseTree.data, {
@@ -4261,10 +5098,9 @@ var TreeCompare = function() {
                 }
             });
 
-            // returns length from root to farthest leaf in branch lengths
-            maxLength = getMaxLengthVisible(baseTree.data.root);
-            baseTree.data.maxLength = getLength(longestNode);
-            /* baseTree.data.treeWidth = width - (2 * paddingHorizontal); */
+            // returns length of longest node
+            //maxLength = getMaxLengthVisible(baseTree.data.root);
+            baseTree.data.maxLength = getLongestBranchLength(baseTree.data.root);
             baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
         }
@@ -4276,7 +5112,8 @@ var TreeCompare = function() {
         baseTree.data.zoomBehaviour.scale(0.8);
         // move the tree to the coordinates and scale it smaller
         d3.select("#" + baseTree.data.canvasId + " svg g")
-            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)");
+            .attr("transform", "translate(" + [90, 25] + ") scale(0.8)")
+            .attr("class", "treegroup");
 
         d3.select(self.frameElement).style("height", "500px");
 
@@ -4318,18 +5155,20 @@ var TreeCompare = function() {
         }
 
         function zoom() {
+
             var scale = d3.event.scale;
             var translation = d3.event.translate;
             zoomBehaviour.translate(translation);
             zoomBehaviour.scale(scale);
+
             if(settings.enableScale){
                 applyScaleText(scaleText, scale, root);
             }
+
             if (settings.enableZoomSliders) {
                 $("#zoomSlider" + baseTree.data.id).val(scale);
             }
-            d3.select("#" + canvasId + " svg g")
-                .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
+            d3.select("#" + canvasId + " svg > g").attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
             d3.selectAll(".tooltipElem").remove();
 
             var tooltips = $("[id$=tooltipElem]	");
@@ -4344,6 +5183,10 @@ var TreeCompare = function() {
             }
 
         }
+
+        toggleActiveBtn("genes", "stackinfoswitch");
+        toggleActiveBtn("normalised", "stackscaleswitch");
+        toggleActiveBtn("desc", "ladderize");
 
     }
 
@@ -4837,7 +5680,7 @@ var TreeCompare = function() {
             initialiseTree(firstTree.root, settings.autoCollapse);
             firstTree.data.clickEvent = getClickEventListenerNode(firstTree, false, {});
             firstTree.data.clickEventLink = getClickEventListenerLink(firstTree, false, {});
-            renderTree(firstTree,newName,canvasId,scaleId);
+            renderTree(firstTree, newName, canvasId, scaleId);
 
             createTreeToggle(name, canvasId, scaleId);
 
@@ -4846,7 +5689,7 @@ var TreeCompare = function() {
             initialiseTree(trees[index].root, settings.autoCollapse);
             trees[index].data.clickEvent = getClickEventListenerNode(trees[index], false, {});
             trees[index].data.clickEventLink = getClickEventListenerLink(trees[index], false, {});
-            renderTree(trees[index],name,canvasId,scaleId);
+            renderTree(trees[index], name, canvasId, scaleId);
 
         }
     }
@@ -5380,8 +6223,6 @@ var TreeCompare = function() {
                 },
                 function () {
                     d = e.target;
-                    // undo functionality
-                    //updateUndo(treeIndex, "collapse_expand", d);
 
                     // action function
                     postorderTraverse(d, function (e) {
@@ -5660,7 +6501,7 @@ var TreeCompare = function() {
                         return "swap subtrees >";
                     },
                     function () {
-                        updateUndo(treeIndex,"swap",d);
+                        updateUndo(treeIndex, "swap", d);
                         postorderTraverse (d, function (e) {
                             e.mouseoverHighlight = false;
                         });
@@ -5685,7 +6526,7 @@ var TreeCompare = function() {
                         }
                     },
                     function () {
-                        updateUndo(treeIndex,{"highlight":d});
+                        updateUndo(treeIndex, {"highlight":d});
                         postorderTraverse (d, function(e) {
                             e.mouseoverHighlight = false;
                         });
@@ -5812,7 +6653,7 @@ var TreeCompare = function() {
         undoActionData.push(treeActionData);
         var tmpTree = clone(trees[treeIndex].data);
         undoFullTreeData.push(tmpTree);
-        $(".undoButton").attr("data-count", undoIndex);
+        $(".undoButton, .globalUndoBtn").attr("data-count", undoIndex);
 
     }
 
@@ -5820,6 +6661,8 @@ var TreeCompare = function() {
      * External function that allows to add an undo functionality on tree operations
      * input:
      * buttonId: id element of the button that will perform the undo functionality
+     * canvasId: canvas where the button is in, to which canvas' tree the undo effects, "phylo" is special case and
+     * undos the last change always
      */
     function undo(canvasId, buttonId){
 
@@ -5834,7 +6677,7 @@ var TreeCompare = function() {
                     return id;
                 }
 
-                if ($("#vis-container2").length !== 0){ // compare mode
+                if ($("#vis-container2").length !== 0 && canvasId != "phylo"){ // compare mode
 
                     // find tree in the right canvas
                     var slice_index = undefined;
@@ -5986,7 +6829,7 @@ var TreeCompare = function() {
                     undoFullTreeData = [];
                 }
 
-                $(".undoButton").attr("data-count", undoIndex);
+                $(".undoButton, .globalUndoBtn").attr("data-count", undoIndex);
 
             })
 
@@ -6018,7 +6861,7 @@ var TreeCompare = function() {
         var scaleTextIndex = svg2.childNodes.length - 2;
 
         if (lastElementIndex > -1) {
-            g.setAttribute('transform', 'translate(' + l_w + ',0)');
+            g.setAttribute('transform', 'translate(' + l_w + ', 0)');
             main = svg2.childNodes[lastElementIndex];
             scale = svg2.childNodes[scaleTextIndex];
             scaleText = svg2.lastElementChild;
@@ -6038,6 +6881,10 @@ var TreeCompare = function() {
         svg.select("#exportLogo").remove();
     }
 
+    function isDefined(o) {
+        var undefined;
+        return o !== undefined;
+    }
 
     //return all the externalised functions
     return {
@@ -6057,7 +6904,8 @@ var TreeCompare = function() {
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth,
-        calcDist: calcDist
+        calcDist: calcDist,
+        addMainLegend: addMainLegend
 
     }
 };
