@@ -60,7 +60,7 @@ var TreeCompare = function() {
     // values genes or events
     var infoStack = 'genes';
 
-    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplications", "Gains", "Losses",];
+    var labels = ["Retained", "Duplicated", "Gained", "Lost", "Duplications", "Gains", "Losses"];
     var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#ff7f0e", "#2ca02c", "#d62728"];
 
     var color = {};
@@ -4030,7 +4030,7 @@ var TreeCompare = function() {
 
             realSize = Math.abs(d.duplication);
             var posBase = posBase + StackSizeDuplication
-            data[stackIndex][seriesIndex] = new seriesElement('Duplication', realSize, StackSizeDuplication, posBase, posStackSize)
+            data[stackIndex][seriesIndex] = new seriesElement('Duplications', realSize, StackSizeDuplication, posBase, posStackSize)
             stackIndex++;
 
         }
