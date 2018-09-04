@@ -118,7 +118,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="#">Open</a>
                         </li>
-                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Save as...</a>
+                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>Save as...</a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">SVG</a>
                                 </li>
@@ -476,6 +476,16 @@ function haveUndo(){
     return $(".undoButton").attr("data-count") > 0;
 
 }
+
+document.getElementById("open").onclick = function() {
+    console.log("open clicked");
+    var x = document.getElementsByClassName("searchButton");
+    var i;
+    for (i = 0; i < x.length; i++) {
+        triggerEvent(x[i], "click");
+    }
+
+};
 
 document.getElementById("find").onclick = function() {
     console.log("find clicked");
