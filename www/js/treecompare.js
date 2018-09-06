@@ -2512,13 +2512,21 @@ var TreeCompare = function() {
     }
 
     function sizeVertical(treeData, increase) {
-        if (increase) {
+        console.log(treeData);
+        console.log(treeData.length);
+        console.log(treeData.treeHeight);
+        console.log(increase);
+        if (increase && typeof increase !== 'number') {
             treeData.treeHeight = parseInt(treeData.treeHeight) + 1;
+            treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
+        } else if (increase && typeof increase == 'number' && treeData.treeHeight < increase) {
+            treeData.treeHeight = parseInt(treeData.treeHeight) + increase;
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         } else {
             treeData.treeHeight = parseInt(treeData.treeHeight) - 1;
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         }
+
     }
 
     /**
@@ -3707,7 +3715,9 @@ var TreeCompare = function() {
         var svgHeight = height + 25;
         var legendRectSize = 20;
         var margin = 25;
-        var legendTxtSize = 12;
+        var legendTxtSize = 13;
+        // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
+        var legendTxtYPadding = Math.round(((legendRectSize - legendTxtSize) / 2) - 1);
         if(infoStack == "genes"){
             var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
         } else {
@@ -3776,10 +3786,10 @@ var TreeCompare = function() {
             })
             .attr('x', 110 + legendRectSize + 5)
             .attr('y', function(d, i){
-                return i * legendRectSize + 0.25 * legendRectSize;
+                return i * legendRectSize + legendTxtSize + legendTxtYPadding;
             })
             .attr('text-anchor', 'start')
-            .attr('alignment-baseline', 'hanging')
+            .attr('alignment-baseline', 'middle')
             .attr("font-size", legendTxtSize).attr("stroke", "black");
 
 
@@ -3921,8 +3931,8 @@ var TreeCompare = function() {
                         .append("text")
                         .classed("legendsummarytxt", true)
                         .text(function (d) {
-                            summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
-                            return summary_number > 0 ? summary_number : "";
+                            var summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
+                            return summary_number > 0 && typeof summary_number == 'number' ? summary_number : "";
                         }).attr("x", function () {
                             return 0 - (xDistanceFromNode + 30)
                         }).attr("y", function (d) {
@@ -4016,7 +4026,7 @@ var TreeCompare = function() {
 
         if(type == 'genes' || !type){
 
-            realSize = Math.abs(d.retained);
+            realSize = Math.abs(d.retained) > 0 ? Math.abs(d.retained) : 0;
             var posBase = posBase + StackSizeretained;
             data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeretained, posBase, posStackSize)
             stackIndex++;
@@ -4025,21 +4035,18 @@ var TreeCompare = function() {
             var posBase = posBase + StackSizeDuplicated
             data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
             stackIndex++;
-
         } else {
 
             realSize = Math.abs(d.duplication);
             var posBase = posBase + StackSizeDuplication
             data[stackIndex][seriesIndex] = new seriesElement('Duplications', realSize, StackSizeDuplication, posBase, posStackSize)
             stackIndex++;
-
         }
 
         realSize = Math.abs(d.gained);
         var posBase = posBase + StackSizeGained
         data[stackIndex][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
         stackIndex++;
-
         realSize = Math.abs(d.lost);
         /* move lost down a little to make it easier to hover it and not the node line */
         data[stackIndex][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
@@ -5046,7 +5053,6 @@ var TreeCompare = function() {
             }
         });
 
-
         createLeafSearch(canvasId, name);
         createToolbar(canvasId, baseTree, compareMode);
         createStackToolbar(canvasId, baseTree, compareMode);
@@ -5103,6 +5109,10 @@ var TreeCompare = function() {
             baseTree.data.maxLength = getLongestBranchLength(baseTree.data.root);
             baseTree.data.treeWidth = width - paddingHorizontal;
             baseTree.data.treeHeight = newHeight;
+        }
+
+        if(hasHistogramData){
+            sizeVertical(baseTree.data, 200);
         }
 
         update(baseTree.root, baseTree.data, undefined, treeToggle);
