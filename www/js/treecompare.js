@@ -2513,14 +2513,15 @@ var TreeCompare = function() {
 
     function sizeVertical(treeData, increase) {
         console.log(treeData);
-        console.log(treeData.length);
+        console.log(treeData.tree.length);
         console.log(treeData.treeHeight);
         console.log(increase);
+
         if (increase && typeof increase !== 'number') {
             treeData.treeHeight = parseInt(treeData.treeHeight) + 1;
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         } else if (increase && typeof increase == 'number' && treeData.treeHeight < increase) {
-            treeData.treeHeight = parseInt(treeData.treeHeight) + increase;
+            treeData.treeHeight = parseInt(treeData.treeHeight) + (increase - treeData.treeHeight);
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         } else {
             treeData.treeHeight = parseInt(treeData.treeHeight) - 1;
@@ -5112,7 +5113,7 @@ var TreeCompare = function() {
         }
 
         if(hasHistogramData){
-            sizeVertical(baseTree.data, 200);
+            sizeVertical(baseTree.data, stackHeight * 2);
         }
 
         update(baseTree.root, baseTree.data, undefined, treeToggle);
