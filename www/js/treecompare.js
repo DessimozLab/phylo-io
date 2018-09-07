@@ -116,7 +116,8 @@ var TreeCompare = function() {
         enableSearch: true,
         autoCollapse: null,
         showHistogramSummaryValue: true,
-        showHistogramValues: true
+        showHistogramValues: true,
+        stackHeight: 100
     };
 
 
@@ -228,6 +229,7 @@ var TreeCompare = function() {
         settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
         settings.showHistogramSummaryValue = getSetting(settingsIn.showHistogramSummaryValue, settings.showHistogramSummaryValue);
         settings.showHistogramValues = getSetting(settingsIn.showHistogramValues, settings.showHistogramValues);
+        settings.stackHeight = getSetting(settingsIn.stackHeight, settings.stackHeight);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -2870,7 +2872,7 @@ var TreeCompare = function() {
                 buildStackToolbar(canvasId);
 
                 createStackZoomSlider(canvasId, "stackwidthzoom", baseTree, stackMinWidth, stackMaxWidth, stackStep, stackWidth);
-                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
+                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, settings.stackHeight);
                 createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
                 createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
                 createHistogramScaleSwitchBtn(canvasId, "stackscaleswitch", baseTree);
@@ -3823,7 +3825,7 @@ var TreeCompare = function() {
         }
 
         var svg = d3.select(this);
-        var h = stackHeight;
+        var h = settings.stackHeight;
         var w = stackWidth;
         var margin = 8;
         var xInitialRightMargin = 35;
@@ -3977,21 +3979,21 @@ var TreeCompare = function() {
         if(type == 'genes' || !type){
 
             if(maxStackHeight == "max" && largestGenome > 0){
-                var normalizer = stackHeight / largestGenome;
+                var normalizer = settings.stackHeight / largestGenome;
             } else if(Number.isInteger(maxStackHeight)){
                 var normalizer = maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+                var normalizer = settings.stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             }
 
         } else {
 
             if(maxStackHeight == "max" && largestEvents > 0){
-                var normalizer = stackHeight / largestEvents;
+                var normalizer = settings.stackHeight / largestEvents;
             } else if(Number.isInteger(maxStackHeight)){
                 var normalizer = maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+                var normalizer = settings.stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             }
 
         }
@@ -4887,7 +4889,7 @@ var TreeCompare = function() {
                         stackWidth = rangeval;
                         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
                     } else if(this.id == 'stackheightzoom'){
-                        stackHeight = rangeval;
+                        settings.stackHeight = rangeval;
                         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
                     }
 
@@ -5113,7 +5115,7 @@ var TreeCompare = function() {
         }
 
         if(hasHistogramData){
-            sizeVertical(baseTree.data, stackHeight * 2);
+            sizeVertical(baseTree.data, settings.stackHeight * 2);
         }
 
         update(baseTree.root, baseTree.data, undefined, treeToggle);
