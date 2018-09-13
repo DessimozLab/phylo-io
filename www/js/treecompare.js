@@ -1096,7 +1096,7 @@ var TreeCompare = function() {
                     break;
                 }
             }
-            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
+            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(3);
             scaleText.text(text);
         }
     }
@@ -2514,10 +2514,6 @@ var TreeCompare = function() {
     }
 
     function sizeVertical(treeData, increase) {
-        console.log(treeData);
-        console.log(treeData.tree.length);
-        console.log(treeData.treeHeight);
-        console.log(increase);
 
         if (increase && typeof increase !== 'number') {
             treeData.treeHeight = parseInt(treeData.treeHeight) + 1;
