@@ -90,7 +90,7 @@ var TreeCompare = function() {
         selectMultipleSearch: false,
         fontSize: 14,
         lineThickness: 3,
-        nodeSize: 4,
+        nodeSize: 6,
         treeWidth: 500,
         treeHeight: 15,
         moveOnClick: true,
@@ -875,7 +875,8 @@ var TreeCompare = function() {
             } else {
                 tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
                 if (tmpNewicks.length > 1) {
-                    newicks = tmpNewicks.slice(0, -1);
+                    //newicks = tmpNewicks.slice(0, -1);
+                    newicks = tmpNewicks;
                 }
             }
 
@@ -945,6 +946,7 @@ var TreeCompare = function() {
             }
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
 
+            tree = false;
             trees.push(fullTree);
         }
         return trees[(trees.length - newicks.length)];
@@ -1097,7 +1099,11 @@ var TreeCompare = function() {
                 }
             }
             var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(3);
-            scaleText.text(text);
+            if(text < 1){
+                text = text +" ("+(((scaleLineWidth / offset) * length) / zoomScale).toExponential(3)+")";
+            }
+            //console.log(text);
+            //scaleText.text(text);
         }
     }
 
@@ -1826,6 +1832,8 @@ var TreeCompare = function() {
         //yes x is vertical position, blame d3's tree vis structure not me...
         var test = 0;
         function setXPos(d, upperBound) {
+            //console.log(d);
+            //console.log(upperBound);
             var params;
             var collapsedHeight;
 
