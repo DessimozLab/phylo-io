@@ -133,6 +133,11 @@ input {
     resize: none;
 }
 
+input[type="range"]{
+    color: inherit;
+    background-color: inherit;
+}
+
 input.treename {
     background: transparent;
     width: 125px;
