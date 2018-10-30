@@ -675,7 +675,8 @@ $(document).ready(function(){
 
     var gistID = $(location).attr('hash').split(/\s*[#-]\s*/); //get gist id from url
     var treecomp = TreeCompare().init({
-        gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+        //gistSaveServerURL: "http://dev.phylo.io/server/gist.php",
+        gistSaveServerURL: "http://sandbox/phylo-io-server/www/gist.php",
 
         scaleColor: "black",
         loadingCallback: function () {
@@ -959,7 +960,7 @@ $(document).ready(function(){
         if (amountText !== "OFF") {
             amount = parseInt(amountText);
             amount += 1;
-            if (amount == maxAmount) {
+            if (amount >= maxAmount) {
                 $("#collapseAmount").html("OFF");
             } else {
                 $("#collapseAmount").html(amount.toString());
@@ -968,6 +969,8 @@ $(document).ready(function(){
             amount = 0;
             $("#collapseAmount").html("0");
         }
+
+        treecomp.updateCollapseAmount($("#collapseAmount").html());
         treecomp.changeAutoCollapseDepth(amount);
 
     });
@@ -995,6 +998,7 @@ $(document).ready(function(){
             $("#collapseAmount").html("OFF");
         }
 
+        treecomp.updateCollapseAmount($("#collapseAmount").html());
         treecomp.changeAutoCollapseDepth(amount);
     });
 
