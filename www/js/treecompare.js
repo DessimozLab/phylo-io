@@ -107,6 +107,7 @@ var TreeCompare = function() {
         enableDownloadButtons: true,
         enableCloudShare: true,
         enableLadderizeTreeButton: true,
+        enableTreeSettingsButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
         enableScale: true,
@@ -197,6 +198,7 @@ var TreeCompare = function() {
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
         settings.enableCloudShare = getSetting(settingsIn.enableCloudShare,settings.enableCloudShare);
         settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
+        settings.enableTreeSettingsButton = getSetting(settingsIn.enableTreeSettingsButton,settings.enableTreeSettingsButton);
         settings.enableFixedButtons = getSetting(settingsIn.enableFixedButtons,settings.enableFixedButtons);
         settings.enableSizeControls = getSetting(settingsIn.enableSizeControls,settings.enableSizeControls);
         settings.enableSearch = getSetting(settingsIn.enableSearch,settings.enableSearch);
@@ -1555,21 +1557,24 @@ var TreeCompare = function() {
     function addTreeGistURL(gistID, name) {
 
         var newTree;
+        var request = new XMLHttpRequest();
+        request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
 
         try {
 
-            var request = new XMLHttpRequest();
-            request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
             request.send(null);
 
             if (request.status === 200) {
+                console.log("GIST success");
                 newTree = JSON.parse(request.responseText).files['file1.json'].content;
             } else {
+                console.log("GIST error "+request.status);
                 throw "Error: Github Gist was not found! ("+request.status+")";
             }
 
         } catch (e){
 
+            console.log(e);
             $('#modalTitleError').html('Github Error');
             $('#modalBodyError').html(e);
             $('#myErrorModal').modal('show');
@@ -1584,7 +1589,7 @@ var TreeCompare = function() {
             name = "Tree " + num;
         }
 
-        //console.log(newTree);
+        console.log(newTree);
         var parsedNwk = newTree.split("$$");
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
@@ -2770,6 +2775,11 @@ var TreeCompare = function() {
                 .attr("class", "ladderize")
                 .text("Ladderize");
 
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "treesettings")
+                .text("Autocollapse depth");
 
             if (compareMode) {
                 treeToolsMenu.append("li")
@@ -2794,6 +2804,9 @@ var TreeCompare = function() {
             createLadderizedTree(canvasId, "ladderize", baseTree);
         }
 
+        if (settings.enableTreeSettingsButton) {
+            createTreeSettings(canvasId, "treesettings", baseTree);
+        }
 
         if (settings.enableOppositeTreeActions && compareMode) {
             createOppositeTreeActions(canvasId, "oppositeTreeAction");
@@ -3610,6 +3623,8 @@ var TreeCompare = function() {
 
     }
 
+
+
     function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
         function buildRescaleButtons(canvasId) {
@@ -4123,6 +4138,77 @@ var TreeCompare = function() {
                 toggleActiveBtn("desc", "ladderize");
                 ladderizeTree(baseTree, "descending")
             });
+    }
+
+
+    function createTreeSettings(canvasId, treeSettingsClass, baseTree) {
+
+        var treeSettingsButton = d3.select("#" + canvasId).select("." + treeSettingsClass).append("div");
+
+        treeSettingsButton.append("button")
+            .attr("id", "collapseDescButton")
+            .attr("class", "btn btn-sm sharp collapseButton desc")
+            .attr("title", "Decrease")
+            .attr("type", "button")
+            .append("span")
+            .text("-");
+
+        treeSettingsButton.append("span")
+            .attr("id", "collapseVal")
+            .attr("class", "collapseAmount")
+            .text($("#collapseAmount").html());
+
+        treeSettingsButton.append("button")
+            .attr("id", "collapseIncButton")
+            .attr("class", "btn btn-sm sharp collapseButton inc")
+            .attr("title", "Increase")
+            .attr("type", "button")
+            .append("span")
+            .text("+");
+
+        d3.select("#" + canvasId).selectAll(".collapseButton")
+            .on('click', function () {
+
+                var collapseAmount = ($("#collapseAmount").html()) ? $("#collapseAmount").html() : "OFF";
+                var amount = 0;
+
+                var maxAmount = treecomp.getMaxAutoCollapse();
+
+                if (collapseAmount !== "0") {
+                    if (collapseAmount === "OFF") {
+                        amount = maxAmount;
+                    } else {
+                        amount = parseInt(collapseAmount);
+                    }
+
+                    if(d3.select(this).classed("inc") ){
+                        amount += 1;
+                    } else {
+                        amount -= 1;
+                    }
+
+
+                    if (amount < 0 || amount >= maxAmount) {
+                        amount = null;
+                        updateCollapseAmount("OFF");
+                    } else {
+                        updateCollapseAmount(amount.toString());
+                    }
+                } else {
+                    amount = null;
+                    updateCollapseAmount("OFF");
+                }
+
+            treecomp.changeAutoCollapseDepth(amount);
+
+        });
+
+
+    }
+
+    function updateCollapseAmount(amount){
+        $("#collapseAmount").html(amount);
+        d3.select('#collapseVal').text(amount);
     }
 
     function toggleActiveBtn(activateElem, parentClass){
@@ -5230,7 +5316,6 @@ var TreeCompare = function() {
      ---------------*/
     function changeAutoCollapseDepth(depth) {
         settings.autoCollapse = depth;
-
         for (var i = 0; i < renderedTrees.length; i++) {
             if (depth === null) {
                 uncollapseAll(renderedTrees[i].root);
@@ -6921,6 +7006,7 @@ var TreeCompare = function() {
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth,
+        updateCollapseAmount: updateCollapseAmount,
         calcDist: calcDist,
         addMainLegend: addMainLegend
 
