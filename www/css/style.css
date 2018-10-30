@@ -380,22 +380,31 @@ rect.node {
 /*styles for export functionality*/
 
 
-#phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg {
+#phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg, #phylo .collapseButton.inc, #phylo .collapseButton.desc, #collapseVal {
     width: 33%;
     margin-left: 0px;
     opacity: 0.6;
+    text-align: center;
+    display: inline-block;
 }
 
 #phylo .btn.normalised, #phylo .btn.fixed, #phylo .btn.events, #phylo .btn.genes {
     width: 50%;
     margin-left: 0px;
     opacity: 0.6;
+    text-align: center;
+    display: inline-block;
 }
 
 #phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover, #phylo .btn.genes:hover, #phylo .btn.events:hover {
     opacity: 1.0;
 }
 
+#collapseVal {
+    padding: 5px 5px;
+    text-align: center;
+    display: inline-block;
+}
 #exportPanel {
     display: none;
     background-color: #999;
