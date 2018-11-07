@@ -1087,7 +1087,11 @@ var TreeCompare = function() {
      */
     function applyScaleText(scaleText, zoomScale, root) {
         // no scaletext if it's supressed
-        if(!scaleText){ return false; }
+        if(!scaleText || settings.useLengths === false){
+            scaleText.text();
+            $("#scale-line, #scale-line-text").hide();
+            return false;
+        }
         if (root.children || root._children) {
             var children = getChildren(root);
             var length = 0;
@@ -1104,8 +1108,28 @@ var TreeCompare = function() {
             if(text < 1){
                 text = text +" ("+(((scaleLineWidth / offset) * length) / zoomScale).toExponential(3)+")";
             }
-            //console.log(text);
-            //scaleText.text(text);
+            scaleText.text(text);
+
+            // draw scale line overlay
+            var maxWidth = scaleLineWidth;
+            var maxZoom = settings.scaleMax;
+            var minZoom = settings.scaleMin;
+            var zoomMul = 1 + ((zoomScale - minZoom) * 99) / (maxZoom - minZoom);
+
+            d3.selectAll("#scale-line-hl").remove();
+            d3.select(".scale-line")
+                .append("path")
+                .attr("d", function() {
+
+                    var scaleHlLineWidth = maxWidth / zoomMul;
+                    return "M" + scaleLinePadding + ",20L" + ((scaleHlLineWidth) + scaleLinePadding) + ",20"
+                })
+                .attr("stroke-width", 1)
+                .attr("id", "scale-line-hl")
+                .attr("class", "scale-line-hl")
+                .attr("stroke", "yellow");
+
+            $("#scale-line, #scale-line-text").show();
         }
     }
 
@@ -1887,7 +1911,7 @@ var TreeCompare = function() {
         var newLenghtMult = 0;
         var lengthMultiplier = lengthMult/maxLength;
         nodes.forEach(function (d) {
-            if (settings.useLengths) { //setting selected by user
+            if (settings.useLengths !== false) { //setting selected by user
                 d.y = getLength(d) * lengthMultiplier; //adjust position to screen size
                 d.baseY = d.y;
             } else {
@@ -2435,7 +2459,8 @@ var TreeCompare = function() {
             d.y0 = d.y;
         });
 
-        //calculate the new scale text
+        //calculate the new scale text, applyscaletext hides the scale if lengths is not used
+        // therefore it's not checked here
         if (settings.enableScale){
             applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
         }
@@ -5091,13 +5116,15 @@ var TreeCompare = function() {
         root.y0 = 0;
 
         //render the scale if we have somewhere to put it
-        if (scaleId && settings.enableScale) {
+        if (scaleId && settings.enableScale === true && settings.useLengths === true) {
             var translatewidth = 100;
             // TODO magic number?
             var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
                 .append("g")
+                .attr("id", "scale-line")
+                .attr("class", "scale-line")
                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .append("path")
                 .attr("d", function() {
@@ -5113,12 +5140,14 @@ var TreeCompare = function() {
                 .attr("font-family", "sans-serif")
                 .text("0")
                 .attr("font-size", "14px")
+                .attr("id", "scale-line-text")
                 .attr("fill", settings.scaleColor)
                 .attr("text-anchor", "middle");
             jQuery.extend(baseTree.data, {
                 scaleText: scaleText,
                 scaleId: scaleId
             });
+            $("#scale-line, #scale-line-text").show();
         }
 
         // variable i is set to the number of leaves (see above)
