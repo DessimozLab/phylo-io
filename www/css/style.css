@@ -4,7 +4,7 @@ html {
     overflow:hidden;
 }
 
-body#manual {
+body#manual, body#about {
     overflow: auto;
 }
 
