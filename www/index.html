@@ -116,7 +116,15 @@
 
                 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">File<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#" id="open">Open</a>
+                        <li id="openviewfile"><a href="#" id="open" class="open" data-open="newickInSingleButton">Open</a>
+                        </li>
+                        <li id="opencomparefile" class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Open...</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="open" data-open="newickIn1Button">Open 1</a>
+                                </li>
+                                <li><a href="#" class="open" data-open="newickIn2Button">Open 2</a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>Save as...</a>
                             <ul class="dropdown-menu">
@@ -477,11 +485,12 @@ function haveUndo(){
 
 }
 
-document.getElementById("open").onclick = function() {
-    console.log("open clicked");
-    var x = document.getElementById("newickInSingleButton");
+$(".open").click(function () {
+    console.log("open clicked: "+$(this).attr("data-open"));
+
+    var x = document.getElementById($(this).attr("data-open"));
     x.click();
-};
+});
 
 document.getElementById("find").onclick = function() {
     console.log("find clicked");
@@ -721,6 +730,10 @@ $(document).ready(function(){
 
     var mode = $("#mode-buttons .active").attr('id');
     if (mode === "view-btn") {
+
+        $("#openviewfile").removeClass("disabled").find("a").removeAttr("onclick");
+        $("#opencomparefile").addClass("disabled").find("a").attr("onclick", "return false;");
+
         $("#compareIn").removeClass("active");
         $("#fileLabel").text("Untitled");
 
@@ -740,6 +753,11 @@ $(document).ready(function(){
         $("#action").css(
                 {"display": "none"}
         );
+    } else {
+
+        $("#opencomparefile").removeClass("disabled").find("a").removeAttr("onclick");
+        $("#openviewfile").addClass("disabled").find("a").attr("onclick", "return false;");
+
     }
     /*
      /
@@ -853,6 +871,9 @@ $(document).ready(function(){
 
    function view() {
 
+          $("#openviewfile").removeClass("disabled").find("a").removeAttr("onclick");
+          $("#opencomparefile").addClass("disabled").find("a").attr("onclick", "return false;");
+
        if ($(window).height() < 550) {
            $("#sidebar-wrapper").css({
                "overflow-y": "scroll"
@@ -903,6 +924,9 @@ $(document).ready(function(){
      */
     //$("#compare-btn").click(function (e) {
     function compare() {
+
+        $("#opencomparefile").removeClass("disabled").find("a").removeAttr("onclick");
+        $("#openviewfile").addClass("disabled").find("a").attr("onclick", "return false;");
 
         if ($(window).height() < 750) {
             $("#sidebar-wrapper").css({
