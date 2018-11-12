@@ -694,7 +694,7 @@ var TreeCompare = function() {
             var file = data.files;
 
             var accept = {
-                text: ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+                text: ["txt", "nh", "nhx", "nwk", "tre", "tree", "json"]
             };
 
             var file_name_tokens = file[0].name.split(".");
@@ -725,7 +725,8 @@ var TreeCompare = function() {
             } else {
                 $("#renderErrorMessage").empty();
                 $("#" + newickIn + "Label").text("No file");
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following' +
+                    ' file endings are accepted: txt, nh, nhx, nwk, tre, tree, json</div>')).hide().slideDown(300);
                 $("#" + newickIn + "Label").attr("placeholder", "Untitled").val("");
                 $("#" + newickIn).attr("placeholder", "Paste your tree or drag and drop your tree file here").val("");
             }
@@ -762,7 +763,7 @@ var TreeCompare = function() {
             var file = control.files;
 
             var accept = {
-                text: ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+                text: ["txt", "nh", "nhx", "nwk", "tre", "tree", "json"]
             };
 
             var file_name_tokens = file[0].name.split(".");
@@ -793,7 +794,8 @@ var TreeCompare = function() {
 
             } else {
                 $("#renderErrorMessage").empty();
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following' +
+                    ' file endings are accepted: txt, nh, nhx, nwk, tre, tree, json</div>')).hide().slideDown(300);
                 $("#" + newickIn + "Label").attr("placeholder", "Untitled").val("");
                 $("#" + newickIn).attr("placeholder", "Paste your tree or drag and drop your tree file here").val("");
             }
@@ -1085,7 +1087,15 @@ var TreeCompare = function() {
     /*
     Changes text in the length scale according to changes in vis
      */
-    function applyScaleText(scaleText, zoomScale, root) {
+    //function applyScaleText(scaleText, zoomScale, root) {
+    function applyScaleText(treeData) {
+
+        var scaleText  = treeData.scaleText;
+        var zoomScale = treeData.zoomBehaviour.scale();
+        var root = treeData.root;
+        var treeNameElements = treeData.root.ID.split("_");
+        var treeName = treeNameElements[0]+"_"+treeNameElements[1];
+
         // no scaletext if it's supressed
         if(!scaleText || settings.useLengths === false){
             scaleText.text();
@@ -1116,18 +1126,17 @@ var TreeCompare = function() {
             var minZoom = settings.scaleMin;
             var zoomMul = 1 + ((zoomScale - minZoom) * 99) / (maxZoom - minZoom);
 
-            d3.selectAll("#scale-line-hl").remove();
-            d3.select(".scale-line")
+            d3.selectAll("#"+treeName+"_scale-line-hl").remove();
+            d3.select("#"+treeName+" > .scale-line")
                 .append("path")
                 .attr("d", function() {
-
                     var scaleHlLineWidth = maxWidth / zoomMul;
                     return "M" + scaleLinePadding + ",20L" + ((scaleHlLineWidth) + scaleLinePadding) + ",20"
                 })
-                .attr("stroke-width", 1)
-                .attr("id", "scale-line-hl")
+                .attr("stroke-width", 2)
+                .attr("id", treeName+"_scale-line-hl")
                 .attr("class", "scale-line-hl")
-                .attr("stroke", "yellow");
+                .attr("stroke", "#76E200");
 
             $("#scale-line, #scale-line-text").show();
         }
@@ -2462,7 +2471,8 @@ var TreeCompare = function() {
         //calculate the new scale text, applyscaletext hides the scale if lengths is not used
         // therefore it's not checked here
         if (settings.enableScale){
-            applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
+            applyScaleText(treeData);
+            //applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
         }
 
         //event listeners for nodes to handle mouseover highlighting, important because all children nodes have to be highlighted
@@ -5276,7 +5286,8 @@ var TreeCompare = function() {
                 var translation = d3.event.translate;
                 zoomBehaviourSemantic.translate(translation);
                 if (settings.enableScale){
-                    applyScaleText(scaleText, scale, root);
+                    applyScaleText(baseTree.data);
+                    //applyScaleText(scaleText, scale, root);
                 }
                 baseTree.data.prevTransform = translation;
                 d3.select("#" + canvasId + " svg g")
@@ -5294,7 +5305,8 @@ var TreeCompare = function() {
             zoomBehaviour.scale(scale);
 
             if(settings.enableScale){
-                applyScaleText(scaleText, scale, root);
+                applyScaleText(baseTree.data);
+                //applyScaleText(scaleText, scale, root);
             }
 
             if (settings.enableZoomSliders) {
