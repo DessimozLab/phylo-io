@@ -851,3 +851,57 @@ button.rescaleButton:hover{
     text-rendering: optimizeLegibility;
     stroke: none;
 }
+
+
+/* dropdown menu styles for multival per line */
+#phylo .extraMargin + span:after {
+    content: "\000A";
+    white-space: pre;
+}
+
+#phylo .modal-container {
+    z-index: 3;
+    right: 50px;
+    top: 75px;
+    position: absolute;
+    padding: 5px 20px 15px 20px;
+    width: 180px;
+    height: 60px;
+    border-radius: 8px;
+    display: none;
+
+}
+
+#phylo li.hz{
+    display: inline-flex;
+}
+
+#phylo .open > .dropdown-menu {
+    display: table-caption;
+}
+
+#phylo .hz > span {
+    display: block;
+    padding: 3px 15px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #2A2A2A;
+    background-color: #e5e5e5;
+    white-space: nowrap;
+    width: 60px;
+}
+
+#phylo .hz > a {
+    line-height: 1.42857143;
+    color: #2A2A2A;
+    background-color: #f7f7f7;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+#phylo a.disabled{
+    pointer-events: none;
+    cursor: default;
+    color: #e5e5e5 !important;
+}

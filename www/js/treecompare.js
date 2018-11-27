@@ -1622,7 +1622,6 @@ var TreeCompare = function() {
             name = "Tree " + num;
         }
 
-        console.log(newTree);
         var parsedNwk = newTree.split("$$");
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
@@ -1648,7 +1647,6 @@ var TreeCompare = function() {
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
 
         trees.push(fullTree);
-
 
         return fullTree
 
@@ -1763,7 +1761,8 @@ var TreeCompare = function() {
         var leaves = treeData.root.leaves.length;
         var leavesVisible = getVisibleLeaves(treeData.root);
 
-        var height = $(".vis-container").height();
+        //var height = $(".vis-container").height();
+        var height = $("#"+treeData.canvasId).height();
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
@@ -1798,6 +1797,7 @@ var TreeCompare = function() {
             treeData.treeHeight = newHeight;
         }
 
+        // TODO same condition as below?
         if (leavesVisible > 0) {
             treeData.prevNoLeavesVisible = false;
         } else {
@@ -3932,21 +3932,6 @@ var TreeCompare = function() {
 
                         d3.select(g).attr("transform", "translate(" + x + ", 0)");
                     });
-                /*
-
-                        function computeDimensions(selection) {
-                          var dimensions = null;
-                          var node = selection.node();
-
-                          if (node instanceof SVGElement) { // check if node is svg element
-                            dimensions = node.getBBox();
-                          } else { // else is html element
-                            dimensions = node.getBoundingClientRect();
-                          }
-                          console.log(dimensions);
-                          return dimensions;
-                        }
-                */
 
                 var stackGroup = svg.append("g").classed("stackGroup", true).call(stackDrag);
 
@@ -4645,7 +4630,9 @@ var TreeCompare = function() {
             dsMatrix.push([]);
             tmpDsMatrix.push([]);
             for (var j = 0; j < rightSplits.length; j++) {
+
                 var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
+
                 var tmpNum = 0;
                 for (var l = 0; l < tmpStr.length; l++) {
                     if (tmpStr[l] == '1') {
@@ -5364,7 +5351,6 @@ var TreeCompare = function() {
                 limitDepth(renderedTrees[i].root, depth);
             }
         }
-
         if (renderedTrees.length === 2) {
             settings.loadingCallback();
             setTimeout(function() {
@@ -6148,9 +6134,15 @@ var TreeCompare = function() {
     // }
 
     function getSibling(d){
-        var sibling = undefined;
+        console.log(d);
+        var sibling = [];
+        if (!$.isArray(d.parent.children)){
+            console.log(d.parent);
+            console.log("did not have children");
+        }
+
         //var indexSibling = d.parent.children.indexOf(sibling);
-        if (d.parent.children.length >= 2){
+        if ($.isArray(d.parent.children) && d.parent.children.length >= 2){
             for (var i = 0; i < d.parent.children.length; i++ ){
                 if (d.parent.children[i] !== d){
                     sibling = d.parent.children[i];
@@ -6168,7 +6160,7 @@ var TreeCompare = function() {
             d.parent.children[1] = sibling.children[1];
         } else {
             var droot_index = droot.parent.children.indexOf(droot);
-            if (d.parent.parent.children[droot_index] != undefined){
+            if (sibling != undefined && d.parent.parent.children[droot_index] != undefined){
                 var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
                 sibling.length = newLenght;
             }
@@ -7019,7 +7011,7 @@ var TreeCompare = function() {
 
         svgExport.setAttribute('hreflang', 'image/svg+xml');
         svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
-        svgExport.setAttribute("download", "Phylo.io-cmp.svg");
+        svgExport.setAttribute('download', 'Phylo.io-cmp.svg');
 
         svg.select("#exportLogo").remove();
     }
