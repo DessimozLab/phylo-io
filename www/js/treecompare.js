@@ -1323,6 +1323,7 @@ var TreeCompare = function() {
      _children means the children are not visible in the visualisation, i.e they are collapsed
      */
     function postorderTraverse(d, f, do_children) {
+        //console.log(d);
         if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
             do_children = true;
         }
@@ -6141,9 +6142,8 @@ var TreeCompare = function() {
             for (var i = 0; i < d.parent.children.length; i++ ){
                 if (d.parent.children[i] !== d){
                     //sibling = d.parent.children[i];
-                    // shouldn't we only cut the non existing sibling instead of returning the first sibling only
+                    // cut the non existing sibling by adding only existing siblings
                     sibling.push(d.parent.children[i]);
-                    console.log(sibling);
                 }
             }
         }
@@ -6162,15 +6162,22 @@ var TreeCompare = function() {
             // index of this leaf
             var droot_index = droot.parent.children.indexOf(droot);
             if (sibling != undefined && d.parent.parent.children[droot_index] != undefined){
-                // where is this used?
-                //var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
-                //sibling.length = newLenght;
+                for (var i = 0; i < sibling.length; i++ ) {
+                    // where is this used?
+                    var newLenght = sibling[i].length + d.parent.parent.children[droot_index].length;
+                    sibling[i].length = newLenght;
+                }
             }
             //d.parent.parent.children[droot_index] = sibling;
             // replace children with sibling (i.e., children with current leaf removed)
-            d.parent.parent.children[droot_index].children = sibling;
+            if ($.isArray(sibling) && sibling.length >= 2) {
+                d.parent.parent.children[droot_index].children = sibling;
+            } else {
+                d.parent.parent.children[droot_index] = sibling[0];
+            }
 
         }
+
         postorderTraverse(tree.data.root, function(e) {
             e.leaves = getChildLeaves(e);
         });
