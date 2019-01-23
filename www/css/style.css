@@ -4,7 +4,7 @@ html {
     overflow:hidden;
 }
 
-body#manual {
+body#manual, body#about {
     overflow: auto;
 }
 
@@ -131,6 +131,11 @@ textarea{
 
 input {
     resize: none;
+}
+
+input[type="range"]{
+    color: inherit;
+    background-color: inherit;
 }
 
 input.treename {
@@ -320,6 +325,12 @@ rect.node {
     border-radius: 0px;
 }
 
+.export-group, .histogram-group {
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+}
+
 /*Styles for sharing*/
 
 #shareButton, #histLblShowBtn, #exportButton, #histLegendShowBtn {
@@ -368,28 +379,32 @@ rect.node {
 
 /*styles for export functionality*/
 
-.export-group {
-    margin: 0 auto;
-    text-align: center;
-    width: 100%;
-}
 
-#phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg {
+#phylo .btn.nwk, #phylo .btn.png, #phylo .btn.svg, #phylo .collapseButton.inc, #phylo .collapseButton.desc, #collapseVal {
     width: 33%;
     margin-left: 0px;
     opacity: 0.6;
+    text-align: center;
+    display: inline-block;
 }
 
 #phylo .btn.normalised, #phylo .btn.fixed, #phylo .btn.events, #phylo .btn.genes {
     width: 50%;
     margin-left: 0px;
     opacity: 0.6;
+    text-align: center;
+    display: inline-block;
 }
 
 #phylo .btn.nwk:hover, #phylo .btn.png:hover, #phylo .btn.svg:hover, #phylo .btn.normalised:hover, #phylo .btn.fixed:hover, #phylo .btn.genes:hover, #phylo .btn.events:hover {
     opacity: 1.0;
 }
 
+#collapseVal {
+    padding: 5px 5px;
+    text-align: center;
+    display: inline-block;
+}
 #exportPanel {
     display: none;
     background-color: #999;
@@ -835,4 +850,58 @@ button.rescaleButton:hover{
     font-family: 'Open Sans', sans-serif;
     text-rendering: optimizeLegibility;
     stroke: none;
+}
+
+
+/* dropdown menu styles for multival per line */
+#phylo .extraMargin + span:after {
+    content: "\000A";
+    white-space: pre;
+}
+
+#phylo .modal-container {
+    z-index: 3;
+    right: 50px;
+    top: 75px;
+    position: absolute;
+    padding: 5px 20px 15px 20px;
+    width: 180px;
+    height: 60px;
+    border-radius: 8px;
+    display: none;
+
+}
+
+#phylo li.hz{
+    display: inline-flex;
+}
+
+#phylo .open > .dropdown-menu {
+    display: table-caption;
+}
+
+#phylo .hz > span {
+    display: block;
+    padding: 3px 15px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #2A2A2A;
+    background-color: #e5e5e5;
+    white-space: nowrap;
+    width: 60px;
+}
+
+#phylo .hz > a {
+    line-height: 1.42857143;
+    color: #2A2A2A;
+    background-color: #f7f7f7;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+#phylo a.disabled{
+    pointer-events: none;
+    cursor: default;
+    color: #e5e5e5 !important;
 }

@@ -203,9 +203,6 @@ label {
 
 /*styles for export functionality*/
 
-.export-group {
-    margin: 0 auto;
-}
 
 #exportButton {
     width: 40px;

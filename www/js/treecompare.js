@@ -90,7 +90,7 @@ var TreeCompare = function() {
         selectMultipleSearch: false,
         fontSize: 14,
         lineThickness: 3,
-        nodeSize: 4,
+        nodeSize: 6,
         treeWidth: 500,
         treeHeight: 15,
         moveOnClick: true,
@@ -107,6 +107,7 @@ var TreeCompare = function() {
         enableDownloadButtons: true,
         enableCloudShare: true,
         enableLadderizeTreeButton: true,
+        enableTreeSettingsButton: true,
         enableOppositeTreeActions: true,
         enableFisheyeZoom: false,
         enableScale: true,
@@ -116,7 +117,8 @@ var TreeCompare = function() {
         enableSearch: true,
         autoCollapse: null,
         showHistogramSummaryValue: true,
-        showHistogramValues: true
+        showHistogramValues: true,
+        stackHeight: 100
     };
 
 
@@ -196,6 +198,7 @@ var TreeCompare = function() {
         settings.enableDownloadButtons = getSetting(settingsIn.enableDownloadButtons,settings.enableDownloadButtons);
         settings.enableCloudShare = getSetting(settingsIn.enableCloudShare,settings.enableCloudShare);
         settings.enableLadderizeTreeButton = getSetting(settingsIn.enableLadderizeTreeButton,settings.enableLadderizeTreeButton);
+        settings.enableTreeSettingsButton = getSetting(settingsIn.enableTreeSettingsButton,settings.enableTreeSettingsButton);
         settings.enableFixedButtons = getSetting(settingsIn.enableFixedButtons,settings.enableFixedButtons);
         settings.enableSizeControls = getSetting(settingsIn.enableSizeControls,settings.enableSizeControls);
         settings.enableSearch = getSetting(settingsIn.enableSearch,settings.enableSearch);
@@ -228,6 +231,7 @@ var TreeCompare = function() {
         settings.gistSaveServerURL = getSetting(settingsIn.gistSaveServerURL, settings.gistSaveServerURL);
         settings.showHistogramSummaryValue = getSetting(settingsIn.showHistogramSummaryValue, settings.showHistogramSummaryValue);
         settings.showHistogramValues = getSetting(settingsIn.showHistogramValues, settings.showHistogramValues);
+        settings.stackHeight = getSetting(settingsIn.stackHeight, settings.stackHeight);
 
         var i;
         if (!(settingsIn.treeWidth === undefined)) {
@@ -690,7 +694,7 @@ var TreeCompare = function() {
             var file = data.files;
 
             var accept = {
-                text: ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+                text: ["txt", "nh", "nhx", "nwk", "tre", "tree", "json"]
             };
 
             var file_name_tokens = file[0].name.split(".");
@@ -721,7 +725,8 @@ var TreeCompare = function() {
             } else {
                 $("#renderErrorMessage").empty();
                 $("#" + newickIn + "Label").text("No file");
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following' +
+                    ' file endings are accepted: txt, nh, nhx, nwk, tre, tree, json</div>')).hide().slideDown(300);
                 $("#" + newickIn + "Label").attr("placeholder", "Untitled").val("");
                 $("#" + newickIn).attr("placeholder", "Paste your tree or drag and drop your tree file here").val("");
             }
@@ -758,7 +763,7 @@ var TreeCompare = function() {
             var file = control.files;
 
             var accept = {
-                text: ["txt", "nh", "nhx", "nwk", "tre", "tree"]
+                text: ["txt", "nh", "nhx", "nwk", "tre", "tree", "json"]
             };
 
             var file_name_tokens = file[0].name.split(".");
@@ -789,7 +794,8 @@ var TreeCompare = function() {
 
             } else {
                 $("#renderErrorMessage").empty();
-                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following file endings are accepted: txt, nh, nhx, nwk, tre, tree</div>')).hide().slideDown(300);
+                $("#renderErrorMessage").append($('<div class="alert alert-danger" role="alert">Only the following' +
+                    ' file endings are accepted: txt, nh, nhx, nwk, tre, tree, json</div>')).hide().slideDown(300);
                 $("#" + newickIn + "Label").attr("placeholder", "Untitled").val("");
                 $("#" + newickIn).attr("placeholder", "Paste your tree or drag and drop your tree file here").val("");
             }
@@ -873,7 +879,8 @@ var TreeCompare = function() {
             } else {
                 tmpNewicks = newick.replace(/(^[ \t]*\n)/gm, "").replace(/(\r\n|\n|\r)/gm, ";").split(";");
                 if (tmpNewicks.length > 1) {
-                    newicks = tmpNewicks.slice(0, -1);
+                    //newicks = tmpNewicks.slice(0, -1);
+                    newicks = tmpNewicks;
                 }
             }
 
@@ -943,6 +950,7 @@ var TreeCompare = function() {
             }
             fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(tree);
 
+            tree = false;
             trees.push(fullTree);
         }
         return trees[(trees.length - newicks.length)];
@@ -1079,9 +1087,21 @@ var TreeCompare = function() {
     /*
     Changes text in the length scale according to changes in vis
      */
-    function applyScaleText(scaleText, zoomScale, root) {
+    //function applyScaleText(scaleText, zoomScale, root) {
+    function applyScaleText(treeData) {
+
+        var scaleText  = treeData.scaleText;
+        var zoomScale = treeData.zoomBehaviour.scale();
+        var root = treeData.root;
+        var treeNameElements = treeData.root.ID.split("_");
+        var treeName = treeNameElements[0]+"_"+treeNameElements[1];
+
         // no scaletext if it's supressed
-        if(!scaleText){ return false; }
+        if(!scaleText || settings.useLengths === false){
+            scaleText.text();
+            $("#scale-line, #scale-line-text").hide();
+            return false;
+        }
         if (root.children || root._children) {
             var children = getChildren(root);
             var length = 0;
@@ -1094,8 +1114,31 @@ var TreeCompare = function() {
                     break;
                 }
             }
-            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(2);
+            var text = (((scaleLineWidth / offset) * length) / zoomScale).toFixed(3);
+            if(text < 1){
+                text = text +" ("+(((scaleLineWidth / offset) * length) / zoomScale).toExponential(3)+")";
+            }
             scaleText.text(text);
+
+            // draw scale line overlay
+            var maxWidth = scaleLineWidth;
+            var maxZoom = settings.scaleMax;
+            var minZoom = settings.scaleMin;
+            var zoomMul = 1 + ((zoomScale - minZoom) * 99) / (maxZoom - minZoom);
+
+            d3.selectAll("#"+treeName+"_scale-line-hl").remove();
+            d3.select("#"+treeName+" > .scale-line")
+                .append("path")
+                .attr("d", function() {
+                    var scaleHlLineWidth = maxWidth / zoomMul;
+                    return "M" + scaleLinePadding + ",20L" + ((scaleHlLineWidth) + scaleLinePadding) + ",20"
+                })
+                .attr("stroke-width", 2)
+                .attr("id", treeName+"_scale-line-hl")
+                .attr("class", "scale-line-hl")
+                .attr("stroke", "#76E200");
+
+            $("#scale-line, #scale-line-text").show();
         }
     }
 
@@ -1280,6 +1323,7 @@ var TreeCompare = function() {
      _children means the children are not visible in the visualisation, i.e they are collapsed
      */
     function postorderTraverse(d, f, do_children) {
+        //console.log(d);
         if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
             do_children = true;
         }
@@ -1547,21 +1591,24 @@ var TreeCompare = function() {
     function addTreeGistURL(gistID, name) {
 
         var newTree;
+        var request = new XMLHttpRequest();
+        request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
 
         try {
 
-            var request = new XMLHttpRequest();
-            request.open('GET', settings.gistSaveServerURL + "?gistid="+gistID, false);
             request.send(null);
 
             if (request.status === 200) {
+                console.log("GIST success");
                 newTree = JSON.parse(request.responseText).files['file1.json'].content;
             } else {
+                console.log("GIST error "+request.status);
                 throw "Error: Github Gist was not found! ("+request.status+")";
             }
 
         } catch (e){
 
+            console.log(e);
             $('#modalTitleError').html('Github Error');
             $('#modalBodyError').html(e);
             $('#myErrorModal').modal('show');
@@ -1576,7 +1623,6 @@ var TreeCompare = function() {
             name = "Tree " + num;
         }
 
-        //console.log(newTree);
         var parsedNwk = newTree.split("$$");
         try {
             var collapsedInfoTree = convertTree(parsedNwk[2]); // calls convert function from above
@@ -1602,7 +1648,6 @@ var TreeCompare = function() {
         fullTree.data.autoCollapseDepth = getRecommendedAutoCollapse(collapsedInfoTree);
 
         trees.push(fullTree);
-
 
         return fullTree
 
@@ -1717,7 +1762,8 @@ var TreeCompare = function() {
         var leaves = treeData.root.leaves.length;
         var leavesVisible = getVisibleLeaves(treeData.root);
 
-        var height = $(".vis-container").height();
+        //var height = $(".vis-container").height();
+        var height = $("#"+treeData.canvasId).height();
         var renderHeight = height - paddingVertical * 2;
         var leavesHidden = 0;
         var triangles = 0;
@@ -1752,6 +1798,7 @@ var TreeCompare = function() {
             treeData.treeHeight = newHeight;
         }
 
+        // TODO same condition as below?
         if (leavesVisible > 0) {
             treeData.prevNoLeavesVisible = false;
         } else {
@@ -1824,6 +1871,8 @@ var TreeCompare = function() {
         //yes x is vertical position, blame d3's tree vis structure not me...
         var test = 0;
         function setXPos(d, upperBound) {
+            //console.log(d);
+            //console.log(upperBound);
             var params;
             var collapsedHeight;
 
@@ -1872,7 +1921,7 @@ var TreeCompare = function() {
         var newLenghtMult = 0;
         var lengthMultiplier = lengthMult/maxLength;
         nodes.forEach(function (d) {
-            if (settings.useLengths) { //setting selected by user
+            if (settings.useLengths !== false) { //setting selected by user
                 d.y = getLength(d) * lengthMultiplier; //adjust position to screen size
                 d.baseY = d.y;
             } else {
@@ -2420,9 +2469,11 @@ var TreeCompare = function() {
             d.y0 = d.y;
         });
 
-        //calculate the new scale text
+        //calculate the new scale text, applyscaletext hides the scale if lengths is not used
+        // therefore it's not checked here
         if (settings.enableScale){
-            applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
+            applyScaleText(treeData);
+            //applyScaleText(treeData.scaleText, treeData.zoomBehaviour.scale(), treeData.root);
         }
 
         //event listeners for nodes to handle mouseover highlighting, important because all children nodes have to be highlighted
@@ -2512,13 +2563,18 @@ var TreeCompare = function() {
     }
 
     function sizeVertical(treeData, increase) {
-        if (increase) {
+
+        if (increase && typeof increase !== 'number') {
             treeData.treeHeight = parseInt(treeData.treeHeight) + 1;
+            treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
+        } else if (increase && typeof increase == 'number' && treeData.treeHeight < increase) {
+            treeData.treeHeight = parseInt(treeData.treeHeight) + (increase - treeData.treeHeight);
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         } else {
             treeData.treeHeight = parseInt(treeData.treeHeight) - 1;
             treeData.treeHeight = (treeData.treeHeight > 1) ? treeData.treeHeight : 1;
         }
+
     }
 
     /**
@@ -2755,6 +2811,11 @@ var TreeCompare = function() {
                 .attr("class", "ladderize")
                 .text("Ladderize");
 
+            treeToolsMenu.append("li")
+                .attr("class", "treeToolsText")
+                .append("div")
+                .attr("class", "treesettings")
+                .text("Autocollapse depth");
 
             if (compareMode) {
                 treeToolsMenu.append("li")
@@ -2779,6 +2840,9 @@ var TreeCompare = function() {
             createLadderizedTree(canvasId, "ladderize", baseTree);
         }
 
+        if (settings.enableTreeSettingsButton) {
+            createTreeSettings(canvasId, "treesettings", baseTree);
+        }
 
         if (settings.enableOppositeTreeActions && compareMode) {
             createOppositeTreeActions(canvasId, "oppositeTreeAction");
@@ -2861,7 +2925,7 @@ var TreeCompare = function() {
                 buildStackToolbar(canvasId);
 
                 createStackZoomSlider(canvasId, "stackwidthzoom", baseTree, stackMinWidth, stackMaxWidth, stackStep, stackWidth);
-                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, stackHeight);
+                createStackZoomSlider(canvasId, "stackheightzoom", baseTree, stackMinHeight, stackMaxHeight, stackStep, settings.stackHeight);
                 createHistogramLabelVisibilityBtn(canvasId, "stacklabelswitch");
                 createHistogramLegendVisibilityBtn(canvasId, "stacklegendswitch");
                 createHistogramScaleSwitchBtn(canvasId, "stackscaleswitch", baseTree);
@@ -3595,6 +3659,8 @@ var TreeCompare = function() {
 
     }
 
+
+
     function createTreeRescale(canvasId, rescaleClass, baseTree) {
 
         function buildRescaleButtons(canvasId) {
@@ -3707,7 +3773,9 @@ var TreeCompare = function() {
         var svgHeight = height + 25;
         var legendRectSize = 20;
         var margin = 25;
-        var legendTxtSize = 12;
+        var legendTxtSize = 13;
+        // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
+        var legendTxtYPadding = Math.round(((legendRectSize - legendTxtSize) / 2) - 1);
         if(infoStack == "genes"){
             var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
         } else {
@@ -3776,10 +3844,10 @@ var TreeCompare = function() {
             })
             .attr('x', 110 + legendRectSize + 5)
             .attr('y', function(d, i){
-                return i * legendRectSize + 0.25 * legendRectSize;
+                return i * legendRectSize + legendTxtSize + legendTxtYPadding;
             })
             .attr('text-anchor', 'start')
-            .attr('alignment-baseline', 'hanging')
+            .attr('alignment-baseline', 'middle')
             .attr("font-size", legendTxtSize).attr("stroke", "black");
 
 
@@ -3812,7 +3880,7 @@ var TreeCompare = function() {
         }
 
         var svg = d3.select(this);
-        var h = stackHeight;
+        var h = settings.stackHeight;
         var w = stackWidth;
         var margin = 8;
         var xInitialRightMargin = 35;
@@ -3865,21 +3933,6 @@ var TreeCompare = function() {
 
                         d3.select(g).attr("transform", "translate(" + x + ", 0)");
                     });
-                /*
-
-                        function computeDimensions(selection) {
-                          var dimensions = null;
-                          var node = selection.node();
-
-                          if (node instanceof SVGElement) { // check if node is svg element
-                            dimensions = node.getBBox();
-                          } else { // else is html element
-                            dimensions = node.getBoundingClientRect();
-                          }
-                          console.log(dimensions);
-                          return dimensions;
-                        }
-                */
 
                 var stackGroup = svg.append("g").classed("stackGroup", true).call(stackDrag);
 
@@ -3921,8 +3974,8 @@ var TreeCompare = function() {
                         .append("text")
                         .classed("legendsummarytxt", true)
                         .text(function (d) {
-                            summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
-                            return summary_number > 0 ? summary_number : "";
+                            var summary_number = infoStack == "genes" ? d.numberGenes : d.numberEvents;
+                            return summary_number > 0 && typeof summary_number == 'number' ? summary_number : "";
                         }).attr("x", function () {
                             return 0 - (xDistanceFromNode + 30)
                         }).attr("y", function (d) {
@@ -3966,21 +4019,21 @@ var TreeCompare = function() {
         if(type == 'genes' || !type){
 
             if(maxStackHeight == "max" && largestGenome > 0){
-                var normalizer = stackHeight / largestGenome;
+                var normalizer = settings.stackHeight / largestGenome;
             } else if(Number.isInteger(maxStackHeight)){
                 var normalizer = maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+                var normalizer = settings.stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             }
 
         } else {
 
             if(maxStackHeight == "max" && largestEvents > 0){
-                var normalizer = stackHeight / largestEvents;
+                var normalizer = settings.stackHeight / largestEvents;
             } else if(Number.isInteger(maxStackHeight)){
                 var normalizer = maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+                var normalizer = settings.stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             }
 
         }
@@ -4016,7 +4069,7 @@ var TreeCompare = function() {
 
         if(type == 'genes' || !type){
 
-            realSize = Math.abs(d.retained);
+            realSize = Math.abs(d.retained) > 0 ? Math.abs(d.retained) : 0;
             var posBase = posBase + StackSizeretained;
             data[stackIndex][seriesIndex] = new seriesElement('Retained', realSize, StackSizeretained, posBase, posStackSize)
             stackIndex++;
@@ -4025,21 +4078,18 @@ var TreeCompare = function() {
             var posBase = posBase + StackSizeDuplicated
             data[stackIndex][seriesIndex] = new seriesElement('Duplicated', realSize, StackSizeDuplicated, posBase, posStackSize)
             stackIndex++;
-
         } else {
 
             realSize = Math.abs(d.duplication);
             var posBase = posBase + StackSizeDuplication
             data[stackIndex][seriesIndex] = new seriesElement('Duplications', realSize, StackSizeDuplication, posBase, posStackSize)
             stackIndex++;
-
         }
 
         realSize = Math.abs(d.gained);
         var posBase = posBase + StackSizeGained
         data[stackIndex][seriesIndex] = new seriesElement('Gained', realSize, StackSizeGained, posBase, posStackSize)
         stackIndex++;
-
         realSize = Math.abs(d.lost);
         /* move lost down a little to make it easier to hover it and not the node line */
         data[stackIndex][seriesIndex] = new seriesElement('Lost', realSize, StackSizeLost, -1, posStackSize)
@@ -4109,6 +4159,77 @@ var TreeCompare = function() {
                 toggleActiveBtn("desc", "ladderize");
                 ladderizeTree(baseTree, "descending")
             });
+    }
+
+
+    function createTreeSettings(canvasId, treeSettingsClass, baseTree) {
+
+        var treeSettingsButton = d3.select("#" + canvasId).select("." + treeSettingsClass).append("div");
+
+        treeSettingsButton.append("button")
+            .attr("id", "collapseDescButton")
+            .attr("class", "btn btn-sm sharp collapseButton desc")
+            .attr("title", "Decrease")
+            .attr("type", "button")
+            .append("span")
+            .text("-");
+
+        treeSettingsButton.append("span")
+            .attr("id", "collapseVal")
+            .attr("class", "collapseAmount")
+            .text($("#collapseAmount").html());
+
+        treeSettingsButton.append("button")
+            .attr("id", "collapseIncButton")
+            .attr("class", "btn btn-sm sharp collapseButton inc")
+            .attr("title", "Increase")
+            .attr("type", "button")
+            .append("span")
+            .text("+");
+
+        d3.select("#" + canvasId).selectAll(".collapseButton")
+            .on('click', function () {
+
+                var collapseAmount = ($("#collapseAmount").html()) ? $("#collapseAmount").html() : "OFF";
+                var amount = 0;
+
+                var maxAmount = treecomp.getMaxAutoCollapse();
+
+                if (collapseAmount !== "0") {
+                    if (collapseAmount === "OFF") {
+                        amount = maxAmount;
+                    } else {
+                        amount = parseInt(collapseAmount);
+                    }
+
+                    if(d3.select(this).classed("inc") ){
+                        amount += 1;
+                    } else {
+                        amount -= 1;
+                    }
+
+
+                    if (amount < 0 || amount >= maxAmount) {
+                        amount = null;
+                        updateCollapseAmount("OFF");
+                    } else {
+                        updateCollapseAmount(amount.toString());
+                    }
+                } else {
+                    amount = null;
+                    updateCollapseAmount("OFF");
+                }
+
+            treecomp.changeAutoCollapseDepth(amount);
+
+        });
+
+
+    }
+
+    function updateCollapseAmount(amount){
+        $("#collapseAmount").html(amount);
+        d3.select('#collapseVal').text(amount);
     }
 
     function toggleActiveBtn(activateElem, parentClass){
@@ -4510,7 +4631,9 @@ var TreeCompare = function() {
             dsMatrix.push([]);
             tmpDsMatrix.push([]);
             for (var j = 0; j < rightSplits.length; j++) {
+
                 var tmpStr = xorStringBuilder(leftSplits[i], rightSplits[j]);
+
                 var tmpNum = 0;
                 for (var l = 0; l < tmpStr.length; l++) {
                     if (tmpStr[l] == '1') {
@@ -4879,7 +5002,7 @@ var TreeCompare = function() {
                         stackWidth = rangeval;
                         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
                     } else if(this.id == 'stackheightzoom'){
-                        stackHeight = rangeval;
+                        settings.stackHeight = rangeval;
                         d3.select("#" + canvasId).selectAll(".stackGroup").remove();
                     }
 
@@ -4991,13 +5114,15 @@ var TreeCompare = function() {
         root.y0 = 0;
 
         //render the scale if we have somewhere to put it
-        if (scaleId && settings.enableScale) {
+        if (scaleId && settings.enableScale === true && settings.useLengths === true) {
             var translatewidth = 100;
             // TODO magic number?
             var translateheight = height - 100;
 
             d3.select("#" + canvasId + " svg")
                 .append("g")
+                .attr("id", "scale-line")
+                .attr("class", "scale-line")
                 .attr("transform", "translate(" + translatewidth + "," + translateheight + ")")
                 .append("path")
                 .attr("d", function() {
@@ -5013,12 +5138,14 @@ var TreeCompare = function() {
                 .attr("font-family", "sans-serif")
                 .text("0")
                 .attr("font-size", "14px")
+                .attr("id", "scale-line-text")
                 .attr("fill", settings.scaleColor)
                 .attr("text-anchor", "middle");
             jQuery.extend(baseTree.data, {
                 scaleText: scaleText,
                 scaleId: scaleId
             });
+            $("#scale-line, #scale-line-text").show();
         }
 
         // variable i is set to the number of leaves (see above)
@@ -5045,7 +5172,6 @@ var TreeCompare = function() {
                 d.triangleLength = getCollapsedTriangleLength(d);
             }
         });
-
 
         createLeafSearch(canvasId, name);
         createToolbar(canvasId, baseTree, compareMode);
@@ -5105,6 +5231,10 @@ var TreeCompare = function() {
             baseTree.data.treeHeight = newHeight;
         }
 
+        if(hasHistogramData){
+            sizeVertical(baseTree.data, settings.stackHeight * 2);
+        }
+
         update(baseTree.root, baseTree.data, undefined, treeToggle);
 
         // where zoom centers
@@ -5144,7 +5274,8 @@ var TreeCompare = function() {
                 var translation = d3.event.translate;
                 zoomBehaviourSemantic.translate(translation);
                 if (settings.enableScale){
-                    applyScaleText(scaleText, scale, root);
+                    applyScaleText(baseTree.data);
+                    //applyScaleText(scaleText, scale, root);
                 }
                 baseTree.data.prevTransform = translation;
                 d3.select("#" + canvasId + " svg g")
@@ -5162,7 +5293,8 @@ var TreeCompare = function() {
             zoomBehaviour.scale(scale);
 
             if(settings.enableScale){
-                applyScaleText(scaleText, scale, root);
+                applyScaleText(baseTree.data);
+                //applyScaleText(scaleText, scale, root);
             }
 
             if (settings.enableZoomSliders) {
@@ -5213,7 +5345,6 @@ var TreeCompare = function() {
      ---------------*/
     function changeAutoCollapseDepth(depth) {
         settings.autoCollapse = depth;
-
         for (var i = 0; i < renderedTrees.length; i++) {
             if (depth === null) {
                 uncollapseAll(renderedTrees[i].root);
@@ -5221,7 +5352,6 @@ var TreeCompare = function() {
                 limitDepth(renderedTrees[i].root, depth);
             }
         }
-
         if (renderedTrees.length === 2) {
             settings.loadingCallback();
             setTimeout(function() {
@@ -6005,12 +6135,15 @@ var TreeCompare = function() {
     // }
 
     function getSibling(d){
-        var sibling = undefined;
+        var sibling = [];
+
         //var indexSibling = d.parent.children.indexOf(sibling);
-        if (d.parent.children.length >= 2){
+        if ($.isArray(d.parent.children) && d.parent.children.length >= 2){
             for (var i = 0; i < d.parent.children.length; i++ ){
                 if (d.parent.children[i] !== d){
-                    sibling = d.parent.children[i];
+                    //sibling = d.parent.children[i];
+                    // cut the non existing sibling by adding only existing siblings
+                    sibling.push(d.parent.children[i]);
                 }
             }
         }
@@ -6021,17 +6154,30 @@ var TreeCompare = function() {
         var sibling = getSibling(d);
         var droot = d.parent;
         if (droot === tree.root){
-            d.parent.children[0] = sibling.children[0];
-            d.parent.children[1] = sibling.children[1];
+            // there's branches with more than 2 leaves, we should return all remaining leaves as children
+            //d.parent.children[0] = sibling.children[0];
+            //d.parent.children[1] = sibling.children[1];
+            d.parent.children = sibling;
         } else {
+            // index of this leaf
             var droot_index = droot.parent.children.indexOf(droot);
-            if (d.parent.parent.children[droot_index] != undefined){
-                var newLenght = sibling.length + d.parent.parent.children[droot_index].length;
-                sibling.length = newLenght;
+            if (sibling != undefined && d.parent.parent.children[droot_index] != undefined){
+                for (var i = 0; i < sibling.length; i++ ) {
+                    // where is this used?
+                    var newLenght = sibling[i].length + d.parent.parent.children[droot_index].length;
+                    sibling[i].length = newLenght;
+                }
             }
-            d.parent.parent.children[droot_index] = sibling;
+            //d.parent.parent.children[droot_index] = sibling;
+            // replace children with sibling (i.e., children with current leaf removed)
+            if ($.isArray(sibling) && sibling.length >= 2) {
+                d.parent.parent.children[droot_index].children = sibling;
+            } else {
+                d.parent.parent.children[droot_index] = sibling[0];
+            }
 
         }
+
         postorderTraverse(tree.data.root, function(e) {
             e.leaves = getChildLeaves(e);
         });
@@ -6876,7 +7022,7 @@ var TreeCompare = function() {
 
         svgExport.setAttribute('hreflang', 'image/svg+xml');
         svgExport.setAttribute('href', 'data:image/svg+xml;base64,\n' + btoa(svg1.outerHTML));
-        svgExport.setAttribute("download", "Phylo.io-cmp.svg");
+        svgExport.setAttribute('download', 'Phylo.io-cmp.svg');
 
         svg.select("#exportLogo").remove();
     }
@@ -6904,6 +7050,7 @@ var TreeCompare = function() {
         changeCanvasSettings: changeCanvasSettings,
         getMaxAutoCollapse: getMaxAutoCollapse,
         changeAutoCollapseDepth: changeAutoCollapseDepth,
+        updateCollapseAmount: updateCollapseAmount,
         calcDist: calcDist,
         addMainLegend: addMainLegend
 
