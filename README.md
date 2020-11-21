@@ -7,10 +7,10 @@ The app can be accessed at [phylo.io](http://phylo.io).
 ## Dependencies
 Phylo.IO requires JQuery, D3js, UnderscoreJS, canvas-toBlob, FileSavier, circular-json and spin:
 ```html
-<script src="//peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+<script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+<script type="text/javascript" src="https://underscorejs.org/underscore-min.js"></script>
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="js/treecompare.js"></script>
-<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>
 <script type="text/javascript" src="js/d3.min.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
