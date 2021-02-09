@@ -11,6 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 binary = FirefoxBinary('/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox')
 
+page_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','www','index.html'))
+
 class PythonOrgSearch(unittest.TestCase):
     
     def setUp(self):
@@ -32,7 +34,7 @@ class PythonOrgSearch(unittest.TestCase):
         Function to test autocollapse of 
         '''
         driver = self.driver
-        driver.get("file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/index.html")
+        driver.get("file://"+page_path)
         driver.find_element_by_link_text("Large Example Tree").click()
         driver.find_element_by_id("renderButton").click()
         driver.find_element_by_id("settings").click()
@@ -53,7 +55,7 @@ class PythonOrgSearch(unittest.TestCase):
         with open(os.getcwd()+"/test.nwk", 'r') as content_file:
             content = content_file.read()
         driver = self.driver
-        driver.get("file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/index.html")
+        driver.get("file://" + page_path)
         driver.find_element_by_id("compare-btn").click()
         driver.find_element_by_id("newickIn1").clear()
         driver.find_element_by_id("newickIn1").send_keys(content)
@@ -70,7 +72,7 @@ class PythonOrgSearch(unittest.TestCase):
     
     def test_search_large_tree_compare(self):
         driver = self.driver
-        driver.get("file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/index.html")
+        driver.get("file://" + page_path)
         driver.find_element_by_id("compare-btn").click()
         driver.find_element_by_link_text("Large Example Trees").click()
         driver.find_element_by_id("renderButton").click()
@@ -85,7 +87,7 @@ class PythonOrgSearch(unittest.TestCase):
     def test_search_remove(self):
         '''This test checks whether the search highlighting after several renderings between view and compare mode gets removed properly'''
         driver = self.driver
-        driver.get("file:///Users/daviddylus/Dropbox/dessimoz/research/opt/gitlab/phylo-io/www/index.html")
+        driver.get("file://" + page_path)
         driver.find_element_by_id("view-btn").click()
         driver.find_element_by_link_text("Large Example Tree").click()
         driver.find_element_by_id("renderButton").click()
