@@ -2073,13 +2073,20 @@ var TreeCompare = function() {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
 
-        d3.selectAll('g.node')
+        /*d3.selectAll('g.node')
+            .filter(function(d){
+                return d.evolutionaryEvents != false
+            })
+            .each(addStack);*/
+
+        if(showHistogramLegend && hasHistogramData){
+
+            d3.selectAll('g.node')
             .filter(function(d){
                 return d.evolutionaryEvents != false
             })
             .each(addStack);
 
-        if(showHistogramLegend && hasHistogramData){
             d3.select('#histogram-legend').remove();
             addMainLegend(treeName);
         }
@@ -4715,17 +4722,24 @@ var TreeCompare = function() {
     function getIntersectingTrees(leftTree, rightTree, commonLeaves){
         var leftTreeIndex = findTreeIndex(leftTree.name);
         var rightTreeIndex = findTreeIndex(rightTree.name);
+
+        // update undo only once per treewide operation
+        updateUndo(leftTreeIndex, "restore_branch", leftTree.root);
+        updateUndo(rightTreeIndex, "restore_branch", rightTree.root);
+        var index1 = findTreeIndex(rightTree.name);
+        var index2 = findTreeIndex(leftTree.name);
         postorderTraverse(leftTree.root, function(d){
             if (!d.children && !d._children){
                 if (commonLeaves.indexOf(d.name) < 0){
-                    updateUndo(leftTreeIndex, "restore_branch", d);
+                    /*updateUndo(leftTreeIndex, "restore_branch", d);*/
                     var cutTree = cutBranch(d, leftTree);
-                    var index1 = findTreeIndex(leftTree.name);
-                    var index2 = findTreeIndex(rightTree.name);
+                    /*var index1 = findTreeIndex(leftTree.name);
+                    var index2 = findTreeIndex(rightTree.name);*/
 
                     preprocessTrees(trees[index1], trees[index2]);
+                    // preprocess function does update too
                     update(leftTree.root, cutTree.data);
-                    update(rightTree.root, rightTree.data);
+                    //update(rightTree.root, rightTree.data);
                 }
             }
 
@@ -4733,14 +4747,14 @@ var TreeCompare = function() {
         postorderTraverse(rightTree.root, function(d){
             if (!d.children && !d._children){
                 if (commonLeaves.indexOf(d.name) < 0){
-                    updateUndo(rightTreeIndex, "restore_branch", d);
+                    /*updateUndo(rightTreeIndex, "restore_branch", d);*/
                     var cutTree = cutBranch(d, rightTree);
-                    var index1 = findTreeIndex(rightTree.name);
-                    var index2 = findTreeIndex(leftTree.name);
+                    /*var index1 = findTreeIndex(rightTree.name);
+                    var index2 = findTreeIndex(leftTree.name);*/
 
                     preprocessTrees(trees[index1], trees[index2]);
                     update(rightTree.root, cutTree.data);
-                    update(leftTree.root, leftTree.data);
+                    //update(leftTree.root, leftTree.data);
                 }
             }
 
@@ -4754,10 +4768,10 @@ var TreeCompare = function() {
         var rightIdx = d3.select("#vis-container2").select("svg").attr("id").split("_")[1];
         var leftTree = trees[leftIdx];
         var rightTree = trees[rightIdx];
-        if((leftTree.root.deepLeafList.length > 100 || rightTree.root.deepLeafList.length > 100) ){
+        if((leftTree.root.deepLeafList.length > 500 || rightTree.root.deepLeafList.length > 500) ){
 
             $('#modalTitleError').html('Too complex tree');
-            $('#modalBodyError').html("One or both trees have too many leaves. 100 leaves is the maximum.");
+            $('#modalBodyError').html("One or both trees have too many leaves. 500 leaves is the maximum.");
             $('#myErrorModal').modal('show');
             return false;
 
@@ -5577,7 +5591,7 @@ var TreeCompare = function() {
         }
 
         // use web workers only if trees are very large
-        if((tree1.deepLeafList.length > 100 || tree2.deepLeafList.length > 100) && !isChrome){
+        if((tree1.deepLeafList.length > 500 || tree2.deepLeafList.length > 500) && !isChrome){
             getVisibleBCNsUsingWorkers(findTreeIndex(trees1.name), findTreeIndex(trees2.name));
         } else {
             getVisibleBCNs(tree1,tree2);
@@ -6163,7 +6177,7 @@ var TreeCompare = function() {
             var droot_index = droot.parent.children.indexOf(droot);
             if (sibling != undefined && d.parent.parent.children[droot_index] != undefined){
                 for (var i = 0; i < sibling.length; i++ ) {
-                    // where is this used?
+                    // makes leaf length as long as before, is it right?
                     var newLenght = sibling[i].length + d.parent.parent.children[droot_index].length;
                     sibling[i].length = newLenght;
                 }
