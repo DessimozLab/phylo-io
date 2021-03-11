@@ -1,5 +1,3 @@
-import phylotree from "./phylotree.js"
-
 
 
 d3.json("flare-2.json").then(function(treeData){
@@ -24,9 +22,8 @@ d3.json("flare-2.json").then(function(treeData){
         duration = 750,
         root;
 
-
     // declares a tree layout and assigns the size
-    var treemap = phylotree().size([height, width]);
+    var treemap = d3.tree().size([height, width]);
 
 // Assigns parent, children, height, depth
     root = d3.hierarchy(treeData, function(d) { return d.children; });
@@ -53,6 +50,8 @@ d3.json("flare-2.json").then(function(treeData){
 
         // Assigns the x and y position for the nodes
         var treeData = treemap(root);
+
+        console.log(treeData);
 
         // Compute the new tree layout.
         var nodes = treeData.descendants(),
@@ -189,7 +188,6 @@ d3.json("flare-2.json").then(function(treeData){
             update(d);
         }
     }
-
 
 
 })
