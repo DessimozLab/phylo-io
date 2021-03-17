@@ -2,42 +2,49 @@
 
 d3.json("flare-2.json").then(function(treeData){
 
+    // MISC SHIT
+    var container = document.getElementById("container");
+    var i = 0,duration = 750,root;
 
-    // Set the dimensions and margins of the diagram
-    var margin = {top: 20, right: 90, bottom: 30, left: 90},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+    // GENERAL DIMENSIONS
+    var margin = {top: 16, right: 16, bottom: 16, left: 96},
+        width = parseFloat(window.getComputedStyle(container).width) - margin.left - margin.right,
+        height = parseFloat(window.getComputedStyle(container).height) - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
-// appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
-    var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.right + margin.left)
+
+    // ZOOM
+    var zoom = d3.zoom().on("zoom", zoomed)
+
+    function zoomed({transform}) {
+        d3.select("#master_g").attr("transform", transform);
+
+    }
+
+    // SVG
+    var svg = d3.select("#container").append("svg")
+        .attr("width", width + margin.left + margin.right )
         .attr("height", height + margin.top + margin.bottom)
+        .call(zoom)
+        .call(zoom.transform, d3.zoomIdentity.translate(margin.left, margin.top))
         .append("g")
-        .attr("transform", "translate("
-            + margin.left + "," + margin.top + ")");
+        .attr("id", "master_g")
+        .attr("transform", "translate("+ margin.left + "," + margin.top + ")")
 
-    var i = 0,
-        duration = 750,
-        root;
+    // D3 TREE
+    var treemap = d3.tree()
+        .size([height, width])
+        //.nodeSize([20,20])
+        //.separation(function(a, b) { return (a.data.radius + b.data.radius)/25 });
 
-    // declares a tree layout and assigns the size
-    var treemap = d3.tree().size([height, width]);
-
-// Assigns parent, children, height, depth
     root = d3.hierarchy(treeData, function(d) { return d.children; });
-    root.x0 = height / 2;
+    root.x0 = height / 2; // Place tree in middle of the svg g
     root.y0 = 0;
 
-
-
-// Collapse after the second level
+    // INIT
     root.children.forEach(collapse);
-
     update(root);
 
-// Collapse the node and all it's children
+    // FUNCTIONS
     function collapse(d) {
         if(d.children) {
             d._children = d.children
@@ -50,8 +57,6 @@ d3.json("flare-2.json").then(function(treeData){
 
         // Assigns the x and y position for the nodes
         var treeData = treemap(root);
-
-        console.log(treeData);
 
         // Compute the new tree layout.
         var nodes = treeData.descendants(),
@@ -105,7 +110,7 @@ d3.json("flare-2.json").then(function(treeData){
 
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
-            .attr('r', 10)
+            .attr('r', 5 )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#fff";
             })
@@ -187,6 +192,9 @@ d3.json("flare-2.json").then(function(treeData){
             }
             update(d);
         }
+
+
+
     }
 
 

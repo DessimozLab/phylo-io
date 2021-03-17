@@ -1,4 +1,16 @@
 
+body{
+    background-color: #ccc
+}
+
+#container{
+    width: 600px;
+    height: 800px;
+    margin: 148px;
+    border: #0f0f0f 4px solid;
+    background-color: #ddd;
+    padding: 8px;
+}
 
 .node circle {
     fill: #fff;
