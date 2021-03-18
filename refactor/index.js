@@ -1,5 +1,26 @@
 
+/*
+     returns list of leaf nodes that are children of d
+     */
+function getChildLeaves(d) {
+    if (d.children || d._children) {
+        var leaves = [];
+        var children = getChildren(d);
+        for (var i = 0; i < children.length; i++) {
+            leaves = leaves.concat(getChildLeaves(children[i]));
+        }
+        return leaves;
+    } else {
+        return [d];
+    }
+}
 
+/*
+Function that returns unvisible children or visible children if one or the other are given as input
+*/
+function getChildren(d) {
+    return d._children ? d._children : (d.children ? d.children : []);
+}
 
 
     // MISC SHIT
@@ -35,9 +56,16 @@
 
     // D3 TREE
     var treemap = d3.tree()
-        .nodeSize([5,1])
-        .separation(function(a, b) {return a.parent == b.parent ? 2 : a.depth });
-        //.size([height, width])
+        .nodeSize([20,0])
+        .separation(function(a, b) {
+            var spacer = 1;
+
+
+            spacer += a._children ? Math.sqrt(getChildLeaves(a).length) *1.5 : 0
+            spacer += b._children ? Math.sqrt(getChildLeaves(b).length)*1.5 : 0
+
+            return spacer;
+        })
 
     root = d3.hierarchy(treeData, function(d) { return d.children; });
     root.x0 = height / 2; // Place tree in middle of the svg g
@@ -101,6 +129,14 @@
             })
             .text(function(d) { return d.data.name; });
 
+        nodeEnter.append("path")
+            .attr("class", "triangle")
+            .attr("d", function (d) {
+                return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+            });
+
+
+
         // UPDATE
         var nodeUpdate = nodeEnter.merge(node);
 
@@ -111,6 +147,7 @@
                 return "translate(" + d.y + "," + d.x + ")";
             });
 
+
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
             .attr('r', 5 )
@@ -118,6 +155,8 @@
                 return d._children ? "lightsteelblue" : "#fff";
             })
             .attr('cursor', 'pointer');
+
+
 
 
         // Remove any exiting nodes
@@ -128,6 +167,12 @@
             })
             .remove();
 
+        nodeExit.select("path")
+            .attr("d", function (d) {
+                return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+            });
+
+
         // On exit reduce the node circles size to 0
         nodeExit.select('circle')
             .attr('r', 1e-6);
@@ -135,6 +180,29 @@
         // On exit reduce the opacity of text labels
         nodeExit.select('text')
             .style('fill-opacity', 1e-6);
+
+
+        node.each(function (d) {
+
+            var leaves = getChildLeaves(d).length;
+
+            if (d._children) {
+
+                d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
+                    .attr("d", function (d) {
+                        var xlength = 100
+                        var ylength = 10 * Math.sqrt(leaves)
+                        return "M" + 0 + "," + 0 + "L" + xlength + "," + (-ylength) + "L" + xlength + "," + (ylength) + "L" + 0 + "," + 0;
+                    })
+            }
+
+            if (d.children) {
+                d3.select(this).select("path").transition().duration(duration)
+                    .attr("d", function (d) {
+                        return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+                    });
+            }
+        })
 
         // ****************** links section ***************************
 
@@ -183,8 +251,6 @@
             return path
         }
 
-
-
         // Toggle children on click.
         function click(event, d) {
             if (d.children) {
@@ -196,6 +262,8 @@
             }
             update(d);
         }
+
+
 
 
 
