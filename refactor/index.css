@@ -4,7 +4,7 @@ body{
 }
 
 #container{
-    width: 600px;
+    width: 1600px;
     height: 800px;
     margin: 148px;
     border: #0f0f0f 4px solid;
@@ -25,6 +25,6 @@ body{
 .link {
     fill: none;
     stroke: #ccc;
-    stroke-width: 2px;
+    stroke-width: 4px;
 }
 
