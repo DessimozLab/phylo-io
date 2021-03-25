@@ -29,17 +29,18 @@ function mean(array){
 
 function separate(a, b) { // todo
 
+
     var spacer = 1;
 
 
-    spacer += a._children ? Math.sqrt(getChildLeaves(b).length)  : 0
-    spacer += b._children ? Math.sqrt(getChildLeaves(b).length) : 0
+    spacer += a._children ? Math.sqrt(getChildLeaves(a).length) * 1  : 0
+    spacer += b._children ? Math.sqrt(getChildLeaves(b).length) * 1 : 0
 
     return spacer;
 }
 
     // SETTINGS
-    var node_vertical_size = 20;
+    var node_vertical_size = 30;
     var node_horizontal_size = 40
     var use_branch_lenght = true;
 
@@ -58,6 +59,7 @@ function separate(a, b) { // todo
 
     // ZOOM
     var zoom = d3.zoom().on("zoom", zoomed)
+
     function zoomed({transform}) {
         d3.select("#master_g").attr("transform", transform);
 
@@ -70,9 +72,11 @@ function separate(a, b) { // todo
         .call(zoom)
         .on("dblclick.zoom", null)
         .call(zoom.transform, d3.zoomIdentity.translate(margin.left, margin.top))
-        .append("g")
+
+        const g_master = svg.append("g")
         .attr("id", "master_g")
         .attr("transform", "translate("+ margin.left + "," + margin.top + ")")
+
 
     // D3 TREE
     var treemap = d3.cluster()
@@ -99,34 +103,15 @@ function separate(a, b) { // todo
     }
 
 
+    console.log(getChildLeaves(root).length)
+
+
     // INIT
     update(root);
 
 
 
-    document.onkeypress = function (e) {
-        e = e || window.event;
 
-        if (e.key == 'z'){
-
-
-            var ns = []
-            root.each(d => ns.push(d));
-
-            const randomElement = ns[Math.floor(Math.random() * ns.length)];
-            console.log(randomElement)
-
-            svg.transition().duration(750).call(
-                zoom.transform,
-                d3.zoomIdentity
-            );
-
-
-
-
-        }
-
-    };
 
 
 
@@ -165,7 +150,7 @@ function separate(a, b) { // todo
         // ****************** Nodes section ***************************
 
         // Update the nodes...
-        var node = svg.selectAll('g.node')
+        var node = g_master.selectAll('g.node')
             .data(nodes, function(d) {return d.id || (d.id = ++i); });
 
         // Enter any new modes at the parent's previous position.
@@ -201,6 +186,13 @@ function separate(a, b) { // todo
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
 
+        nodeEnter.append("rect").filter(d => getChildLeaves(d).length > 3)
+            .attr("x", -20)
+            .attr("y", -30)
+            .attr("width",  10)
+            .attr("height",  40)
+            .attr("fill", "red")
+
 
 
         // UPDATE
@@ -216,7 +208,7 @@ function separate(a, b) { // todo
 
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
-            .attr('r', d => d._children ?  1e-6: 5 )
+            .attr('r', d => d._children ?  1e-6 : 5 )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#fff";
             })
@@ -277,7 +269,7 @@ function separate(a, b) { // todo
         // ****************** links section ***************************
 
         // Update the links...
-        var link = svg.selectAll('path.link')
+        var link = g_master.selectAll('path.link')
             .data(links, function(d) { return d.id; });
 
         // Enter any new links at the parent's previous position.
@@ -323,6 +315,7 @@ function separate(a, b) { // todo
 
         // Toggle children on click.
         function click(event, d) {
+
             if (d.children) {
                 d._children = d.children;
                 d.children = null;
@@ -331,7 +324,42 @@ function separate(a, b) { // todo
                 d._children = null;
             }
             update(d);
+
+
+
+
+
+
         }
 
     }
+
+function centerNode(source) {
+    var t = d3.zoomTransform(svg.node());
+    var x = -source.y0;
+    var y = -source.x0;
+    x = x * 1 + width / 2;
+    y = y * 1 + height / 2;
+    d3.select('svg').transition().duration(duration).call( zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
+
+}
+
+document.onkeypress = function (e) {
+    e = e || window.event;
+
+    if (e.key == 'z'){
+
+        var ns = []
+        root.each(d => ns.push(d));
+
+        var randomElement = ns[Math.floor(Math.random() * ns.length)];
+
+
+        centerNode(randomElement)
+
+
+
+    }
+
+};
 
