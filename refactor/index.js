@@ -12,7 +12,7 @@ function PhyloTree(){
     this.container_d3
     this.zoom;
     this.svg;
-    this.svg_d3;
+    this.svg_d3
     this.G;
     this.G_d3;
     this.treemap;
@@ -56,8 +56,6 @@ function PhyloTree(){
         this.width = parseFloat(window.getComputedStyle(this.container).width) - this.margin.left - this.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - this.margin.top - this.margin.bottom;
 
-        //DATA
-
         // parse input data
         this.input_data = input_data
         if (this.data_type == "newick") {
@@ -69,6 +67,7 @@ function PhyloTree(){
 
         // create svg
         this.svg = this.container_d3.append("svg")
+            .attr("id", "svg" + this.uid)
             .attr("width", this.width + this.margin.left + this.margin.right )
             .attr("height", this.height + this.margin.top + this.margin.bottom)
             .call(this.zoom)
@@ -86,7 +85,7 @@ function PhyloTree(){
 
         // D3 TREE
         this.treemap = d3.cluster()
-            .nodeSize([this.node_vertical_size,this.node_horizontal_size]) // todo
+            .nodeSize([this.node_vertical_size,this.node_horizontal_size])
             .separation(this._separate)
 
         this.root = d3.hierarchy(this.treeData, d => d.children );
@@ -232,17 +231,12 @@ function PhyloTree(){
 
         node.each(function (d) {
 
-
             if (d._children) {
-
-                var leaves = this._getChildLeaves(d);
-                var triangle_y = this._mean(leaves.map(i => i.y) ) - d.y;
-
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function (d) {
-                        var y_length = triangle_y
-                        var x_length = this.node_vertical_size * Math.sqrt(leaves.length)
+                        var y_length = that.node_horizontal_size * Math.sqrt(that._getChildLeaves(d).length)
+                        var x_length = that.node_vertical_size * Math.sqrt(that._getChildLeaves(d).length)
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
@@ -298,6 +292,30 @@ function PhyloTree(){
 
     }
 
+    this.centerNode = function(source) {
+
+
+        var t = d3.zoomTransform(this.svg.node());
+        var x = -source.y0;
+        var y = -source.x0;
+        x = x * 1 + this.width / 2;
+        y = y * 1 + this.height / 2;
+        d3.select('#svg' + this.uid ).transition().duration(this.duration).call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
+
+    }
+
+    this.modify_node_vertical_size = function(variation){
+        this.node_vertical_size += variation
+        this.treemap.nodeSize([this.node_vertical_size,this.node_horizontal_size])
+        this.update()
+    }
+
+    this.modify_node_hozirontal_size = function(variation){
+        this.node_horizontal_size += variation
+        this.treemap.nodeSize([this.node_vertical_size,this.node_horizontal_size])
+        this.update()
+    }
+
     // PRIVATE METHODS
 
     this._zoomed = function({transform}) {
@@ -306,12 +324,11 @@ function PhyloTree(){
 
     this._separate =  function(a, b) { // todo
 
-
         var spacer = 1;
 
 
-        spacer += a._children ? Math.sqrt(getChildLeaves(a).length) * 1  : 0
-        spacer += b._children ? Math.sqrt(getChildLeaves(b).length) * 1 : 0
+        spacer += a._children ? Math.sqrt(that._getChildLeaves(a).length) * 1  : 0
+        spacer += b._children ? Math.sqrt(that._getChildLeaves(b).length) * 1 : 0
 
         return spacer;
     }
@@ -337,16 +354,6 @@ function PhyloTree(){
         return array.reduce((a, b) => a + b) / array.length
     }
 
-    this._centerNode = function(source) {
-        var t = d3.zoomTransform(this.svg.node());
-        var x = -source.y0;
-        var y = -source.x0;
-        x = x * 1 + this.width / 2;
-        y = y * 1 + this.height / 2;
-        this.svg_d3.transition().duration(this.duration).call( this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
-
-    }
-
     this._diagonal = function(s, d) {
 
         //var path = `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`
@@ -361,16 +368,13 @@ function PhyloTree(){
         if (d.children) {
             d._children = d.children;
             d.children = null;
+            //d.triangle_width = that._mean(that._getChildLeaves(d).map(i => i.y) ) - d.y;
         } else {
             d.children = d._children;
             d._children = null;
+            d.triangle_width = null;
         }
-        this._update(d);
-
-
-
-
-
+        that.update(d);
 
     }
 
