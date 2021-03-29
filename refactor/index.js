@@ -1,7 +1,386 @@
+var uid = 0
+
+function PhyloTree(){
+
+    // MAIN VARIABLES
+    const that = this
+    this.uid = uid
+    this.input_data;
+    this.data;
+    this.container_id;
+    this.container;
+    this.container_d3
+    this.zoom;
+    this.svg;
+    this.svg_d3;
+    this.G;
+    this.G_d3;
+    this.treemap;
+    this.root;
+    this.nodes;
+    this.links;
+
+    // TREE VARIABLES
+    this.node_vertical_size = 30;
+    this.node_horizontal_size = 40;
+    this.use_branch_lenght = true;
+    this.margin = {top: 16, right: 16, bottom: 16, left: 96};
+    this.width;
+    this.height;
+    this.use_branch_lenght;
+    this.max_length
+    this.scale_branch_length;
+
+    // MISC
+    this.init_params;
+    this.data_type;
+    var i = 0;
+    var duration = 75;
+
+    // IMPORT
+    this.parser = require("biojs-io-newick");
+
+    // PUBLIC METHODS
+    this.render = function(container_id, input_data, params) {
+
+        uid += 1 // this help to have an unique id for each tree for DOM id reference.
+
+        this.init_params = params || {'data_type': 'newick', "use_branch_lenght": true};
+        this.use_branch_lenght = this.init_params.use_branch_lenght;
+        this.data_type = this.init_params.data_type;
+        this.container_id = container_id;
+
+        // CONTAINER
+        this.container = document.getElementById(container_id);
+        this.container_d3 = d3.select(this.container);
+        this.width = parseFloat(window.getComputedStyle(this.container).width) - this.margin.left - this.margin.right;
+        this.height = parseFloat(window.getComputedStyle(this.container).height) - this.margin.top - this.margin.bottom;
+
+        //DATA
+
+        // parse input data
+        this.input_data = input_data
+        if (this.data_type == "newick") {
+            this.treeData = this.parser.parse_newick(this.input_data);
+        }
+
+        // creates zoom behavior
+        this.zoom = d3.zoom().on("zoom", this._zoomed)
+
+        // create svg
+        this.svg = this.container_d3.append("svg")
+            .attr("width", this.width + this.margin.left + this.margin.right )
+            .attr("height", this.height + this.margin.top + this.margin.bottom)
+            .call(this.zoom)
+            .on("dblclick.zoom", null)
+            .call(this.zoom.transform, d3.zoomIdentity.translate(this.margin.left, this.margin.top))
+
+        this.svg_d3 = d3.select(this.svg)
+
+        this.G = this.svg.append("g")
+            .attr("id", "master_g" + this.uid)
+            .attr("transform", "translate("+ this.margin.left + "," + this.margin.top + ")")
+
+        this.G_d3 = d3.select(this.G);
+
+
+        // D3 TREE
+        this.treemap = d3.cluster()
+            .nodeSize([this.node_vertical_size,this.node_horizontal_size]) // todo
+            .separation(this._separate)
+
+        this.root = d3.hierarchy(this.treeData, d => d.children );
+        this.root.x0 = this.height / 2;
+        this.root.y0 = 0;
+
+        if (this.use_branch_lenght) {
+
+            // compute the branch length from the root till each nodes (d.branch_size)
+            this.max_length = 0
+            this.root.eachBefore(d => {
+                if (d.parent) {
+                    d.branch_size = d.parent.branch_size + d.data.branch_length
+                    if (d.branch_size > this.max_length) {
+                        this.max_length = d.branch_size
+                    }
+                } else {
+                    d.branch_size = 0
+                }
+            })
+        }
+
+        this.update(this.root);
+
+    }
+
+    this.update = function(source) {
+
+        var that = this
+
+        // Assigns the x and y position for the nodes
+        this.treeData  = this.treemap(this.root);
+
+        // Compute the new tree layout.
+        this.nodes = this.treeData.descendants();
+        this.links = this.treeData.descendants().slice(1);
+
+        if (this.use_branch_lenght) {
+            // Create a scale between branch size domain and y pos range
+            var max_y = 0;
+            this.nodes.forEach(d => {
+                if (d.y > max_y) {
+                    max_y = d.y
+                }
+            })
+            this.scale_branch_length = d3.scaleLinear().domain([0, this.max_length]).range([this.treeData.y, max_y])
+
+            this.nodes.forEach(d => d.y = this.scale_branch_length(d.branch_size))
+        }
+
+
+        // ****************** Nodes section ***************************
+
+        // Update the nodes...
+        var node = this.G.selectAll('g.node')
+            .data(this.nodes, function(d) {return d.id || (d.id = ++i); });
+
+        // Enter any new modes at the parent's previous position.
+        var nodeEnter = node.enter().append('g')
+            .attr('class', 'node')
+            .attr("transform", function(d) {
+                return "translate(" + source.y0 + "," + source.x0 + ")";
+            })
+            .on('click', this._click)
+
+        // Add Circle for the nodes
+        nodeEnter.append('circle')
+            .attr('class', 'node')
+            .attr('r', 1e-6)
+            .style("fill", function(d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            });
+
+        // Add labels for the nodes
+        nodeEnter.append('text')
+            .attr("dy", ".35em")
+            .attr("x", function(d) {
+                return d.children || d._children ? -13 : 13;
+            })
+            .attr("text-anchor", function(d) {
+                return d.children || d._children ? "end" : "start";
+            })
+            .text(function(d) { return d.data.name; });
+
+        nodeEnter.append("path")
+            .attr("class", "triangle")
+            .attr("d", function (d) {
+                return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+            });
+
+        nodeEnter.append("rect").filter(d => this._getChildLeaves(d).length > 3)
+            .attr("x", -20)
+            .attr("y", -30)
+            .attr("width",  10)
+            .attr("height",  40)
+            .attr("fill", "red")
+
+
+
+        // UPDATE
+        var nodeUpdate = nodeEnter.merge(node);
+
+        // Transition to the proper position for the node
+        nodeUpdate.transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                return "translate(" + d.y + "," + d.x + ")";
+            });
+
+
+        // Update the node attributes and style
+        nodeUpdate.select('circle.node')
+            .attr('r', d => d._children ?  1e-6 : 5 )
+            .style("fill", function(d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            })
+            .attr('cursor', 'pointer');
+
+
+
+        // Remove any exiting nodes
+        var nodeExit = node.exit().transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                return "translate(" + source.y + "," + source.x + ")";
+            })
+            .remove();
+
+        nodeExit.select("path")
+            .attr("d", function (d) {
+                return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+            });
+
+
+        // On exit reduce the node circles size to 0
+        nodeExit.select('circle')
+            .attr('r', 1e-6);
+
+        // On exit reduce the opacity of text labels
+        nodeExit.select('text')
+            .style('fill-opacity', 1e-6);
+
+
+        node.each(function (d) {
+
+
+            if (d._children) {
+
+                var leaves = this._getChildLeaves(d);
+                var triangle_y = this._mean(leaves.map(i => i.y) ) - d.y;
+
+
+                d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
+                    .attr("d", function (d) {
+                        var y_length = triangle_y
+                        var x_length = this.node_vertical_size * Math.sqrt(leaves.length)
+                        return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
+                    })
+
+            }
+
+            if (d.children) {
+                d3.select(this).select("path").transition().duration(duration)
+                    .attr("d", function (d) {
+                        return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+                    });
+            }
+
+        })
+
+        // ****************** links section ***************************
+
+        // Update the links...
+        var link = this.G.selectAll('path.link')
+            .data(this.links, function(d) { return d.id; });
+
+        // Enter any new links at the parent's previous position.
+        var linkEnter = link.enter().insert('path', "g")
+            .attr("class", "link")
+            .attr('d', function(d){
+                var o = {x: source.x0, y: source.y0}
+                return that._diagonal(o, o)
+            });
+
+        // UPDATE
+        var linkUpdate = linkEnter.merge(link);
+
+        // Transition back to the parent element position
+        linkUpdate.transition()
+            .duration(duration)
+            .attr('d', function(d){ return that._diagonal(d, d.parent) });
+
+        // Remove any exiting links
+        var linkExit = link.exit().transition()
+            .duration(duration)
+            .attr('d', function(d) {
+                var o = {x: source.x, y: source.y}
+                return that._diagonal(o, o)
+            })
+            .remove();
+
+        // Store the old positions for transition.
+        this.nodes.forEach(function(d){
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+
+
+
+    }
+
+    // PRIVATE METHODS
+
+    this._zoomed = function({transform}) {
+        d3.select("#master_g" + that.uid).attr("transform", transform);
+    }
+
+    this._separate =  function(a, b) { // todo
+
+
+        var spacer = 1;
+
+
+        spacer += a._children ? Math.sqrt(getChildLeaves(a).length) * 1  : 0
+        spacer += b._children ? Math.sqrt(getChildLeaves(b).length) * 1 : 0
+
+        return spacer;
+    }
+
+    this._getChildLeaves =  function(d) {
+        if (d.children || d._children) {
+            var leaves = [];
+            var children = this._getChildren(d);
+            for (var i = 0; i < children.length; i++) {
+                leaves = leaves.concat(this._getChildLeaves(children[i]));
+            }
+            return leaves;
+        } else {
+            return [d];
+        }
+    }
+
+    this._getChildren =  function(d) {
+        return d._children ? d._children : (d.children ? d.children : []);
+    }
+
+    this._mean = function(array){
+        return array.reduce((a, b) => a + b) / array.length
+    }
+
+    this._centerNode = function(source) {
+        var t = d3.zoomTransform(this.svg.node());
+        var x = -source.y0;
+        var y = -source.x0;
+        x = x * 1 + this.width / 2;
+        y = y * 1 + this.height / 2;
+        this.svg_d3.transition().duration(this.duration).call( this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
+
+    }
+
+    this._diagonal = function(s, d) {
+
+        //var path = `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`
+
+        var path =   "M" + s.y + "," + s.x + "L" + d.y + "," + s.x + "L" + d.y + "," + d.x;
+
+        return path
+    }
+
+    this._click = function(event, d) {
+
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        this._update(d);
+
+
+
+
+
+
+    }
+
+    return this
+
+}
+
 
 /*
-     returns list of leaf nodes that are children of d
-     */
+
 function getChildLeaves(d) {
     if (d.children || d._children) {
         var leaves = [];
@@ -15,14 +394,12 @@ function getChildLeaves(d) {
     }
 }
 
-/*
-Function that returns unvisible children or visible children if one or the other are given as input
-*/
+
 function getChildren(d) {
     return d._children ? d._children : (d.children ? d.children : []);
 }
 
-/* Function that calculates mean of array items values */
+
 function mean(array){
     return array.reduce((a, b) => a + b) / array.length
 }
@@ -57,13 +434,7 @@ function separate(a, b) { // todo
         width = parseFloat(window.getComputedStyle(container).width) - margin.left - margin.right,
         height = parseFloat(window.getComputedStyle(container).height)  - margin.top - margin.bottom;
 
-    // ZOOM
-    var zoom = d3.zoom().on("zoom", zoomed)
 
-    function zoomed({transform}) {
-        d3.select("#master_g").attr("transform", transform);
-
-    }
 
     // SVG
     var svg = d3.select("#container").append("svg")
@@ -141,9 +512,9 @@ function separate(a, b) { // todo
                     max_y = d.y
                 }
             })
-            var lenght_to_y = d3.scaleLinear().domain([0, max_length]).range([treeData.y, max_y])
+            var scale_branch_length = d3.scaleLinear().domain([0, max_length]).range([treeData.y, max_y])
 
-            nodes.forEach(d => d.y = lenght_to_y(d.branch_size))
+            nodes.forEach(d => d.y = scale_branch_length(d.branch_size))
         }
 
 
@@ -362,4 +733,29 @@ document.onkeypress = function (e) {
     }
 
 };
+
+
+
+  document.onkeypress = function (e) {
+        e = e || window.event;
+
+        if (e.key == 'z'){
+
+            var ns = []
+            tree1.root.each(d => ns.push(d));
+
+            var randomElement = ns[Math.floor(Math.random() * ns.length)];
+
+
+            tree1._centerNode(randomElement)
+
+
+
+        }
+
+    };
+
+    */
+
+
 

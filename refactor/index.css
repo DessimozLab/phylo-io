@@ -3,10 +3,21 @@ body{
     background-color: #ccc
 }
 
-#container{
-    width: 1600px;
+#container1{
+    display: inline-block;
+    width: 40%;
     height: 800px;
-    margin: 148px;
+    margin: 92px;
+    border: #0f0f0f 4px solid;
+    background-color: #ddd;
+    padding: 8px;
+}
+
+#container2{
+    display: inline-block;
+    width: 40%;
+    height: 800px;
+    margin: 92px;
     border: #0f0f0f 4px solid;
     background-color: #ddd;
     padding: 8px;
