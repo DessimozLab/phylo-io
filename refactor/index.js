@@ -30,6 +30,7 @@ function PhyloTree(){
     this.use_branch_lenght;
     this.max_length
     this.scale_branch_length;
+    this.stack;
 
     // MISC
     this.init_params;
@@ -45,10 +46,11 @@ function PhyloTree(){
 
         uid += 1 // this help to have an unique id for each tree for DOM id reference.
 
-        this.init_params = params || {'data_type': 'newick', "use_branch_lenght": true};
+        this.init_params = params || {'data_type': 'newick', "use_branch_lenght": true, 'stack': false}; // todo if only one param is set should work
         this.use_branch_lenght = this.init_params.use_branch_lenght;
         this.data_type = this.init_params.data_type;
         this.container_id = container_id;
+        this.stack = this.init_params.stack;
 
         // CONTAINER
         this.container = document.getElementById(container_id);
@@ -72,13 +74,13 @@ function PhyloTree(){
             .attr("height", this.height + this.margin.top + this.margin.bottom)
             .call(this.zoom)
             .on("dblclick.zoom", null)
-            .call(this.zoom.transform, d3.zoomIdentity.translate(this.margin.left, this.margin.top))
+            .call(this.zoom.transform, d3.zoomIdentity.translate(this.margin.left,  (this.height/2 +  this.margin.top) ))
 
         this.svg_d3 = d3.select(this.svg)
 
         this.G = this.svg.append("g")
             .attr("id", "master_g" + this.uid)
-            .attr("transform", "translate("+ this.margin.left + "," + this.margin.top + ")")
+            .attr("transform", "translate("+ this.margin.left + "," + (this.height/2 +  this.margin.top) + ")")
 
         this.G_d3 = d3.select(this.G);
 
@@ -176,12 +178,16 @@ function PhyloTree(){
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
 
-        nodeEnter.append("rect").filter(d => this._getChildLeaves(d).length > 3)
-            .attr("x", -20)
-            .attr("y", -30)
-            .attr("width",  10)
-            .attr("height",  40)
-            .attr("fill", "red")
+        if (this.stack) {
+
+            nodeEnter.append("rect").filter(d => this._getChildLeaves(d).length > 3)
+                .attr("x", -20)
+                .attr("y", -30)
+                .attr("width", 10)
+                .attr("height", 40)
+                .attr("fill", "red")
+
+        }
 
 
 
