@@ -275,8 +275,8 @@ function PhyloTree(){
 
 
         similarity = d3.scaleLinear()
-            .domain([0, 1]) // unit: topology similarity
-            .range(["red", "green"]) // unit: color
+            .domain([1, 0.8, 0.6, 0.4, 0.2, 0]) // unit: topology similarity
+            .range( ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)']) // unit: color
 
         // Transition back to the parent element position
         linkUpdate.transition()
@@ -401,16 +401,16 @@ function PhyloTree(){
      */
     this._createDeepLeafList = function(_tree) {
 
-
-
         this._postorderTraverse(_tree, function(d){
             var deepLeafList = [];
 
             for (var i=0; i < d._leaves.length; i++){
 
-                deepLeafList.push(d._leaves[i].name)
+
+                deepLeafList.push(d._leaves[i].data.name)
             }
             d.deepLeafList = deepLeafList;
+
 
         });
     }

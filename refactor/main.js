@@ -35,6 +35,7 @@ function PhyloIO() {
         if (this.compareMode){
 
             this.compare(this.trees[0].tree, this.trees[1].tree)
+
             this.trees.forEach(element => element.tree.update(element.tree.root));
 
         }
@@ -51,7 +52,7 @@ function PhyloIO() {
         for (var i = 0; i < tree1._leaves.length; i++) {
             for (var j = 0; j < tree2._leaves.length; j++) {
 
-                if (tree1._leaves[i].name === tree2._leaves[j].name) {
+                if (tree1._leaves[i].data.name === tree2._leaves[j].data.name) {
                     tree1._leaves[i].correspondingLeaf = tree2._leaves[j];
                     tree2._leaves[j].correspondingLeaf = tree1._leaves[i];
 
@@ -61,6 +62,7 @@ function PhyloIO() {
 
         t1._createDeepLeafList(tree1);
         t2._createDeepLeafList(tree2);
+
 
         this.getVisibleBCNs(tree1,tree2);
 
@@ -137,7 +139,7 @@ Function that returns unvisible children or visible children if one or the other
 
 
 
-            var test = $.inArray(tree._leaves[i].name, node.deepLeafList);
+            var test = $.inArray(tree._leaves[i].data.name, node.deepLeafList);
 
 
             if (test > -1){
@@ -213,6 +215,7 @@ Function that returns unvisible children or visible children if one or the other
         var lv = v.deepLeafList;
         var ln = n.deepLeafList;
 
+
         var lvlen = lv ? lv.length : 0;
         var lnlen = ln ? ln.length : 0;
 
@@ -220,6 +223,7 @@ Function that returns unvisible children or visible children if one or the other
 
 
         var intersect = _.intersection(lv, ln).length;
+
         return intersect / (lvlen + lnlen - intersect);
     }
 
