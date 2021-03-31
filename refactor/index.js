@@ -190,7 +190,6 @@ function PhyloTree(){
         }
 
 
-
         // UPDATE
         var nodeUpdate = nodeEnter.merge(node);
 
@@ -274,9 +273,15 @@ function PhyloTree(){
         // UPDATE
         var linkUpdate = linkEnter.merge(link);
 
+
+        similarity = d3.scaleLinear()
+            .domain([0, 1]) // unit: topology similarity
+            .range(["red", "green"]) // unit: color
+
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(duration)
+            .style('stroke', d => d.elementS ? similarity(d.elementS) : "#ccc" )
             .attr('d', function(d){ return that._diagonal(d, d.parent) });
 
         // Remove any exiting links
@@ -382,6 +387,86 @@ function PhyloTree(){
         }
         that.update(d);
 
+    }
+
+    /**
+     Description:
+     Creates list of leaves of each node in subtree rooted at v
+
+     Note:
+     Difference between deep leaf list and leaves in:
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     - Root has leaves: A, B, C and D (terminal leaves)
+     - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
+     */
+    this._createDeepLeafList = function(_tree) {
+
+
+
+        this._postorderTraverse(_tree, function(d){
+            var deepLeafList = [];
+
+            for (var i=0; i < d._leaves.length; i++){
+
+                deepLeafList.push(d._leaves[i].name)
+            }
+            d.deepLeafList = deepLeafList;
+
+        });
+    }
+
+    /*
+Description:
+Traverses and performs function f on treenodes in postorder
+Arguments:
+d: the tree object
+f: callback function
+do_children (optional, default: true): consider invisible children?
+Comments:
+if do_children === false, doesn't traverse _children, only children
+_children means the children are not visible in the visualisation, i.e they are collapsed
+*/
+    this._postorderTraverse = function(d, f, do_children) {
+
+        if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
+            do_children = true;
+        }
+        var children = [];
+        if (do_children) {
+            children = that._getChildren(d);
+        } else {
+            if (d.children) {
+                children = d.children
+            }
+        }
+        if (children.length > 0) {
+            for (var i = 0; i < children.length; i++) {
+                this._postorderTraverse(children[i], f, do_children);
+            }
+            f(d);
+            return;
+
+        } else {
+            f(d);
+            return;
+        }
+    }
+
+
+    /*
+     returns list of leaf nodes that are children of d
+     */
+    this._getChildLeaves = function(d) {
+        if (d.children || d._children) {
+            var leaves = [];
+            var children = this._getChildren(d);
+            for (var i = 0; i < children.length; i++) {
+                leaves = leaves.concat(this._getChildLeaves(children[i]));
+            }
+            return leaves;
+        } else {
+            return [d];
+        }
     }
 
     return this

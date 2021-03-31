@@ -1311,42 +1311,7 @@ var TreeCompare = function() {
 
     }
 
-    /*
-     Description:
-     Traverses and performs function f on treenodes in postorder
-     Arguments:
-     d: the tree object
-     f: callback function
-     do_children (optional, default: true): consider invisible children?
-     Comments:
-     if do_children === false, doesn't traverse _children, only children
-     _children means the children are not visible in the visualisation, i.e they are collapsed
-     */
-    function postorderTraverse(d, f, do_children) {
-        //console.log(d);
-        if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
-            do_children = true;
-        }
-        var children = [];
-        if (do_children) {
-            children = getChildren(d);
-        } else {
-            if (d.children) {
-                children = d.children
-            }
-        }
-        if (children.length > 0) {
-            for (var i = 0; i < children.length; i++) {
-                postorderTraverse(children[i], f, do_children);
-            }
-            f(d);
-            return;
 
-        } else {
-            f(d);
-            return;
-        }
-    }
     /*
      function important for rerooting to create new top leave root node
      */

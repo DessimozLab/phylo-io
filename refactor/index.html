@@ -11,6 +11,7 @@
     <!-- JS -->
     <script src="./biojs-io-newick.min.js"></script>
     <script src="./jquery-3.6.0.min.js"></script>
+    <script src="./underscore.min.js"></script>
     <script src="./d3.js"></script>
     <script  src="./main.js"></script>
     <script  src="./index.js"></script>
@@ -60,8 +61,8 @@
 
 
 
-    var tree1 = phyloio.trees[0]
-    var tree2 = phyloio.trees[1]
+    var tree1 = phyloio.trees[0].tree
+    var tree2 = phyloio.trees[1].tree
 
 
     document.onkeypress = function (e) {

@@ -35,7 +35,7 @@ body{
 
 .link {
     fill: none;
-    stroke: #ccc;
+    /*stroke: #ccc;*/
     stroke-width: 4px;
 }
 
