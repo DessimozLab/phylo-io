@@ -6,7 +6,7 @@ body{
 #container1{
     display: inline-block;
     width: 40%;
-    height: 800px;
+    height: 600px;
     margin: 32px;
     border: #0f0f0f 4px solid;
     background-color: #ddd;
@@ -16,7 +16,7 @@ body{
 #container2{
     display: inline-block;
     width: 40%;
-    height: 800px;
+    height: 600px;
     margin: 32px;
     border: #0f0f0f 4px solid;
     background-color: #ddd;
