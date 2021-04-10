@@ -1,10 +1,10 @@
+// Reroot
+// topology + BCN
 
 var parser = require("biojs-io-newick");
 var uid = 0
 
 function PhyloIO() {
-
-
 
     // GENERAL
     var that_phylo = this;
@@ -43,10 +43,27 @@ function PhyloIO() {
         var right = Object.entries(that_phylo.containers)[1][1]
 
         shortcuts = {
-            "q": function(){left.centerNode(left.viewer.get_random_node())},
+
+            "r": function(){left.viewer.centerNode(left.viewer.get_random_node())},
             "a": function(){left.viewer.modify_node_hozirontal_size(-5)},
             "d": function(){left.viewer.modify_node_hozirontal_size(5)},
+            "w": function(){left.viewer.modify_node_vertical_size(-5)},
+            "s": function(){left.viewer.modify_node_vertical_size(5)},
+            "q": function(){left.previous_model()},
+            "e": function(){left.next_model()},
+
+
+
+            "u": function(){right.previous_model()},
+            "o": function(){right.next_model()},
+            "p": function(){right.viewer.centerNode(right.viewer.get_random_node())},
+            "j": function(){right.viewer.modify_node_hozirontal_size(-5)},
+            "l": function(){right.viewer.modify_node_hozirontal_size(5)},
+            "i": function(){right.viewer.modify_node_vertical_size(-5)},
+            "k": function(){right.viewer.modify_node_vertical_size(5)},
         }
+
+
 
         if (shortcuts.hasOwnProperty(e.key)){
             shortcuts[e.key]()
@@ -63,8 +80,9 @@ function Container(container_id){
     this.uid = uid; uid += 1;
     this.div_id = container_id;
     this.settings = {};
-    this.models = {};
-    this.viewer = new Viewer(this.div_id);
+    this.models = [];
+    this.current_model = 0;
+    this.viewer = new Viewer(this);
 
     // API
     this.configure_container = function(params){ // todo: control if params exists
@@ -74,25 +92,63 @@ function Container(container_id){
         }
     }
     this.start = function(){
-        this.viewer.update_data(this.models[Object.keys(this.models)[0]]);
+        this.viewer.update_data(this.models[this.current_model]);
         this.viewer.update(this.viewer.hierarchy);
+    }
+    this.previous_model = function(){
+        if (this.current_model > 0){
+
+            this.store_zoom_transform(this.models[this.current_model])
+
+            this.current_model -= 1;
+            this.viewer.update_data(this.models[this.current_model])
+            this.viewer.update(this.viewer.hierarchy)
+
+            var z = this.models[this.current_model].data.zoom
+
+            if (z) {this.viewer.set_zoom(z.k,z.x,z.y)}
+        }
+    }
+    this.next_model = function(){
+        if (this.current_model < this.models.length -1 ){
+
+            this.store_zoom_transform(this.models[this.current_model])
+
+            this.current_model += 1;
+            this.viewer.update_data(this.models[this.current_model]);
+            this.viewer.update(this.viewer.hierarchy);
+
+
+            var z = this.models[this.current_model].data.zoom
+
+            if (z) {this.viewer.set_zoom(z.k,z.x,z.y)}
+        }
+    }
+    this.store_zoom_transform = function(model){
+        model.store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
     }
 
     // PRIVATE
     this._add_model = function(model){
-        this.models[model.uid] = model;
+        this.models.push(model);
+    }
+    this.trigger_collapse = function(data){
+        this.models[this.current_model].collapse(data)
+        this.viewer._build_d3_data()
+        this.viewer.update(this.viewer.hierarchy)
     }
 
     return this;
 }
 
-function Viewer(container_id){
+function Viewer(container){
 
     var that_viewer = this;
     var i = 0;
     var duration = 0;
 
     // GENERAL
+    this.container_object = container
     this.uid = uid; uid += 1;
     this.data; // current model used no model here just raw data
     this.hierarchy;
@@ -103,7 +159,7 @@ function Viewer(container_id){
     this.svg_d3;
     this.G;
     this.G_d3;
-    this.container = document.getElementById(container_id);
+    this.container = document.getElementById(this.container_object.div_id);
     this.container_d3 = d3.select(this.container);
 
     // TREE VARIABLES
@@ -132,27 +188,6 @@ function Viewer(container_id){
         // Compute the new tree layout.
         this.nodes = data_d3.descendants();
         this.links = data_d3.descendants().slice(1);
-
-        /*
-
-        if (this.use_branch_lenght) {
-
-            // Create a scale between branch size domain and y pos range
-            var max_y = 0;
-            this.nodes.forEach(d => {
-                if (d.y > max_y) {
-                    max_y = d.y
-                }
-            })
-
-            this.scale_branch_length = d3.scaleLinear().domain([0, this.max_length]).range([data_d3.y, max_y])
-
-            this.nodes.forEach(d => d.y = this.scale_branch_length(d.branch_size))
-        }
-
-
-         */
-
 
         // ****************** Nodes section ***************************
 
@@ -251,7 +286,8 @@ function Viewer(container_id){
             .style('fill-opacity', 1e-6);
 
 
-        node.each(function (d) {
+        nodeUpdate.each(function (d) {
+
 
             if (d._children) {
 
@@ -355,6 +391,20 @@ function Viewer(container_id){
         this.hierarchy.x0 = this.height / 2;
         this.hierarchy.y0 = 0;
 
+        this.hierarchy.each(d => {
+
+            if (d.data.collapse) {
+                d._children = d.children;
+                d.children = null;
+            }
+            else {
+                d._children = null;
+
+
+            }
+
+        })
+
         if (this.use_branch_lenght) {
 
             // compute the branch length from the root till each nodes (d.branch_size)
@@ -381,14 +431,47 @@ function Viewer(container_id){
             this.scale_branch_length = d3.scaleLinear().domain([0, this.max_length]).range([x.y, max_y])
 
         }
+
     }
     this.modify_node_hozirontal_size = function(variation){
 
-        console.log(this.node_horizontal_size)
         this.node_horizontal_size += variation
         this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
         this._build_d3_data()
         this.update(this.hierarchy)
+
+    }
+    this.modify_node_vertical_size = function(variation){
+
+        this.node_vertical_size += variation
+        this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
+        this._build_d3_data()
+        this.update(this.hierarchy)
+
+    }
+
+    this.get_random_node = function(){
+        var ns = []
+        this.hierarchy.each(d => ns.push(d));
+        return ns[Math.floor(Math.random() * ns.length)];
+
+    }
+    this.centerNode = function(source) {
+
+
+        var t = d3.zoomTransform(this.svg.node());
+        var x = -source.y0;
+        var y = -source.x0;
+        x = x * 1 + this.width / 2;
+        y = y * 1 + this.height / 2;
+        d3.select('#svg' + this.uid ).transition().duration(this.duration).call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
+
+    }
+    this.set_zoom = function (k,x,y) {
+
+        //x = x * 1 + this.width / 2;
+        //y = y * 1 + this.height / 2;
+        d3.select('#svg' + this.uid ).transition().duration(this.duration).call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
 
     }
 
@@ -433,17 +516,7 @@ function Viewer(container_id){
         return path
     }
     this._click = function(event, d) {
-
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-        } else {
-            d.children = d._children;
-            d._children = null;
-            d.triangle_width = null;
-        }
-        that_viewer.update(d);
-
+        that_viewer.container_object.trigger_collapse(d.data)
     }
     /**
      Description:
@@ -532,7 +605,17 @@ function Model(data, params){
     var params = params || {'data_type': 'newick', "use_branch_lenght": true, 'stack': false}; // todo if only one param is set should work;
 
     // API
-    this.api = function(){}
+    this.collapse = function(data){
+        data.collapse ? data.collapse = false : data.collapse = true;
+    }
+    this.store_zoomTransform = function(zoom){
+
+        this.data.zoom = {
+            "k":zoom.k,
+            "x":zoom.x,
+            "y":zoom.y,
+        };
+    }
 
     // PRIVATE
     this._parse = function(){
@@ -544,12 +627,14 @@ function Model(data, params){
 
     }
 
+
     // GENERAL
     this.uid = uid; uid += 1;
     this.data_type = params.data_type;
 
     this.input_data = data;
     this.data = this._parse();
+
 
     return this;
 }
