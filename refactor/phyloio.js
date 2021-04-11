@@ -137,6 +137,13 @@ function Container(container_id){
         this.viewer._build_d3_data()
         this.viewer.update(this.viewer.hierarchy)
     }
+    this.trigger_reroot = function(data){
+        this.models[this.current_model].reroot(data)
+        this.viewer.update_data(this.models[this.current_model])
+        //this.viewer._build_d3_data()
+        this.viewer.update(this.viewer.hierarchy)
+
+    }
 
     return this;
 }
@@ -178,7 +185,7 @@ function Viewer(container){
         this.data = model.data;
         this._build_d3_data();
     }
-    this.update = function(source){
+    this.update = function(source){ //rename render
 
         var that_viewer = this
 
@@ -288,7 +295,6 @@ function Viewer(container){
 
         nodeUpdate.each(function (d) {
 
-
             if (d._children) {
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
@@ -313,7 +319,9 @@ function Viewer(container){
 
         // Update the links...
         var link = this.G.selectAll('path.link')
-            .data(this.links, function(d) { return d.id; });
+            .data(this.links, function(d) { return d.id; })
+
+
 
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert('path', "g")
@@ -321,10 +329,24 @@ function Viewer(container){
             .attr('d', function(d){
                 var o = {x: source.x0, y: source.y0}
                 return that_viewer._diagonal(o, o)
-            });
+            })
+
+
+        linkEnter.on("click", d =>
+        {
+            that_viewer.container_object.trigger_reroot(d.path[0].__data__)
+        })
+
 
         // UPDATE
         var linkUpdate = linkEnter.merge(link);
+
+
+
+
+
+
+
 
 
         similarity = d3.scaleLinear()
@@ -335,7 +357,8 @@ function Viewer(container){
         linkUpdate.transition()
             .duration(duration)
             .style('stroke', d => d.elementS ? similarity(d.elementS) : "#ccc" )
-            .attr('d', function(d){ return that_viewer._diagonal(d, d.parent) });
+            .attr('d', function(d){ return that_viewer._diagonal(d, d.parent) })
+
 
         // Remove any exiting links
         var linkExit = link.exit().transition()
@@ -608,6 +631,118 @@ function Model(data, params){
     this.collapse = function(data){
         data.collapse ? data.collapse = false : data.collapse = true;
     }
+    this.reroot = function(data){
+
+
+        // extract meta data (zoom)
+        var meta = this.data.zoom;
+
+        // create new root r
+        var root = {"children": [], "name": "", "branch_length": 0, "new": true}
+
+        // detach the base node
+        var p = this.get_parent(data.data)
+
+
+        const index = p.children.indexOf(data.data);
+        if (index > -1) {
+            p.children.splice(index, 1);
+        }
+
+        root.children.push(data.data)
+        root.children.push(p)
+
+        var current = p;
+        var p = this.get_parent(p)
+
+
+        while(p){
+
+
+
+            const index = p.children.indexOf(current);
+            if (index > -1) {
+                p.children.splice(index, 1);
+            }
+
+            current.children.push(p);
+
+
+            if (this.get_parent(p)){var current = p;}
+
+            var p = this.get_parent(p)
+
+        }
+
+        // remove root
+
+        function process(o,key,value) {
+            if (key == 'root' && value == true){
+                return true
+            }
+        }
+
+        function traverse(o,func) {
+            for (var i in o) {
+                if (func.apply(this,[o,i,o[i]])){
+                    return o
+                }
+                if (o[i] !== null && typeof(o[i])=="object") {
+                    //going one step down in the object tree!!
+                    var c = traverse(o[i], func)
+                    if (c) {
+
+                        console.log(o,c)
+
+                        var index2 = o.indexOf(c);
+                        if (index2 > -1) {
+                            o.splice(index2, 1);
+                        }
+
+                        o.push(c.children[0])
+                        c.children = []
+
+
+                }
+                }
+            }
+        }
+
+        traverse(root,process);
+
+
+
+
+
+
+        /*
+
+        var index2 = this.data.children.indexOf(current);
+        if (index2 > -1) {
+            this.data.children.splice(index2, 1);
+        }
+
+
+         */
+
+        //console.log(root)
+
+        //current.children.push(this.data);
+
+
+
+
+
+
+
+
+        root.zoom = meta
+
+        this.data = root;
+        this.data.root = true;
+
+
+    }
     this.store_zoomTransform = function(zoom){
 
         this.data.zoom = {
@@ -627,13 +762,47 @@ function Model(data, params){
 
     }
 
-
     // GENERAL
     this.uid = uid; uid += 1;
     this.data_type = params.data_type;
 
     this.input_data = data;
     this.data = this._parse();
+    this.data.root = true;
+
+    this.get_parent = function(e){
+
+        var p = false;
+
+        function process(key,value) {
+            if (key ==  "children"){
+                for (var i in value) {
+                    if (value[i] == e){
+                        return true
+                    }
+                }
+            }
+        }
+
+        function traverse(o,func) {
+            for (var i in o) {
+                if (func.apply(this,[i,o[i]])){
+                    p = o
+                }
+                if (o[i] !== null && typeof(o[i])=="object") {
+                    //going one step down in the object tree!!
+                    traverse(o[i],func)
+                }
+            }
+        }
+
+        traverse(this.data,process);
+
+        return p
+    }
+
+
+    // todo create meta data object in init
 
 
     return this;
