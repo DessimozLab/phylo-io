@@ -33,9 +33,7 @@ function PhyloIO() {
         }
     }
 
-    // Private
-
-    // Keyboard manager
+    // KEYBOARD
     document.onkeypress = function (e) {
         e = e || window.event;
 
@@ -98,7 +96,7 @@ function Container(container_id){
     this.previous_model = function(){
         if (this.current_model > 0){
 
-            this.store_zoom_transform(this.models[this.current_model])
+            this.models[this.current_model].store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
 
             this.current_model -= 1;
             this.viewer.update_data(this.models[this.current_model])
@@ -112,7 +110,7 @@ function Container(container_id){
     this.next_model = function(){
         if (this.current_model < this.models.length -1 ){
 
-            this.store_zoom_transform(this.models[this.current_model])
+            this.models[this.current_model].store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
 
             this.current_model += 1;
             this.viewer.update_data(this.models[this.current_model]);
@@ -124,14 +122,8 @@ function Container(container_id){
             if (z) {this.viewer.set_zoom(z.k,z.x,z.y)}
         }
     }
-    this.store_zoom_transform = function(model){
-        model.store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
-    }
 
-    // PRIVATE
-    this._add_model = function(model){
-        this.models.push(model);
-    }
+    // INTERFACE WITH MODEL
     this.trigger_collapse = function(data){
         this.models[this.current_model].collapse(data)
         this.viewer._build_d3_data()
@@ -143,6 +135,11 @@ function Container(container_id){
         //this.viewer._build_d3_data()
         this.viewer.update(this.viewer.hierarchy)
 
+    }
+
+    // PRIVATE
+    this._add_model = function(model){
+        this.models.push(model);
     }
 
     return this;
@@ -633,16 +630,165 @@ function Model(data, params){
     }
     this.reroot = function(data){
 
-
         // extract meta data (zoom)
         var meta = this.data.zoom;
 
         // create new root r
         var root = {"children": [], "name": "", "branch_length": 0, "new": true}
 
+        var parent = data.data.parent
+        var child = data.data
+
+        root.children.push(child)
+        parent.children.push(root)
+
+        this.set_parent(child, root )
+        this.set_parent(root, parent )
+
+        // remove current node from parent children
+        const index = parent.children.indexOf(child);
+        if (index > -1) {
+            parent.children.splice(index, 1);
+        }
+
+        var parent = parent
+        var child = root
+
+        var stack = []
+
+        while (parent.root != true) {
+
+            stack.push([parent,child])
+
+            child = parent
+            parent = parent.parent
+
+        }
+
+        stack.push([parent,child])
+
+        var f = function(p,c){
+
+            c.children.push(p)
+            p.parent =c
+
+
+
+            const b = p.children.indexOf(c);
+            if (b > -1) {
+                p.children.splice(b, 1);
+            }
+
+        }
+
+
+        for (var e in stack){
+            var p = stack[e][0]
+            var c = stack[e][1]
+
+            f(p,c)
+
+        }
+
+
+        var c = parent.children[0]
+        var r = parent
+        var p = parent.parent
+
+        const ce = parent.parent.children.indexOf(r);
+        if (ce > -1) {
+            parent.parent.children.splice(ce, 1);
+        }
+
+        c.parent = p
+        p.children.push(c)
+        r = null
+
+
+
+
+
+
+
+
+
+        //remove root
+
+
+
+
+
+        /*
+
+        root.children.push(data.data)
+        data.data.parent.children.push(root)
+
+        var old_p = data.data.parent
+        this.set_parent(data.data, root )
+        this.set_parent(root, old_p )
+
+
+        // remove current node from parent children
+        const index = root.parent.children.indexOf(data.data);
+        if (index > -1) {
+            root.parent.children.splice(index, 1);
+        }
+
+        var previous = root
+        var current_node = root.parent
+        var old_current_node;
+
+        while(current_node.root != "true"){
+
+            // remove current node from parent children
+            const index = current_node.children.indexOf(previous);
+            if (index > -1) {
+                current_node.children.splice(index, 1);
+            }
+
+            // reverse parent/child
+            previous.children.push(current_node)
+
+            old_current_node = current_node
+
+            current_node = current_node.parent
+
+            this.set_parent(current_node, previous)
+
+            previous = current_node
+
+
+
+
+        }
+
+
+         */
+
+
+/*
+        const g = current_node.parent.children.indexOf(current_node);
+        if (g > -1) {
+            current_node.parent.children.splice(g, 1);
+        }
+
+        */
+
+
+
+
+        /*
+
+
+
+
+
+
+
+
+
         // detach the base node
         var p = this.get_parent(data.data)
-
 
         const index = p.children.indexOf(data.data);
         if (index > -1) {
@@ -655,10 +801,11 @@ function Model(data, params){
         var current = p;
         var p = this.get_parent(p)
 
+        this.set_parent(data.data, root)
+
+        var old_p;
 
         while(p){
-
-
 
             const index = p.children.indexOf(current);
             if (index > -1) {
@@ -668,12 +815,89 @@ function Model(data, params){
             current.children.push(p);
 
 
-            if (this.get_parent(p)){var current = p;}
+            var old_curr = current
 
-            var p = this.get_parent(p)
+
+            if (this.get_parent(p)) {
+                var current = p;
+                var p = this.get_parent(p)
+
+                this.set_parent(p, old_curr)
+            }
+            else {
+                old_p = p
+                var p = this.get_parent(p)
+                this.set_parent(old_p, old_curr)
+
+            }
+
+
+
+
+
+
 
         }
 
+
+         */
+
+        /*
+
+        var old_root = old_p
+        var pp = current
+
+        const v = pp.children.indexOf(old_root);
+        if (v > -1) {
+            pp.children.splice(v, 1);
+        }
+
+        var ff = old_root.children[0]
+        pp.children.push(ff)
+
+        old_root.children = null
+        old_root.parent = null
+        old_root.root = null
+
+        this.set_parent(ff, pp )
+
+
+
+
+        console.log(ff , pp)
+
+
+
+
+
+
+
+        var old_root;
+
+        for (var j in current.children ){
+            if (current.children[j].root == true)
+            {old_root = current.children[j] }
+        }
+
+
+        var parent_old_root = current
+
+        const v = parent_old_root.children.indexOf(old_root);
+        if (v > -1) {
+            parent_old_root.children.splice(v, 1);
+        }
+
+        var x = old_root.children[0]
+        parent_old_root.children.push(x);
+
+        old_root.children = []
+
+        this.set_parent(x, parent_old_root)
+
+
+*/
+
+        /*
         // remove root
 
         function process(o,key,value) {
@@ -683,16 +907,22 @@ function Model(data, params){
         }
 
         function traverse(o,func) {
+
+            //console.log(o)
+
             for (var i in o) {
                 if (func.apply(this,[o,i,o[i]])){
+
                     return o
                 }
                 if (o[i] !== null && typeof(o[i])=="object") {
                     //going one step down in the object tree!!
-                    var c = traverse(o[i], func)
-                    if (c) {
 
-                        console.log(o,c)
+
+                    console.log(o[i])
+                    var c = traverse(o[i], func)
+
+                    if (c) {
 
                         var index2 = o.indexOf(c);
                         if (index2 > -1) {
@@ -700,7 +930,11 @@ function Model(data, params){
                         }
 
                         o.push(c.children[0])
+                        //this.set_parent(c.children[0], o)
                         c.children = []
+
+
+
 
 
                 }
@@ -708,41 +942,47 @@ function Model(data, params){
             }
         }
 
-        traverse(root,process);
+        var remove_old_root = function(child, node)
+        {
+            if (child.root == true){
 
 
+                var old_root = child
+                var parent_old_root = node
+
+                console.log(old_root, parent_old_root)
 
 
+                var index2 = parent_old_root.children.indexOf(old_root);
+                if (index2 > -1) {
+                    parent_old_root.children.splice(index2, 1);
+                }
+
+                var x = old_root.children[0]
+                parent_old_root.children.push(x)
+
+                //this.set_parent(x, parent_old_root )
+
+                old_root.children = []
 
 
-        /*
-
-        var index2 = this.data.children.indexOf(current);
-        if (index2 > -1) {
-            this.data.children.splice(index2, 1);
+            }
         }
 
-
-         */
+        //this.traverse(root,null, remove_old_root)
 
         //console.log(root)
-
-        //current.children.push(this.data);
-
+        //traverse(root,process);
 
 
-
-
-
-
+*/
 
         root.zoom = meta
-
         this.data = root;
         this.data.root = true;
 
-
     }
+
     this.store_zoomTransform = function(zoom){
 
         this.data.zoom = {
@@ -762,48 +1002,55 @@ function Model(data, params){
 
     }
 
+    this.traverse = function(o,func_pre, func_post) {
+
+        if (func_pre){
+            func_pre.apply(this,[o,o["children"]])
+        }
+
+        if(o["children"]){
+
+            for (var c in o["children"] ) {
+
+                var child = o["children"][c]
+
+                child= this.traverse(child, func_pre, func_post)
+
+                if (func_post) {
+                    func_post.apply(this,[child,o])
+                }
+
+
+            }
+
+
+        }
+
+        return o
+
+    }
+
+    this.set_parent = function (node,parent){
+        node.parent = parent
+    }
+
+    this.factory = function(json){
+        return this.traverse(json, null , this.set_parent);
+    }
+
     // GENERAL
     this.uid = uid; uid += 1;
     this.data_type = params.data_type;
 
     this.input_data = data;
-    this.data = this._parse();
+    this.data = this.factory(this._parse());
+
     this.data.root = true;
 
     this.get_parent = function(e){
 
-        var p = false;
-
-        function process(key,value) {
-            if (key ==  "children"){
-                for (var i in value) {
-                    if (value[i] == e){
-                        return true
-                    }
-                }
-            }
-        }
-
-        function traverse(o,func) {
-            for (var i in o) {
-                if (func.apply(this,[i,o[i]])){
-                    p = o
-                }
-                if (o[i] !== null && typeof(o[i])=="object") {
-                    //going one step down in the object tree!!
-                    traverse(o[i],func)
-                }
-            }
-        }
-
-        traverse(this.data,process);
-
-        return p
+        return e.parent
     }
-
-
-    // todo create meta data object in init
-
 
     return this;
 }
