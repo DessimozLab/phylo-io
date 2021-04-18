@@ -1,17 +1,13 @@
-// Reroot
-// topology + BCN
 
 var parser = require("biojs-io-newick");
-var uid = 0
+var uid = 0 // unique id generator
 
 function PhyloIO() {
 
     // GENERAL
-    var that_phylo = this;
-    this.compareMode = false;
-
-    // CONTAINER
-    this.containers = {}
+    var that_phylo = this; // Back up for "this" when "this" is override like in click/event callback functions
+    this.compareMode = false; // If true, compute topology comparaison/distance between containers trees.
+    this.containers = {} // {container id -> Container() }
 
     // API
     this.create_container = function(container_id){
@@ -22,9 +18,8 @@ function PhyloIO() {
     this.add_tree_to_container = function(container, data, params){
 
         var params = params || undefined;
-
         var tree = new Model(data, params);
-        container._add_model(tree)
+        container.add_model(tree)
 
     }
     this.start = function(){
@@ -35,13 +30,14 @@ function PhyloIO() {
 
     // KEYBOARD
     document.onkeypress = function (e) {
+        // Only apply keyboard shortcut to the first (left) and second (right) created containers
         e = e || window.event;
 
         var left = Object.entries(that_phylo.containers)[0][1]
         var right = Object.entries(that_phylo.containers)[1][1]
 
         shortcuts = {
-
+            // LEFT
             "r": function(){left.viewer.centerNode(left.viewer.get_random_node())},
             "a": function(){left.viewer.modify_node_hozirontal_size(-5)},
             "d": function(){left.viewer.modify_node_hozirontal_size(5)},
@@ -49,9 +45,7 @@ function PhyloIO() {
             "s": function(){left.viewer.modify_node_vertical_size(5)},
             "q": function(){left.previous_model()},
             "e": function(){left.next_model()},
-
-
-
+            // RIGHT
             "u": function(){right.previous_model()},
             "o": function(){right.next_model()},
             "p": function(){right.viewer.centerNode(right.viewer.get_random_node())},
@@ -60,8 +54,6 @@ function PhyloIO() {
             "i": function(){right.viewer.modify_node_vertical_size(-5)},
             "k": function(){right.viewer.modify_node_vertical_size(5)},
         }
-
-
 
         if (shortcuts.hasOwnProperty(e.key)){
             shortcuts[e.key]()
@@ -75,11 +67,11 @@ function PhyloIO() {
 function Container(container_id){
 
     // GENERAL
-    this.uid = uid; uid += 1;
+    this.uid = uid++;
     this.div_id = container_id;
     this.settings = {};
     this.models = [];
-    this.current_model = 0;
+    this.current_model = 0; // current model index of this.models
     this.viewer = new Viewer(this);
 
     // API
@@ -132,13 +124,11 @@ function Container(container_id){
     this.trigger_reroot = function(data){
         this.models[this.current_model].reroot(data)
         this.viewer.update_data(this.models[this.current_model])
-        //this.viewer._build_d3_data()
         this.viewer.update(this.viewer.hierarchy)
-
     }
 
     // PRIVATE
-    this._add_model = function(model){
+    this.add_model = function(model){
         this.models.push(model);
     }
 
@@ -153,7 +143,7 @@ function Viewer(container){
 
     // GENERAL
     this.container_object = container
-    this.uid = uid; uid += 1;
+    this.uid = uid++;
     this.data; // current model used no model here just raw data
     this.hierarchy;
     this.d3_cluster;
@@ -372,6 +362,28 @@ function Viewer(container){
             d.y0 = d.y;
         });
     }
+    this.modify_node_hozirontal_size = function(variation){
+
+        this.node_horizontal_size += variation
+        this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
+        this._build_d3_data()
+        this.update(this.hierarchy)
+
+    }
+    this.modify_node_vertical_size = function(variation){
+
+        this.node_vertical_size += variation
+        this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
+        this._build_d3_data()
+        this.update(this.hierarchy)
+
+    }
+    this.get_random_node = function(){
+        var ns = []
+        this.hierarchy.each(d => ns.push(d));
+        return ns[Math.floor(Math.random() * ns.length)];
+
+    }
 
     // PRIVATE METHODS
     this._init = function(){
@@ -453,44 +465,19 @@ function Viewer(container){
         }
 
     }
-    this.modify_node_hozirontal_size = function(variation){
-
-        this.node_horizontal_size += variation
-        this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
-        this._build_d3_data()
-        this.update(this.hierarchy)
-
-    }
-    this.modify_node_vertical_size = function(variation){
-
-        this.node_vertical_size += variation
-        this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
-        this._build_d3_data()
-        this.update(this.hierarchy)
-
-    }
-
-    this.get_random_node = function(){
-        var ns = []
-        this.hierarchy.each(d => ns.push(d));
-        return ns[Math.floor(Math.random() * ns.length)];
-
-    }
     this.centerNode = function(source) {
 
+        var x = -source.y0 + this.width / 2;
+        var y = -source.x0 + this.height / 2;
 
-        var t = d3.zoomTransform(this.svg.node());
-        var x = -source.y0;
-        var y = -source.x0;
-        x = x * 1 + this.width / 2;
-        y = y * 1 + this.height / 2;
-        d3.select('#svg' + this.uid ).transition().duration(this.duration).call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
+        d3.select('#svg' + this.uid )
+            .transition()
+            .duration(this.duration)
+            .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
 
     }
     this.set_zoom = function (k,x,y) {
 
-        //x = x * 1 + this.width / 2;
-        //y = y * 1 + this.height / 2;
         d3.select('#svg' + this.uid ).transition().duration(this.duration).call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
 
     }
@@ -538,18 +525,17 @@ function Viewer(container){
     this._click = function(event, d) {
         that_viewer.container_object.trigger_collapse(d.data)
     }
-    /**
-     Description:
-     Creates list of leaves of each node in subtree rooted at v
-
-     Note:
-     Difference between deep leaf list and leaves in:
-     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
-     - Root has leaves: A, B, C and D (terminal leaves)
-     - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
-     */
     this._createDeepLeafList = function(_tree) {
+        /**
+         Description:
+         Creates list of leaves of each node in subtree rooted at v
 
+         Note:
+         Difference between deep leaf list and leaves in:
+         (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+         - Root has leaves: A, B, C and D (terminal leaves)
+         - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
+         */
         this._postorderTraverse(_tree, function(d){
             var deepLeafList = [];
 
@@ -563,19 +549,18 @@ function Viewer(container){
 
         });
     }
-    /*
-Description:
-Traverses and performs function f on treenodes in postorder
-Arguments:
-d: the tree object
-f: callback function
-do_children (optional, default: true): consider invisible children?
-Comments:
-if do_children === false, doesn't traverse _children, only children
-_children means the children are not visible in the visualisation, i.e they are collapsed
-*/
     this._postorderTraverse = function(d, f, do_children) {
-
+        /*
+     Description:
+     Traverses and performs function f on treenodes in postorder
+     Arguments:
+     d: the tree object
+     f: callback function
+     do_children (optional, default: true): consider invisible children?
+     Comments:
+     if do_children === false, doesn't traverse _children, only children
+     _children means the children are not visible in the visualisation, i.e they are collapsed
+     */
         if (do_children === undefined) { //check whether variable is defined, e.g. string, integer ...
             do_children = true;
         }
@@ -599,10 +584,11 @@ _children means the children are not visible in the visualisation, i.e they are 
             return;
         }
     }
-    /*
-     returns list of leaf nodes that are children of d
-     */
     this._getChildLeaves = function(d) {
+
+        /*
+    returns list of leaf nodes that are children of d
+    */
         if (d.children || d._children) {
             var leaves = [];
             var children = this._getChildren(d);
@@ -614,7 +600,7 @@ _children means the children are not visible in the visualisation, i.e they are 
             return [d];
         }
     }
-    
+
     this._init()
 
     return this;
@@ -681,7 +667,6 @@ function Model(data, params){
 
         }
 
-
         for (var e in stack){
             var p = stack[e][0]
             var c = stack[e][1]
@@ -690,6 +675,7 @@ function Model(data, params){
 
         }
 
+        // Remove root
 
         var c = parent.children[0]
         var r = parent
@@ -704,285 +690,11 @@ function Model(data, params){
         p.children.push(c)
         r = null
 
-
-
-
-
-
-
-
-
-        //remove root
-
-
-
-
-
-        /*
-
-        root.children.push(data.data)
-        data.data.parent.children.push(root)
-
-        var old_p = data.data.parent
-        this.set_parent(data.data, root )
-        this.set_parent(root, old_p )
-
-
-        // remove current node from parent children
-        const index = root.parent.children.indexOf(data.data);
-        if (index > -1) {
-            root.parent.children.splice(index, 1);
-        }
-
-        var previous = root
-        var current_node = root.parent
-        var old_current_node;
-
-        while(current_node.root != "true"){
-
-            // remove current node from parent children
-            const index = current_node.children.indexOf(previous);
-            if (index > -1) {
-                current_node.children.splice(index, 1);
-            }
-
-            // reverse parent/child
-            previous.children.push(current_node)
-
-            old_current_node = current_node
-
-            current_node = current_node.parent
-
-            this.set_parent(current_node, previous)
-
-            previous = current_node
-
-
-
-
-        }
-
-
-         */
-
-
-/*
-        const g = current_node.parent.children.indexOf(current_node);
-        if (g > -1) {
-            current_node.parent.children.splice(g, 1);
-        }
-
-        */
-
-
-
-
-        /*
-
-
-
-
-
-
-
-
-
-        // detach the base node
-        var p = this.get_parent(data.data)
-
-        const index = p.children.indexOf(data.data);
-        if (index > -1) {
-            p.children.splice(index, 1);
-        }
-
-        root.children.push(data.data)
-        root.children.push(p)
-
-        var current = p;
-        var p = this.get_parent(p)
-
-        this.set_parent(data.data, root)
-
-        var old_p;
-
-        while(p){
-
-            const index = p.children.indexOf(current);
-            if (index > -1) {
-                p.children.splice(index, 1);
-            }
-
-            current.children.push(p);
-
-
-            var old_curr = current
-
-
-            if (this.get_parent(p)) {
-                var current = p;
-                var p = this.get_parent(p)
-
-                this.set_parent(p, old_curr)
-            }
-            else {
-                old_p = p
-                var p = this.get_parent(p)
-                this.set_parent(old_p, old_curr)
-
-            }
-
-
-
-
-
-
-
-        }
-
-
-         */
-
-        /*
-
-        var old_root = old_p
-        var pp = current
-
-        const v = pp.children.indexOf(old_root);
-        if (v > -1) {
-            pp.children.splice(v, 1);
-        }
-
-        var ff = old_root.children[0]
-        pp.children.push(ff)
-
-        old_root.children = null
-        old_root.parent = null
-        old_root.root = null
-
-        this.set_parent(ff, pp )
-
-
-
-
-        console.log(ff , pp)
-
-
-
-
-
-
-
-        var old_root;
-
-        for (var j in current.children ){
-            if (current.children[j].root == true)
-            {old_root = current.children[j] }
-        }
-
-
-        var parent_old_root = current
-
-        const v = parent_old_root.children.indexOf(old_root);
-        if (v > -1) {
-            parent_old_root.children.splice(v, 1);
-        }
-
-        var x = old_root.children[0]
-        parent_old_root.children.push(x);
-
-        old_root.children = []
-
-        this.set_parent(x, parent_old_root)
-
-
-*/
-
-        /*
-        // remove root
-
-        function process(o,key,value) {
-            if (key == 'root' && value == true){
-                return true
-            }
-        }
-
-        function traverse(o,func) {
-
-            //console.log(o)
-
-            for (var i in o) {
-                if (func.apply(this,[o,i,o[i]])){
-
-                    return o
-                }
-                if (o[i] !== null && typeof(o[i])=="object") {
-                    //going one step down in the object tree!!
-
-
-                    console.log(o[i])
-                    var c = traverse(o[i], func)
-
-                    if (c) {
-
-                        var index2 = o.indexOf(c);
-                        if (index2 > -1) {
-                            o.splice(index2, 1);
-                        }
-
-                        o.push(c.children[0])
-                        //this.set_parent(c.children[0], o)
-                        c.children = []
-
-
-
-
-
-                }
-                }
-            }
-        }
-
-        var remove_old_root = function(child, node)
-        {
-            if (child.root == true){
-
-
-                var old_root = child
-                var parent_old_root = node
-
-                console.log(old_root, parent_old_root)
-
-
-                var index2 = parent_old_root.children.indexOf(old_root);
-                if (index2 > -1) {
-                    parent_old_root.children.splice(index2, 1);
-                }
-
-                var x = old_root.children[0]
-                parent_old_root.children.push(x)
-
-                //this.set_parent(x, parent_old_root )
-
-                old_root.children = []
-
-
-            }
-        }
-
-        //this.traverse(root,null, remove_old_root)
-
-        //console.log(root)
-        //traverse(root,process);
-
-
-*/
-
         root.zoom = meta
         this.data = root;
         this.data.root = true;
 
     }
-
     this.store_zoomTransform = function(zoom){
 
         this.data.zoom = {
@@ -991,17 +703,6 @@ function Model(data, params){
             "y":zoom.y,
         };
     }
-
-    // PRIVATE
-    this._parse = function(){
-
-        if (this.data_type == "newick") {
-            return parser.parse_newick(this.input_data);
-        }
-
-
-    }
-
     this.traverse = function(o,func_pre, func_post) {
 
         if (func_pre){
@@ -1029,28 +730,30 @@ function Model(data, params){
         return o
 
     }
-
     this.set_parent = function (node,parent){
         node.parent = parent
     }
-
     this.factory = function(json){
         return this.traverse(json, null , this.set_parent);
     }
 
-    // GENERAL
-    this.uid = uid; uid += 1;
-    this.data_type = params.data_type;
+    // PRIVATE
+    this._parse = function(){
 
+        if (this.data_type == "newick") {
+            return parser.parse_newick(this.input_data);
+        }
+
+
+    }
+
+    // GENERAL
+    this.uid = uid++;
+    this.data_type = params.data_type;
     this.input_data = data;
     this.data = this.factory(this._parse());
-
     this.data.root = true;
 
-    this.get_parent = function(e){
-
-        return e.parent
-    }
 
     return this;
 }
