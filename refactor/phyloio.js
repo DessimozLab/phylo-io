@@ -4,10 +4,15 @@ var uid = 0 // unique id generator
 
 function PhyloIO() {
 
-    // GENERAL
-    var that_phylo = this; // Back up for "this" when "this" is override like in click/event callback functions
-    this.compareMode = false; // If true, compute topology comparaison/distance between containers trees.
-    this.containers = {} // {container id -> Container() }
+    var self = this; // Back up for "this" when "this" is override like in click/event callback functions
+
+    this.constructor = function(){
+        this.containers = {} // {container id -> Container() }
+        this.settings = {};
+        this.compareMode = false; // If true, compute topology comparaison/distance between containers trees.
+
+            return this
+    }
 
     // API
     this.create_container = function(container_id){
@@ -33,8 +38,8 @@ function PhyloIO() {
         // Only apply keyboard shortcut to the first (left) and second (right) created containers
         e = e || window.event;
 
-        var left = Object.entries(that_phylo.containers)[0][1]
-        var right = Object.entries(that_phylo.containers)[1][1]
+        var left = Object.entries(self.containers)[0][1]
+        var right = Object.entries(self.containers)[1][1]
 
         shortcuts = {
             // LEFT
@@ -61,18 +66,23 @@ function PhyloIO() {
 
     };
 
-    return this;
+    return this.constructor()
 }
 
 function Container(container_id){
 
-    // GENERAL
-    this.uid = uid++;
-    this.div_id = container_id;
-    this.settings = {};
-    this.models = [];
-    this.current_model = 0; // current model index of this.models
-    this.viewer = new Viewer(this);
+    this.constructor = function(){
+
+        this.uid = uid++;
+        this.div_id = container_id;
+        this.settings = {};
+        this.models = [];
+        this.current_model = 0; // current model index of this.models
+        this.viewer = new Viewer(this);
+
+        return this
+
+    }
 
     // API
     this.configure_container = function(params){ // todo: control if params exists
@@ -82,8 +92,8 @@ function Container(container_id){
         }
     }
     this.start = function(){
-        this.viewer.update_data(this.models[this.current_model]);
-        this.viewer.update(this.viewer.hierarchy);
+        this.viewer.set_data(this.models[this.current_model]);
+        this.viewer.render(this.viewer.hierarchy);
     }
     this.previous_model = function(){
         if (this.current_model > 0){
@@ -91,8 +101,8 @@ function Container(container_id){
             this.models[this.current_model].store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
 
             this.current_model -= 1;
-            this.viewer.update_data(this.models[this.current_model])
-            this.viewer.update(this.viewer.hierarchy)
+            this.viewer.set_data(this.models[this.current_model])
+            this.viewer.render(this.viewer.hierarchy)
 
             var z = this.models[this.current_model].data.zoom
 
@@ -105,8 +115,8 @@ function Container(container_id){
             this.models[this.current_model].store_zoomTransform(d3.zoomTransform(this.viewer.svg.node()))
 
             this.current_model += 1;
-            this.viewer.update_data(this.models[this.current_model]);
-            this.viewer.update(this.viewer.hierarchy);
+            this.viewer.set_data(this.models[this.current_model]);
+            this.viewer.render(this.viewer.hierarchy);
 
 
             var z = this.models[this.current_model].data.zoom
@@ -118,13 +128,13 @@ function Container(container_id){
     // INTERFACE WITH MODEL
     this.trigger_collapse = function(data){
         this.models[this.current_model].collapse(data)
-        this.viewer._build_d3_data()
-        this.viewer.update(this.viewer.hierarchy)
+        this.viewer.build_d3_data()
+        this.viewer.render(this.viewer.hierarchy)
     }
     this.trigger_reroot = function(data){
         this.models[this.current_model].reroot(data)
-        this.viewer.update_data(this.models[this.current_model])
-        this.viewer.update(this.viewer.hierarchy)
+        this.viewer.set_data(this.models[this.current_model])
+        this.viewer.render(this.viewer.hierarchy)
     }
 
     // PRIVATE
@@ -132,49 +142,55 @@ function Container(container_id){
         this.models.push(model);
     }
 
-    return this;
+    return this.constructor();
 }
 
 function Viewer(container){
 
-    var that_viewer = this;
+    var self = this;
     var i = 0;
     var duration = 0;
 
-    // GENERAL
-    this.container_object = container
-    this.uid = uid++;
-    this.data; // current model used no model here just raw data
-    this.hierarchy;
-    this.d3_cluster;
+    this.constructor = function(){
 
-    this.zoom;
-    this.svg;
-    this.svg_d3;
-    this.G;
-    this.G_d3;
-    this.container = document.getElementById(this.container_object.div_id);
-    this.container_d3 = d3.select(this.container);
+        // GENERAL
+        this.container_object = container
+        this.uid = uid++;
+        this.data; // current model used no model here just raw data
+        this.hierarchy;
+        this.d3_cluster;
 
-    // TREE VARIABLES
-    this.node_vertical_size = 30;
-    this.node_horizontal_size = 40;
-    this.use_branch_lenght = true;
-    this.margin = {top: 16, right: 16, bottom: 16, left: 96};
-    this.width = parseFloat(window.getComputedStyle(this.container).width) - this.margin.left - this.margin.right;
-    this.height = parseFloat(window.getComputedStyle(this.container).height) - this.margin.top - this.margin.bottom;
-    this.max_length;
-    this.scale_branch_length;
-    this.stack;
+        this.zoom;
+        this.svg;
+        this.svg_d3;
+        this.G;
+        this.G_d3;
+        this.container = document.getElementById(this.container_object.div_id);
+        this.container_d3 = d3.select(this.container);
+
+        // TREE VARIABLES
+        this.node_vertical_size = 30;
+        this.node_horizontal_size = 40;
+        this.use_branch_lenght = true;
+        this.margin = {top: 16, right: 16, bottom: 16, left: 96};
+        this.width = parseFloat(window.getComputedStyle(this.container).width) - this.margin.left - this.margin.right;
+        this.height = parseFloat(window.getComputedStyle(this.container).height) - this.margin.top - this.margin.bottom;
+        this.max_length;
+        this.scale_branch_length;
+        this.stack;
+
+
+        this._init()
+        }
 
     // PUBLIC METHODS
     this.update_data =  function(model){
         this.data = model.data;
-        this._build_d3_data();
+        this.build_d3_data();
     }
     this.update = function(source){ //rename render
 
-        var that_viewer = this
+        var self = this
 
         // Assigns the x and y position for the nodes
         var data_d3  = this.d3_cluster(this.hierarchy);
@@ -197,7 +213,7 @@ function Viewer(container){
             .attr("transform", function(d) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
-            .on('click', this._click)
+            .on('click', this.click)
 
         // Add Circle for the nodes
         nodeEnter.append('circle')
@@ -286,8 +302,8 @@ function Viewer(container){
 
                 d3.select(this).select("path").transition().duration(duration) // (d.searchHighlight) ? 0 : duration)
                     .attr("d", function (d) {
-                        var y_length = that_viewer.node_horizontal_size * Math.sqrt(that_viewer._getChildLeaves(d).length)
-                        var x_length = that_viewer.node_vertical_size * Math.sqrt(that_viewer._getChildLeaves(d).length)
+                        var y_length = self.node_horizontal_size * Math.sqrt(self._getChildLeaves(d).length)
+                        var x_length = self.node_vertical_size * Math.sqrt(self._getChildLeaves(d).length)
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
@@ -315,13 +331,13 @@ function Viewer(container){
             .attr("class", "link")
             .attr('d', function(d){
                 var o = {x: source.x0, y: source.y0}
-                return that_viewer._diagonal(o, o)
+                return self._diagonal(o, o)
             })
 
 
         linkEnter.on("click", d =>
         {
-            that_viewer.container_object.trigger_reroot(d.path[0].__data__)
+            self.container_object.trigger_reroot(d.path[0].__data__)
         })
 
 
@@ -344,7 +360,7 @@ function Viewer(container){
         linkUpdate.transition()
             .duration(duration)
             .style('stroke', d => d.elementS ? similarity(d.elementS) : "#ccc" )
-            .attr('d', function(d){ return that_viewer._diagonal(d, d.parent) })
+            .attr('d', function(d){ return self._diagonal(d, d.parent) })
 
 
         // Remove any exiting links
@@ -352,7 +368,7 @@ function Viewer(container){
             .duration(duration)
             .attr('d', function(d) {
                 var o = {x: source.x, y: source.y}
-                return that_viewer._diagonal(o, o)
+                return self._diagonal(o, o)
             })
             .remove();
 
@@ -366,16 +382,16 @@ function Viewer(container){
 
         this.node_horizontal_size += variation
         this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
-        this._build_d3_data()
-        this.update(this.hierarchy)
+        this.build_d3_data()
+        this.render(this.hierarchy)
 
     }
     this.modify_node_vertical_size = function(variation){
 
         this.node_vertical_size += variation
         this.d3_cluster.nodeSize([this.node_vertical_size,this.node_horizontal_size])
-        this._build_d3_data()
-        this.update(this.hierarchy)
+        this.build_d3_data()
+        this.render(this.hierarchy)
 
     }
     this.get_random_node = function(){
@@ -388,7 +404,7 @@ function Viewer(container){
     // PRIVATE METHODS
     this._init = function(){
 
-        this.zoom = d3.zoom().on("zoom", this._zoomed) // creates zoom behavior
+        this.zoom = d3.zoom().on("zoom", this.zoomed) // creates zoom behavior
 
         // create svg
         this.svg = this.container_d3.append("svg")
@@ -415,7 +431,7 @@ function Viewer(container){
         //this.update(this.root);
     }
     this._zoomed = function({transform}) {
-        d3.select("#master_g" + that_viewer.uid).attr("transform", transform);
+        d3.select("#master_g" + self.uid).attr("transform", transform);
     }
     this._build_d3_data = function(){
 
@@ -484,15 +500,15 @@ function Viewer(container){
 
     // PRIVATE METHODS
     this._zoomed = function({transform}) {
-        d3.select("#master_g" + that_viewer.uid).attr("transform", transform);
+        d3.select("#master_g" + self.uid).attr("transform", transform);
     }
     this._separate =  function(a, b) { // todo
 
         var spacer = 1;
 
 
-        spacer += a._children ? Math.sqrt(that_viewer._getChildLeaves(a).length) * 1  : 0
-        spacer += b._children ? Math.sqrt(that_viewer._getChildLeaves(b).length) * 1 : 0
+        spacer += a._children ? Math.sqrt(self._getChildLeaves(a).length) * 1  : 0
+        spacer += b._children ? Math.sqrt(self._getChildLeaves(b).length) * 1 : 0
 
         return spacer;
     }
@@ -523,7 +539,7 @@ function Viewer(container){
         return path
     }
     this._click = function(event, d) {
-        that_viewer.container_object.trigger_collapse(d.data)
+        self.container_object.trigger_collapse(d.data)
     }
     this._createDeepLeafList = function(_tree) {
         /**
@@ -566,7 +582,7 @@ function Viewer(container){
         }
         var children = [];
         if (do_children) {
-            children = that_viewer._getChildren(d);
+            children = self._getChildren(d);
         } else {
             if (d.children) {
                 children = d.children
@@ -601,14 +617,26 @@ function Viewer(container){
         }
     }
 
-    this._init()
+    this.constructor()
 
     return this;
 }
 
 function Model(data, params){
 
-    var params = params || {'data_type': 'newick', "use_branch_lenght": true, 'stack': false}; // todo if only one param is set should work;
+    this.constructor = function(){
+
+        var params = params || {'data_type': 'newick', "use_branch_lenght": true, 'stack': false}; // todo if only one param is set should work;
+
+        this.uid = uid++;
+        this.data_type = params.data_type;
+        this.input_data = data;
+        this.data = this.factory(this._parse());
+        this.data.root = true;
+
+        return this
+
+    }
 
     // API
     this.collapse = function(data){
@@ -747,14 +775,7 @@ function Model(data, params){
 
     }
 
-    // GENERAL
-    this.uid = uid++;
-    this.data_type = params.data_type;
-    this.input_data = data;
-    this.data = this.factory(this._parse());
-    this.data.root = true;
 
-
-    return this;
+    return this.constructor();
 }
 
