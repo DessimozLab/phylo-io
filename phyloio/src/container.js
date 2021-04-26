@@ -18,8 +18,8 @@ export default class Container {
     }
 
     // create and add Model() configure with params
-    add_tree(data, params ){
-        this.models.push(new Model(data, params || undefined))
+    add_tree(data){
+        this.models.push(new Model(data))
     }
 
     // update the data viewer and render it
@@ -31,23 +31,24 @@ export default class Container {
     // shift the pointer (if possible) in the model list and update viewer model
     shift_model(offset) {
 
-        if (this.current_model + offset >= 0 && this.current_model + offset <= this.models.length ) {
+        if (this.current_model + offset >= 0 && this.current_model + offset <= this.models.length -1 ) {
 
-                // store the current zoom information
-                var old_m = this.models[this.current_model]
-                old_m.store_zoomTransform(this.viewer.d3.zoomTransform(this.viewer.svg.node()))
+            // store the current zoom information
+            var old_m = this.models[this.current_model]
+            old_m.store_zoomTransform(this.viewer.d3.zoomTransform(this.viewer.svg.node()))
 
-                // update new model data to viewer
-                this.current_model -= 1;
-                var m = this.models[this.current_model]
-                this.viewer.set_data(m)
-                this.viewer.render(this.viewer.hierarchy)
+            // update new model data to viewer
+            this.current_model += offset;
+            var m = this.models[this.current_model]
 
-                // apply if any stored zoom information
-                var z = m.data.zoom
-                if (z) {
-                    this.viewer.set_zoom(z.k, z.x, z.y)
-                }
+            this.viewer.set_data(m)
+            this.viewer.render(this.viewer.hierarchy)
+
+            // apply if any stored zoom information
+            var z = m.data.zoom
+            if (z) {
+                this.viewer.set_zoom(z.k, z.x, z.y)
+            }
         }
 
     }

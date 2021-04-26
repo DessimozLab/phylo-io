@@ -44,20 +44,20 @@ function PhyloIO() {
         shortcuts = {
             // LEFT
             "r": function(){left.viewer.centerNode(left.viewer.get_random_node())},
-            "a": function(){left.viewer.modify_node_hozirontal_size(-5)},
-            "d": function(){left.viewer.modify_node_hozirontal_size(5)},
-            "w": function(){left.viewer.modify_node_vertical_size(-5)},
-            "s": function(){left.viewer.modify_node_vertical_size(5)},
+            "a": function(){left.viewer.modify_node_size( 'horizontal',-5)},
+            "d": function(){left.viewer.modify_node_size( 'horizontal',5)},
+            "w": function(){left.viewer.modify_node_size( 'vertical',-5)},
+            "s": function(){left.viewer.modify_node_size( 'vertical',5)},
             "q": function(){left.previous_model()},
             "e": function(){left.next_model()},
             // RIGHT
             "u": function(){right.previous_model()},
             "o": function(){right.next_model()},
             "p": function(){right.viewer.centerNode(right.viewer.get_random_node())},
-            "j": function(){right.viewer.modify_node_hozirontal_size(-5)},
-            "l": function(){right.viewer.modify_node_hozirontal_size(5)},
-            "i": function(){right.viewer.modify_node_vertical_size(-5)},
-            "k": function(){right.viewer.modify_node_vertical_size(5)},
+            "j": function(){right.viewer.modify_node_size( 'horizontal',-5)},
+            "l": function(){right.viewer.modify_node_size( 'horizontal',5)},
+            "i": function(){right.viewer.modify_node_size( 'vertical',-5)},
+            "k": function(){right.viewer.modify_node_size( 'vertical',5)},
         }
 
         if (shortcuts.hasOwnProperty(e.key)){
@@ -213,7 +213,7 @@ function Viewer(container){
             .attr("transform", function(d) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
-            .on('click', this.click)
+            .on('click', this.click_nodes)
 
         // Add Circle for the nodes
         nodeEnter.append('circle')
@@ -242,7 +242,7 @@ function Viewer(container){
 
         if (this.stack) {
 
-            nodeEnter.append("rect").filter(d => this._getChildLeaves(d).length > 3)
+            nodeEnter.append("rect").filter(d => this.getChildLeaves(d).length > 3)
                 .attr("x", -20)
                 .attr("y", -30)
                 .attr("width", 10)
@@ -515,9 +515,9 @@ function Viewer(container){
     this._getChildLeaves =  function(d) {
         if (d.children || d._children) {
             var leaves = [];
-            var children = this._getChildren(d);
+            var children = this.getChildren(d);
             for (var i = 0; i < children.length; i++) {
-                leaves = leaves.concat(this._getChildLeaves(children[i]));
+                leaves = leaves.concat(this.getChildLeaves(children[i]));
             }
             return leaves;
         } else {
@@ -607,9 +607,9 @@ function Viewer(container){
     */
         if (d.children || d._children) {
             var leaves = [];
-            var children = this._getChildren(d);
+            var children = this.getChildren(d);
             for (var i = 0; i < children.length; i++) {
-                leaves = leaves.concat(this._getChildLeaves(children[i]));
+                leaves = leaves.concat(this.getChildLeaves(children[i]));
             }
             return leaves;
         } else {

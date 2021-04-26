@@ -2,13 +2,18 @@
 var uid_model = 0
 import * as parser from 'biojs-io-newick';
 
-export default class Container {
+export default class Model {
 
-    constructor(data, params) {
+    constructor(data) {
 
-        var params = params || {'data_type': 'newick', "use_branch_lenght": true, 'stack': false}; // todo if only one param is set should work;
+        this.settings = {
+            'data_type' : 'newick',
+            'stack': false,
+            'use_branch_lenght' : true,
+            'style': {
+            },
+        }
         this.uid = uid_model++;
-        this.data_type = params.data_type;
         this.input_data = data;
         this.data = this.factory(this.parse());
         this.data.root = true;
@@ -53,7 +58,7 @@ export default class Container {
 
     parse(){
 
-        if (this.data_type == "newick") {
+        if (this.settings.data_type == "newick") {
             return parser.parse_newick(this.input_data);
         }
 
@@ -64,34 +69,32 @@ export default class Container {
         data.collapse ? data.collapse = false : data.collapse = true;
     }
 
-    reroot(data){
+    reroot(data){ // todo mind branch length
 
         // extract meta data (zoom)
         var meta = this.data.zoom;
 
         // create new root r
-        var root = {"children": [], "name": "", "branch_length": 0, "new": true}
+        var root = {"children": [], "name": "", "branch_length": 0}
 
+        // source and target node of the clicked edges
         var parent = data.data.parent
         var child = data.data
 
+        // insert new root node between target and source and connect
         root.children.push(child)
         parent.children.push(root)
-
         this.set_parent(child, root )
         this.set_parent(root, parent )
-
-        // remove current node from parent children
         const index = parent.children.indexOf(child);
         if (index > -1) {
             parent.children.splice(index, 1);
         }
 
+        // While we are at the old root reverse child/parent order
         var parent = parent
         var child = root
-
         var stack = []
-
         while (parent.root != true) {
 
             stack.push([parent,child])
@@ -100,46 +103,28 @@ export default class Container {
             parent = parent.parent
 
         }
-
         stack.push([parent,child])
-
-        var f = function(p,c){
-
-            c.children.push(p)
-            p.parent =c
-
-
-
-            const b = p.children.indexOf(c);
-            if (b > -1) {
-                p.children.splice(b, 1);
-            }
-
-        }
-
         for (var e in stack){
             var p = stack[e][0]
             var c = stack[e][1]
 
-            f(p,c)
+            this.reverse_order(p,c)
 
         }
 
-        // Remove root
-
+        // Remove old root
         var c = parent.children[0]
         var r = parent
         var p = parent.parent
-
         const ce = parent.parent.children.indexOf(r);
         if (ce > -1) {
             parent.parent.children.splice(ce, 1);
         }
-
         c.parent = p
         p.children.push(c)
         r = null
 
+        // configure new root
         root.zoom = meta
         this.data = root;
         this.data.root = true;
@@ -155,6 +140,16 @@ export default class Container {
         };
     }
 
+    reverse_order(parent,child) {
 
+        child.children.push(parent)
+        parent.parent =child
+
+        const b = parent.children.indexOf(child);
+        if (b > -1) {
+            parent.children.splice(b, 1);
+        }
+
+    }
 
 };
