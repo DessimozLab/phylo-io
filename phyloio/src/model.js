@@ -32,7 +32,7 @@ export default class Model {
 
                 var child = o["children"][c]
 
-                child= this.traverse(child, func_pre, func_post)
+                child = this.traverse(child, func_pre, func_post)
 
                 if (func_post) {
                     func_post.apply(this,[child,o])
@@ -52,13 +52,21 @@ export default class Model {
         node.parent = parent
     }
 
+    set_cumulated_length(node, children){
+        if (node.parent) {
+            node.distance_to_root = node.parent.distance_to_root + node.branch_length
+        }
+        else{node.distance_to_root = 0}
+
+    }
+
     factory(json){
-        return this.traverse(json, null , this.set_parent);
+        return this.traverse(this.traverse(json, null , this.set_parent), this.set_cumulated_length , null)
     }
 
     parse(){
 
-        if (this.settings.data_type == "newick") {
+        if (this.settings.data_type === "newick") {
             return parser.parse_newick(this.input_data);
         }
 
@@ -69,7 +77,7 @@ export default class Model {
         data.collapse ? data.collapse = false : data.collapse = true;
     }
 
-    reroot(data){ // todo mind branch length
+    reroot(data){
 
         // extract meta data (zoom)
         var meta = this.data.zoom;
@@ -90,6 +98,11 @@ export default class Model {
         if (index > -1) {
             parent.children.splice(index, 1);
         }
+
+        // ajust distance now that distance target/source is splitted in two
+        var old_distance = child.branch_length
+        parent.branch_length = old_distance/2
+        child.branch_length = old_distance /2
 
         // While we are at the old root reverse child/parent order
         var parent = parent
@@ -149,6 +162,8 @@ export default class Model {
         if (b > -1) {
             parent.children.splice(b, 1);
         }
+
+
 
     }
 

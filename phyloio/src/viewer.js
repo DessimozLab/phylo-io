@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 var uid_viewer = 0 // unique id generator is bound to a single Viewer()
+const collapse_ratio_vertical = 0.6 // how much a triangle is vertically narrow
 
 // D3 viewer that render any model tree
 export default class Viewer {
@@ -95,7 +96,7 @@ export default class Viewer {
 
         // Update the nodes...
         var node = this.G.selectAll('g.node')
-            .data(this.nodes, function(d) {return d.id || (d.id = ++this.id_gen); });
+            .data(this.nodes, d => { return d.id  || (d.id = ++this.id_gen); });
 
         // Enter any new modes at the parent's previous position.
         var nodeEnter = node.enter().append('g')
@@ -128,7 +129,8 @@ export default class Viewer {
             .attr("class", "triangle")
             .attr("d", function (d) {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
-            });
+            })
+            //.on('click', (d, i) =>  { self_render.click_nodes(d,i)})
 
 
         var nodeUpdate = nodeEnter.merge(node);
@@ -171,14 +173,17 @@ export default class Viewer {
             .style('fill-opacity', 1e-6);
 
 
-        // Add collapsed triangle todo correct size
-        nodeUpdate.each(function (d) {
+        // Add collapsed triangle
+        nodeUpdate.each(function (d) { // todo click on triangle to un/collapse
+
             if (d._children) {
 
-                d3.select(this).select("path").transition().duration(self_render.settings.duration) // (d.searchHighlight) ? 0 : duration)
+                d3.select(this).select("path").transition().duration(self_render.settings.duration)
                     .attr("d", function (d) {
-                        var y_length =  self_render.settings.tree.node_horizontal_size * Math.sqrt(self_render.getChildLeaves(d).length)
-                        var x_length =  self_render.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length)
+
+                        const average = arr => arr.reduce( ( p, c ) => p + c.data.distance_to_root, 0 ) / arr.length;
+                        var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
+                        var x_length =  self_render.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
@@ -263,18 +268,18 @@ export default class Viewer {
                 }
             })
 
-            this.build_scale_branch_length()
+            this.build_scale_branch_length() // dont build scale on collapse
 
         }
 
     }
 
-    separate(a, b) { // todo
+    separate(a, b) {
 
         var spacer = 1;
 
-        spacer += a._children ? Math.sqrt(this.getChildLeaves(a).length) * 1  : 0
-        spacer += b._children ? Math.sqrt(this.getChildLeaves(b).length) * 1 : 0
+        spacer += a._children ? Math.sqrt(this.getChildLeaves(a).length) * collapse_ratio_vertical  : 0
+        spacer += b._children ? Math.sqrt(this.getChildLeaves(b).length) * collapse_ratio_vertical : 0
 
         return spacer;
     }
