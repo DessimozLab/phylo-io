@@ -174,7 +174,7 @@ export default class Viewer {
 
 
         // Add collapsed triangle
-        nodeUpdate.each(function (d) { // todo click on triangle to un/collapse
+        nodeUpdate.each(function (d) { 
 
             if (d._children) {
 
