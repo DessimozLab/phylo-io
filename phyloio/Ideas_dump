@@ -1,1 +1,0 @@
-- Chained update function: (model data -> d3 hiearchy -> d3 cluster) when changes occured in the chain we automatically update the rest
