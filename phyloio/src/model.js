@@ -4,7 +4,7 @@ import * as parser from 'biojs-io-newick';
 
 export default class Model {
 
-    constructor(data) {
+    constructor(data, settings) {
 
         this.settings = {
             'data_type' : 'newick',
@@ -13,10 +13,25 @@ export default class Model {
             'style': {
             },
         }
+
+        if (settings) {
+
+            for(var key in settings) {
+                var value = settings[key];
+                this.settings[key] = value;
+            }
+
+        }
+
         this.uid = uid_model++;
         this.input_data = data;
         this.data = this.factory(this.parse());
         this.data.root = true;
+
+
+
+
+
 
     }
 
@@ -61,7 +76,22 @@ export default class Model {
     }
 
     factory(json){
-        return this.traverse(this.traverse(json, null , this.set_parent), this.set_cumulated_length , null)
+
+        var p;
+
+        // if branch size is not used put 1
+        if (!this.settings.use_branch_lenght) {
+            p = this.traverse(json, function(n,c){n.branch_length=1})
+            p.branch_length = 0 // root
+        }
+
+        // set parent attribute
+        p = this.traverse(json, null , this.set_parent)
+
+        // compute cumulated  lenght
+        p = this.traverse(p, this.set_cumulated_length , null)
+
+        return p
     }
 
     parse(){
@@ -69,6 +99,12 @@ export default class Model {
         if (this.settings.data_type === "newick") {
             return parser.parse_newick(this.input_data);
         }
+
+        else if (this.settings.data_type === "json") {
+            return this.input_data
+        }
+
+
 
 
     }

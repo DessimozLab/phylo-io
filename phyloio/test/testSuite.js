@@ -15,17 +15,6 @@ describe('Phylo.io Test Suite', function() {
     vars = {}
   })
   afterEach(async function() {
-
-    if (this.currentTest.state === 'failed') {
-      var t = this.currentTest.title
-      driver.takeScreenshot().then(function(data){
-        var base64Data = data.replace(/^data:image\/png;base64,/,"")
-        fs.writeFile(screenshots + t + "|" + Date.now() + ".png", base64Data, 'base64', function(err) {
-          if(err) console.log(err);
-        });
-      });
-    }
-
     await driver.quit();
   })
   it('zoom-rescale-pan-zoomAt', async function() {
@@ -35,12 +24,102 @@ describe('Phylo.io Test Suite', function() {
     await driver.get("http://localhost:63342/phylo-io/phyloio/dist/index.html")
     await driver.manage().window().setRect(1401, 794)
 
-    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g0 > .link:nth-child(4)")));
-    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g0 > .node:nth-child(39) > .node")));
-    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .link:nth-child(4)")));
-    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .node:nth-child(46) > .node")));
-    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .link:nth-child(5)")));
+    // On left panel collapse a node & verify triangle exist
+    await driver.sleep(2000).then(function() {
+      console.log('waited 2 seconds');
+    });
 
+    driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g0 > .link:nth-child(4)")));
+
+    await driver.takeScreenshot().then(function(data){
+      var base64Data = data.replace(/^data:image\/png;base64,/,"")
+      fs.writeFile(screenshots +  "rerootsatart|" + Date.now() + ".png", base64Data, 'base64', function(err) {
+        if(err) console.log(err);
+      });
+    });
+
+
+
+
+    // uncollapse it and check triangle is deleted
+
+    // collapse another node & verify triangle exist
+
+    // reroot & and check triangle still there
+
+    // verify uncollapse still work
+
+    // On right panel collapse a node & verify triangle exist
+
+    // then do 3 successive reroot
+
+    // verify uncollapse still work
+
+
+
+
+
+
+    /*
+
+
+
+    var e = await driver.findElement(By.css("#master_g0 > .node:nth-child(38) > .node"))
+    await driver.actions().move(e).click()
+
+
+
+
+
+
+
+    var chainClick = ["#master_g0 > .link:nth-child(4)", "#master_g0 > .node:nth-child(39) > .node","#master_g1 > .link:nth-child(4)"  ]
+
+
+    driver.takeScreenshot().then(function(data){
+      var base64Data = data.replace(/^data:image\/png;base64,/,"")
+      fs.writeFile(screenshots +  "rerootsatart|" + Date.now() + ".png", base64Data, 'base64', function(err) {
+        if(err) console.log(err);
+      });
+    });
+
+
+    chainClick.forEach(id => driver.executeScript("arguments[0].click();", driver.findElement(By.css(id))));
+
+    driver.takeScreenshot().then(function(data){
+      var base64Data = data.replace(/^data:image\/png;base64,/,"")
+      fs.writeFile(screenshots + "rerootend|" + Date.now() + ".png", base64Data, 'base64', function(err) {
+        if(err) console.log(err);
+      });
+    });
+
+        driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g0 > .link:nth-child(4)")));
+        driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g0 > .node:nth-child(39) > .node")));
+        driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .link:nth-child(4)")));
+        driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .node:nth-child(46) > .node")));
+        driver.executeScript("arguments[0].click();", driver.findElement(By.css("#master_g1 > .link:nth-child(5)")));
+
+
+        await driver.findElement(By.css("#master_g0 > .link:nth-child(4)")).click()
+        await driver.findElement(By.css("#master_g0 > .link:nth-child(5)")).click()
+        await driver.findElement(By.css("#master_g0 > .node:nth-child(38) > .node")).click()
+        await driver.findElement(By.css("#master_g0 > .link:nth-child(2)")).click()
+        await driver.findElement(By.css(".node:nth-child(18) > .triangle")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(4)")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(10)")).click()
+        await driver.findElement(By.css("#master_g1 > .node:nth-child(37) > .node")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(1)")).click()
+        await driver.findElement(By.css(".node:nth-child(5) > .triangle")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(11)")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(7)")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(5)")).click()
+        await driver.findElement(By.css("#master_g1 > .node:nth-child(51) > .node")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(4)")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(16)")).click()
+        await driver.findElement(By.css("#master_g1 > .link:nth-child(8)")).click()
+
+
+       */
   })
   it('tree_toggle', async function() {
   })

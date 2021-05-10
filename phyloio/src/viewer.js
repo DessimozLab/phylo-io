@@ -127,6 +127,7 @@ export default class Viewer {
 
         nodeEnter.append("path")
             .attr("class", "triangle")
+            .style("fill", "#666")
             .attr("d", function (d) {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             })
@@ -147,7 +148,7 @@ export default class Viewer {
         nodeUpdate.select('circle.node')
             .attr('r', d => d._children ?  1e-6 : 5 )
             .style("fill", function(d) {
-                return d._children ? "lightsteelblue" : "#fff";
+                return d._children ? "lightsteelblue" : "#666";
             })
             .attr('cursor', 'pointer');
 
@@ -182,6 +183,9 @@ export default class Viewer {
                     .attr("d", function (d) {
 
                         const average = arr => arr.reduce( ( p, c ) => p + c.data.distance_to_root, 0 ) / arr.length;
+
+                        var y = average(self_render.getChildLeaves(d)) -d.data.distance_to_root
+
                         var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
                         var x_length =  self_render.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
@@ -252,25 +256,21 @@ export default class Viewer {
         // Build d3 layout
         this.d3_cluster_data = this.d3_cluster(this.hierarchy);
 
-        // If branch lenght is used, apply transform on node X positions
-        if (this.model.settings.use_branch_lenght) {
-
-            // compute the branch length from the root till each nodes (d.branch_size)
-            this.max_length = 0
-            this.hierarchy.eachBefore(d => {
-                if (d.parent) {
-                    d.branch_size = d.parent.branch_size + d.data.branch_length
-                    if (d.branch_size > this.max_length) {
-                        this.max_length = d.branch_size
-                    }
-                } else {
-                    d.branch_size = 0
+        // compute the branch length from the root till each nodes (d.branch_size)
+        this.max_length = 0
+        this.hierarchy.eachBefore(d => {
+            if (d.parent) {
+                d.branch_size = d.parent.branch_size + d.data.branch_length
+                if (d.branch_size > this.max_length) {
+                    this.max_length = d.branch_size
                 }
-            })
+            } else {
+                d.branch_size = 0
+            }
+        })
 
-            this.build_scale_branch_length() // dont build scale on collapse
+        this.build_scale_branch_length() // dont build scale on collapse
 
-        }
 
     }
 
@@ -345,6 +345,7 @@ export default class Viewer {
     }
 
     click_nodes(event, node) {
+        console.log(node.data)
         this.container_object.trigger_("collapse", node.data)
     }
 
