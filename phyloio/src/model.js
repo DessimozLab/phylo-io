@@ -8,9 +8,20 @@ export default class Model {
 
         this.settings = {
             'data_type' : 'newick',
-            'stack': false,
             'use_branch_lenght' : true,
-            'style': {
+            'show_histogram' : false,
+            'has_histogram_data' : false,
+            'style': {},
+            'stack' : {
+                'type': 'genes',
+                'showHistogramValues' : true,
+                'showHistogramSummaryValue' : true,
+                'legendTxtSize' : 12,
+                'margin' : 8,
+                'xInitialRightMargin' : 35,
+                'stackHeight' : 100,
+                'stackWidth' : 20,
+
             },
         }
 
@@ -28,9 +39,10 @@ export default class Model {
         this.data = this.factory(this.parse());
         this.data.root = true;
 
-
-
-
+        // check that histogram data is present
+        if(this.settings.show_histogram && this.data.evolutionaryEvents) {
+            this.settings.has_histogram_data  = true;
+        }
 
 
     }
