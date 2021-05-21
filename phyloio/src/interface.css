@@ -1,3 +1,4 @@
+
 .corner_placeholder {
     position: absolute;
     display: flex;
@@ -10,6 +11,7 @@
 .bottom { bottom: 0 }
 
 .square_button{
+
     border:none;
     padding: 8px;
     cursor: pointer;
@@ -19,9 +21,27 @@
     background-color: #ccc;
 }
 
+/* TOGGLE */
+
 .screen_toggle{
+    cursor: default;
     background-color: #ffffff;
 }
+
+.screen_toggle:hover{
+    background-color: #ffffff;
+}
+
+/* BRANCH SCALE */
+
+.scale_line{
+    stroke-width:  2;
+    stroke: black;
+}
+
+.scale_text{
+}
+
 
 
 

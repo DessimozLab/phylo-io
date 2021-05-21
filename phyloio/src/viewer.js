@@ -38,6 +38,7 @@ export default class Viewer {
         this.G_d3;
         this.container = document.getElementById(this.container_object.div_id);
         this.container_d3 = d3.select(this.container);
+        this.interface;
 
         // Settings
         this.settings = {
@@ -57,7 +58,7 @@ export default class Viewer {
         this.height = parseFloat(window.getComputedStyle(this.container).height) - this.settings.style.margin.top - this.settings.style.margin.bottom;
 
         // ZOOM
-        this.zoom = d3.zoom().on("zoom", (d, i) =>  { this.zoomed(d,i)} )
+        this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
 
         // SVG
         this.svg = this.container_d3.append("svg")
@@ -83,8 +84,6 @@ export default class Viewer {
         // MISC.
         this.settings.stack.colorMap = this.compute_color_map_stack()
 
-        // INTERFACE
-        this.interface = new Interface(this, this.container_object)
     }
 
     // DATA
@@ -162,7 +161,8 @@ export default class Viewer {
 
         this.build_scale_branch_length() // todo dont build scale on collapse
 
-        this.interface.render();
+        this.interface = new Interface(this, this.container_object)
+
 
 
     }
@@ -377,6 +377,10 @@ export default class Viewer {
 
     zoomed({transform}) {
         d3.select("#master_g" + this.uid).attr("transform", transform);
+
+        if (this.interface && this.model.settings.use_branch_lenght) {
+            this.interface.update_scale_value(transform.k);
+        }
     }
 
     square_edges(s, d) {

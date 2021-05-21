@@ -17,6 +17,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "css-loader": "^5.2.4",
+    "file-loader": "^6.2.0",
     "jquery": "^3.6.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.35.0",
