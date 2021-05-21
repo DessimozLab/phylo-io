@@ -12,6 +12,10 @@ export default class Model {
             'show_histogram' : false,
             'has_histogram_data' : false,
             'style': {},
+            'tree': {
+                'node_vertical_size' : 30,
+                'node_horizontal_size' : 40,
+            },
             'stack' : {
                 'type': 'genes',
                 'showHistogramValues' : true,
@@ -19,8 +23,9 @@ export default class Model {
                 'legendTxtSize' : 12,
                 'margin' : 8,
                 'xInitialRightMargin' : 35,
-                'stackHeight' : 100,
+                'stackHeight' : 40,
                 'stackWidth' : 20,
+                'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
 
             },
         }
@@ -39,11 +44,31 @@ export default class Model {
         this.data = this.factory(this.parse());
         this.data.root = true;
 
-        // check that histogram data is present
+        // check that histogram data is present and compute
         if(this.settings.show_histogram && this.data.evolutionaryEvents) {
             this.settings.has_histogram_data  = true;
-        }
+            this.largestGenome =  0;
+            this.largestEvents = 0; // todo
 
+            this.traverse(this.data , function(n,c){
+                let g = n.nr_hogs ? n.nr_hogs : n.nr_proteins
+                if (g > this.largestGenome ) {this.largestGenome = g;}
+
+                if (n.evolutionaryEvents){
+
+                    let e = n.evolutionaryEvents.gained + n.evolutionaryEvents.lost + n.evolutionaryEvents.duplications
+                    if (e > this.largestEvents ) {this.largestEvents = e;}
+
+                }
+
+
+
+            })
+
+
+
+
+        }
 
     }
 
@@ -87,7 +112,7 @@ export default class Model {
 
     }
 
-    factory(json){
+    factory(json){ // todo do one traversal with all in one function
 
         var p;
 

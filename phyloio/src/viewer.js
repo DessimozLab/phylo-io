@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import Interface from './interface.js'
 
 d3.selection.prototype.moveToFront = function() {
     return this.each(function() {
@@ -41,12 +42,7 @@ export default class Viewer {
         // Settings
         this.settings = {
             'duration' : 0,
-            'tree': {
-                'node_vertical_size' : 30,
-                'node_horizontal_size' : 40,
-            },
             'style': {
-
                 'margin' : {top: 16, right: 16, bottom: 16, left: 96},
 
             },
@@ -71,6 +67,7 @@ export default class Viewer {
             .call(this.zoom)
             .on("dblclick.zoom", null)
             .call(this.zoom.transform, d3.zoomIdentity.translate(this.settings.style.margin.left,  (this.height/2 +  this.settings.style.margin.top) ))
+
         this.svg_d3 = d3.select(this.svg)
 
         // G element for zoom/transform
@@ -81,17 +78,30 @@ export default class Viewer {
 
         // D3 TREE LAYOUT
         this.d3_cluster = d3.cluster()
-            .nodeSize([this.settings.tree.node_vertical_size,this.settings.tree.node_horizontal_size])
             .separation((a,b) =>  {return this.separate(a,b)})
 
         // MISC.
         this.settings.stack.colorMap = this.compute_color_map_stack()
+
+        // INTERFACE
+        this.interface = new Interface(this, this.container_object)
     }
 
     // DATA
     set_data(model){
         this.data = model.data;
         this.model = model;
+
+        if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
+            this.model.settings.tree.node_vertical_size = 100;
+            this.model.settings.tree.node_horizontal_size = 80;
+        }
+        else {
+            this.model.settings.tree.node_vertical_size = 30;
+            this.model.settings.tree.node_horizontal_size = 40;
+        }
+
+        this.d3_cluster.nodeSize([this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
         this.build_d3_data();
     }
 
@@ -151,6 +161,8 @@ export default class Viewer {
             }
 
         this.build_scale_branch_length() // todo dont build scale on collapse
+
+        this.interface.render();
 
 
     }
@@ -216,7 +228,7 @@ export default class Viewer {
                 return d.children || d._children ? -13 : 13;
             })
             .attr("text-anchor", function(d) {
-                return d.children || d._children ? "end" : "start";
+                return d.children || d._children ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; });
 
@@ -228,7 +240,7 @@ export default class Viewer {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             })
 
-        if (this.model.settings.has_histogram_data) {
+        if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) {
             // create null stack
             nodeEnter.append("g")
                 .attr("class", "stackGroup")
@@ -246,7 +258,7 @@ export default class Viewer {
 
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
-            .attr('r', d => d._children ?  1e-6 : 5 )
+            .attr('r', d => d._children ?  1e-6 : 3 )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#666";
             })
@@ -266,7 +278,7 @@ export default class Viewer {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
             });
 
-        if (this.model.settings.has_histogram_data) {
+        if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) {
             // create null stack
             nodeEnter.selectAll("g .stackGroup").remove()
         }
@@ -294,7 +306,7 @@ export default class Viewer {
                         var y = average(self_render.getChildLeaves(d)) -d.data.distance_to_root
 
                         var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
-                        var x_length =  self_render.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
+                        var x_length =  self_render.model.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
@@ -308,7 +320,7 @@ export default class Viewer {
         })
 
         // Add Stack
-        if (this.model.settings.has_histogram_data){
+        if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
             nodeUpdate.filter(function(d){
                 return d.stackData
             }).each((d, i, nodes) => {this.render_stack(nodes[i],d)}
@@ -387,17 +399,18 @@ export default class Viewer {
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
 
+
     // TUNNING
     modify_node_size(axis, variation){
 
         if (axis === 'vertical') {
-            this.settings.tree.node_vertical_size += variation
+            this.model.settings.tree.node_vertical_size += variation
         }
         else if (axis === 'horizontal') {
-            this.settings.tree.node_horizontal_size += variation
+            this.model.settings.tree.node_horizontal_size += variation
         }
 
-        this.d3_cluster.nodeSize([ this.settings.tree.node_vertical_size,this.settings.tree.node_horizontal_size])
+        this.d3_cluster.nodeSize([ this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
         this.build_d3_data()
         this.render(this.hierarchy)
 
@@ -523,8 +536,6 @@ export default class Viewer {
 
     }
 
-
-
     compute_color_map_stack(){
 
         var l = this.settings.stack.labels
@@ -541,33 +552,27 @@ export default class Viewer {
     }
 
     getStackNormalizer(d, type){
-        
-        var stackHeight = 40
 
-        var maxStackHeight = "ratio";
-        //var maxStackHeight = "max";
-        var largestGenome = 30000;
-        var largestEvents = 1000;
+        var ms = this.model.settings.stack
 
+        if(type === 'genes' || !type){
 
-        if(type == 'genes' || !type){
-
-            if(maxStackHeight == "max" && largestGenome > 0){
-                var normalizer = stackHeight / largestGenome;
-            } else if(Number.isInteger(maxStackHeight)){
-                var normalizer = maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+            if(ms.maxStackHeight === "max" && this.model.largestGenome > 0){
+                var normalizer = ms.stackHeight / this.model.largestGenome;
+            } else if(Number.isInteger(ms.maxStackHeight)){
+                var normalizer = ms.maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
+                var normalizer = ms.stackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             }
 
         } else {
 
-            if(maxStackHeight == "max" && largestEvents > 0){
-                var normalizer = stackHeight / largestEvents;
-            } else if(Number.isInteger(maxStackHeight)){
-                var normalizer = maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+            if(ms.maxStackHeight === "max" && this.model.largestEvents > 0){
+                var normalizer = ms.stackHeight / this.model.largestEvents;
+            } else if(Number.isInteger(ms.maxStackHeight)){
+                var normalizer = m.maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+                var normalizer = ms.stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
             }
 
         }
@@ -578,11 +583,14 @@ export default class Viewer {
 
     barStack(seriesDataAll, type) {
 
-        if(type == 'genes' || !type) {
-            var data = [[{}], [{}], [{}], [{}]];
+        var data;
+
+        if(type === 'genes' || !type) {
+            data = [[{}], [{}], [{}], [{}]];
         } else {
-            var data = [[{}], [{}], [{}]];
+            data = [[{}], [{}], [{}]];
         }
+
         var size = 0;
         var d = seriesDataAll.data.evolutionaryEvents;
         var posBase = 0; // positive base
@@ -657,13 +665,6 @@ export default class Viewer {
 
         return data;
     }
-
-
-
-
-
-
-
 
 
 

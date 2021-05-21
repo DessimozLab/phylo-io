@@ -5,38 +5,39 @@ body{
 
 #container1{
     display: inline-block;
-    width: 40%;
+    width: 45%;
     height: 600px;
-    margin: 32px;
-    border: #0f0f0f 2px solid;
+    border: #0f0f0f 1px solid;
     background-color: #fff;
-    padding: 8px;
+
 }
 
 #container2{
     display: inline-block;
-    width: 40%;
+    width: 45%;
     height: 600px;
-    margin: 32px;
     border: #0f0f0f 2px solid;
     background-color: #fff;
-    padding: 8px;
 }
 
 .node circle {
     fill: #fff;
-    //stroke: steelblue;
-    //stroke-width: 3px;
 }
 
 .node text {
-    font: 8px sans-serif;
+    font: 12px sans-serif;
 }
 
 .link {
     cursor: pointer;
     fill: none;
-    /*stroke: #ccc;*/
-    stroke-width: 4px;
+    stroke-width: 1px;
 }
+
+#histogram-legend text, .legendtxt, .legendsummarytxt {
+    font-family: 'Open Sans', sans-serif;
+    text-rendering: optimizeLegibility;
+    stroke: none;
+}
+
 

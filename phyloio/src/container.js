@@ -69,6 +69,22 @@ export default class Container {
 
     }
 
+    toggle_stack(){
+
+        var ms = this.models[this.current_model].settings
+
+        if (ms.has_histogram_data){
+
+            ms.show_histogram = !ms.show_histogram;
+            this.viewer.set_data(this.models[this.current_model])
+            this.viewer.render(this.viewer.hierarchy)
+
+        }
+
+
+
+    }
+
 };
 
 

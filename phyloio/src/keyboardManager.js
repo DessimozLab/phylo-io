@@ -28,6 +28,7 @@ export default class keyboardManager {
                 "s": function(){self_km.left.viewer.modify_node_size( 'vertical',5)},
                 "q": function(){self_km.left.shift_model(-1)},
                 "e": function(){self_km.left.shift_model(1)},
+                "f": function(){self_km.left.toggle_stack()},
                 // RIGHT
                 "u": function(){self_km.right.shift_model(-1)},
                 "o": function(){self_km.right.shift_model(1)},
@@ -36,6 +37,7 @@ export default class keyboardManager {
                 "l": function(){self_km.right.viewer.modify_node_size( 'horizontal',5)},
                 "i": function(){self_km.right.viewer.modify_node_size( 'vertical',-5)},
                 "k": function(){self_km.right.viewer.modify_node_size( 'vertical',5)},
+                ";": function(){self_km.right.toggle_stack()},
             }
 
             if (shortcuts.hasOwnProperty(e.key)){

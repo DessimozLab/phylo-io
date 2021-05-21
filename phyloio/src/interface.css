@@ -1,0 +1,60 @@
+.corner_placeholder {
+    position: absolute;
+    display: flex;
+    padding: 8px;
+}
+
+.top { top: 0; }
+.right { right: 0; }
+.left { left: 0; }
+.bottom { bottom: 0 }
+
+.square_button{
+    border:none;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.square_button:hover{
+    background-color: #ccc;
+}
+
+.screen_toggle{
+    background-color: #ffffff;
+}
+
+
+
+
+
+
+
+
+
+
+.toggle{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+
+
+
+.zoomin{
+    position: relative;
+    bottom: 40px;
+    right: 10px;
+}
+
+.zoomout{
+    position: relative;
+    bottom: 40px;
+    right: 10px;
+}
+
+
+
+
+
+
