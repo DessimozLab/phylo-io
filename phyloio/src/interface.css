@@ -15,10 +15,12 @@
     border:none;
     padding: 8px;
     cursor: pointer;
+    background-color: rgba(239, 239, 239, 0.95);
+    color:#555;
 }
 
 .square_button:hover{
-    background-color: #ccc;
+    background-color: #ddd;
 }
 
 /* TOGGLE */
@@ -35,43 +37,72 @@
 /* BRANCH SCALE */
 
 .scale_line{
-    stroke-width:  2;
-    stroke: black;
+    stroke-width:  1.2;
+    stroke: #555;
 }
 
 .scale_text{
+
 }
 
+/* SEARCH */
 
+.search_input{
 
+    border: 1px solid #ddd;
+    border-right: none;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    margin: 2px;
+    margin-right: 0;
+    background-color: white;
 
-
-
-
-
-
-
-
-.toggle{
-    position: absolute;
-    bottom: 0;
-    left: 0;
 }
 
-
-
-
-.zoomin{
-    position: relative;
-    bottom: 40px;
-    right: 10px;
+.search_button {
+    margin: 2px;
+    margin-left: 0 !important;
 }
 
-.zoomout{
-    position: relative;
-    bottom: 40px;
-    right: 10px;
+/* TOP RIGHT SUB MENU */
+
+.tr-buttons{
+    display: flex;}
+
+.tr-buttons  * {
+    align-self: flex-end;
 }
+
+.tr-menus{
+    display: flex;
+    flex-direction: column;
+    margin-left: 4px;
+
+}
+
+.tr-menus > div {
+    align-self: flex-end;
+    width: 100%;
+    margin: 2px;
+    background-color: rgba(239, 239, 239, 0.95);
+    display: none;
+}
+
+.menu_export{
+
+}
+
+.menu_export > div {
+    margin: 4px;
+}
+
+.menu_export > div > button {
+    background-color: white;
+}
+
+.menu_settings{
+}
+
 
 
 

@@ -1,13 +1,13 @@
 
 body{
-    background-color: #fff
+    background-color: #dddd
 }
 
 #container1{
     display: inline-block;
     width: 45%;
     height: 600px;
-    border: #0f0f0f 1px solid;
+
     background-color: #fff;
 
 }
@@ -16,7 +16,7 @@ body{
     display: inline-block;
     width: 45%;
     height: 600px;
-    border: #0f0f0f 1px solid;
+
     background-color: #fff;
 }
 
