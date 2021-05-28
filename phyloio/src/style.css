@@ -25,14 +25,11 @@ body{
 }
 
 .node text {
-    font: 12px sans-serif;
+    font-family: monospace;
+
 }
 
-.link {
-    cursor: pointer;
-    fill: none;
-    stroke-width: 1px;
-}
+
 
 #histogram-legend text, .legendtxt, .legendsummarytxt {
     font-family: 'Open Sans', sans-serif;

@@ -9,12 +9,19 @@ export default class Model {
         this.settings = {
             'data_type' : 'newick',
             'use_branch_lenght' : true,
+            'has_branch_lenght' : true,
+            'dessimode': false,
             'show_histogram' : false,
             'has_histogram_data' : false,
             'style': {},
             'tree': {
                 'node_vertical_size' : 30,
                 'node_horizontal_size' : 40,
+                'node_radius' : 3, // move to style
+                'line_width' : 3,// move to style
+                'font_size':12,// move to style
+                'collapse_level' : 0,
+                'max_depth' : 0,
             },
             'stack' : {
                 'type': 'genes',
@@ -66,8 +73,6 @@ export default class Model {
             })
 
 
-
-
         }
 
     }
@@ -106,9 +111,12 @@ export default class Model {
 
     set_cumulated_length(node, children){
         if (node.parent) {
+            node.depth = node.parent.depth + 1
             node.distance_to_root = node.parent.distance_to_root + node.branch_length
         }
-        else{node.distance_to_root = 0}
+        else{
+            node.distance_to_root = 0
+        node.depth = 0}
 
     }
 
@@ -116,8 +124,11 @@ export default class Model {
 
         var p;
 
+        //has_branch_lenght
+        if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
+
         // if branch size is not used put 1
-        if (!this.settings.use_branch_lenght) {
+        if (!this.settings.has_branch_lenght) {
             p = this.traverse(json, function(n,c){n.branch_length=1})
             p.branch_length = 0 // root
         }
@@ -127,6 +138,10 @@ export default class Model {
 
         // compute cumulated  lenght
         p = this.traverse(p, this.set_cumulated_length , null)
+
+        // get max depth
+        this.traverse(p, function(n,c){if (n.depth > this.settings.tree.max_depth){this.settings.tree.max_depth = n.depth}})
+
 
         return p
     }

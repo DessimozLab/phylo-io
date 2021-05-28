@@ -87,7 +87,9 @@ export default class Viewer {
     }
 
     // DATA
-    set_data(model){
+    set_data(model, refresh_interface = true){
+
+
         this.data = model.data;
         this.model = model;
 
@@ -101,7 +103,14 @@ export default class Viewer {
         }
 
         this.d3_cluster.nodeSize([this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
+
         this.build_d3_data();
+
+        if (refresh_interface){
+            this.interface = new Interface(this, this.container_object)
+        }
+
+
     }
 
     build_d3_data(){
@@ -161,7 +170,7 @@ export default class Viewer {
 
         this.build_scale_branch_length() // todo dont build scale on collapse
 
-        this.interface = new Interface(this, this.container_object)
+        //this.interface = new Interface(this, this.container_object)
 
 
 
@@ -198,7 +207,12 @@ export default class Viewer {
         var self_render = this;
 
         // update x pos with branch length
-        this.nodes.forEach(d => d.y = this.scale_branch_length(d.branch_size))
+        this.nodes.forEach(d => {
+            if (this.model.settings.has_branch_lenght && this.model.settings.use_branch_lenght) {
+                d.y = this.scale_branch_length(d.branch_size)
+            }
+            else{d.y = this.scale_branch_length(d.depth)}
+        })
 
         // Update the nodes...
         var node = this.G.selectAll('g.node')
@@ -224,6 +238,7 @@ export default class Viewer {
         // Add labels for the nodes
         nodeEnter.append('text')
             .attr("dy", ".35em")
+            .style('font-size', d => {return this.model.settings.tree.font_size + "px";})
             .attr("x", function(d) {
                 return d.children || d._children ? -13 : 13;
             })
@@ -258,11 +273,14 @@ export default class Viewer {
 
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
-            .attr('r', d => d._children ?  1e-6 : 3 )
+            .attr('r', d => d._children ?  1e-6 : this.model.settings.tree.node_radius )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#666";
             })
             .attr('cursor', 'pointer');
+
+        nodeUpdate.select('text').style('font-size', d => {return this.model.settings.tree.font_size + "px";})
+
 
         // Remove any exiting nodes
         var nodeExit = node.exit().transition()
@@ -346,6 +364,8 @@ export default class Viewer {
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert('path', "g")
             .attr("class", "link")
+            .style("cursor","pointer")
+            .style("fill","none")
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
         linkEnter.on('click', (d) =>  { this.click_edges(d)})
@@ -356,6 +376,7 @@ export default class Viewer {
         linkUpdate.transition()
             .duration(this.settings.duration)
             .style('stroke', d => d.elementS ? similarity(d.elementS) : "#ccc" )
+            .style('stroke-width',  this.model.settings.tree.line_width)
             .attr('d', d => this.square_edges(d, d.parent))
 
         // Remove any exiting links
@@ -404,20 +425,76 @@ export default class Viewer {
     }
 
 
-    // TUNNING
+    // TUNNING todo should be in COntroller
     modify_node_size(axis, variation){
 
         if (axis === 'vertical') {
             this.model.settings.tree.node_vertical_size += variation
+            this.interface.update_slider(this.interface.slider_v, this.model.settings.tree.node_vertical_size)
         }
         else if (axis === 'horizontal') {
             this.model.settings.tree.node_horizontal_size += variation
+            this.interface.update_slider(this.interface.slider_h, this.model.settings.tree.node_horizontal_size)
         }
 
         this.d3_cluster.nodeSize([ this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
         this.build_d3_data()
         this.render(this.hierarchy)
 
+
+        if (this.interface && this.model.settings.use_branch_lenght) {
+           var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+            this.interface.update_scale_value(k);
+        }
+
+    }
+
+    toggle_use_length(){
+        this.model.settings.use_branch_lenght = !this.model.settings.use_branch_lenght
+
+        if (!this.model.settings.use_branch_lenght){this.interface.remove_scale()}
+        else{this.interface.add_scale()}
+
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
+    update_node_radius(val){
+        this.model.settings.tree.node_radius = val
+        this.render(this.hierarchy)
+    }
+
+    update_line_width(val){
+        this.model.settings.tree.line_width = val
+        this.render(this.hierarchy)
+    }
+
+    update_collapse_level(val){
+        this.model.settings.tree.collapse_level = val
+        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
+    }
+
+    update_font_size(val){
+        this.model.settings.tree.font_size = val
+        this.render(this.hierarchy)
+    }
+
+    toggle_dessimode(){
+        this.model.settings.dessimode = !this.model.settings.dessimode
+
+        if (this.model.settings.dessimode) {
+
+            var r= Math.floor(Math.random() * 101);
+
+            if (r > 50) {alert("[Common] If I may just give a little feedback... [ following 1200 lines truncated]")}
+            else if (r > 10) {alert("[Rare] If I may just give a little feedback... [ following 1200 lines truncated]")}
+            else{alert("[Lengendary] Have you heard about banana ?")}
+
+
+
+
+
+        }
     }
 
     // HELPER
@@ -456,6 +533,14 @@ export default class Viewer {
             .duration(this.settings.duration)
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
 
+    }
+
+    zoom_in(){
+        this.svg.transition().call(this.zoom.scaleBy, 2)
+    }
+
+    zoom_out(){
+        this.svg.transition().call(this.zoom.scaleBy, 0.5)
     }
 
     // STACK

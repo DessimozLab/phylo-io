@@ -15,7 +15,8 @@ export default class Interface {
 
         // remove previous placeholder & UI
         this.container_d3.selectAll("corner_placeholder").remove()
-        this.container_d3.select(".scale").remove()
+        this.remove_scale()
+        this.container_d3.selectAll(".menu_settings").remove()
 
         // Create corner placeholder for UI elements
         this.bottom_left = this.add_bottom_left_container()
@@ -24,7 +25,9 @@ export default class Interface {
         this.top_right = this.add_top_right_container()
 
         // BOTTOM LEFT
-        this.add_toggle()
+        if (this.container_object.models.length > 1) {
+            this.add_toggle()
+        }
         if (this.viewer.model.settings.use_branch_lenght) {
             this.scale_text = this.add_scale()
         }
@@ -99,7 +102,7 @@ export default class Interface {
     add_zoom(){
 
         this.bottom_right.append('button')
-            .on('click', d => {return this.viewer.centerNode(this.viewer.get_random_node())})
+            .on('click', d => {return this.viewer.zoom_in()})
             .attr('class', ' square_button')
             .style('margin', '2px')
             .append("div")
@@ -109,7 +112,7 @@ export default class Interface {
             .attr('class', ' fas fa-search-plus ')
 
         this.bottom_right.append('button')
-            .on('click', d => {return this.viewer.centerNode(this.viewer.get_random_node())})
+            .on('click', d => {return this.viewer.zoom_out()})
             .attr('class', ' square_button')
             .style('margin', '2px')
             .append("div")
@@ -149,6 +152,7 @@ export default class Interface {
 
 
     }
+    remove_scale(){this.container_d3.select(".scale").remove()}
     update_scale_value(zoom_scale){
         this.scale_text.text(this.compute_scale(zoom_scale))
 
@@ -198,9 +202,8 @@ export default class Interface {
         this.menu_export = this.tr_menus.append('div')
             .attr('class', 'menu_export')
 
-
         // Adds
-        this.menu_export.append('div').append("text")
+        this.menu_export.append('div').append("p")
             .attr("class", 'scale_text')
             .text("Export as: ")
 
@@ -251,27 +254,146 @@ export default class Interface {
     }
 
     // SETTINGS
-    add_settings(){
+    add_settings() {
+
+        // add the buttons
         this.tr_buttons.append('button')
             .attr('class', ' square_button')
             .style('margin', '2px')
             .on("click", d => {
-            if (this.menu_settings.style('display') === 'none'){
-                this.menu_export.style("display", 'none')
-                return this.menu_settings.style("display", 'block')
-            }
-            return this.menu_settings.style("display", 'none')
-        })
+                if (this.menu_settings.style('display') === 'none') {
+                    this.menu_export.style("display", 'none')
+                    return this.menu_settings.style("display", 'block')
+                }
+                return this.menu_settings.style("display", 'none')
+            })
             .append("div")
-            .attr("class","label")
+            .attr("class", "label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-sliders-h ')
 
+        // add the menu
         this.menu_settings = this.tr_menus.append('div')
             .style("background-color", '#aaa')
             .attr('class', 'menu_settings')
             .style('height', '60px')
+
+        // ADD THE ACCORDION SYSTEM
+
+        this.menu_general_b = this.menu_settings.append('button').attr('class', 'accordion').text("Tree")
+        this.menu_general_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
+        this.menu_tree_b = this.menu_settings.append('button').attr('class', 'accordion').text("Branch & Labels")
+        this.menu_tree_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
+        if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
+        this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Stack")
+        this.menu_stack_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        }
+
+        this.menu_advanced_b = this.menu_settings.append('button').attr('class', 'accordion').text("Advanced")
+        this.menu_advanced_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
+        // ADD LOGIC TO ACCORDION
+        var acc = document.getElementById(this.container_object.div_id).getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+
+        // ADD TOGGLE BRANCH LENGTH
+        if(this.viewer.model.settings.has_branch_lenght){
+            this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch lenght",   this.viewer.toggle_use_length.bind(this.viewer))
+        }
+
+        // ADD SLIDER RESIZE X/Y
+        this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 10, 100, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
+            (e ) =>{this.viewer.modify_node_size('vertical', e.target.value - this.viewer.model.settings.tree.node_vertical_size)})
+
+        this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 10, 100, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
+            (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
+
+        // ADD SLIDER NODE/LINE/TEXT
+        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node size", 1, 10, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
+            (e ) =>{this.viewer.update_node_radius(e.target.value)})
+
+        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, 8, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
+            (e ) =>{this.viewer.update_line_width(e.target.value)})
+
+        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 40, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
+            (e ) =>{this.viewer.update_font_size(e.target.value)})
+
+        // COLLAPSE
+
+        this.slider_c = this.add_slider_UI(this.menu_general_p,
+            this.viewer.model.settings.tree.collapse_level == 0 ? "Autocollapse: Off" : "Autocollapse:" + this.viewer.model.settings.tree.collapse_level,
+            0, this.viewer.model.settings.tree.max_depth , this.viewer.model.settings.tree.collapse_level, 0,"slider_collapse_level_",)
+        document.getElementById("slider_collapse_level_" + this.container_object.uid).onchange = (e) => {
+
+
+            this.viewer.update_collapse_level(e.target.value)
+            var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse:" + this.viewer.model.settings.tree.collapse_level;
+
+            document.getElementById("slider_collapse_level_" + this.container_object.uid)
+                .parentElement.previousSibling.innerHTML = lab;
+
+            }
+
+        // JOKE
+        this.add_swicth_UI(this.menu_advanced_p, this.viewer.model.settings.dessimode,() => {return this.viewer.model.settings.dessimode ? "Disable Dessimode" : "Activate Dessimode"},   this.viewer.toggle_dessimode.bind(this.viewer))
+
+
+    }
+
+    add_swicth_UI(parent, checked, label, f){
+
+        var lab = parent.append('label').style("display", 'inline-block')
+            .attr("class","switch")
+
+        lab.append('input').attr('type', 'checkbox' ).property('checked', checked);
+        lab.append('span').attr("class","slider_t round")
+            .on('click', (d) => { f()} )
+
+        parent.append('p').text(label).style("display", 'inline-block').style("margin-left", '12px')
+
+    }
+
+    add_slider_UI(parent, label, min, max, current, step, id, f){
+
+        var f = f || function(){};
+
+        parent.append("p").text(label)
+
+        var d = parent.append('div')
+            .attr("class","slidecontainer")
+
+        var input =  d.append('input').attr("class","slider")
+            .attr('type', 'range' )
+            .attr('min', min )
+            .attr('max', max )
+            .attr('value', current )
+            //.attr('step', step )
+            .attr('id', id + this.container_object.uid )
+            .on('click', (e) => { f(e)} )
+
+        return input
+
+
+
+    }
+
+    update_slider(slide ,value){
+        slide.attr('value', value);
     }
 
 }
