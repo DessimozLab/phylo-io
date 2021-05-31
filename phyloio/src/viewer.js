@@ -84,6 +84,7 @@ export default class Viewer {
         // MISC.
         this.settings.stack.colorMap = this.compute_color_map_stack()
 
+
     }
 
     // DATA
@@ -206,6 +207,7 @@ export default class Viewer {
 
         var self_render = this;
 
+
         // update x pos with branch length
         this.nodes.forEach(d => {
             if (this.model.settings.has_branch_lenght && this.model.settings.use_branch_lenght) {
@@ -226,6 +228,7 @@ export default class Viewer {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
             .on('click', (d, i) =>  { this.click_nodes(d,i)})
+
 
         // Add Circle for the nodes
         nodeEnter.append('circle')
@@ -414,7 +417,7 @@ export default class Viewer {
     }
 
     click_edges(edge) {
-        this.container_object.trigger_("reroot", event.path[0].__data__)
+        //this.container_object.trigger_("reroot", event.path[0].__data__)
     }
 
     set_zoom(k,x,y) {

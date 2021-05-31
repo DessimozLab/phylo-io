@@ -27,7 +27,7 @@ export default class API {
             container.start()
         }
 
-        new keyboardManager(this);
+        //new keyboardManager(this);
     }
 
 }
