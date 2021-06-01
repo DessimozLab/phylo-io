@@ -51,6 +51,7 @@ export default class Model {
         this.data = this.factory(this.parse());
         this.data.root = true;
 
+
         // check that histogram data is present and compute
         if(this.settings.show_histogram && this.data.evolutionaryEvents) {
             this.settings.has_histogram_data  = true;
@@ -142,6 +143,9 @@ export default class Model {
         // get max depth
         this.traverse(p, function(n,c){if (n.depth > this.settings.tree.max_depth){this.settings.tree.max_depth = n.depth}})
 
+        this.suggestions = [] // autocomplete name
+        this.traverse(json, function(n,c){
+            if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
 
         return p
     }

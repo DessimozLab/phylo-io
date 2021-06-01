@@ -527,14 +527,8 @@ export default class Viewer {
 
     // UTILS
     centerNode(source) {
+        this.svg.transition().call(this.zoom.translateTo, source.y0,source.x0)
 
-        var x = -source.y0 + this.width / 2;
-        var y = -source.x0 + this.height / 2;
-
-        d3.select('#svg' + this.uid )
-            .transition()
-            .duration(this.settings.duration)
-            .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(1) );
 
     }
 

@@ -95,6 +95,14 @@ export default class Container {
         this.viewer.render(this.viewer.hierarchy)
     }
 
+    zoom_to_node(name){
+        var n = []
+
+        this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
+
+        this.viewer.centerNode(n[0])
+    }
+
     toggle_stack(){
 
         var ms = this.models[this.current_model].settings
