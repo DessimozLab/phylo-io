@@ -242,11 +242,27 @@ export default class Viewer {
         nodeEnter.append('text')
             .attr("dy", ".35em")
             .style('font-size', d => {return this.model.settings.tree.font_size + "px";})
+            .attr("font-weight", (d) =>  {
+                return d.children || d._children ? 900 : 400
+            })
+            .attr("y", (d) => {
+                if (d.children || d._children){
+                    if (d.children && this.isOdd(d.children.length)){
+                        return 13
+                    }
+                    if (d._children && this.isOdd(d._children.length)){
+                        return 13
+                    }
+                    return 0
+                }
+                return 0
+            })
             .attr("x", function(d) {
-                return d.children || d._children ? -13 : 13;
+                return 13;
             })
             .attr("text-anchor", function(d) {
-                return d.children || d._children ? "end" : "start"; // todo better deal with internal name
+                return "start";
+                //return d.children || d._children ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; });
 
@@ -751,6 +767,8 @@ export default class Viewer {
 
         return data;
     }
+
+    isOdd(num) { return num % 2;}
 
 
 
