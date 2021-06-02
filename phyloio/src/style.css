@@ -3,6 +3,14 @@ body{
     background-color: #dddd
 }
 
+#container1_stack{
+    display: inline-block;
+    width: 100%;
+    height: 600px;
+
+    background-color: #fff;
+}
+
 #container1{
     display: inline-block;
     width: 45%;

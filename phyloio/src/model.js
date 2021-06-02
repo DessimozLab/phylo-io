@@ -29,9 +29,9 @@ export default class Model {
                 'showHistogramSummaryValue' : true,
                 'legendTxtSize' : 12,
                 'margin' : 8,
-                'xInitialRightMargin' : 35,
-                'stackHeight' : 40,
-                'stackWidth' : 20,
+                'xInitialRightMargin' : 45,
+                'stackHeight' : 80,
+                'stackWidth' : 30,
                 'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
 
             },

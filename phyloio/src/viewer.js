@@ -95,8 +95,8 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 100;
-            this.model.settings.tree.node_horizontal_size = 80;
+            this.model.settings.tree.node_vertical_size = 120;
+            this.model.settings.tree.node_horizontal_size = 120;
         }
         else {
             this.model.settings.tree.node_vertical_size = 30;
@@ -251,7 +251,7 @@ export default class Viewer {
                         return 13
                     }
                     if (d._children && this.isOdd(d._children.length)){
-                        return 13
+                        return 13 // todo internal name offsetted if collapse
                     }
                     return 0
                 }
@@ -567,8 +567,8 @@ export default class Viewer {
         var txtDistanceFromBar = ms.stackWidth + ms.margin
 
         if (ms.showHistogramValues) {
-            
-            var legends = stackGroup.selectAll("text")
+
+            var legends = stackGroup.selectAll(".legendtxt")
                 .data(data)
                 .enter()
                 .append("text")
@@ -624,7 +624,7 @@ export default class Viewer {
             })
             .style("opacity", 0.8)
             .attr("y", function (d) {
-                return 0 - d[0].y0;
+                return 0 - d[0].y0 - 0.5;
             })
             .attr("x", function (d) {
                 return 0 - xDistanceFromNode;
@@ -713,7 +713,7 @@ export default class Viewer {
         var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
         var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeretained;
 
-        if(type == 'genes' || !type){
+        if(type === 'genes' || !type){
 
             realSize = Math.abs(d.retained) > 0 ? Math.abs(d.retained) : 0;
             var posBase = posBase + StackSizeretained;

@@ -455,10 +455,10 @@ export default class Interface {
         }
 
         // ADD SLIDER RESIZE X/Y
-        this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 10, 100, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
+        this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 10, 400, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
             (e ) =>{this.viewer.modify_node_size('vertical', e.target.value - this.viewer.model.settings.tree.node_vertical_size)})
 
-        this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 10, 100, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
+        this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 10, 400, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
             (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
 
         // ADD SLIDER NODE/LINE/TEXT
