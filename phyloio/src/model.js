@@ -24,7 +24,7 @@ export default class Model {
                 'max_depth' : 0,
             },
             'stack' : {
-                'type': 'genes',
+                'type': 'genes',//'events',
                 'showHistogramValues' : true,
                 'showHistogramSummaryValue' : true,
                 'legendTxtSize' : 12,
@@ -32,7 +32,7 @@ export default class Model {
                 'xInitialRightMargin' : 45,
                 'stackHeight' : 80,
                 'stackWidth' : 30,
-                'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
+                'maxStackHeight': 'ratio', // ratio -> stack height fixed | max -> largest data = stack height
 
             },
         }
@@ -131,22 +131,25 @@ export default class Model {
         // if branch size is not used put 1
         if (!this.settings.has_branch_lenght) {
             p = this.traverse(json, function(n,c){n.branch_length=1})
+            //console.log("t1")
             p.branch_length = 0 // root
         }
 
         // set parent attribute
         p = this.traverse(json, null , this.set_parent)
+        //console.log("t2")
 
         // compute cumulated  lenght
         p = this.traverse(p, this.set_cumulated_length , null)
-
+        //console.log("t3")
         // get max depth
         this.traverse(p, function(n,c){if (n.depth > this.settings.tree.max_depth){this.settings.tree.max_depth = n.depth}})
-
+        //console.log("t4")
         this.suggestions = [] // autocomplete name
         this.traverse(json, function(n,c){
-            if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
 
+            if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
+        //console.log("t5")
         return p
     }
 

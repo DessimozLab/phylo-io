@@ -417,7 +417,7 @@ export default class Interface {
             .attr('class', 'menu_settings')
 
 
-        // ADD THE ACCORDION SYSTEM
+        // ADD THE ACCORDION SYSTEM todo close other when open one
 
         this.menu_general_b = this.menu_settings.append('button').attr('class', 'accordion').text("Tree")
         this.menu_general_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
@@ -428,6 +428,60 @@ export default class Interface {
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
         this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Stack")
         this.menu_stack_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
+
+
+            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Stack height", 40, 300, this.viewer.model.settings.stack.stackHeight, 5, "slider_stack_height_",
+                (e ) =>{this.viewer.update_stack_height(e.target.value)})
+
+            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Stack width", 10, 150, this.viewer.model.settings.stack.stackWidth, 5, "slider_stack_width_",
+                (e ) =>{this.viewer.update_stack_width(e.target.value)})
+
+            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Label size", 6, 40, this.viewer.model.settings.stack.legendTxtSize, 1, "slider_stack_text_size_",
+                (e ) =>{this.viewer.update_stack_font(e.target.value)})
+
+            this.menu_stack_p.append("p").text('Labels')
+
+
+            this.stack_type = this.menu_stack_p.append('div')
+                .style('display', 'flex')
+                .style('margin-top', "14px")
+
+
+
+            this.stack_type.append('button') // todo clean click
+                .attr('class', ' square_button')
+                .attr('id', 'stack_type_events')
+                .style('background-color', d => {return this.viewer.model.settings.stack.type === 'events' ? 'rgb(204, 204, 204)': null })
+                .on("click", d => {
+                    this.viewer.update_stack_type('events')
+                    this.viewer. d3.select("#stack_type_events").style('background-color','rgb(204, 204, 204)')
+                    this.viewer.d3.select("#stack_type_genes").style('background-color', null)
+                })
+                .style('margin', '2px')
+                .style('flex-grow', '1')
+                .append("text")
+                .text("Events")
+
+
+            this.stack_type.append('button')
+                .attr('class', ' square_button')
+                .attr('id', 'stack_type_genes')
+                .style('background-color', d => {return this.viewer.model.settings.stack.type === 'genes' ? 'rgb(204, 204, 204)': null })
+                .on("click", d => {
+                    this.viewer.update_stack_type('genes')
+                    this.viewer.d3.select("#stack_type_genes").style('background-color','rgb(204, 204, 204)')
+                    this.viewer.d3.select("#stack_type_events").style('background-color', null)
+                })
+                .style('margin', '2px')
+                .style('flex-grow', '1')
+                .append("text")
+                .text("Genes")
+
+            this.add_swicth_UI(this.menu_stack_p, (this.viewer.model.settings.stack.maxStackHeight === 'ratio'),"Fix stack height",   this.viewer.toggle_height_max_ratio.bind(this.viewer))
+
+
+
         }
 
         //this.menu_advanced_b = this.menu_settings.append('button').attr('class', 'accordion').text("Advanced")
@@ -486,10 +540,6 @@ export default class Interface {
                 .parentElement.previousSibling.innerHTML = lab;
 
             }
-
-        // JOKE
-        //this.add_swicth_UI(this.menu_advanced_p, this.viewer.model.settings.dessimode,() => {return this.viewer.model.settings.dessimode ? "Disable Dessimode" : "Activate Dessimode"},   this.viewer.toggle_dessimode.bind(this.viewer))
-
 
     }
 

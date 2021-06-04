@@ -63,9 +63,9 @@ export default class Container {
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
         }
-
         this.viewer.set_data(this.models[this.current_model])
         this.viewer.render(this.viewer.hierarchy)
+
 
     }
 

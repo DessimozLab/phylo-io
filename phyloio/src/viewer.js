@@ -107,6 +107,7 @@ export default class Viewer {
 
         this.build_d3_data();
 
+
         if (refresh_interface){
             this.interface = new Interface(this, this.container_object)
         }
@@ -151,6 +152,17 @@ export default class Viewer {
             }
         })
 
+        this.compute_stack_data()
+
+        this.build_scale_branch_length() // todo dont build scale on collapse
+
+        //this.interface = new Interface(this, this.container_object)
+
+
+
+    }
+
+    compute_stack_data(){
         // store required data for stack on node
         if (this.model.settings.has_histogram_data){
             this.hierarchy.eachBefore((d, i, node) => {
@@ -167,14 +179,7 @@ export default class Viewer {
                     //console.log("No data for stack in ", d)
                 }
             })
-            }
-
-        this.build_scale_branch_length() // todo dont build scale on collapse
-
-        //this.interface = new Interface(this, this.container_object)
-
-
-
+        }
     }
 
     build_scale_branch_length(){
@@ -197,8 +202,12 @@ export default class Viewer {
         this.links = this.d3_cluster_data.descendants().slice(1);
 
         // And render them
+        console.log('sub render')
         this.render_nodes(source)
+        console.log('nodes rendered')
         this.render_edges(source)
+        console.log('edges rendered')
+
 
     }
 
@@ -280,10 +289,10 @@ export default class Viewer {
                 .attr("class", "stackGroup")
         }
 
-        var nodeUpdate = nodeEnter.merge(node);
+        this.nodeUpdate = nodeEnter.merge(node);
 
         // Transition to the proper position for the node
-        nodeUpdate.transition()
+        this.nodeUpdate.transition()
             .duration(this.settings.duration)
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
@@ -291,14 +300,14 @@ export default class Viewer {
 
 
         // Update the node attributes and style
-        nodeUpdate.select('circle.node')
+        this.nodeUpdate.select('circle.node')
             .attr('r', d => d._children ?  1e-6 : this.model.settings.tree.node_radius )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#666";
             })
             .attr('cursor', 'pointer');
 
-        nodeUpdate.select('text').style('font-size', d => {return this.model.settings.tree.font_size + "px";})
+        this.nodeUpdate.select('text').style('font-size', d => {return this.model.settings.tree.font_size + "px";})
 
 
         // Remove any exiting nodes
@@ -331,7 +340,7 @@ export default class Viewer {
 
 
         // Add collapsed triangle
-        nodeUpdate.each(function (d) {
+        this.nodeUpdate.each(function (d) {
 
             if (d._children) {
 
@@ -356,13 +365,16 @@ export default class Viewer {
             }
         })
 
+        /*
+
         // Add Stack
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
-            nodeUpdate.filter(function(d){
+            this.nodeUpdate.filter(function(d){
                 return d.stackData
             }).each((d, i, nodes) => {this.render_stack(nodes[i],d)}
             );
         }
+        */
 
         // Store the old positions for transition.
         this.nodes.forEach(function(d){
@@ -478,6 +490,46 @@ export default class Viewer {
         this.render(this.hierarchy)
     }
 
+    // stack
+
+    toggle_height_max_ratio(){
+        if (this.model.settings.stack.maxStackHeight === 'max'){
+            this.model.settings.stack.maxStackHeight = 'ratio'
+        }
+        else{
+            this.model.settings.stack.maxStackHeight = 'max'
+        }
+
+
+        this.build_d3_data()
+        this.render(this.hierarchy)
+
+    }
+
+    update_stack_height(val){
+        this.model.settings.stack.stackHeight = val
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
+    update_stack_width(val){
+        this.model.settings.stack.stackWidth = val
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
+    update_stack_font(val){
+        this.model.settings.stack.legendTxtSize = val
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
+    update_stack_type(val){
+        this.model.settings.stack.type = val
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
     update_node_radius(val){
         this.model.settings.tree.node_radius = val
         this.render(this.hierarchy)
@@ -558,13 +610,17 @@ export default class Viewer {
 
     // STACK
     render_stack(d,e){
-        
+
+
+
         var ms = this.model.settings.stack
         var data = e.stackData[ms.type];
         var stackGroup  = this.d3.select(d);
 
-        var xDistanceFromNode = ms.stackWidth + ms.xInitialRightMargin;
-        var txtDistanceFromBar = ms.stackWidth + ms.margin
+
+
+        var xDistanceFromNode =  parseInt(ms.xInitialRightMargin) + parseInt(ms.stackWidth)
+        var txtDistanceFromBar = parseInt(ms.stackWidth) + parseInt(ms.margin)
 
         if (ms.showHistogramValues) {
 
@@ -581,17 +637,17 @@ export default class Viewer {
                     // TODO adjust based on feedback
                     if(d[0].y0 < 0){
                         // legend below zero line
-                        return ms.legendTxtSize+2;
+                        return parseInt(ms.legendTxtSize)+2;
                     }
 
                     // if bar height smaller than text size, put text on bottom
-                    if(d[0].y < ms.legendTxtSize && d[0].y0 > 0) {
+                    if(d[0].y < parseInt(ms.legendTxtSize) && d[0].y0 > 0) {
                         return -(d[0].y0 - d[0].y);
                     }
 
                     // center legend text vertically with some extra padding
-                    return -(d[0].y0 - ((d[0].y + ms.legendTxtSize)/2));
-                }).attr("font-size", ms.legendTxtSize).attr("stroke", "black")
+                    return -(d[0].y0 - ((d[0].y + parseInt(ms.legendTxtSize))/2));
+                }).attr("font-size", parseInt(ms.legendTxtSize)).attr("stroke", "black")
 
         }
         if (ms.showHistogramSummaryValue) {
@@ -610,7 +666,7 @@ export default class Viewer {
                     return 0 - (xDistanceFromNode + 30)
                 }).attr("y", function (d) {
                     return 0 - ms.margin;
-                }).attr("font-size", ms.legendTxtSize).attr("stroke", "black")
+                }).attr("font-size", parseInt(ms.legendTxtSize)).attr("stroke", "black")
 
         }
 
@@ -636,6 +692,8 @@ export default class Viewer {
 
         d3.selectAll(".stackGroup").moveToFront();
 
+        this.addMainLegend()
+
     }
 
     compute_color_map_stack(){
@@ -657,6 +715,7 @@ export default class Viewer {
 
         var ms = this.model.settings.stack
 
+
         if(type === 'genes' || !type){
 
             if(ms.maxStackHeight === "max" && this.model.largestGenome > 0){
@@ -672,9 +731,9 @@ export default class Viewer {
             if(ms.maxStackHeight === "max" && this.model.largestEvents > 0){
                 var normalizer = ms.stackHeight / this.model.largestEvents;
             } else if(Number.isInteger(ms.maxStackHeight)){
-                var normalizer = m.maxStackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+                var normalizer = m.maxStackHeight / (d.duplications + d.gained + Math.abs(d.lost));
             } else {
-                var normalizer = ms.stackHeight / (d.duplication + d.gained + Math.abs(d.lost));
+                var normalizer = ms.stackHeight / (d.duplications + d.gained + Math.abs(d.lost));
             }
 
         }
@@ -708,7 +767,7 @@ export default class Viewer {
         var realSize;
         var StackSizeretained = (d.retained) ? stackScale(d.retained, normalizer) : 0;
         var StackSizeDuplicated = (d.duplicated) ? stackScale(d.duplicated, normalizer) : 0;
-        var StackSizeDuplication = (d.duplication) ? stackScale(d.duplication, normalizer) : 0;
+        var StackSizeDuplication = (d.duplications) ? stackScale(d.duplications, normalizer) : 0;
         var StackSizeGained = (d.gained) ? stackScale(d.gained, normalizer) : 0;
         var StackSizeLost = (d.lost) ? stackScale(d.lost, normalizer) : 0;
         var posStackSize = StackSizeGained + StackSizeDuplicated + StackSizeretained;
@@ -726,7 +785,7 @@ export default class Viewer {
             stackIndex++;
         } else {
 
-            realSize = Math.abs(d.duplication);
+            realSize = Math.abs(d.duplications);
             var posBase = posBase + StackSizeDuplication
             data[stackIndex][seriesIndex] = new seriesElement('Duplications', realSize, StackSizeDuplication, posBase, posStackSize)
             stackIndex++;
@@ -766,6 +825,92 @@ export default class Viewer {
         )
 
         return data;
+    }
+
+    addMainLegend() {
+
+        d3.select('#histogram-legend').remove();
+
+        var width = 230;
+        var height = 80;
+        var svgHeight = height + 25;
+        var legendRectSize = 20;
+        var margin = 25;
+        var legendTxtSize = 13;
+        // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
+        var legendTxtYPadding = Math.round(((legendRectSize - legendTxtSize) / 2) - 1);
+        if(this.model.settings.stack.type == "genes"){
+            var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
+        } else {
+            var dataLabels = ["Gains", "Duplications", "Losses" ]
+        }
+
+        // to position legends correctly
+        var rects = dataLabels.length - 1;
+
+        var dy = (this.height - height - 25)
+
+
+        var legendSvg = d3.select("#svg" + this.uid).append("svg")//.append("g").attr("transform", "translate(25," + dy  + ")")
+            .attr("id", "histogram-legend")
+            .attr("x", margin)
+            .attr("y", margin)
+            .attr("width", width + "px")
+            .attr("height", svgHeight + "px")
+
+            .append("g")
+
+
+        legendSvg.append("line")
+            .attr("x1", 0)
+            .attr("y1", rects * legendRectSize)
+            .attr("x2", 200)
+            .attr("y2", rects * legendRectSize)
+            .attr("class", "divline")
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+        legendSvg.selectAll('rect')
+            .data(dataLabels)
+            .enter()
+            .append('rect')
+            .attr('x', 110)
+            .attr('y', function(d, i){
+                return i * legendRectSize;
+            })
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .attr('fill', (d, i, node) => {
+                return this.settings.stack.colorMap[d];
+            });
+
+        legendSvg.selectAll('text')
+            .data(dataLabels)
+            .enter()
+            .append('text')
+            .text(function(d){
+                return d;
+            })
+            .attr('x', 110 + legendRectSize + 5)
+            .attr('y', function(d, i){
+                return i * legendRectSize + legendTxtSize + legendTxtYPadding;
+            })
+            .attr('text-anchor', 'start')
+            .attr('alignment-baseline', 'middle')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+
+        legendSvg
+            .append('text')
+            .attr("class", "legendGeneTotal")
+            .text("Total # of "+this.model.settings.stack.type)
+            .attr('x', 0)
+            .attr('y', rects * legendRectSize - 5)
+            .attr('text-anchor', 'start')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+        d3.selectAll(".legendGeneTotal").moveToFront();
+
     }
 
     isOdd(num) { return num % 2;}
