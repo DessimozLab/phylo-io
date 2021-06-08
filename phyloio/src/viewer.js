@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import Interface from './interface.js'
+import { tip as d3tip } from "d3-v6-tip";
 
 d3.selection.prototype.moveToFront = function() {
     return this.each(function() {
@@ -8,7 +9,7 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 var uid_viewer = 0 // unique id generator is bound to a single Viewer()
-const collapse_ratio_vertical = 0.6 // how much a triangle is vertically narrow
+const collapse_ratio_vertical = 0.2 // how much a triangle is vertically narrow
 
 // D3 viewer that render any model tree
 export default class Viewer {
@@ -71,6 +72,7 @@ export default class Viewer {
             .on("dblclick.zoom", null)
             .call(this.zoom.transform, d3.zoomIdentity.translate(this.settings.style.margin.left,  (this.height/2 +  this.settings.style.margin.top) ))
 
+
         this.svg_d3 = d3.select(this.svg)
 
         // G element for zoom/transform
@@ -97,7 +99,7 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 80;
+            this.model.settings.tree.node_vertical_size = 60;
             this.model.settings.tree.node_horizontal_size = 120;
         }
         else {
@@ -212,6 +214,29 @@ export default class Viewer {
 
     render_nodes(source){
 
+        var tip = d3tip()
+            .attr('class', 'd3-tip')
+            .html((EVENT,d)=> {
+
+                var html = "<b>Click to (un)collapse </b><hr>"
+
+
+                if (typeof d.data.evolutionaryEvents != "undefined" ){
+
+
+                    html += 'duplicated genes: '  + d.data.evolutionaryEvents.duplicated + '<br>'
+                    html += 'duplications: '  + d.data.evolutionaryEvents.duplications + '<br>'
+                    html += 'gained genes: '  + d.data.evolutionaryEvents.gained + '<br>'
+                    html += 'lost/loss: '  + d.data.evolutionaryEvents.lost + '<br>'
+                    html += 'retained genes: '  + d.data.evolutionaryEvents.retained + '<br>'
+
+                }
+
+
+                return html });
+
+
+
 
         var self_render = this;
 
@@ -288,6 +313,17 @@ export default class Viewer {
                 .attr("class", "stackGroup")
         }
 
+        nodeEnter
+            .on('mouseover', (event,d)=>{
+                if(d.children || d._children) tip.show(event,d);
+            })
+            .on('mouseout', tip.hide)
+
+
+        nodeEnter.call(tip)
+
+
+
         this.nodeUpdate = nodeEnter.merge(node);
 
         // Transition to the proper position for the node
@@ -339,25 +375,32 @@ export default class Viewer {
 
 
         // Add collapsed triangle
-        this.nodeUpdate.each(function (d) {
+        this.nodeUpdate.each((d,i,nodes) => {
 
             if (d._children) {
 
-                d3.select(this).select("path").transition().duration(self_render.settings.duration)
+                d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
                     .attr("d", function (d) {
+
+
 
                         const average = arr => arr.reduce( ( p, c ) => p + c.data.distance_to_root, 0 ) / arr.length;
 
                         var y = average(self_render.getChildLeaves(d)) -d.data.distance_to_root
 
+
+
                         var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
                         var x_length =  self_render.model.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
+
+                        d3.select(nodes[i]).select("text").attr("x", y_length + 13).attr("y", 0)
+
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
             }
             if (d.children) {
-                d3.select(this).select("path").transition().duration(self_render.settings.duration)
+                d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
                     .attr("d", function (d) {
                         return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
                     });
@@ -559,9 +602,10 @@ export default class Viewer {
     }
 
     update_collapse_level(val){
+        console.log(val)
         this.model.settings.tree.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
-        this.set_data(this.model)
+        this.set_data(this.model, )
         this.render(this.hierarchy)
 
     }
@@ -616,7 +660,10 @@ export default class Viewer {
 
     // UTILS
     centerNode(source) {
-        this.svg.transition().call(this.zoom.translateTo, source.y0,source.x0)
+
+        //this.svg.transition().call(this.zoom.translateTo, source.y0,source.x0)
+        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(this.height/2-source.y0,this.width/2-source.x0).scale(1) )
+
 
 
     }
@@ -627,6 +674,10 @@ export default class Viewer {
 
     zoom_out(){
         this.svg.transition().call(this.zoom.scaleBy, 0.5)
+    }
+
+    zoom_by(val){
+        this.svg.transition().call(this.zoom.scaleBy, val)
     }
 
     // STACK

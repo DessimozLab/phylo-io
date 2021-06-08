@@ -168,8 +168,11 @@ export default class Model {
 
     }
 
-    collapse(data){
-        data.collapse ? data.collapse = false : data.collapse = true;
+    collapse(data, action){
+        if (action) {data.collapse = true}
+        else if (action == false){data.collapse = false}
+        else{data.collapse ? data.collapse = false : data.collapse = true;}
+
     }
 
     reroot(data){

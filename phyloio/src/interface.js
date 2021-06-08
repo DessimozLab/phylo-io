@@ -166,11 +166,17 @@ export default class Interface {
     // SEARCH
 
     autocomplete(inp, arr) {
+
+
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
         var currentFocus;
         /*execute a function when someone writes in the text field:*/
+
         inp.addEventListener("input", function(e) {
+
+
+
             var a, b, i, val = this.value;
             /*close any already open lists of autocompleted values*/
             closeAllLists();
@@ -263,13 +269,15 @@ export default class Interface {
     }
 
     add_search(){
+
+
+        this.container_d3.selectAll("#searchinp" + this.viewer.uid).remove()
+
         this.search_input =  this.tr_buttons.append('input')
             .attr('class', ' square_button search_input')
             .attr('id', "searchinp" + this.viewer.uid )
 
         this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.suggestions)
-
-
         this.tr_buttons.append('button')
             .attr('class', ' square_button search_button')
             .style('margin', '2px')

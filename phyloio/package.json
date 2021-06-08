@@ -17,6 +17,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "css-loader": "^5.2.4",
+    "d3-v6-tip": "^1.0.9",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
     "style-loader": "^2.0.0",
