@@ -54,17 +54,27 @@ export default class Container {
     }
 
     // send action trigger to model, update the data/build d3 data & render the viewer
-    trigger_(action, data){
+    trigger_(action, data, node){
+
+
+        var modify_structure = false
 
         if (action === 'collapse') {
             this.models[this.current_model].collapse(data)
+            this.viewer.collapse(data, node)
+
         }
 
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
+            modify_structure = true
         }
-        this.viewer.set_data(this.models[this.current_model])
+
+        //this.viewer.container_d3.append('div').attr('class', 'overlaid').text('Loading')
+        if (modify_structure){this.viewer.set_data(this.models[this.current_model])}
         this.viewer.render(this.viewer.hierarchy)
+        //this.viewer.d3.select('.overlaid').remove()
+
 
 
     }
@@ -91,8 +101,7 @@ export default class Container {
 
         this.models[this.current_model].traverse(tree, f )
 
-        this.viewer.set_data(this.models[this.current_model], false)
-        this.viewer.render(this.viewer.hierarchy)
+
     }
 
     zoom_to_node(name){

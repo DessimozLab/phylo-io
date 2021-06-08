@@ -1,6 +1,4 @@
-body{
-    font-family: monospace !important;
-}
+
 .corner_placeholder {
     position: absolute;
     display: flex;
@@ -59,7 +57,7 @@ body{
     background-color: white;
     border-top-right-radius : 0;
     border-bottom-right-radius : 0;
-    height: 13px !important;
+    /*height: 13px !important;*/
 }
 
 .search_input:hover{background-color: white;}

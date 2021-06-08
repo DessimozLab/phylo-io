@@ -14,10 +14,8 @@ contains a Viewer instance. Each Viewer (and by consequent Container) can have m
 
 import './style.css';
 import './interface.css';
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/solid'
-import '@fortawesome/fontawesome-free/js/regular'
-import '@fortawesome/fontawesome-free/js/brands'
+import './fontawesome/css/all.css'
+
 
 import API from './api.js'
 

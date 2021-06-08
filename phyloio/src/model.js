@@ -20,7 +20,7 @@ export default class Model {
                 'node_radius' : 3, // move to style
                 'line_width' : 3,// move to style
                 'font_size':12,// move to style
-                'collapse_level' : 0,
+                'collapse_level' : 3,
                 'max_depth' : 0,
             },
             'stack' : {
@@ -32,7 +32,7 @@ export default class Model {
                 'xInitialRightMargin' : 45,
                 'stackHeight' : 80,
                 'stackWidth' : 30,
-                'maxStackHeight': 'ratio', // ratio -> stack height fixed | max -> largest data = stack height
+                'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
 
             },
         }

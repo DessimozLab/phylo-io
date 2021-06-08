@@ -38,6 +38,8 @@ export default class Viewer {
         this.G_d3;
         this.container = document.getElementById(this.container_object.div_id);
         this.container_d3 = d3.select(this.container);
+        this.container_d3.style('font-family', 'monospace !important' )
+
         this.interface;
 
         // Settings
@@ -95,7 +97,7 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 120;
+            this.model.settings.tree.node_vertical_size = 80;
             this.model.settings.tree.node_horizontal_size = 120;
         }
         else {
@@ -202,11 +204,8 @@ export default class Viewer {
         this.links = this.d3_cluster_data.descendants().slice(1);
 
         // And render them
-        console.log('sub render')
         this.render_nodes(source)
-        console.log('nodes rendered')
         this.render_edges(source)
-        console.log('edges rendered')
 
 
     }
@@ -365,16 +364,22 @@ export default class Viewer {
             }
         })
 
-        /*
+
+
 
         // Add Stack
+
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
             this.nodeUpdate.filter(function(d){
-                return d.stackData
+                return d.stackData && d.data.depth > 0
             }).each((d, i, nodes) => {this.render_stack(nodes[i],d)}
             );
+
+            this.addMainLegend()
         }
-        */
+
+
+
 
         // Store the old positions for transition.
         this.nodes.forEach(function(d){
@@ -399,7 +404,7 @@ export default class Viewer {
             .style("fill","none")
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
-        linkEnter.on('click', (d) =>  { this.click_edges(d)})
+        //linkEnter.on('click', (d) =>  { this.click_edges(d)})
 
         var linkUpdate = linkEnter.merge(link);
 
@@ -441,11 +446,24 @@ export default class Viewer {
     }
 
     click_nodes(event, node) {
-        this.container_object.trigger_("collapse", node.data)
+        this.container_object.trigger_("collapse", node.data, node)
     }
 
     click_edges(edge) {
         //this.container_object.trigger_("reroot", event.path[0].__data__)
+    }
+
+    collapse( data, d){
+        if (data.collapse) {
+            d._children = d.children;
+            d.children = null;
+        }
+        else {
+            d.children = d._children;
+            d._children = null;
+
+        }
+
     }
 
     set_zoom(k,x,y) {
@@ -543,6 +561,8 @@ export default class Viewer {
     update_collapse_level(val){
         this.model.settings.tree.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
+        this.set_data(this.model, false)
+        this.render(this.hierarchy)
     }
 
     update_font_size(val){
@@ -692,7 +712,7 @@ export default class Viewer {
 
         d3.selectAll(".stackGroup").moveToFront();
 
-        this.addMainLegend()
+
 
     }
 

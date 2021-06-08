@@ -3,6 +3,33 @@ body{
     background-color: #dddd
 }
 
+.overlaid{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    background-color: rgba(240,240,240,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 6em;
+    color: white;
+    animation: blinker 2s linear infinite;
+}
+
+
+
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+
+
 #container1_stack{
     display: inline-block;
     width: 100%;
