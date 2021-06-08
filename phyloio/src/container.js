@@ -61,7 +61,7 @@ export default class Container {
 
         if (action === 'collapse') {
             this.models[this.current_model].collapse(data)
-            this.viewer.collapse(data, node)
+            this.viewer.apply_collapse_from_data_to_d3(data, node)
 
         }
 
@@ -83,23 +83,30 @@ export default class Container {
     collapse_depth(depth, tree){
 
 
-        var f
-
-
-        if (depth == 0 ){
-
-
-            f = function(n,c) {
-                n.collapse = false
+        tree.eachAfter((d)=> {
+            if (depth == 0 ){
+                if (d.data.collapse) {
+                    this.models[this.current_model].collapse(d.data)
+                    this.viewer.apply_collapse_from_data_to_d3(d.data, d)
+                }
             }
-        }
-        else(
-            f = function(n,c){
-            if (n.depth >= depth ){n.collapse = true}
-            else{n.collapse = false}
+            else{
+                if (d.depth >= depth ){
+                    if (!d.data.collapse) {
+                        this.models[this.current_model].collapse(d.data)
+                        this.viewer.apply_collapse_from_data_to_d3(d.data, d)
+                    }
+                }
+                    else{
+                        if (d.data.collapse) {
+                            this.models[this.current_model].collapse(d.data)
+                            this.viewer.apply_collapse_from_data_to_d3(d.data, d)
+                        }
+                    }
+                }
         })
 
-        this.models[this.current_model].traverse(tree, f )
+
 
 
     }

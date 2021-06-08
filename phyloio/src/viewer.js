@@ -453,7 +453,7 @@ export default class Viewer {
         //this.container_object.trigger_("reroot", event.path[0].__data__)
     }
 
-    collapse( data, d){
+    apply_collapse_from_data_to_d3(data, d){
         if (data.collapse) {
             d._children = d.children;
             d.children = null;
@@ -560,7 +560,7 @@ export default class Viewer {
 
     update_collapse_level(val){
         this.model.settings.tree.collapse_level = val
-        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
+        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.hierarchy)
         this.set_data(this.model, false)
         this.render(this.hierarchy)
     }
