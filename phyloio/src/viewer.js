@@ -560,9 +560,10 @@ export default class Viewer {
 
     update_collapse_level(val){
         this.model.settings.tree.collapse_level = val
-        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.hierarchy)
-        this.set_data(this.model, false)
+        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
+        this.set_data(this.model)
         this.render(this.hierarchy)
+
     }
 
     update_font_size(val){

@@ -26,6 +26,8 @@ export default class Container {
     start(){
         this.viewer.set_data(this.models[this.current_model]);
         this.viewer.render(this.viewer.hierarchy);
+        this.viewer.update_collapse_level(this.models[this.current_model].settings.tree.collapse_level)
+
     }
 
     // shift the pointer (if possible) in the model list and update viewer model
@@ -57,7 +59,7 @@ export default class Container {
     trigger_(action, data, node){
 
 
-        var modify_structure = false
+
 
         if (action === 'collapse') {
             this.models[this.current_model].collapse(data)
@@ -67,11 +69,10 @@ export default class Container {
 
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
-            modify_structure = true
         }
 
         //this.viewer.container_d3.append('div').attr('class', 'overlaid').text('Loading')
-        if (modify_structure){this.viewer.set_data(this.models[this.current_model])}
+        this.viewer.set_data(this.models[this.current_model])
         this.viewer.render(this.viewer.hierarchy)
         //this.viewer.d3.select('.overlaid').remove()
 
@@ -83,29 +84,24 @@ export default class Container {
     collapse_depth(depth, tree){
 
 
-        tree.eachAfter((d)=> {
-            if (depth == 0 ){
-                if (d.data.collapse) {
-                    this.models[this.current_model].collapse(d.data)
-                    this.viewer.apply_collapse_from_data_to_d3(d.data, d)
-                }
-            }
-            else{
-                if (d.depth >= depth ){
-                    if (!d.data.collapse) {
-                        this.models[this.current_model].collapse(d.data)
-                        this.viewer.apply_collapse_from_data_to_d3(d.data, d)
-                    }
-                }
-                    else{
-                        if (d.data.collapse) {
-                            this.models[this.current_model].collapse(d.data)
-                            this.viewer.apply_collapse_from_data_to_d3(d.data, d)
-                        }
-                    }
-                }
-        })
 
+        var f
+
+
+        if (depth == 0 ){
+
+
+            f = function(n,c) {
+                n.collapse = false
+            }
+        }
+        else(
+            f = function(n,c){
+                if (n.depth >= depth  ){n.collapse = true}
+                else{n.collapse = false}
+            })
+
+        this.models[this.current_model].traverse(tree, f )
 
 
 

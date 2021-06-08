@@ -20,7 +20,7 @@ export default class Model {
                 'node_radius' : 3, // move to style
                 'line_width' : 3,// move to style
                 'font_size':12,// move to style
-                'collapse_level' : 3,
+                'collapse_level' : 2,
                 'max_depth' : 0,
             },
             'stack' : {
