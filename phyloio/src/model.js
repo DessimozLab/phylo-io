@@ -17,9 +17,9 @@ export default class Model {
             'tree': {
                 'node_vertical_size' : 30,
                 'node_horizontal_size' : 40,
-                'node_radius' : 3, // move to style
-                'line_width' : 3,// move to style
-                'font_size':12,// move to style
+                'node_radius' : 6, // move to style
+                'line_width' : 6,// move to style
+                'font_size':50,// move to style
                 'collapse_level' : 2,
                 'max_depth' : 0,
             },

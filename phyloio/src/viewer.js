@@ -313,14 +313,7 @@ export default class Viewer {
                 .attr("class", "stackGroup")
         }
 
-        nodeEnter
-            .on('mouseover', (event,d)=>{
-                if(d.children || d._children) tip.show(event,d);
-            })
-            .on('mouseout', tip.hide)
 
-
-        nodeEnter.call(tip)
 
 
 
@@ -406,6 +399,16 @@ export default class Viewer {
                     });
             }
         })
+
+
+        this.nodeUpdate
+            .on('mouseover', (event,d)=>{
+                if(d.children || d._children) tip.show(event,d);
+            })
+            .on('mouseout', tip.hide)
+
+
+        this.nodeUpdate.call(tip)
 
 
 
@@ -662,7 +665,7 @@ export default class Viewer {
     centerNode(source) {
 
         //this.svg.transition().call(this.zoom.translateTo, source.y0,source.x0)
-        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(this.height/2-source.y0,this.width/2-source.x0).scale(1) )
+        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(this.width/2-source.y0,this.height/2-source.x0).scale(1) )
 
 
 

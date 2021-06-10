@@ -524,13 +524,13 @@ export default class Interface {
             (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
 
         // ADD SLIDER NODE/LINE/TEXT
-        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node size", 1, 10, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
+        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node size", 1, 20, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})
 
-        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, 8, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
+        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, 20, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
             (e ) =>{this.viewer.update_line_width(e.target.value)})
 
-        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 40, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
+        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 200, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
             (e ) =>{this.viewer.update_font_size(e.target.value)})
 
         // COLLAPSE
@@ -542,7 +542,7 @@ export default class Interface {
 
 
             this.viewer.update_collapse_level(e.target.value)
-            var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse:" + this.viewer.model.settings.tree.collapse_level;
+            var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse: " + this.viewer.model.settings.tree.collapse_level;
 
             document.getElementById("slider_collapse_level_" + this.container_object.uid)
                 .parentElement.previousSibling.innerHTML = lab;

@@ -28,6 +28,7 @@ export default class Container {
         this.viewer.render(this.viewer.hierarchy);
         this.viewer.update_collapse_level(this.models[this.current_model].settings.tree.collapse_level)
         this.viewer.zoom_by(0.05)
+        this.viewer.render(this.viewer.hierarchy);
 
     }
 
@@ -73,7 +74,10 @@ export default class Container {
         }
 
         //this.viewer.container_d3.append('div').attr('class', 'overlaid').text('Loading')
-        this.viewer.set_data(this.models[this.current_model])
+        //this.viewer.set_data(this.models[this.current_model])
+        //this.viewer.render(this.viewer.hierarchy)
+
+        this.viewer.build_d3_data()
         this.viewer.render(this.viewer.hierarchy)
         //this.viewer.d3.select('.overlaid').remove()
 
