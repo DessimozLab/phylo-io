@@ -99,8 +99,8 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 80;
-            this.model.settings.tree.node_horizontal_size = 150;
+            this.model.settings.tree.node_vertical_size = 40;
+            this.model.settings.tree.node_horizontal_size = 100;
         }
         else {
             this.model.settings.tree.node_vertical_size = 30;
@@ -219,6 +219,29 @@ export default class Viewer {
             .html((EVENT,d)=> {
 
                 var html = "<b>Click to (un)collapse </b><hr>"
+
+/*
+                if (typeof d.data.evolutionaryEvents != "undefined" ){
+
+
+                    html += 'duplicated genes: '  + d.data.evolutionaryEvents.duplicated + '<br>'
+                    html += 'duplications: '  + d.data.evolutionaryEvents.duplications + '<br>'
+                    html += 'gained genes: '  + d.data.evolutionaryEvents.gained + '<br>'
+                    html += 'lost/loss: '  + d.data.evolutionaryEvents.lost + '<br>'
+                    html += 'retained genes: '  + d.data.evolutionaryEvents.retained + '<br>'
+
+                }
+
+ */
+
+
+                return html });
+
+        this.tip_stack = d3tip()
+            .attr('class', 'd3-tip')
+            .html((EVENT,d)=> {
+
+                var html = ""
 
 
                 if (typeof d.data.evolutionaryEvents != "undefined" ){
@@ -401,14 +424,23 @@ export default class Viewer {
         })
 
 
-        this.nodeUpdate
+        this.nodeUpdate.select('circle')
             .on('mouseover', (event,d)=>{
                 if(d.children || d._children) tip.show(event,d);
             })
             .on('mouseout', tip.hide)
 
 
-        this.nodeUpdate.call(tip)
+        this.nodeUpdate.select('circle').call(tip)
+
+        this.nodeUpdate.select('path')
+            .on('mouseover', (event,d)=>{
+                if(d.children || d._children) tip.show(event,d);
+            })
+            .on('mouseout', tip.hide)
+
+
+        this.nodeUpdate.select('path').call(tip)
 
 
 
@@ -423,6 +455,8 @@ export default class Viewer {
 
             this.addMainLegend()
         }
+
+
 
 
 
@@ -708,6 +742,8 @@ export default class Viewer {
 
 
 
+
+
         var xDistanceFromNode =  parseInt(ms.xInitialRightMargin) + parseInt(ms.stackWidth)
         var txtDistanceFromBar = parseInt(ms.stackWidth) + parseInt(ms.margin)
 
@@ -778,6 +814,15 @@ export default class Viewer {
                 return d[0].size
             })
             .attr("width", ms.stackWidth)
+
+        stackGroup
+            .on('mouseover', (event,d)=>{
+                if(d.children || d._children) this.tip_stack.show(event,d);
+            })
+            .on('mouseout', this.tip_stack.hide)
+
+
+        stackGroup.call(this.tip_stack)
 
         d3.selectAll(".stackGroup").moveToFront();
 
