@@ -19,8 +19,8 @@ export default class Model {
                 'node_horizontal_size' : 40,
                 'node_radius' : 6, // move to style
                 'line_width' : 6,// move to style
-                'font_size':20,// move to style
-                'collapse_level' : 2,
+                'font_size':30,// move to style
+                'collapse_level' : 1,
                 'max_depth' : 0,
             },
             'stack' : {
@@ -30,7 +30,7 @@ export default class Model {
                 'legendTxtSize' : 12,
                 'margin' : 8,
                 'xInitialRightMargin' : 45,
-                'stackHeight' : 80,
+                'stackHeight' : 120,
                 'stackWidth' : 30,
                 'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
 

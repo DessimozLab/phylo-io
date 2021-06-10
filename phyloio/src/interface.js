@@ -434,15 +434,15 @@ export default class Interface {
         this.menu_tree_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
-        this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Stack")
+        this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Bar Graph")
         this.menu_stack_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
 
 
-            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Stack height", 40, 300, this.viewer.model.settings.stack.stackHeight, 5, "slider_stack_height_",
+            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Bar height", 40, 300, this.viewer.model.settings.stack.stackHeight, 5, "slider_stack_height_",
                 (e ) =>{this.viewer.update_stack_height(e.target.value)})
 
-            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Stack width", 10, 150, this.viewer.model.settings.stack.stackWidth, 5, "slider_stack_width_",
+            this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Bar width", 10, 150, this.viewer.model.settings.stack.stackWidth, 5, "slider_stack_width_",
                 (e ) =>{this.viewer.update_stack_width(e.target.value)})
 
             this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Label size", 6, 40, this.viewer.model.settings.stack.legendTxtSize, 1, "slider_stack_text_size_",

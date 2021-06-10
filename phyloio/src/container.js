@@ -27,7 +27,7 @@ export default class Container {
         this.viewer.set_data(this.models[this.current_model]);
         this.viewer.render(this.viewer.hierarchy);
         this.viewer.update_collapse_level(this.models[this.current_model].settings.tree.collapse_level)
-        this.viewer.zoom_by(0.05)
+        this.viewer.zoom_by(0.4)
         this.viewer.render(this.viewer.hierarchy);
 
     }
@@ -141,7 +141,6 @@ export default class Container {
 
         var p = searchTree(this.viewer.hierarchy, name, [])
 
-        console.log(p)
 
         for(var i=1;i<p.length;i++){ // 1 is for skipping the root
 

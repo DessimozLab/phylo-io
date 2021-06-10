@@ -99,8 +99,8 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 40;
-            this.model.settings.tree.node_horizontal_size = 100;
+            this.model.settings.tree.node_vertical_size = 30;
+            this.model.settings.tree.node_horizontal_size = 200;
         }
         else {
             this.model.settings.tree.node_vertical_size = 30;
@@ -201,6 +201,8 @@ export default class Viewer {
     // RENDERING
     render(source){
 
+
+
         // Get the nodes and edges
         this.nodes = this.d3_cluster_data.descendants();
         this.links = this.d3_cluster_data.descendants().slice(1);
@@ -218,31 +220,7 @@ export default class Viewer {
             .attr('class', 'd3-tip')
             .html((EVENT,d)=> {
 
-                var html = "<b>Click to (un)collapse </b><hr>"
-
-/*
-                if (typeof d.data.evolutionaryEvents != "undefined" ){
-
-
-                    html += 'duplicated genes: '  + d.data.evolutionaryEvents.duplicated + '<br>'
-                    html += 'duplications: '  + d.data.evolutionaryEvents.duplications + '<br>'
-                    html += 'gained genes: '  + d.data.evolutionaryEvents.gained + '<br>'
-                    html += 'lost/loss: '  + d.data.evolutionaryEvents.lost + '<br>'
-                    html += 'retained genes: '  + d.data.evolutionaryEvents.retained + '<br>'
-
-                }
-
- */
-
-
-                return html });
-
-        this.tip_stack = d3tip()
-            .attr('class', 'd3-tip')
-            .html((EVENT,d)=> {
-
-                var html = ""
-
+                var html = "<b>Click to (un)collapse </b> <hr>"
 
                 if (typeof d.data.evolutionaryEvents != "undefined" ){
 
@@ -256,9 +234,8 @@ export default class Viewer {
                 }
 
 
+
                 return html });
-
-
 
 
         var self_render = this;
@@ -367,7 +344,9 @@ export default class Viewer {
             .attr("transform", function(d) {
                 return "translate(" + source.y + "," + source.x + ")";
             })
+            .call(tip.hide)
             .remove();
+
 
         // nullify the triangle
         nodeExit.select("path")
@@ -424,23 +403,16 @@ export default class Viewer {
         })
 
 
-        this.nodeUpdate.select('circle')
+        this.nodeUpdate
             .on('mouseover', (event,d)=>{
                 if(d.children || d._children) tip.show(event,d);
             })
             .on('mouseout', tip.hide)
 
 
-        this.nodeUpdate.select('circle').call(tip)
-
-        this.nodeUpdate.select('path')
-            .on('mouseover', (event,d)=>{
-                if(d.children || d._children) tip.show(event,d);
-            })
-            .on('mouseout', tip.hide)
+        this.nodeUpdate.call(tip)
 
 
-        this.nodeUpdate.select('path').call(tip)
 
 
 
@@ -513,6 +485,9 @@ export default class Viewer {
     }
 
     zoomed({transform}) {
+
+
+
         d3.select("#master_g" + this.uid).attr("transform", transform);
 
         if (this.interface && this.model.settings.use_branch_lenght) {
@@ -653,7 +628,6 @@ export default class Viewer {
     }
 
     update_collapse_level(val){
-        console.log(val)
         this.model.settings.tree.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
         this.set_data(this.model, )
@@ -814,15 +788,6 @@ export default class Viewer {
                 return d[0].size
             })
             .attr("width", ms.stackWidth)
-
-        stackGroup
-            .on('mouseover', (event,d)=>{
-                if(d.children || d._children) this.tip_stack.show(event,d);
-            })
-            .on('mouseout', this.tip_stack.hide)
-
-
-        stackGroup.call(this.tip_stack)
 
         d3.selectAll(".stackGroup").moveToFront();
 
