@@ -19,13 +19,13 @@ export default class Model {
                 'node_horizontal_size' : 40,
                 'node_radius' : 6, // move to style
                 'line_width' : 6,// move to style
-                'font_size':50,// move to style
+                'font_size':20,// move to style
                 'collapse_level' : 2,
                 'max_depth' : 0,
             },
             'stack' : {
                 'type': 'genes',//'events',
-                'showHistogramValues' : true,
+                'showHistogramValues' : false,
                 'showHistogramSummaryValue' : true,
                 'legendTxtSize' : 12,
                 'margin' : 8,

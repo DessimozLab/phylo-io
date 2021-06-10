@@ -99,8 +99,8 @@ export default class Viewer {
         this.model = model;
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 60;
-            this.model.settings.tree.node_horizontal_size = 120;
+            this.model.settings.tree.node_vertical_size = 80;
+            this.model.settings.tree.node_horizontal_size = 150;
         }
         else {
             this.model.settings.tree.node_vertical_size = 30;
@@ -457,7 +457,7 @@ export default class Viewer {
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
-            .style('stroke', d => d.elementS ? similarity(d.elementS) : "#ccc" )
+            .style('stroke', d => d.elementS ? similarity(d.elementS) : "#555" )
             .style('stroke-width',  this.model.settings.tree.line_width)
             .attr('d', d => this.square_edges(d, d.parent))
 
@@ -555,6 +555,20 @@ export default class Viewer {
     }
 
     // stack
+
+
+    toggle_show_stack_number(){
+        if (this.model.settings.stack.showHistogramValues){
+            this.model.settings.stack.showHistogramValues = false
+        }
+        else{
+            this.model.settings.stack.showHistogramValues = true
+        }
+
+
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
 
     toggle_height_max_ratio(){
         if (this.model.settings.stack.maxStackHeight === 'max'){
@@ -725,7 +739,7 @@ export default class Viewer {
                 }).attr("font-size", parseInt(ms.legendTxtSize)).attr("stroke", "black")
 
         }
-        if (ms.showHistogramSummaryValue) {
+        if (ms.showHistogramValues) { // todo shulld be showHistogramSummaryValue
 
             var summaryLegend = stackGroup.selectAll(".stackGroup")
                 .data(function (d) {

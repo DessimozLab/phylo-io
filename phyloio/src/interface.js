@@ -488,6 +488,9 @@ export default class Interface {
 
             this.add_swicth_UI(this.menu_stack_p, (this.viewer.model.settings.stack.maxStackHeight === 'ratio'),"Fix stack height",   this.viewer.toggle_height_max_ratio.bind(this.viewer))
 
+            this.add_swicth_UI(this.menu_stack_p, this.viewer.model.settings.stack.showHistogramValues,"Show numbers",   this.viewer.toggle_show_stack_number.bind(this.viewer))
+
+
 
 
         }
@@ -561,6 +564,7 @@ export default class Interface {
             .on('click', (d) => { f()} )
 
         parent.append('p').text(label).style("display", 'inline-block').style("margin-left", '12px')
+        parent.append('br')
 
     }
 
