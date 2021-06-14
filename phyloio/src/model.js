@@ -19,7 +19,7 @@ export default class Model {
                 'node_horizontal_size' : 40,
                 'node_radius' : 6, // move to style
                 'line_width' : 6,// move to style
-                'font_size':30,// move to style
+                'font_size':10,// move to style
                 'collapse_level' : 1,
                 'max_depth' : 0,
             },

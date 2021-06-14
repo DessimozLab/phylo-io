@@ -533,7 +533,7 @@ export default class Interface {
         this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, 20, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
             (e ) =>{this.viewer.update_line_width(e.target.value)})
 
-        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 200, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
+        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
             (e ) =>{this.viewer.update_font_size(e.target.value)})
 
         // COLLAPSE

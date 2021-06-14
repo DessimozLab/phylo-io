@@ -100,7 +100,7 @@ export default class Viewer {
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
             this.model.settings.tree.node_vertical_size = 30;
-            this.model.settings.tree.node_horizontal_size = 200;
+            this.model.settings.tree.node_horizontal_size = 150;
         }
         else {
             this.model.settings.tree.node_vertical_size = 30;
@@ -260,7 +260,7 @@ export default class Viewer {
             .attr("transform", function(d) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
-            .on('click', (d, i) =>  { this.click_nodes(d,i)})
+            .on('click', (d, i) =>  { if (i.parent != null) {this.click_nodes(d,i)}})
 
 
         // Add Circle for the nodes
@@ -274,12 +274,15 @@ export default class Viewer {
         // Add labels for the nodes
         nodeEnter.append('text')
             .attr("dy", ".35em")
-            .style('font-size', d => {return this.model.settings.tree.font_size + "px";})
+            .style('font-size', d => {
+                return this.compute_node_font_size(d)
+                })
             .attr("font-weight", (d) =>  {
                 return d.children || d._children ? 900 : 400
             })
             .attr("y", (d) => {
-                if (d.children || d._children){
+                if (d.parent == null){return 0}
+                else if (d.children || d._children){
                     if (d.children && this.isOdd(d.children.length)){
                         return 13
                     }
@@ -291,11 +294,12 @@ export default class Viewer {
                 return 0
             })
             .attr("x", function(d) {
-                return 13;
+                return d.parent == null ? -13 : 13;
             })
             .attr("text-anchor", function(d) {
-                return "start";
-                //return d.children || d._children ? "end" : "start"; // todo better deal with internal name
+                //return "start";
+
+                return d.parent == null ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; });
 
@@ -335,8 +339,10 @@ export default class Viewer {
             })
             .attr('cursor', 'pointer');
 
-        this.nodeUpdate.select('text').style('font-size', d => {return this.model.settings.tree.font_size + "px";})
-
+        this.nodeUpdate.select('text')
+            .style('font-size', d => {
+                return this.compute_node_font_size(d)
+            })
 
         // Remove any exiting nodes
         var nodeExit = node.exit().transition()
@@ -375,9 +381,7 @@ export default class Viewer {
             if (d._children) {
 
                 d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
-                    .attr("d", function (d) {
-
-
+                    .attr("d",  (d) => {
 
                         const average = arr => arr.reduce( ( p, c ) => p + c.data.distance_to_root, 0 ) / arr.length;
 
@@ -388,7 +392,12 @@ export default class Viewer {
                         var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
                         var x_length =  self_render.model.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
 
+
+                       d.data.triangle_height = x_length
                         d3.select(nodes[i]).select("text").attr("x", y_length + 13).attr("y", 0)
+                            .style('font-size', d => {
+                            return this.compute_node_font_size(d)
+                        })
 
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
@@ -397,6 +406,7 @@ export default class Viewer {
             if (d.children) {
                 d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
                     .attr("d", function (d) {
+                        d.data.triangle_height = 0
                         return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
                     });
             }
@@ -493,6 +503,14 @@ export default class Viewer {
         if (this.interface && this.model.settings.use_branch_lenght) {
             this.interface.update_scale_value(transform.k);
         }
+
+        if (typeof this.G != "undefined" ){
+            this.G.selectAll('g.node').selectAll('text').style('font-size', d => {
+                return this.compute_node_font_size(d)
+            })
+        }
+
+
     }
 
     square_edges(s, d) {
@@ -1013,6 +1031,23 @@ export default class Viewer {
     }
 
     isOdd(num) { return num % 2;}
+
+    compute_node_font_size(d){
+
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+        var fs =  this.model.settings.tree.font_size/k ;
+        if (d._children && fs > d.data.triangle_height){
+            fs = d.data.triangle_height
+        }
+
+        var max_leave = this.model.settings.tree.node_vertical_size*k
+
+        if (!d.children && !d._children && fs > max_leave){
+            fs = max_leave
+        }
+
+        return fs+ "px"
+    }
 
 
 
