@@ -26,9 +26,11 @@ export default class Container {
     start(){
         this.viewer.set_data(this.models[this.current_model]);
         this.viewer.render(this.viewer.hierarchy);
-        this.viewer.update_collapse_level(this.models[this.current_model].settings.tree.collapse_level)
-        this.viewer.zoom_by(0.4)
-        this.viewer.render(this.viewer.hierarchy);
+        this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
+
+
+        //this.viewer.zoom_by(0.4) #STACK
+        //this.viewer.render(this.viewer.hierarchy); #STACK
 
     }
 
@@ -61,25 +63,51 @@ export default class Container {
     trigger_(action, data, node){
 
 
-
-
         if (action === 'collapse') {
             this.models[this.current_model].collapse(data)
             this.viewer.apply_collapse_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
+        }
+
+        else if (action === 'collapseAll') {
+            this.models[this.current_model].collapseAll(data, true)
+            this.viewer.apply_collapseAll_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
+        }
+        else if (action === 'expandAll') {
+            this.models[this.current_model].collapseAll(data, false)
+            this.viewer.apply_expandAll_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
+        }
+        else if (action === 'swap') {
+
+            this.models[this.current_model].swap_subtrees(data)
+            this.viewer.apply_swap_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
 
         }
 
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
+            this.viewer.set_data(this.models[this.current_model])
+            this.viewer.render(this.viewer.hierarchy)
         }
 
-        //this.viewer.container_d3.append('div').attr('class', 'overlaid').text('Loading')
-        //this.viewer.set_data(this.models[this.current_model])
-        //this.viewer.render(this.viewer.hierarchy)
+        else if (action === 'trim'){
+            this.models[this.current_model].trim(data)
+            this.viewer.set_data(this.models[this.current_model])
+            this.viewer.render(this.viewer.hierarchy)
+        }
 
-        this.viewer.build_d3_data()
-        this.viewer.render(this.viewer.hierarchy)
-        //this.viewer.d3.select('.overlaid').remove()
+
 
 
 

@@ -45,7 +45,7 @@ export default class Viewer {
 
         // Settings
         this.settings = {
-            'duration' : 0,
+            'duration' : 500,
             'style': {
                 'margin' : {top: 16, right: 16, bottom: 16, left: 96},
 
@@ -140,6 +140,13 @@ export default class Viewer {
             }
         })
 
+        this.build_d3_cluster()
+
+
+    }
+
+    build_d3_cluster(){
+
         // Build d3 layout
         this.d3_cluster_data = this.d3_cluster(this.hierarchy);
 
@@ -201,7 +208,7 @@ export default class Viewer {
     // RENDERING
     render(source){
 
-
+        d3.selectAll("#menu-node").remove()
 
         // Get the nodes and edges
         this.nodes = this.d3_cluster_data.descendants();
@@ -215,6 +222,7 @@ export default class Viewer {
     }
 
     render_nodes(source){
+
 
         var tip = d3tip()
             .attr('class', 'd3-tip')
@@ -260,7 +268,11 @@ export default class Viewer {
             .attr("transform", function(d) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
-            .on('click', (d, i) =>  { if (i.parent != null) {this.click_nodes(d,i)}})
+            .on('click', (d, i) =>  {
+
+                if (i.parent != null) {this.click_nodes(d,i)}
+
+            })
 
 
         // Add Circle for the nodes
@@ -317,11 +329,9 @@ export default class Viewer {
                 .attr("class", "stackGroup")
         }
 
-
-
-
-
         this.nodeUpdate = nodeEnter.merge(node);
+
+
 
         // Transition to the proper position for the node
         this.nodeUpdate.transition()
@@ -412,7 +422,7 @@ export default class Viewer {
             }
         })
 
-
+/*
         this.nodeUpdate
             .on('mouseover', (event,d)=>{
                 if(d.children || d._children) tip.show(event,d);
@@ -421,6 +431,9 @@ export default class Viewer {
 
 
         this.nodeUpdate.call(tip)
+
+
+ */
 
 
 
@@ -453,22 +466,30 @@ export default class Viewer {
 
     render_edges(source){
 
+
         var self_render = this;
 
         // Update the links...
         var link = this.G.selectAll('path.link')
-            .data(this.links, function(d) { return d.id; })
+            //.data(this.links, function(d) { return d.id; })
+            .data(this.links,  d => { return d.ID  || (d.ID = ++this.id_gen); });
 
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert('path', "g")
             .attr("class", "link")
             .style("cursor","pointer")
             .style("fill","none")
+            .style('stroke-width',  this.model.settings.tree.line_width)
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
-        //linkEnter.on('click', (d) =>  { this.click_edges(d)})
+
+
+        linkEnter.on('click', (d,i) =>  { this.click_edges(d,i)})
+
+
 
         var linkUpdate = linkEnter.merge(link);
+
 
         // Transition back to the parent element position
         linkUpdate.transition()
@@ -482,6 +503,9 @@ export default class Viewer {
             .duration(this.settings.duration)
             .attr('d', d => this.square_edges({x: source.x, y: source.y}, {x: source.x, y: source.y}))
             .remove();
+
+
+
     }
 
     separate(a, b) {
@@ -519,23 +543,201 @@ export default class Viewer {
     }
 
     click_nodes(event, node) {
-        this.container_object.trigger_("collapse", node.data, node)
+
+
+        var menu = [
+            {
+                title: node.data.collapse ? 'Expand' : 'Collapse' ,
+                action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
+            },
+            {
+                title: 'Collapse All' ,
+                action: () =>  {this.container_object.trigger_("collapseAll", node.data, node)}
+            },
+            {
+                title: 'Expand All' ,
+                action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
+            },
+            {
+                title: 'swap subtrees' ,
+                action: () =>  {this.container_object.trigger_("swap", node.data, node)}
+            },
+            {
+                title: 'Close' ,
+                action: () =>  {
+                    d3.select("#menu-node").remove()
+                }
+            }
+        ]
+
+        this.create_menu_click(menu, node.y,node.x,event,node)
+
     }
 
-    click_edges(edge) {
-        //this.container_object.trigger_("reroot", event.path[0].__data__)
+    click_edges(event,edge) {
+
+        var t = this.d3.zoomTransform(this.svg.node())
+
+        var xy = t.invert([event.pageX,event.pageY]);
+
+        var menu = [{
+            title: 'Reroot' ,
+            action: () =>  {
+                this.container_object.trigger_("reroot", event.path[0].__data__)
+            }
+        },
+            {
+                title: 'Trim branch' ,
+                action: () =>  {
+                    this.container_object.trigger_("trim", event.path[0].__data__)
+                }
+            },{
+            title: 'Close' ,
+            action: () =>  {
+                d3.select("#menu-node").remove()
+            }
+        }]
+
+        this.create_menu_click(menu, xy[0],xy[1], event, edge)
+    }
+
+    create_menu_click(menu, x ,y, event, e){
+
+        d3.select("#menu-node").remove()
+
+        /* build context menu */
+        var m = this.G.append("g")
+        m.style('display', 'none');
+        m.attr('id', 'menu-node');
+
+
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+        var fs = 20/k // scaled font size
+        var vps = 8/k // scaled vertical margin
+        var hps = 10/k // scaled horizontal margin
+        var rs = 8/k // scaled radius size
+
+        var r = m.append('rect')
+            .attr('height', menu.length * (fs+vps))
+            .style('fill', "#eee")
+            .attr('rx', rs)
+            .attr('ry', rs)
+
+        var gg = m.selectAll('menu_item')
+            .data(menu)
+            .enter()
+            .append('g')
+
+            gg.attr('cursor', 'pointer')
+            .attr('transform', function(d, i) {
+                return 'translate(' + hps + ',' + ((i + 1) * fs+vps) + ')';
+            })
+            .on('mouseover', function(d){
+                d3.select(this).style('fill', 'steelblue');
+            })
+            .on('mouseout', function(d){
+                d3.select(this).style('fill', 'black');
+            })
+            .on('click', function(d,i){
+                i.action(d);
+            })
+
+        var t = gg.append('text')
+            .attr('cursor', 'pointer')
+            .attr("font-weight", (d) =>  {
+                return d.title === "Close" ? 900 : 400
+            })
+            .style('font-size', d => {
+                return  fs;
+            })
+            .text(function(d) {
+                return d.title;
+            })
+
+        var w = 0;
+
+        t.each(function(d){
+            var l = this.getComputedTextLength();
+            if (l > w) w = l;
+        })
+
+
+
+        r.attr('width', w + 2*hps);
+
+
+        m.attr('transform', 'translate(' + x + ',' + y + ')');
+        m.style('display', 'block');
+        m.datum(event);
     }
 
     apply_collapse_from_data_to_d3(data, d){
-        if (data.collapse) {
+        if (data.collapse && d.children != null ) {
             d._children = d.children;
             d.children = null;
         }
-        else {
+        else if (data.collapse == false && d._children != null) {
             d.children = d._children;
             d._children = null;
 
         }
+
+    }
+
+    apply_collapseAll_from_data_to_d3(data, root_node){
+
+        var  node = root_node  , nodes = [node], children, i, index = -1;
+
+        while (node = nodes.pop()) {
+
+
+            this.apply_collapse_from_data_to_d3(node.data, node)
+
+
+            if (children = node.children) {
+                for (i = children.length - 1; i >= 0; --i) {
+                    nodes.push(children[i]);
+                }
+            }
+
+            if (children = node._children) {
+                for (i = children.length - 1; i >= 0; --i) {
+                    nodes.push(children[i]);
+                }
+            }
+
+        }
+
+    }
+
+    apply_expandAll_from_data_to_d3(data, root_node){
+
+        var  node = root_node  , nodes = [node], children, i, index = -1;
+
+        while (node = nodes.pop()) {
+
+            this.apply_collapse_from_data_to_d3(node.data, node)
+
+            if (children = node.children) {
+                for (i = children.length - 1; i >= 0; --i) {
+                    nodes.push(children[i]);
+                }
+            }
+
+            if (children = node._children) {
+                for (i = children.length - 1; i >= 0; --i) {
+                    nodes.push(children[i]);
+                }
+            }
+
+        }
+
+    }
+
+    apply_swap_from_data_to_d3(data, d){
+
+        var e = d.children.pop()
+        d.children.unshift(e)
 
     }
 
@@ -545,7 +747,6 @@ export default class Viewer {
             .duration(this.settings.duration)
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
-
 
     // TUNNING todo should be in COntroller
     modify_node_size(axis, variation){
@@ -560,7 +761,7 @@ export default class Viewer {
         }
 
         this.d3_cluster.nodeSize([ this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
-        this.build_d3_data()
+        this.build_d3_cluster()
         this.render(this.hierarchy)
 
 
@@ -646,8 +847,8 @@ export default class Viewer {
     }
 
     update_collapse_level(val){
-        this.model.settings.tree.collapse_level = val
-        this.container_object.collapse_depth(this.model.settings.tree.collapse_level, this.model.data)
+        this.model.settings.collapse_level = val
+        this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
         this.set_data(this.model, )
         this.render(this.hierarchy)
 

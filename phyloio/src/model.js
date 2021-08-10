@@ -18,11 +18,11 @@ export default class Model {
                 'node_vertical_size' : 30,
                 'node_horizontal_size' : 40,
                 'node_radius' : 6, // move to style
-                'line_width' : 6,// move to style
-                'font_size':10,// move to style
-                'collapse_level' : 1,
+                'line_width' : 3,// move to style
+                'font_size':14, // move to style
                 'max_depth' : 0,
             },
+            'collapse_level': 0,
             'stack' : {
                 'type': 'genes',//'events',
                 'showHistogramValues' : false,
@@ -45,6 +45,7 @@ export default class Model {
             }
 
         }
+
 
         this.uid = uid_model++;
         this.input_data = data;
@@ -175,6 +176,24 @@ export default class Model {
 
     }
 
+    collapseAll(data, action){
+        if (action) {
+            this.traverse(data, function(n,c){n.collapse = true} , null)}
+        else if (action == false){
+            this.traverse(data, function(n,c){n.collapse = false} , null)}
+
+
+    }
+
+    swap_subtrees(data){
+         var e = data.children.pop()
+        data.children.unshift(e)
+
+    }
+
+
+
+
     reroot(data){
 
         // extract meta data (zoom)
@@ -239,6 +258,39 @@ export default class Model {
         root.zoom = meta
         this.data = root;
         this.data.root = true;
+
+    }
+
+    trim(data){ // todo place at same position as father
+
+
+        function remove_child(parent, child){
+
+            const index = parent.children.indexOf(child);
+            if (index > -1) {
+                parent.children.splice(index, 1);
+            }
+
+        }
+
+        // source and target node of the clicked edges
+        var parent = data.data.parent
+        var child = data.data
+
+        remove_child(parent,child)
+
+        if (parent.children.length === 1) {
+            var single_child = parent.children[0]
+            single_child.branch_length += parent.branch_length
+            var grand_parent = parent.parent
+
+            remove_child(grand_parent, parent)
+            grand_parent.children.push(single_child)
+            single_child.parent = grand_parent
+
+        }
+
+
 
     }
 

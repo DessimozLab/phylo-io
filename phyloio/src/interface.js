@@ -539,13 +539,13 @@ export default class Interface {
         // COLLAPSE
 
         this.slider_c = this.add_slider_UI(this.menu_general_p,
-            this.viewer.model.settings.tree.collapse_level == 0 ? "Autocollapse: Off" : "Autocollapse:" + this.viewer.model.settings.tree.collapse_level,
-            0, this.viewer.model.settings.tree.max_depth , this.viewer.model.settings.tree.collapse_level, 0,"slider_collapse_level_",)
+            this.viewer.model.settings.collapse_level == 0 ? "Autocollapse: Off" : "Autocollapse:" + this.viewer.model.settings.collapse_level,
+            0, this.viewer.model.settings.tree.max_depth , this.viewer.model.settings.collapse_level, 0,"slider_collapse_level_",)
         document.getElementById("slider_collapse_level_" + this.container_object.uid).onchange = (e) => {
 
 
             this.viewer.update_collapse_level(e.target.value)
-            var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse: " + this.viewer.model.settings.tree.collapse_level;
+            var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse: " + this.viewer.model.settings.collapse_level;
 
             document.getElementById("slider_collapse_level_" + this.container_object.uid)
                 .parentElement.previousSibling.innerHTML = lab;
