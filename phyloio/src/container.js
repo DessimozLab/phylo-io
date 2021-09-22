@@ -1,5 +1,6 @@
 import Viewer from './viewer.js'
 import Model from './model.js'
+const { compute_visible_topology_similarity } = require('./comparison.js')
 
 var uid_container = 0 // unique id generator is bound to a single Container()
 
@@ -23,11 +24,16 @@ export default class Container {
     }
 
     // update the data viewer and render it
-    start(){
-        this.viewer.set_data(this.models[this.current_model]);
-        this.viewer.render(this.viewer.hierarchy);
-        this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
+    start(no_rendering){
 
+        var no_rendering = (typeof no_rendering !== 'undefined') ? no_rendering : false;
+
+        this.viewer.set_data(this.models[this.current_model]);
+
+        if (no_rendering){
+            this.viewer.render(this.viewer.hierarchy);
+            this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
+        }
 
         //this.viewer.zoom_by(0.4) #STACK
         //this.viewer.render(this.viewer.hierarchy); #STACK
@@ -48,6 +54,9 @@ export default class Container {
             var m = this.models[this.current_model]
 
             this.viewer.set_data(m)
+
+            this.compute_topology_and_render_bounded_viewer()
+
             this.viewer.render(this.viewer.hierarchy)
 
             // apply if any stored zoom information
@@ -90,6 +99,7 @@ export default class Container {
             this.models[this.current_model].swap_subtrees(data)
             this.viewer.apply_swap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
+            this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(node)
 
 
@@ -98,12 +108,14 @@ export default class Container {
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
             this.viewer.set_data(this.models[this.current_model])
+            this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(this.viewer.hierarchy)
         }
 
         else if (action === 'trim'){
             this.models[this.current_model].trim(data)
             this.viewer.set_data(this.models[this.current_model])
+            this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(this.viewer.hierarchy)
         }
 
@@ -202,6 +214,23 @@ export default class Container {
 
 
     }
+
+    compute_topology_and_render_bounded_viewer(){
+
+        // if bound container and compare mode activate, we need to update it too
+        if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+
+            compute_visible_topology_similarity(true)
+
+            var con1 = phylo.bound_container[0]
+            var con2 =  phylo.bound_container[1]
+
+            var ccc = (con1 == this) ? con2 : con1
+            ccc.viewer.render(ccc.viewer.hierarchy)
+        }
+    }
+
+
 
 };
 

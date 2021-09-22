@@ -19,8 +19,8 @@ export default class Viewer {
         // General
         this.container_object = container // related Container()
         this.uid = uid_viewer ++; // unique viewer() id
-        this.data; // current model.data used, no Model() here to prevent breaking MVC
-        this.model; // current model.data used
+        this.data; // current model.data used
+        this.model; // current model
 
         // D3
         this.d3 = d3 // d3.js instance that contain information about zoom, etc..
@@ -59,6 +59,14 @@ export default class Viewer {
         }
         this.width = parseFloat(window.getComputedStyle(this.container).width) - this.settings.style.margin.left - this.settings.style.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - this.settings.style.margin.top - this.settings.style.margin.bottom;
+
+        var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
+        var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
+
+        this.colorScale = d3.scaleLinear()
+            .domain(colorScaleDomain)
+            .range(colorScaleRange);
+
 
         // ZOOM
         this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
@@ -484,7 +492,7 @@ export default class Viewer {
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
 
 
-        linkEnter.on('click', (d,i) =>  { this.click_edges(d,i)})
+
 
 
 
@@ -494,9 +502,15 @@ export default class Viewer {
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
-            .style('stroke', d => d.elementS ? similarity(d.elementS) : "#555" )
+            .style('stroke', (d) => {
+                //console.log(d.data.elementS)
+                return d.data.elementS ? this.colorScale(d.data.elementS) : "#555"} )
             .style('stroke-width',  this.model.settings.tree.line_width)
             .attr('d', d => this.square_edges(d, d.parent))
+
+
+        linkUpdate.on('click', (d,i) =>  { this.click_edges(d,i)})
+
 
         // Remove any exiting links
         var linkExit = link.exit().transition()
@@ -578,7 +592,12 @@ export default class Viewer {
 
         var t = this.d3.zoomTransform(this.svg.node())
 
-        var xy = t.invert([event.pageX,event.pageY]);
+        let div_i = this.container_object.div_id;
+
+        let py = document.getElementById(div_i).offsetTop
+        let px = document.getElementById(div_i).offsetLeft
+
+        var xy = t.invert([event.pageX-px,event.pageY-py]);
 
         var menu = [{
             title: 'Reroot' ,
@@ -661,12 +680,9 @@ export default class Viewer {
             if (l > w) w = l;
         })
 
-
-
         r.attr('width', w + 2*hps);
 
-
-        m.attr('transform', 'translate(' + x + ',' + y + ')');
+        m.attr('transform', 'translate(' + x  + ',' + y  + ')');
         m.style('display', 'block');
         m.datum(event);
     }

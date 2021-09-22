@@ -19,7 +19,11 @@ import './fontawesome/css/all.css'
 
 import API from './api.js'
 
-var init = function(){
+
+Object.values = Object.values || function(o){return Object.keys(o).map(function(k){return o[k]})};
+
+
+const init = function(){
   return new API()
 }
 

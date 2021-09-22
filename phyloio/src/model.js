@@ -49,8 +49,11 @@ export default class Model {
 
         this.uid = uid_model++;
         this.input_data = data;
+        this.leaves = []
         this.data = this.factory(this.parse());
         this.data.root = true;
+        this.similarity = []; // list of models id already process for topology BCN
+
 
 
         // check that histogram data is present and compute
@@ -142,13 +145,23 @@ export default class Model {
 
         // compute cumulated  lenght
         p = this.traverse(p, this.set_cumulated_length , null)
-        //console.log("t3")
-        // get max depth
-        this.traverse(p, function(n,c){if (n.depth > this.settings.tree.max_depth){this.settings.tree.max_depth = n.depth}})
-        //console.log("t4")
+
+        this.traverse(p, function(n,c){
+            if (n.depth > this.settings.tree.max_depth){
+                this.settings.tree.max_depth = n.depth
+            }
+            if (!(n.hasOwnProperty('children'))){
+                this.leaves.push(n)
+                n.correspondingLeaf = {}
+
+            }
+
+            n.leaves = this.get_leaves(n)
+
+        })
+
         this.suggestions = [] // autocomplete name
         this.traverse(json, function(n,c){
-
             if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
         //console.log("t5")
         return p
@@ -191,9 +204,6 @@ export default class Model {
 
     }
 
-
-
-
     reroot(data){
 
         // extract meta data (zoom)
@@ -201,6 +211,7 @@ export default class Model {
 
         // create new root r
         var root = {"children": [], "name": "", "branch_length": 0}
+        root.leaves = this.get_leaves(root)
 
         // source and target node of the clicked edges
         var parent = data.data.parent
@@ -303,6 +314,41 @@ export default class Model {
         };
     }
 
+    /**
+     Description:
+     Creates list of leaves of each node in subtree rooted at v
+
+     Note:
+     Difference between deep leaf list and leaves in:
+     (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
+     - Root has leaves: A, B, C and D (terminal leaves)
+     - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
+     */
+    createDeepLeafList() {
+
+         var build_deepLeafList = function(child, node){
+
+
+             node.deepLeafList = node.deepLeafList.concat(child.deepLeafList)
+
+        }
+
+        var build_deepLeafLeaves = function(node,children){
+
+             if (!(node.hasOwnProperty('children') )){
+                 node.deepLeafList = [node.name]
+             }
+             else {
+                 node.deepLeafList = [] //node.name
+             }
+
+
+        }
+
+        this.traverse(this.data, build_deepLeafLeaves, build_deepLeafList)
+
+    }
+
     reverse_order(parent,child) {
 
         child.children.push(parent)
@@ -315,6 +361,22 @@ export default class Model {
 
 
 
+    }
+
+    get_leaves(node){
+
+        var l = []
+
+        this.traverse(node, function(n,c){
+            if (!(n.hasOwnProperty('children'))){
+                l.push(n)
+            }
+
+
+    })
+
+
+        return l
     }
 
 };

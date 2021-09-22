@@ -1,4 +1,5 @@
 import Container from './container.js'
+const { compute_visible_topology_similarity } = require('./comparison.js')
 import keyboardManager from './keyboardManager.js'
 
 // class to handle user interaction to init and set up phyloIO instance
@@ -6,6 +7,7 @@ export default class API {
 
     constructor() {
         this.containers = {}; // {container id -> Container() }
+        this.bound_container = []
         this.settings = {
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
@@ -17,6 +19,8 @@ export default class API {
     create_container(container_id){ // container_id -> str
         let c = new Container(container_id);
         this.containers[container_id] = c;
+
+        if (this.bound_container.lenght < 2) {this.bound_container.push(c)}
         return c;
     }
 
@@ -24,7 +28,17 @@ export default class API {
     start(){
 
         for (const [uid, container] of Object.entries(this.containers)) {
-            container.start()
+            container.start(this.settings.compareMode)
+        }
+
+        if (this.settings.compareMode){
+            compute_visible_topology_similarity()
+
+            for (const [uid, container] of Object.entries(this.containers)) {
+                container.viewer.render(container.viewer.hierarchy);
+                container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level)
+            }
+
         }
 
         //new keyboardManager(this);
