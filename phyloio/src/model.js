@@ -211,7 +211,7 @@ export default class Model {
 
         // create new root r
         var root = {"children": [], "name": "", "branch_length": 0}
-        root.leaves = this.get_leaves(root)
+
 
         // source and target node of the clicked edges
         var parent = data.data.parent
@@ -269,6 +269,8 @@ export default class Model {
         root.zoom = meta
         this.data = root;
         this.data.root = true;
+
+        root.leaves = this.get_leaves(root)
 
     }
 
