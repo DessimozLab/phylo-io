@@ -31,9 +31,6 @@ function compute_visible_topology_similarity(recompute=false){
 function compute_similarity_container_pair(co1,co2){
 
 
-
-
-
     let t1 = co1.viewer.model
     let t2 = co2.viewer.model
 
@@ -114,9 +111,6 @@ function BCN(v, tree) {
     var elementBCNNode = null;
     var maxElementS = 0;
     var spanningTree = getSpanningTree(tree, v);
-
-
-
 
     for (var i = 0; i < spanningTree.length; i++) {
         //get elementBCN for node v

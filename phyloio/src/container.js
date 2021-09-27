@@ -71,7 +71,6 @@ export default class Container {
     // send action trigger to model, update the data/build d3 data & render the viewer
     trigger_(action, data, node){
 
-
         if (action === 'collapse') {
             this.models[this.current_model].collapse(data)
             this.viewer.apply_collapse_from_data_to_d3(data, node)
@@ -79,7 +78,6 @@ export default class Container {
             this.viewer.render(node)
 
         }
-
         else if (action === 'collapseAll') {
             this.models[this.current_model].collapseAll(data, true)
             this.viewer.apply_collapseAll_from_data_to_d3(data, node)
@@ -104,24 +102,18 @@ export default class Container {
 
 
         }
-
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
             this.viewer.set_data(this.models[this.current_model])
             this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(this.viewer.hierarchy)
         }
-
         else if (action === 'trim'){
             this.models[this.current_model].trim(data)
             this.viewer.set_data(this.models[this.current_model])
             this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(this.viewer.hierarchy)
         }
-
-
-
-
 
     }
 

@@ -254,16 +254,30 @@ export default class Model {
         }
 
         // Remove old root
-        var c = parent.children[0]
+
+
+
+
         var r = parent
         var p = parent.parent
         const ce = parent.parent.children.indexOf(r);
         if (ce > -1) {
             parent.parent.children.splice(ce, 1);
         }
-        c.parent = p
-        p.children.push(c)
+
+
+        var i = 0,len = parent.children.length;
+        while (i < len) {
+            let c = parent.children[i]
+            c.parent = p
+            p.children.push(c)
+            i++
+        }
+
+
+
         r = null
+
 
         // configure new root
         root.zoom = meta
@@ -366,6 +380,7 @@ export default class Model {
     }
 
     get_leaves(node){
+
 
         var l = []
 
