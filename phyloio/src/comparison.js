@@ -1,5 +1,5 @@
 
-function compute_visible_topology_similarity(recompute=false){
+function compute_visible_topology_similarity(recompute=true){
 
 
 

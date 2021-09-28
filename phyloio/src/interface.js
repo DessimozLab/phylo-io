@@ -1,4 +1,5 @@
 import * as fs from 'file-saver';
+import * as d3 from 'd3';
 
 // D3 viewer Interface that render UI elements(buttons, slider, menu)
 export default class Interface {
@@ -41,6 +42,11 @@ export default class Interface {
         this.add_export()
         //this.add_undo()
         this.add_settings()
+
+        // COLOR LEGEND
+        if (phylo.settings.compareMode){
+            this.add_color_legend()
+        }
 
     }
 
@@ -148,6 +154,7 @@ export default class Interface {
             .attr("dy", ".2em")
             .text(d => {return this.compute_scale()})
 
+
         return scale_text
 
 
@@ -162,6 +169,54 @@ export default class Interface {
         var zoom_scale = zoom_scale || 1;
         return (this.viewer.scale_branch_length.invert(this.scale_pixel_length)/zoom_scale).toFixed(4);
     }
+
+
+    //TOPOLOGY COLORING
+    add_color_legend(){
+
+        let top_padding = 16;
+        let left_padding = 16;
+        let width = 16;
+        let height = 104;
+        let gutter = 8;
+
+
+
+        let x = d3.scaleLinear()
+            .domain([-1, this.viewer.colorScale.range().length - 1])
+            .rangeRound([top_padding, height]);
+
+        let gg = this.viewer.svg_d3.node().append('g')
+            .attr("class", 'colorlegend')
+
+            gg.selectAll("rect")
+            .data(this.viewer.colorScale.range())
+            .join("rect")
+            .attr("x", left_padding)
+            .attr("y", (d, i) => x(i - 1))
+            .attr("width", width)
+            .attr("height",(d, i) => x(i) - x(i - 1))
+            .attr("fill", d => d);
+
+        gg.append("text")
+            .attr("x", left_padding + width + gutter )
+            .attr("y", top_padding + 10)
+            .attr("fill", "#555")
+            .attr('text-anchor', 'middle')
+            .attr("dy", ".2em")
+            .text('1')
+
+
+        gg.append("text")
+            .attr("x", left_padding + width + gutter )
+            .attr("y", height - 6 )
+            .attr("fill", "#555")
+            .attr('text-anchor', 'middle')
+            .attr("dy", ".2em")
+            .text('0')
+
+    }
+    remove_color_legend(){this.container_d3.select(".colorlegend").remove()}
 
     // SEARCH
 

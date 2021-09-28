@@ -286,6 +286,13 @@ export default class Model {
 
         root.leaves = this.get_leaves(root)
 
+
+        this.traverse(root, function(n,c){
+            n.leaves = this.get_leaves(n)
+        })
+
+
+
     }
 
     trim(data){ // todo place at same position as father

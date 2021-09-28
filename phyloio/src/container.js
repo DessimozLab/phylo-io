@@ -105,13 +105,13 @@ export default class Container {
         else if (action === 'reroot'){
             this.models[this.current_model].reroot(data)
             this.viewer.set_data(this.models[this.current_model])
-            this.compute_topology_and_render_bounded_viewer()
+            this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
         }
         else if (action === 'trim'){
             this.models[this.current_model].trim(data)
             this.viewer.set_data(this.models[this.current_model])
-            this.compute_topology_and_render_bounded_viewer()
+            this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
         }
 
@@ -207,12 +207,12 @@ export default class Container {
 
     }
 
-    compute_topology_and_render_bounded_viewer(){
+    compute_topology_and_render_bounded_viewer(recompute=true){ // change to als eby default and deal with elementS -> one vlue instead of model uid to val
 
         // if bound container and compare mode activate, we need to update it too
         if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
 
-            compute_visible_topology_similarity(true)
+            compute_visible_topology_similarity(recompute)
 
             var con1 = phylo.bound_container[0]
             var con2 =  phylo.bound_container[1]
