@@ -37,6 +37,10 @@ export default class Interface {
         // BOTTOM RIGHT
         this.add_zoom()
 
+
+        // TOP LEFT
+        this.add_data_icon()
+
         // TOP RIGHT
         this.add_search()
         this.add_export()
@@ -72,6 +76,63 @@ export default class Interface {
         this.tr_menus = div.append("div").attr("class","tr-menus")
 
         return div
+    }
+
+    // DATA ICON
+    add_data_icon(){
+
+        this.top_left.append('button')
+            .on('click', d => {
+                var modal = document.getElementById('modal_' + this.container_object.div_id);
+                modal.style.display = "block";
+            })
+            .attr('class', ' square_button')
+            .attr('id', 'buttonmodal_' + this.container_object.div_id )
+            .style('margin', '2px')
+            .append("div")
+            .attr("class","label")
+            .append('i')
+            .style('color', '#888')
+            .attr('class', ' fas fa-folder ')
+
+
+
+            let e = this.container_d3.append('div')
+                .attr('class', ' modal')
+                .attr('id', 'modal_' + this.container_object.div_id )
+                .append('div')
+                .attr('class', ' modal-content')
+
+                e.append('span')
+                    .on('click',(d) => {var modal = document.getElementById('modal_' + this.container_object.div_id);modal.style.display = "none";})
+                    .attr('class', ' close')
+                    .text("&times;")
+                e.append('p').text("Some text in the Modal..")
+
+
+
+
+        window.onclick = (event) => {
+
+            var all = document.getElementsByClassName('modal');
+            for (var i = 0; i < all.length; i++) {
+
+                if (event.target == all[i]) {
+                    all[i].style.display = "none";
+                }
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
     }
 
     // TOGGLE

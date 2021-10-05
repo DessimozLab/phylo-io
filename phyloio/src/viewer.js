@@ -59,7 +59,7 @@ export default class Viewer {
         }
 
         this.width = parseFloat(window.getComputedStyle(this.container).width)  -  this.settings.style.margin.left - 2*this.settings.style.margin.right;
-        this.height = parseFloat(window.getComputedStyle(this.container).height) - this.settings.style.margin.top - this.settings.style.margin.bottom;
+        this.height = parseFloat(window.getComputedStyle(this.container).height) - 2*this.settings.style.margin.top - this.settings.style.margin.bottom;
 
         var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
         var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
