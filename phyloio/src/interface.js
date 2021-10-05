@@ -184,7 +184,7 @@ export default class Interface {
 
         let x = d3.scaleLinear()
             .domain([-1, this.viewer.colorScale.range().length - 1])
-            .rangeRound([top_padding, height]);
+            .rangeRound([this.viewer.height/2-height, this.viewer.height/2]);
 
         let gg = this.viewer.svg_d3.node().append('g')
             .attr("class", 'colorlegend')
@@ -200,7 +200,7 @@ export default class Interface {
 
         gg.append("text")
             .attr("x", left_padding + width + gutter )
-            .attr("y", top_padding + 10)
+            .attr("y", this.viewer.height/2-height + 10)
             .attr("fill", "#555")
             .attr('text-anchor', 'middle')
             .attr("dy", ".2em")
@@ -209,7 +209,7 @@ export default class Interface {
 
         gg.append("text")
             .attr("x", left_padding + width + gutter )
-            .attr("y", height - 6 )
+            .attr("y", this.viewer.height/2 - 6 )
             .attr("fill", "#555")
             .attr('text-anchor', 'middle')
             .attr("dy", ".2em")

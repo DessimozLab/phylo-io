@@ -57,7 +57,8 @@ export default class Viewer {
             }
 
         }
-        this.width = parseFloat(window.getComputedStyle(this.container).width) - this.settings.style.margin.left - this.settings.style.margin.right;
+
+        this.width = parseFloat(window.getComputedStyle(this.container).width)  -  this.settings.style.margin.left - 2*this.settings.style.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - this.settings.style.margin.top - this.settings.style.margin.bottom;
 
         var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
