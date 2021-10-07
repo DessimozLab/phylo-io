@@ -27,14 +27,21 @@ export default class API {
     // start the app by computing required information and starting each container
     start(){
 
-        for (const [uid, container] of Object.entries(this.containers)) {
+
+        var cs = Object.entries(this.containers)
+
+        for (const [uid, container] of cs) {
             container.start(this.settings.compareMode)
         }
 
-        if (this.settings.compareMode){
+        var con1 = this.bound_container[0]
+        var con2 =  this.bound_container[1]
+
+        if (this.settings.compareMode && con1.models.length > 0 && con2.models.length > 0 ){
+
             compute_visible_topology_similarity()
 
-            for (const [uid, container] of Object.entries(this.containers)) {
+            for (const [uid, container] of cs) {
                 container.viewer.render(container.viewer.hierarchy);
                 container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level)
             }

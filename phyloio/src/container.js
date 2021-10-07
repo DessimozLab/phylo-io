@@ -1,5 +1,6 @@
 import Viewer from './viewer.js'
 import Model from './model.js'
+import Interface from "./interface";
 const { compute_visible_topology_similarity } = require('./comparison.js')
 
 var uid_container = 0 // unique id generator is bound to a single Container()
@@ -25,6 +26,12 @@ export default class Container {
 
     // update the data viewer and render it
     start(no_rendering){
+
+
+        if (this.models.length <= 0){
+            this.interface = new Interface(this.viewer, this, true)
+            return
+        }
 
         var no_rendering = (typeof no_rendering !== 'undefined') ? no_rendering : false;
 
@@ -212,13 +219,21 @@ export default class Container {
         // if bound container and compare mode activate, we need to update it too
         if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
 
-            compute_visible_topology_similarity(recompute)
+
 
             var con1 = phylo.bound_container[0]
             var con2 =  phylo.bound_container[1]
 
+
+
+            if ( con1.models.length > 0 && con2.models.length > 0){
+                compute_visible_topology_similarity(recompute)
+
+
             var ccc = (con1 == this) ? con2 : con1
             ccc.viewer.render(ccc.viewer.hierarchy)
+
+            }
         }
     }
 

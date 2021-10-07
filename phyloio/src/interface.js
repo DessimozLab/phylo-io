@@ -4,7 +4,9 @@ import * as d3 from 'd3';
 // D3 viewer Interface that render UI elements(buttons, slider, menu)
 export default class Interface {
 
-    constructor(v,c){
+    constructor(v,c, empty_mode){
+
+        var empty_mode = (typeof empty_mode !== 'undefined') ? empty_mode : false;
 
         this.scale_pixel_length = 120;
 
@@ -16,9 +18,18 @@ export default class Interface {
         this.container_d3.style('position', 'relative')
 
         // remove previous placeholder & UI
-        this.container_d3.selectAll("corner_placeholder").remove()
+        this.container_d3.selectAll(".corner_placeholder").remove()
+        this.container_d3.selectAll(".modal_data").remove()
         this.remove_scale()
         this.container_d3.selectAll(".menu_settings").remove()
+
+
+        if (empty_mode){
+            this.top_left = this.add_top_left_container()
+            this.add_data_icon()
+            this.add_empty_message()
+            return
+        }
 
         // Create corner placeholder for UI elements
         this.bottom_left = this.add_bottom_left_container()
@@ -82,52 +93,70 @@ export default class Interface {
     add_data_icon(){
 
         this.top_left.append('button')
-            .on('click', d => {
-                var modal = document.getElementById('modal_' + this.container_object.div_id);
-                modal.style.display = "block";
-            })
             .attr('class', ' square_button')
             .attr('id', 'buttonmodal_' + this.container_object.div_id )
             .style('margin', '2px')
+            .attr('data-bs-toggle', 'modal')
+            .attr('data-bs-target', '#exampleModal')
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-folder ')
+            .text(' Add tree')
 
 
+        let mod_html = 			"<!-- Modal -->" +
+            "<div class=\"modal fade\" id=\"exampleModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\">" +
+            "<div class=\"modal-dialog modal-lg\" role=\"document\">" +
+            "<div class=\"modal-content\">" +
+            "<div class=\"modal-body\">" +
+            "<p><b>Compatible format</b>: Newick, NHX, phyloxml. </p>" +
+            "<br>" +
+            "<h5> <b>Add tree from string</b></h5>" +
+            "<form>" +
+            "<div class=\"row\">" +
+            "<div class=\"col\">" +
+            "<textarea class=\"form-control\" id=\"exampleFormControlTextarea1s\" rows=\"3\"></textarea>" +
+            "</div>" +
+            "<div class=\"col\">" +
+            "<button type=\"button\"class=\"btn btn-primary btn-reply add_tree\">Add this tree</button>" +
+            "</div>" +
+            "</div>" +
+            "</form>" +
+            "<br>" +
+            "<h5> <b>Add tree from file</b></h5>" +
+            "<form>" +
+            "<div class=\"row\">" +
+            "<div class=\"col\">" +
+            "<input type=\"file\" class=\"form-control-file\" id=\"exampleFormControlFile1\">" +
+            "</div>" +
+            "<div class=\"col\">" +
+            "<button type=\"button\" class=\"btn btn-primary btn-reply add_tree\">Add this tree</button>" +
+            "</div>" +
+            "</div>" +
+            "</form>" +
+            "</div>" +
+            "<div class=\"modal-footer\">" +
+            "<button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>"
 
-            let e = this.container_d3.append('div')
-                .attr('class', ' modal')
-                .attr('id', 'modal_' + this.container_object.div_id )
-                .append('div')
-                .attr('class', ' modal-content')
 
-                e.append('span')
-                    .on('click',(d) => {var modal = document.getElementById('modal_' + this.container_object.div_id);modal.style.display = "none";})
-                    .attr('class', ' close')
-                    .text("&times;")
-                e.append('p').text("Some text in the Modal..")
+        let content = document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
-
-
-
-        window.onclick = (event) => {
-
-            var all = document.getElementsByClassName('modal');
-            for (var i = 0; i < all.length; i++) {
-
-                if (event.target == all[i]) {
-                    all[i].style.display = "none";
-                }
-
-            }
+        /*
+        var btnr = document.getElementsByClassName("add_tree");
+        for (var i = 0; i < btnr.length; i++) {
+            btnr.item(i).onclick = () => {
+                this.container_object.add_tree(t1)
+                console.log(this.container_object)
+            };
         }
 
-
-
-
-
+         */
 
 
 
@@ -821,4 +850,29 @@ export default class Interface {
         svg.append("g").html(logo_xml);
 
     }
+
+    add_empty_message(){
+
+
+        let gg = this.viewer.svg_d3.node().append('g')
+            .attr("class", 'empty_message')
+            .attr("transform", "translate("+ (this.viewer.width/2)+"," + (this.viewer.height/2)  + ")")
+
+        let scale_text = gg.append("text")
+            .attr("class", 'scale_text')
+            //.attr("x", 0)
+            //.attr("y", 0)
+            .attr("fill", "#555")
+            .attr('text-anchor', 'middle')
+            .text("Non tree loaded, use top left icon to add trees.")
+
+
+
+
+
+
+
+    }
+
+
 }

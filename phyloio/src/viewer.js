@@ -224,8 +224,6 @@ export default class Viewer {
         this.links = this.d3_cluster_data.descendants().slice(1);
 
 
-        console.log(this.uid, this.nodes.length)
-
         // And render them
         this.render_nodes(source)
         this.render_edges(source)
