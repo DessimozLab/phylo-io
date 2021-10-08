@@ -100,12 +100,14 @@ export default class Interface {
     // DATA ICON
     add_data_icon(){
 
+        this.container_d3.select("#exampleModal" + this.container_object.uid).remove()
+
         this.top_left.append('button')
             .attr('class', ' square_button')
             .attr('id', 'buttonmodal_' + this.container_object.div_id )
             .style('margin', '2px')
             .attr('data-bs-toggle', 'modal')
-            .attr('data-bs-target', '#exampleModal')
+            .attr('data-bs-target', '#exampleModal' + this.container_object.uid)
             .append("div")
             .attr("class","label")
             .append('i')
@@ -124,8 +126,9 @@ export default class Interface {
             "<h5> <b>Add tree from string</b></h5>" +
             "<form>" +
             "<div class=\"row\">" +
-            "<div class=\"col\">" +
+            "<div class=\"col-8\">" +
             "<textarea class=\"form-control\" id=\"exampleFormControlTextarea1s\" rows=\"3\"></textarea>" +
+            "<small>Example: <a href=\"#\" class=\"t1\">tree #1</a>, <a href=\"#\" class=\"t2\">tree #2</a>, <a href=\"#\" class=\"tbig\">big tree</a>.</small>" +
             "</div>" +
             "<div class=\"col\">" +
             "<button type=\"button\"class=\"btn btn-primary btn-reply add_tree\">Add this tree</button>" +
@@ -136,7 +139,7 @@ export default class Interface {
             "<h5> <b>Add tree from file</b></h5>" +
             "<form>" +
             "<div class=\"row\">" +
-            "<div class=\"col\">" +
+            "<div class=\"col-8\">" +
             "<input type=\"file\" class=\"form-control-file\" id=\"exampleFormControlFile1\">" +
             "</div>" +
             "<div class=\"col\">" +
@@ -152,21 +155,52 @@ export default class Interface {
             "</div>" +
             "</div>"
 
+        mod_html = mod_html.replace('exampleModalLabel', 'exampleModalLabel' + this.container_object.uid)
+        mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
+        mod_html = mod_html.replace('exampleFormControlFile1', 'exampleFormControlFile1' + this.container_object.uid)
+        mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
+
+
 
         let content = document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
-        /*
-        var btnr = document.getElementsByClassName("add_tree");
+        var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
+
+        var btnr = modmod.getElementsByClassName("add_tree");
         for (var i = 0; i < btnr.length; i++) {
             btnr.item(i).onclick = () => {
-                this.container_object.add_tree(t1)
-                console.log(this.container_object)
+                let s = document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value
+
+                this.container_object.add_tree(s)
+
+                document.querySelector('#exampleModal'+ this.container_object.uid).style.display =  'none'
+
+
+                document.querySelectorAll('.modal-backdrop').forEach(elem => {
+                    elem.parentNode.removeChild(elem);
+                });
+
+
+                this.container_object.viewer.set_data(this.container_object.models[this.container_object.current_model]);
+                this.container_object.viewer.render(this.container_object.viewer.hierarchy);
+                this.container_object.viewer.update_collapse_level(this.container_object.models[this.container_object.current_model].settings.collapse_level)
+
             };
         }
 
-         */
 
 
+        modmod.getElementsByClassName('t1')[0].onclick = () => {
+            document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
+        };
+
+        modmod.getElementsByClassName('t2')[0].onclick = () => {
+            document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small2
+        };
+
+        modmod.getElementsByClassName('tbig')[0].onclick = () => {
+            document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.big
+        };
 
 
 

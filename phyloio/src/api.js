@@ -3,7 +3,7 @@ const { compute_visible_topology_similarity } = require('./comparison.js')
 import keyboardManager from './keyboardManager.js'
 
 // class to handle user interaction to init and set up phyloIO instance
-export default class API {
+export default class API { // todo ultime ! phylo is used ase reference from .html not goood
 
     constructor() {
         this.containers = {}; // {container id -> Container() }

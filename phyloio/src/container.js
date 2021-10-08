@@ -33,7 +33,7 @@ export default class Container {
             return
         }
 
-        var no_rendering = (typeof no_rendering !== 'undefined') ? no_rendering : false;
+        var no_rendering = (typeof no_rendering !== 'undefined') ? no_rendering : false; // todo inverted ??
 
         this.viewer.set_data(this.models[this.current_model]);
 
