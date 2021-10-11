@@ -116,7 +116,7 @@ export default class Interface {
             .text(' Add tree')
 
 
-        let mod_html = 			"<!-- Modal -->" +
+        let mod_html = "<!-- Modal -->" +
             "<div class=\"modal fade\" id=\"exampleModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\">" +
             "<div class=\"modal-dialog modal-lg\" role=\"document\">" +
             "<div class=\"modal-content\">" +
@@ -131,7 +131,7 @@ export default class Interface {
             "<small>Example: <a href=\"#\" class=\"t1\">tree #1</a>, <a href=\"#\" class=\"t2\">tree #2</a>, <a href=\"#\" class=\"tbig\">big tree</a>.</small>" +
             "</div>" +
             "<div class=\"col\">" +
-            "<button type=\"button\"class=\"btn btn-primary btn-reply add_tree\">Add this tree</button>" +
+            "<button type=\"button\" id='add_tree_str_btn' class=\"btn btn-primary btn-reply \">Add this tree</button>" +
             "</div>" +
             "</div>" +
             "</form>" +
@@ -140,10 +140,10 @@ export default class Interface {
             "<form>" +
             "<div class=\"row\">" +
             "<div class=\"col-8\">" +
-            "<input type=\"file\" class=\"form-control-file\" id=\"exampleFormControlFile1\">" +
+            "<input type=\"file\"  id='add_tree_file_input' class=\"form-control-file\" id=\"exampleFormControlFile1\">" +
             "</div>" +
             "<div class=\"col\">" +
-            "<button type=\"button\" class=\"btn btn-primary btn-reply add_tree\">Add this tree</button>" +
+            "<button type=\"button\" id='add_tree_file_btn' class=\"btn btn-primary btn-reply \">Add this tree</button>" +
             "</div>" +
             "</div>" +
             "</form>" +
@@ -159,6 +159,9 @@ export default class Interface {
         mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
         mod_html = mod_html.replace('exampleFormControlFile1', 'exampleFormControlFile1' + this.container_object.uid)
         mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
+        mod_html = mod_html.replace('add_tree_file_btn', 'add_tree_file_btn' + this.container_object.uid)
+        mod_html = mod_html.replace('add_tree_str_btn', 'add_tree_str_btn' + this.container_object.uid)
+        mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
 
 
 
@@ -166,27 +169,52 @@ export default class Interface {
 
         var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
 
-        var btnr = modmod.getElementsByClassName("add_tree");
-        for (var i = 0; i < btnr.length; i++) {
-            btnr.item(i).onclick = () => {
-                let s = document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value
 
-                this.container_object.add_tree(s)
+        const add_tree_helpers = function(container_object, str){
 
-                document.querySelector('#exampleModal'+ this.container_object.uid).style.display =  'none'
+            container_object.add_tree(str)
 
+            document.querySelector('#exampleModal'+ container_object.uid).style.display =  'none'
+            document.querySelectorAll('.modal-backdrop').forEach(elem => {
+                elem.parentNode.removeChild(elem);
+            });
+            container_object.viewer.set_data(container_object.models[container_object.current_model]);
+            container_object.viewer.render(container_object.viewer.hierarchy);
+            container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
-                document.querySelectorAll('.modal-backdrop').forEach(elem => {
-                    elem.parentNode.removeChild(elem);
-                });
-
-
-                this.container_object.viewer.set_data(this.container_object.models[this.container_object.current_model]);
-                this.container_object.viewer.render(this.container_object.viewer.hierarchy);
-                this.container_object.viewer.update_collapse_level(this.container_object.models[this.container_object.current_model].settings.collapse_level)
-
-            };
         }
+
+
+        document.getElementById('add_tree_str_btn' + this.container_object.uid).onclick = () => {
+
+            let s = document.getElementById("exampleFormControlTextarea1s" + this.container_object.uid).value
+
+            add_tree_helpers(this.container_object, s)
+        }
+
+
+        document.getElementById('add_tree_file_btn' + this.container_object.uid).onclick = () => {
+            var file = document.getElementById('add_tree_file_input' + this.container_object.uid).files[0];
+
+
+            if (file) {
+                var reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+                reader.onload =  (evt) => {
+                    add_tree_helpers(this.container_object, evt.target.result)
+                }
+                reader.onerror = function (evt) {
+                    console.log("error reading file")
+                }
+            }
+
+
+
+        }
+
+        modmod.getElementsByClassName('t1')[0].onclick = () => {
+            document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
+        };
 
 
 
