@@ -15,6 +15,16 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
     }
 
+    reset(){
+        this.containers = {}; // {container id -> Container() }
+        this.bound_container = []
+        this.settings = {
+            "compareMode" : false, // compare for each pair of tree topological similarity
+        };
+    }
+
+
+
     // create adn return a new container and add it the dict using its div id
     create_container(container_id){ // container_id -> str
         let c = new Container(container_id);
@@ -31,7 +41,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         var cs = Object.entries(this.containers)
 
         for (const [uid, container] of cs) {
-            container.start(this.settings.compareMode)
+            container.start(true)
         }
 
         var con1 = this.bound_container[0]

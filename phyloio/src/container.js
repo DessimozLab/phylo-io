@@ -25,7 +25,7 @@ export default class Container {
     }
 
     // update the data viewer and render it
-    start(no_rendering){
+    start(rendering){
 
 
         if (this.models.length <= 0){
@@ -33,11 +33,11 @@ export default class Container {
             return
         }
 
-        var no_rendering = (typeof no_rendering !== 'undefined') ? no_rendering : false; // todo inverted ??
+        var rendering = (typeof rendering !== 'undefined') ? rendering : false; // todo inverted ??
 
         this.viewer.set_data(this.models[this.current_model]);
 
-        if (no_rendering){
+        if (rendering){
             this.viewer.render(this.viewer.hierarchy);
             this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
         }

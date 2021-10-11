@@ -42,7 +42,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Switch to compare mode">
+                <a href="#" id="menu_compare_mode" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Switch between single & compare mode">
                     <i class="bi-layout-split" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
@@ -76,34 +76,73 @@
     </div>
 
 
-    <div class="p-2 flex-grow-1" id="container12" style="height: 100%; width: 100%; background-color: white; border-right: 1px solid lightgrey" ></div>
-    <div class="p-2 flex-grow-1" id="container22" style="height: 100%; width: 100%; background-color: white"  ></div>
-
-
 
 
 </main>
 
 
-<script>/* global bootstrap: false */
-(function () {
-    'use strict'
+<script>
+
+    var compare = false;
+    const phylo = PhyloIO.init()
+
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl)
     })
-})()
+
+    document.getElementById("menu_compare_mode").onclick = function() {
+        compare = compare ? false: true
+        start_phylo(compare)
+    };
+
+    var start_phylo = function(compare){
+
+        if (document.getElementById("containerL")) { document.getElementById("containerL").outerHTML = "";}
+        if (document.getElementById("containerR")) {document.getElementById("containerR").outerHTML = "";}
+        if (document.getElementById("containerS")) {document.getElementById("containerS").outerHTML = "";}
+
+        var left_con_html = "<div class=\"p-2 flex-grow-1\" id=\"containerL\" style=\"height: 100%; width: 100%; background-color: white; border-right: 1px solid lightgrey\" ></div>"
+        var right_con_html = "<div class=\"p-2 flex-grow-1\" id=\"containerR\" style=\"height: 100%; width: 100%; background-color: white;\"></div>"
+        var single_con_html = "<div class=\"p-2 flex-grow-1\" id=\"containerS\" style=\"height: 100%; width: 100%; background-color: white;\"></div>"
 
 
-const  phylo = PhyloIO.init()
-const c1 = phylo.create_container("container12")
-const c2 = phylo.create_container("container22")
+        phylo.reset()
+        console.log(phylo)
+        phylo.settings.compareMode = compare;
+
+        var m = document.getElementsByTagName('main')[0]
+
+        if (compare){
+
+            m.insertAdjacentHTML('beforeend',left_con_html)
+            m.insertAdjacentHTML('beforeend',right_con_html)
+
+            const c1 = phylo.create_container("containerL")
+            const c2 = phylo.create_container("containerR")
+
+            phylo.bound_container = [c1,c2];
+            phylo.start()
+
+        }
+
+        else {
 
 
-phylo.settings.compareMode = true;
-phylo.bound_container = [c1,c2];
-phylo.start()
+            m.insertAdjacentHTML('beforeend', single_con_html)
 
+            const c1 = phylo.create_container("containerS")
+            phylo.settings.compareMode = compare;
+            phylo.start()
+        }
+
+        return phylo
+
+
+    }
+
+
+    start_phylo(compare)
 
 
 </script>
