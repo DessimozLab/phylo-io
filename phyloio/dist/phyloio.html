@@ -9,10 +9,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="phyloio.css">
+
     <!-- JavaScript Bundle with Popper -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="bundle.js"></script>
+
 </head>
+
+
+<style>
+
+    .nav-pills .nav-link {
+        border-radius: 0 !important;
+    }
+</style>
 
 <body>
 
@@ -27,12 +38,12 @@
         </a>
         <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
             <li class="nav-item">
-                <a href="#" class="nav-link  py-3 border-bottom" aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session">
+                <a href="#" class="nav-link  py-3 border-bottom" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
                     <i class="bi-upload" style="font-size: 24px;color: white "></i>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Save Session">
+                <a href="#" class="nav-link py-3 border-bottom" id="menu_save" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Save Session">
                     <i class="bi-download" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
@@ -76,9 +87,39 @@
     </div>
 
 
+    <!-- Modal -->
+    <div class="modal" id="modalload" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load a phylo.io session</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="load_session_input" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="load_session_file" class="btn btn-primary">Load the session</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
 
 
 </main>
+
+
 
 
 <script>
@@ -95,6 +136,70 @@
         compare = compare ? false: true
         start_phylo(compare)
     };
+    document.getElementById("menu_save").onclick = function() {
+        phylo.save_session()
+    };
+
+    document.getElementById("menu_load").onclick = function() {
+        $('#modalload').modal('show');
+    };
+
+    document.getElementById('load_session_file').onclick = () => {
+        var file = document.getElementById('load_session_input').files[0];
+
+        $('#modalload').modal('hide');
+
+        if (file) {
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload =  (evt) => {
+
+                var pickle = JSON.parse(evt.target.result)
+
+                for(var key in pickle.settings) {
+                    var value = pickle.settings[key];
+                    phylo.settings[key] = value;
+                }
+
+                start_phylo(phylo.settings.compareMode)
+
+
+                let cs = Object.values(pickle.containers)
+                let csp = Object.values(phylo.containers)
+
+                for (var i = 0; i < cs.length; i++) {
+
+                    var ms = cs[i].models
+
+
+
+                    for (var j = 0; j < ms.length; j++) {
+                        csp[i].add_tree(ms[j].input, ms[j].settings )
+                    }
+
+                    container_object = csp[i]
+
+                    container_object.viewer.set_data(container_object.models[container_object.current_model]);
+                    container_object.viewer.render(container_object.viewer.hierarchy);
+                    container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
+
+
+                }
+
+
+
+
+
+            }
+            reader.onerror = function (evt) {
+                console.log("error reading file")
+            }
+        }
+
+
+
+    }
+
 
     var start_phylo = function(compare){
 
@@ -108,7 +213,6 @@
 
 
         phylo.reset()
-        console.log(phylo)
         phylo.settings.compareMode = compare;
 
         var m = document.getElementsByTagName('main')[0]
@@ -140,7 +244,6 @@
 
 
     }
-
 
     start_phylo(compare)
 

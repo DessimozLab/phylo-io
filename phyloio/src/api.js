@@ -58,7 +58,54 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         }
 
-        //new keyboardManager(this);
+        new keyboardManager(this);
     }
+
+    screenshot(){
+
+    }
+
+    save_session(){
+
+        var pickle = {
+            "containers" : [],
+            'settings' : this.settings
+        }
+
+        let cs = Object.values(this.containers)
+
+        for (var i = 0; i < cs.length; i++) {
+
+            let ms = cs[i].models
+
+            let minput = []
+
+            for (var j = 0; j < ms.length; j++) {
+                minput.push({'settings':ms[j].settings, 'input':ms[j].input_data})
+            }
+
+            pickle.containers.push({
+                'models' : minput,
+                'settings'  : cs[i].settings
+            })
+        }
+
+        function download(content, fileName, contentType) {
+            var a = document.createElement("a");
+            var file = new Blob([content], {type: contentType});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+        }
+
+        let myString = JSON.stringify(pickle)
+
+        download(myString, 'session.phyloio', 'text/plain');
+
+
+    }
+
+
+
 
 }
