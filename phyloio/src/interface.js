@@ -554,25 +554,7 @@ export default class Interface {
         this.export_as.append('button') // todo clean click
             .attr('class', ' square_button')
             .on("click", d => {
-                var svg = this.viewer.d3.select("#svg" + this.viewer.uid)
-                this.addLogo(svg);
-
-
-                var name = svg.attr("id");
-                var svgString = this.getSVGString(svg.node());
-                var exportElement = svg.node();
-                var width = exportElement.getBoundingClientRect().width;
-                var height = exportElement.getBoundingClientRect().height;
-                this.svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
-
-                function save(dataBlob, filesize) {
-                    var filename = (name) ? name+"." : "";
-                    fs.saveAs(dataBlob, filename+'phylo.io.png'); // FileSaver.js function
-                }
-                svg.select("#exportLogo").remove();
-
-
-
+                this.screen_shot('png')
             })
             .style('margin', '2px')
             .style('flex-grow', '1')
@@ -583,18 +565,41 @@ export default class Interface {
         this.export_as.append('button')
             .attr('class', ' square_button')
             .on("click", d => { // todo clean
-                var svg = this.viewer.d3.select("#svg" + this.viewer.uid)
-                this.addLogo(svg);
-                var name = svg.attr("id");
-                var svgString = this.getSVGString(svg.node());
-                var blob = new Blob([svgString], {"type": "image/svg+xml;base64,"+ btoa(svgString)});
-                fs.saveAs(blob, name+".svg");
-                svg.select("#exportLogo").remove();
+                this.screen_shot('svg')
             })
             .style('margin', '2px')
             .style('flex-grow', '1')
             .append("text")
             .text("SVG")
+
+    }
+
+    screen_shot(format){
+
+        var svg = this.viewer.d3.select("#svg" + this.viewer.uid)
+        this.addLogo(svg);
+        var name = svg.attr("id");
+        var svgString = this.getSVGString(svg.node());
+
+        if(format === 'svg') {
+            var blob = new Blob([svgString], {"type": "image/svg+xml;base64,"+ btoa(svgString)});
+            fs.saveAs(blob, name+".svg");
+            svg.select("#exportLogo").remove();
+
+        }
+        else if (format === 'png'){
+            var exportElement = svg.node();
+            var width = exportElement.getBoundingClientRect().width;
+            var height = exportElement.getBoundingClientRect().height;
+            this.svgString2Image(svgString, 2 * width, 2 * height, 'png', save);
+            svg.select("#exportLogo").remove();
+
+            function save(dataBlob, filesize) {
+                var filename = (name) ? name+"." : "";
+                fs.saveAs(dataBlob, filename+'phylo.io.png'); // FileSaver.js function
+            }
+
+        }
 
     }
 

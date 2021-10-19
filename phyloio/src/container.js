@@ -20,8 +20,8 @@ export default class Container {
     }
 
     // create and add Model() configure with params
-    add_tree(data, settings){
-        this.models.push(new Model(data, settings))
+    add_tree(data, settings, from_raw_data=true){
+        this.models.push(new Model(data, settings, from_raw_data))
     }
 
     // update the data viewer and render it

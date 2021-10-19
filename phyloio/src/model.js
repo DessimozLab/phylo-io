@@ -4,7 +4,7 @@ import * as parser from 'biojs-io-newick';
 
 export default class Model {
 
-    constructor(data, settings) {
+    constructor(data, settings, from_raw_data = true) {
 
         this.settings = {
             'data_type' : 'newick',
@@ -46,14 +46,18 @@ export default class Model {
 
         }
 
-
         this.uid = uid_model++;
         this.input_data = data;
         this.leaves = []
-        this.data = this.factory(this.parse());
-        this.data.root = true;
         this.similarity = []; // list of models id already process for topology BCN
 
+        if (from_raw_data){
+        this.data = this.factory(this.parse());
+        this.data.root = true;
+        }
+        else{
+            this.data = data
+        }
 
 
         // check that histogram data is present and compute
@@ -401,6 +405,23 @@ export default class Model {
 
 
         return l
+    }
+
+    remove_circularity(){
+        var data = Object.assign({}, this.data);
+
+        this.traverse(data, function(n,c){n.parent=null;n.leaves=null})
+
+        return data
+    }
+
+    add_circularity_back(data){
+
+        data.leaves = this.get_leaves(data)
+        this.traverse(data, function(n,c){n.leaves = this.get_leaves(n)}, this.set_parent)
+
+        return data
+
     }
 
 };

@@ -174,7 +174,7 @@
 
 
                     for (var j = 0; j < ms.length; j++) {
-                        csp[i].add_tree(ms[j].input, ms[j].settings )
+                        csp[i].add_tree(ms[j].data, ms[j].settings, false )
                     }
 
                     container_object = csp[i]
@@ -185,6 +185,8 @@
 
 
                 }
+
+                phylo.start()
 
 
 
