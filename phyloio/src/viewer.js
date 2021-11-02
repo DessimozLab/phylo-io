@@ -766,6 +766,72 @@ export default class Viewer {
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
 
+    fit_to_viewer_height(){
+
+        /*
+
+        //
+        th = tree height
+        vh = viewer height
+
+        //
+        m = vh - th --> margin
+
+        //
+        m > 0 = return
+
+        //
+
+        n = m / node space * triangle coeff  -->  number of node to remove to fit
+
+        while n > 0
+
+            traverse(n)
+                #children > n   --> continue
+                #children < n || +-= n  --> collapse + n -= #children
+
+        */
+
+
+        var get_height = function(that,d,c){
+
+            return that.model.settings.tree.node_vertical_size * Math.sqrt(that.getChildLeaves(d).length) * collapse_ratio_vertical
+        }
+
+
+        var vh = this.height
+        var th = this.G.node().getBBox().height
+        var m = vh - th
+
+        if (m >= 0){
+            console.log('need to zoom to fit')
+            return
+        }
+
+        m = -m
+
+        this.model.traverse(this.hierarchy, (d,c) => {
+
+
+            var ht  = d.data.leaves.length * this.model.settings.tree.node_vertical_size
+
+            if (ht < m) {
+
+                this.model.collapse(d.data, true)
+                this.apply_collapse_from_data_to_d3(d.data, d)
+
+                m -= ht
+                m += get_height(this, d, c) * this.model.settings.tree.node_vertical_size
+            }
+
+        })
+
+        this.build_d3_cluster()
+        this.render(this.hierarchy)
+
+
+    }
+
     // TUNNING todo should be in COntroller
     modify_node_size(axis, variation){
 
@@ -801,7 +867,6 @@ export default class Viewer {
     }
 
     // stack
-
 
     toggle_show_stack_number(){
         if (this.model.settings.stack.showHistogramValues){

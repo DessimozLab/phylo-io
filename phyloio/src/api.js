@@ -108,6 +108,60 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
     }
 
+    compute_distance(){
+        var X1 = this.bound_container[0].models[this.bound_container[0].current_model].table
+        var X2 = this.bound_container[1].models[this.bound_container[1].current_model].table
+
+        var n_good  = 0
+
+        for (var i = 0; i < X1.table.length; i++) {
+            var s1 = X1.table[i][0]
+            var e1 = X1.table[i][1]
+            var w1 = Math.abs(e1-s1)
+
+            if (w1 > 0){
+
+                var species =  X1.I2S.slice(s1,e1+1)
+                var index = []
+
+                for (const [name, idx] of Object.entries(X2.S2I)) {
+                    if (species.includes(name)) {index.push(idx)}
+                }
+
+                var s2 =  Math.min.apply(null,index)
+                var e2 = Math.max.apply(null,index)
+                var w2 = Math.abs(e2-s2)
+
+                if (w1 == w2) {
+
+                    if ( (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) || (X2.table[s2][0] == s2 && X2.table[s2][1] == e2)) {
+                        n_good += 1
+                    }
+                    else{
+                        console.log('not good')
+                    }
+
+                }
+                else{
+                    console.log(s2,e2, X2.table[e2], X2.table[s2])
+                }
+
+
+
+
+            }
+
+        }
+
+        console.log(X1,X2)
+        console.log((X1.n_edges + X2.n_edges -2*n_good), X1.n_edges, X2.n_edges , n_good)
+
+
+
+
+
+    }
+
 
 
 

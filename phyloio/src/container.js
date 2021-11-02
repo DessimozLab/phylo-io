@@ -110,14 +110,18 @@ export default class Container {
 
         }
         else if (action === 'reroot'){
-            this.models[this.current_model].reroot(data)
-            this.viewer.set_data(this.models[this.current_model])
+            var mod = this.models[this.current_model]
+            mod.reroot(data)
+            this.viewer.set_data(mod)
+            mod.table = mod.build_table()
             this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
         }
         else if (action === 'trim'){
-            this.models[this.current_model].trim(data)
-            this.viewer.set_data(this.models[this.current_model])
+            var mod = this.models[this.current_model]
+            mod.trim(data)
+            this.viewer.set_data(mod)
+            mod.table = mod.build_table()
             this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -147,9 +151,8 @@ export default class Container {
 
         this.models[this.current_model].traverse(tree, f )
 
-
-
     }
+
 
     zoom_to_node(name){
 

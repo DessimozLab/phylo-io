@@ -32,13 +32,14 @@
 
     <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41);
 }">
-        <a href="/" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
-            <i class="bi-circle" style="font-size: 24px;color: white  "></i>
+        <a href="#" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
+            <i class="bi-triangle" style="font-size: 24px;color: white  "></i>
+            <small style="font-size: xx-small; color: white">PHYLO.IO</small>
 
         </a>
         <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
             <li class="nav-item">
-                <a href="#" class="nav-link  py-3 border-bottom" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
+                <a href="#" class="nav-link  py-3 border-bottom border-top" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
                     <i class="bi-upload" style="font-size: 24px;color: white "></i>
                 </a>
             </li>
@@ -58,7 +59,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Distance">
+                <a href="#" id="menu_distance" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Distance">
                     <i class="bi-rulers" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
@@ -110,13 +111,6 @@
 
 
 
-
-
-
-
-
-
-
 </main>
 
 
@@ -133,7 +127,7 @@
     })
 
     document.getElementById("menu_compare_mode").onclick = function() {
-        compare = compare ? false: true
+        compare = !compare
         start_phylo(compare)
     };
     document.getElementById("menu_save").onclick = function() {
@@ -172,7 +166,6 @@
                     var ms = cs[i].models
 
 
-
                     for (var j = 0; j < ms.length; j++) {
                         csp[i].add_tree(ms[j].data, ms[j].settings, false )
                     }
@@ -201,6 +194,10 @@
 
 
     }
+
+    document.getElementById("menu_distance").onclick = function() {
+        phylo.compute_distance()
+    };
 
 
     var start_phylo = function(compare){

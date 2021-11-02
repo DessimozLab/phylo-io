@@ -54,6 +54,7 @@ export default class Interface {
         }
 
         // BOTTOM RIGHT
+        this.add_fit_height()
         this.add_zoom()
 
 
@@ -263,6 +264,21 @@ export default class Interface {
 
 
 
+    }
+
+    add_fit_height() {
+
+        this.bottom_right.append('button')
+            .on('click', d => {
+                return this.viewer.fit_to_viewer_height()
+            })
+            .attr('class', ' square_button')
+            .style('margin', '2px')
+            .append("div")
+            .attr("class", "label")
+            .append('i')
+            .style('color', '#888')
+            .attr('class', ' fas fa-arrows-alt-v ')
     }
 
     // ZOOM
@@ -952,15 +968,13 @@ export default class Interface {
 
 
             document.querySelector('#ex1'+ this.container_object.uid).addEventListener('click', event => {
-                console.log('#1')
-
-                this.container_object.add_tree(this.examples["small1"])
                 this.container_object.add_tree(this.examples["big"])
+                this.container_object.add_tree(this.examples["small1"])
+
                 phylo.start()
             });
 
         document.querySelector('#ex2'+ this.container_object.uid).addEventListener('click', event => {
-            console.log('#2')
 
             this.container_object.add_tree(this.examples["small2"])
             this.container_object.add_tree(this.examples["stack"],{'data_type': 'json', 'use_branch_lenght': false, 'show_histogram':true, 'collapse_level': 2})
