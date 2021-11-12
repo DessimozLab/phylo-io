@@ -110,12 +110,17 @@ export default class Container {
 
         }
         else if (action === 'reroot'){
+
             var mod = this.models[this.current_model]
             mod.reroot(data)
+            mod.rooted = true
             this.viewer.set_data(mod)
             mod.table = mod.build_table()
+
             this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
+
+            console.log(this.viewer.hierarchy, this.models[this.current_model] )
         }
         else if (action === 'trim'){
             var mod = this.models[this.current_model]

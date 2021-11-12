@@ -152,6 +152,7 @@ export default class Viewer {
         this.build_d3_cluster()
 
 
+
     }
 
     build_d3_cluster(){
@@ -269,7 +270,7 @@ export default class Viewer {
 
         // Update the nodes...
         var node = this.G.selectAll('g.node')
-            .data(this.nodes, d => { return d.ID  || (d.ID = ++this.id_gen); });
+            .data(this.nodes, d => { return d.ID  || (d.ID = ++this.id_gen); })
 
         // Enter any new modes at the parent's previous position.
         var nodeEnter = node.enter().append('g')
@@ -341,8 +342,6 @@ export default class Viewer {
 
         this.nodeUpdate = nodeEnter.merge(node);
 
-
-
         // Transition to the proper position for the node
         this.nodeUpdate.transition()
             .duration(this.settings.duration)
@@ -353,7 +352,7 @@ export default class Viewer {
 
         // Update the node attributes and style
         this.nodeUpdate.select('circle.node')
-            .attr('r', d => d._children ?  1e-6 : this.model.settings.tree.node_radius )
+            .attr('r', d => d._children || (!this.model.rooted && d.data.root ) ?  1e-6 : this.model.settings.tree.node_radius )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#666";
             })
@@ -432,6 +431,8 @@ export default class Viewer {
             }
         })
 
+
+
 /*
         this.nodeUpdate
             .on('mouseover', (event,d)=>{
@@ -444,11 +445,6 @@ export default class Viewer {
 
 
  */
-
-
-
-
-
 
         // Add Stack
 
@@ -768,31 +764,6 @@ export default class Viewer {
 
     fit_to_viewer_height(){
 
-        /*
-
-        //
-        th = tree height
-        vh = viewer height
-
-        //
-        m = vh - th --> margin
-
-        //
-        m > 0 = return
-
-        //
-
-        n = m / node space * triangle coeff  -->  number of node to remove to fit
-
-        while n > 0
-
-            traverse(n)
-                #children > n   --> continue
-                #children < n || +-= n  --> collapse + n -= #children
-
-        */
-
-
         var get_height = function(that,d,c){
 
             return that.model.settings.tree.node_vertical_size * Math.sqrt(that.getChildLeaves(d).length) * collapse_ratio_vertical
@@ -932,7 +903,7 @@ export default class Viewer {
     update_collapse_level(val){
         this.model.settings.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
-        this.set_data(this.model, )
+        this.set_data(this.model)
         this.render(this.hierarchy)
 
     }

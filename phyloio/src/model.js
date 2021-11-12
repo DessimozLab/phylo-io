@@ -59,6 +59,9 @@ export default class Model {
             this.data = data
         }
 
+        this.rooted = this.data.children.length !== 3
+
+
         this.table = this.build_table()
 
 
