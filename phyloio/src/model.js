@@ -1,6 +1,8 @@
+import * as d3 from "d3";
 
 var uid_model = 0
 import * as parser from 'biojs-io-newick';
+const { build_table } = require('./utils.js')
 
 export default class Model {
 
@@ -61,9 +63,8 @@ export default class Model {
 
         this.rooted = this.data.children.length !== 3
 
-
-        this.table = this.build_table()
-
+        this.hierarchy_mockup = this.build_hierarchy_mockup()
+        this.table = build_table(this.hierarchy_mockup)
 
         // check that histogram data is present and compute
         if(this.settings.show_histogram && this.data.evolutionaryEvents) {
@@ -91,7 +92,7 @@ export default class Model {
 
     }
 
-    build_table(){ // build table for RF
+    OLD_build_table(){ // build table for RF
 
         //console.log(this.data)
         this.traverse(this.data, function(node,children){
@@ -255,6 +256,10 @@ export default class Model {
             if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
         //console.log("t5")
         return p
+    }
+
+    build_hierarchy_mockup(){
+        return d3.hierarchy(this.data, d => d.children );
     }
 
     parse(){

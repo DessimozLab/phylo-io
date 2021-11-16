@@ -54,11 +54,12 @@ export default class Interface {
         if (this.viewer.model.settings.use_branch_lenght) {
             this.scale_text = this.add_scale()
         }
+        this.add_root_badge()
 
         // BOTTOM RIGHT
         this.add_fit_height()
         this.add_zoom()
-        this.add_root_badge()
+
 
 
         // TOP LEFT
@@ -81,12 +82,13 @@ export default class Interface {
     add_bottom_left_container() {
         return this.container_d3.append("div")
             .attr("class","corner_placeholder bottom left")
+            .style("flex-direction",  "column")
     }
     add_bottom_right_container(){
         return this.container_d3.append("div")
             .attr("class","corner_placeholder bottom right")
             .style("flex-direction",  "column")
-            .style(    "align-items", "flex-end")
+            .style( "align-items", "flex-end")
     }
     add_top_left_container(){
         return this.container_d3.append("div")
@@ -241,7 +243,12 @@ export default class Interface {
 
     // TOGGLE
     add_toggle(){
-        this.bottom_left.append('button')
+        var sub_div =  this.bottom_left.append("div")
+            .style( "display", "flex")
+            .style('margin', '2px')
+
+
+        sub_div.append('button')
             .on('click', d => {return this.container_object.shift_model(-1)})
             .attr('class', ' square_button')
             .append("div")
@@ -251,13 +258,13 @@ export default class Interface {
             .attr('class', ' fas fa-chevron-left ')
 
 
-        this.bottom_left.append('button')
+        sub_div.append('button')
             .attr('class', ' square_button screen_toggle')
             .append("div")
             .attr("class","label")
             .text(d => {return this.container_object.current_model +1  + " / "  + this.container_object.models.length})
 
-        this.bottom_left.append('button')
+        sub_div.append('button')
             .attr('class', ' square_button')
             .on('click', d => { return this.container_object.shift_model(1)})
             .append("div")
@@ -288,8 +295,9 @@ export default class Interface {
     // BADGE ROOTING
     add_root_badge() {
 
-        this.bottom_right.append('button')
+        this.bottom_left.append('button')
             .attr('class', ' square_button')
+            .style('padding', '4px')
             .style('margin', '2px')
             .style('cursor', 'default')
             .style('color', 'white')
@@ -328,7 +336,7 @@ export default class Interface {
     add_scale(){
 
         var scaleLineLateralPadding = 10
-        var scaleLineBottomPadding = 40
+        var scaleLineBottomPadding = 80
 
 
         var gg = this.viewer.svg_d3.node().append('g')

@@ -1,5 +1,6 @@
 import Container from './container.js'
 const { compute_visible_topology_similarity } = require('./comparison.js')
+const { build_table, reroot_hierarchy } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
 
 // class to handle user interaction to init and set up phyloIO instance
@@ -82,7 +83,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             for (var j = 0; j < ms.length; j++) {
 
-                console.log(ms[j])
 
                 minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity()})
             }
@@ -109,8 +109,49 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     compute_distance(){
-        var X1 = this.bound_container[0].models[this.bound_container[0].current_model].table
-        var X2 = this.bound_container[1].models[this.bound_container[1].current_model].table
+
+        var mod1 = this.bound_container[0].models[this.bound_container[0].current_model]
+        var mod2 = this.bound_container[1].models[this.bound_container[1].current_model]
+
+        // HIERARCHY & TABLES
+
+        if (!mod1.rooted || !mod2.rooted ) {
+
+
+            var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
+            var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
+
+
+            var intersection = leaves1.filter(value => leaves2.includes(value));
+
+            if (intersection.length > 0){
+
+
+
+                // reroot both of them
+                var hierarchy_mockup_rerooted1 = reroot_hierarchy(mod1.hierarchy_mockup, intersection[0])
+                var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.hierarchy_mockup, intersection[0])
+
+                console.log(hierarchy_mockup_rerooted1)
+
+
+                // build tables
+                var X1 = build_table(hierarchy_mockup_rerooted1)
+                var X2 = build_table(hierarchy_mockup_rerooted2)
+
+
+            }
+            else{
+                console.log("No leaves in common, impossible to compute phylogenetic distance")
+                return
+            }
+
+
+        }
+        else{
+            var X1 = mod1.table
+            var X2 = mod2.table
+        }
 
         var n_good  = 0
 
@@ -128,7 +169,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                     if (species.includes(name)) {index.push(idx)}
                 }
 
-                var s2 =  Math.min.apply(null,index)
+                var s2 = Math.min.apply(null,index)
                 var e2 = Math.max.apply(null,index)
                 var w2 = Math.abs(e2-s2)
 
@@ -138,12 +179,10 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                         n_good += 1
                     }
                     else{
-                        console.log('not good')
+                        console.log('not good:', X2.table[e2][0], X2.table[e2][1], s2 ,e2 )
+
                     }
 
-                }
-                else{
-                    console.log(s2,e2, X2.table[e2], X2.table[s2])
                 }
 
 

@@ -2,6 +2,7 @@ import Viewer from './viewer.js'
 import Model from './model.js'
 import Interface from "./interface";
 const { compute_visible_topology_similarity } = require('./comparison.js')
+const { build_table } = require('./utils.js')
 
 var uid_container = 0 // unique id generator is bound to a single Container()
 
@@ -115,18 +116,19 @@ export default class Container {
             mod.reroot(data)
             mod.rooted = true
             this.viewer.set_data(mod)
-            mod.table = mod.build_table()
+            mod.hierarchy_mockup = mod.build_hierarchy_mockup()
+            mod.table = build_table(mod.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
 
-            console.log(this.viewer.hierarchy, this.models[this.current_model] )
         }
         else if (action === 'trim'){
             var mod = this.models[this.current_model]
             mod.trim(data)
             this.viewer.set_data(mod)
-            mod.table = mod.build_table()
+            mod.hierarchy_mockup = mod.build_hierarchy_mockup()
+            mod.table = build_table(mod.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
             this.viewer.render(this.viewer.hierarchy)
         }
