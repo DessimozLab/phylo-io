@@ -259,6 +259,11 @@ export default class Viewer {
 
         var self_render = this;
 
+        var on_screen_text_size = this.compute_node_font_size()
+        var subsampling_index = -1
+        var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
+
+        var real_node_radius = this.compute_node_radius()
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -298,7 +303,8 @@ export default class Viewer {
         nodeEnter.append('text')
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return this.compute_node_font_size(d)
+                subsampling_index += 1;
+                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : '0px' ;
                 })
             .attr("font-weight", (d) =>  {
                 return d.children || d._children ? 900 : 400
@@ -351,16 +357,19 @@ export default class Viewer {
 
 
         // Update the node attributes and style
+
         this.nodeUpdate.select('circle.node')
-            .attr('r', d => d._children || (!this.model.rooted && d.data.root ) ?  1e-6 : this.model.settings.tree.node_radius )
+            .attr('r', d => d._children || (!this.model.rooted && d.data.root ) ?  1e-6 : real_node_radius )
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#666";
             })
             .attr('cursor', 'pointer');
 
+        subsampling_index = -1
         this.nodeUpdate.select('text')
             .style('font-size', d => {
-                return this.compute_node_font_size(d)
+                subsampling_index += 1;
+                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : 0 ;
             })
 
         // Remove any exiting nodes
@@ -413,9 +422,13 @@ export default class Viewer {
 
 
                        d.data.triangle_height = x_length
-                        d3.select(nodes[i]).select("text").attr("x", y_length + 13).attr("y", 0)
+                        subsampling_index = -1
+                        d3.select(nodes[i])
+                            .select("text")
+                            .attr("x", y_length + 13).attr("y", 0)
                             .style('font-size', d => {
-                            return this.compute_node_font_size(d)
+                                subsampling_index += 1;
+                                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : 0 ;
                         })
 
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
@@ -457,11 +470,6 @@ export default class Viewer {
             this.addMainLegend()
         }
 
-
-
-
-
-
         // Store the old positions for transition.
         this.nodes.forEach(function(d){
             d.x0 = d.x;
@@ -472,12 +480,12 @@ export default class Viewer {
 
     render_edges(source){
 
-
         var self_render = this;
+
+        var real_edges_width = this.compute_edge_width()
 
         // Update the links...
         var link = this.G.selectAll('path.link')
-            //.data(this.links, function(d) { return d.id; })
             .data(this.links,  d => { return d.ID  || (d.ID = ++this.id_gen); });
 
         // Enter any new links at the parent's previous position.
@@ -489,34 +497,24 @@ export default class Viewer {
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
 
-
-
-
-
-
         var linkUpdate = linkEnter.merge(link);
-
 
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
             .style('stroke', (d) => {
                 //console.log(d.data.elementS)
-                return d.data.elementS ? this.colorScale(d.data.elementS) : "#555"} )
-            .style('stroke-width',  this.model.settings.tree.line_width)
+                return d.data.elementS ? this.colorScale(d.data.elementS) : "#555"})
+            .style('stroke-width',  real_edges_width)
             .attr('d', d => this.square_edges(d, d.parent))
 
-
         linkUpdate.on('click', (d,i) =>  { this.click_edges(d,i)})
-
 
         // Remove any exiting links
         var linkExit = link.exit().transition()
             .duration(this.settings.duration)
             .attr('d', d => this.square_edges({x: source.x, y: source.y}, {x: source.x, y: source.y}))
             .remove();
-
-
 
     }
 
@@ -541,12 +539,30 @@ export default class Viewer {
         }
 
         if (typeof this.G != "undefined" ){
-            this.G.selectAll('g.node').selectAll('text').style('font-size', d => {
-                return this.compute_node_font_size(d)
+            var on_screen_text_size = this.compute_node_font_size()
+            var subsampling_index = -1
+            var subsampling_module = 1 + Math.floor(on_screen_text_size/this.model.settings.tree.node_vertical_size)
+
+
+            var real_edges_width = this.compute_edge_width()
+            this.G.selectAll('path.link').style('stroke-width',  real_edges_width)
+
+            var real_node_radius = this.compute_node_radius()
+
+            this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {return (d.data.collapse || d.data.root) ? 1e-6 :  real_node_radius } )
+
+            this.G.selectAll('g.node')
+                .selectAll('text')
+                .style('font-size', d => {
+                    if (d.children || d._children){
+                        return on_screen_text_size
+                    }
+                    subsampling_index += 1;
+                    return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : '0px' ;
+
+
             })
         }
-
-
     }
 
     square_edges(s, d) {
@@ -629,6 +645,7 @@ export default class Viewer {
 
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+
         var fs = 20/k // scaled font size
         var vps = 8/k // scaled vertical margin
         var hps = 10/k // scaled horizontal margin
@@ -787,6 +804,7 @@ export default class Viewer {
             var ht  = d.data.leaves.length * this.model.settings.tree.node_vertical_size
 
             if (ht < m) {
+
 
                 this.model.collapse(d.data, true)
                 this.apply_collapse_from_data_to_d3(d.data, d)
@@ -1287,10 +1305,18 @@ export default class Viewer {
 
     isOdd(num) { return num % 2;}
 
-    compute_node_font_size(d){
+    compute_node_font_size(){
+
+        return 0
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
         var fs =  this.model.settings.tree.font_size/k ;
+
+
+
+        return fs
+
+        /*
         if (d._children && fs > d.data.triangle_height){
             fs = d.data.triangle_height
         }
@@ -1302,9 +1328,22 @@ export default class Viewer {
         }
 
         return fs+ "px"
+
+
+         */
     }
 
+    compute_node_radius(){
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+        var nr =  this.model.settings.tree.node_radius/k ;
+        return (nr > this.model.settings.tree.node_vertical_size/2) ? this.model.settings.tree.node_vertical_size/2 : nr
+    }
 
+    compute_edge_width(){
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+        var ew = this.model.settings.tree.line_width/k;
+        return (ew > this.model.settings.tree.node_vertical_size/2) ? this.model.settings.tree.node_vertical_size/2 : ew
+    }
 
 };
 
