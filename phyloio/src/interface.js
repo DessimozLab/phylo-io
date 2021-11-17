@@ -782,6 +782,7 @@ export default class Interface {
             this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch lenght",   this.viewer.toggle_use_length.bind(this.viewer))
         }
 
+
         // ADD SLIDER RESIZE X/Y
         this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 10, 400, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
             (e ) =>{this.viewer.modify_node_size('vertical', e.target.value - this.viewer.model.settings.tree.node_vertical_size)})
@@ -789,11 +790,15 @@ export default class Interface {
         this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 10, 400, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
             (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
 
+        // ADD TOGGLE INTERNAL LABEL
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_internal_label,"Show internal label",   this.viewer.toggle_internal_label.bind(this.viewer))
+
+
         // ADD SLIDER NODE/LINE/TEXT
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})
 
-        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, 50, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
+        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
             (e ) =>{this.viewer.update_line_width(e.target.value)})
 
         this.slider_t = this.add_slider_UI(this.menu_tree_p, "Label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",

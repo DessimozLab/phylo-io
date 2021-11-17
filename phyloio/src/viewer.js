@@ -222,6 +222,8 @@ export default class Viewer {
 
         // Get the nodes and edges
         this.nodes = this.d3_cluster_data.descendants();
+        this.nodes = this.nodes.sort((a,b) => {return a.x - b.x})
+
         this.links = this.d3_cluster_data.descendants().slice(1);
 
 
@@ -262,8 +264,9 @@ export default class Viewer {
         var on_screen_text_size = this.compute_node_font_size()
         var subsampling_index = -1
         var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
-
         var real_node_radius = this.compute_node_radius()
+
+
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -271,6 +274,13 @@ export default class Viewer {
                 d.y = this.scale_branch_length(d.branch_size)
             }
             else{d.y = this.scale_branch_length(d.depth)}
+
+            if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
+                subsampling_index += 1;
+                d.subsampled = (subsampling_index % subsampling_module === 0) ;
+            }
+
+
         })
 
         // Update the nodes...
@@ -303,8 +313,7 @@ export default class Viewer {
         nodeEnter.append('text')
             .attr("dy", ".35em")
             .style('font-size', d => {
-                subsampling_index += 1;
-                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : '0px' ;
+                return d.subsampled ? on_screen_text_size : '0px' ;
                 })
             .attr("font-weight", (d) =>  {
                 return d.children || d._children ? 900 : 400
@@ -368,8 +377,7 @@ export default class Viewer {
         subsampling_index = -1
         this.nodeUpdate.select('text')
             .style('font-size', d => {
-                subsampling_index += 1;
-                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : 0 ;
+                return d.subsampled ? on_screen_text_size : '0px' ;
             })
 
         // Remove any exiting nodes
@@ -422,13 +430,11 @@ export default class Viewer {
 
 
                        d.data.triangle_height = x_length
-                        subsampling_index = -1
                         d3.select(nodes[i])
                             .select("text")
                             .attr("x", y_length + 13).attr("y", 0)
                             .style('font-size', d => {
-                                subsampling_index += 1;
-                                return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : 0 ;
+                                return d.subsampled ? on_screen_text_size : '0px' ;
                         })
 
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
@@ -531,7 +537,6 @@ export default class Viewer {
     zoomed({transform}) {
 
 
-
         d3.select("#master_g" + this.uid).attr("transform", transform);
 
         if (this.interface && this.model.settings.use_branch_lenght) {
@@ -539,26 +544,36 @@ export default class Viewer {
         }
 
         if (typeof this.G != "undefined" ){
+
             var on_screen_text_size = this.compute_node_font_size()
             var subsampling_index = -1
-            var subsampling_module = 1 + Math.floor(on_screen_text_size/this.model.settings.tree.node_vertical_size)
+            var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
 
+
+
+
+            // update x pos with branch length
+            this.nodes.forEach(d => {
+
+                if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
+                    subsampling_index += 1;
+                    d.subsampled = (subsampling_index % subsampling_module === 0) ;
+                }
+
+
+            })
 
             var real_edges_width = this.compute_edge_width()
             this.G.selectAll('path.link').style('stroke-width',  real_edges_width)
 
             var real_node_radius = this.compute_node_radius()
-
             this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {return (d.data.collapse || d.data.root) ? 1e-6 :  real_node_radius } )
 
             this.G.selectAll('g.node')
                 .selectAll('text')
                 .style('font-size', d => {
-                    if (d.children || d._children){
-                        return on_screen_text_size
-                    }
-                    subsampling_index += 1;
-                    return  (subsampling_index % subsampling_module === 0 ) ? on_screen_text_size : '0px' ;
+
+                    return d.subsampled ? on_screen_text_size : '0px' ;
 
 
             })
@@ -852,6 +867,12 @@ export default class Viewer {
         else{this.interface.add_scale()}
 
         this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
+    toggle_internal_label(){
+
+        this.model.settings.display_internal_label = !this.model.settings.display_internal_label
         this.render(this.hierarchy)
     }
 
@@ -1307,12 +1328,8 @@ export default class Viewer {
 
     compute_node_font_size(){
 
-        return 0
-
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
         var fs =  this.model.settings.tree.font_size/k ;
-
-
 
         return fs
 

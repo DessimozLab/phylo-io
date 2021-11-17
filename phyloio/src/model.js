@@ -11,6 +11,7 @@ export default class Model {
         this.settings = {
             'data_type' : 'newick',
             'use_branch_lenght' : true,
+            'display_internal_label' : false,
             'has_branch_lenght' : true,
             'dessimode': false,
             'show_histogram' : false,
