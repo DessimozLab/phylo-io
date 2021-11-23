@@ -38,6 +38,8 @@ export default class keyboardManager {
                 "i": function(){self_km.right.viewer.modify_node_size( 'vertical',-5)},
                 "k": function(){self_km.right.viewer.modify_node_size( 'vertical',5)},
                 ";": function(){self_km.right.toggle_stack()},
+
+                "g": function(){phylo.compute_distance()}
             }
 
             if (shortcuts.hasOwnProperty(e.key)){

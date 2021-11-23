@@ -35,7 +35,7 @@ function build_table(hierarchy){ // build table for RF
     }, null)
 
     var n = hierarchy.leaves().length
-    var X = Array.from(new Array(n), _ => Array(2).fill(0));
+    var X = Array.from(new Array(n), _ => Array(3).fill(0));
     var S2I = {} //Array(n).fill(0)
     var I2S = Array(n).fill(0)
     var n_edges = 0
@@ -77,6 +77,13 @@ function build_table(hierarchy){ // build table for RF
 
             X[ii][0] = node.left_
             X[ii][1] = node.right_
+            if (node.data.hasOwnProperty('branch_length')){
+                X[ii][2] = node.data.branch_length
+            }
+            else {
+                X[ii][2] = 1
+            }
+
 
             n_edges += 1
 
@@ -90,6 +97,7 @@ function build_table(hierarchy){ // build table for RF
             ii = node.right_
             X[ii][0] = node.left_
             X[ii][1] = node.right_
+            X[ii][2] = node.data.branch_length
             n_edges += 1
             break
         }

@@ -502,17 +502,21 @@ export default class Model {
     remove_circularity(){ // safe my model
         var data = Object.assign({}, this.data);
 
-        this.traverse(data, function(n,c){n.parent=null;n.leaves=null})
+        this.traverse(data, function(n,c){
+            n.parent=null;
+            n.leaves=null;
+            n.correspondingLeaf = {}
+            n.elementBCN = null})
 
         return data
     }
 
-    add_circularity_back(data){ //load model
+    add_circularity_back(){
 
-        data.leaves = this.get_leaves(data)
-        this.traverse(data, function(n,c){n.leaves = this.get_leaves(n)}, this.set_parent)
+        this.data.leaves = this.get_leaves(this.data)
 
-        return data
+        this.traverse(this.data, function(n,c){n.leaves = this.get_leaves(n)}, this.set_parent)
+
 
     }
 

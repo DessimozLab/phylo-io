@@ -567,7 +567,12 @@ export default class Viewer {
             this.G.selectAll('path.link').style('stroke-width',  real_edges_width)
 
             var real_node_radius = this.compute_node_radius()
-            this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {return (d.data.collapse || d.data.root) ? 1e-6 :  real_node_radius } )
+            this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {
+
+
+
+                return d.data.collapse || (!this.model.rooted && d.data.root) ? 1e-6 :  real_node_radius }
+                )
 
             this.G.selectAll('g.node')
                 .selectAll('text')

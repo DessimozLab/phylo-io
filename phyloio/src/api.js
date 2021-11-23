@@ -36,7 +36,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     // start the app by computing required information and starting each container
-    start(){
+    start(recompute=false){
 
 
         var cs = Object.entries(this.containers)
@@ -50,7 +50,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         if (this.settings.compareMode && con1.models.length > 0 && con2.models.length > 0 ){
 
-            compute_visible_topology_similarity()
+            compute_visible_topology_similarity(recompute)
 
             for (const [uid, container] of cs) {
                 container.viewer.render(container.viewer.hierarchy);
@@ -154,6 +154,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         }
 
         var n_good  = 0
+        var euclidian = 0
 
         for (var i = 0; i < X1.table.length; i++) {
             var s1 = X1.table[i][0]
@@ -175,14 +176,28 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
                 if (w1 == w2) {
 
-                    if ( (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) || (X2.table[s2][0] == s2 && X2.table[s2][1] == e2)) {
+                    if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
                         n_good += 1
+                        euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
+                    }
+                    else if (X2.table[s2][0] == s2 && X2.table[s2][1] == e2){
+
+                        n_good += 1
+                        euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[s2][2]) )
+
                     }
                     else{
-                        console.log('not good:', X2.table[e2][0], X2.table[e2][1], s2 ,e2 )
+                        console.log(X1.table[i][2],X2.table[e2][2] )
+                        euclidian += parseFloat(X1.table[i][2])
+                        euclidian += parseFloat(X2.table[e2][2])
 
                     }
 
+                }
+
+                else{
+                    euclidian += parseFloat(X1.table[i][2])
+                    euclidian += parseFloat(X2.table[e2][2])
                 }
 
 
@@ -193,7 +208,9 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         }
 
         console.log(X1,X2)
-        console.log((X1.n_edges + X2.n_edges -2*n_good), X1.n_edges, X2.n_edges , n_good)
+        console.log(euclidian, (X1.n_edges + X2.n_edges -2*n_good), X1.n_edges, X2.n_edges , n_good)
+
+        alert("RF: " + (X1.n_edges + X2.n_edges -2*n_good).toString() + '\n' + 'Euclidian: ' + euclidian.toString() )
 
 
 
