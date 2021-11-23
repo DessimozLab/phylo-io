@@ -1,6 +1,6 @@
 import Container from './container.js'
 const { compute_visible_topology_similarity } = require('./comparison.js')
-const { build_table, reroot_hierarchy } = require('./utils.js')
+const { build_table, reroot_hierarchy, screen_shot } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
 
 // class to handle user interaction to init and set up phyloIO instance
@@ -60,10 +60,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         }
 
         new keyboardManager(this);
-    }
-
-    screenshot(){
-
     }
 
     save_session(){ // TODO not working since collapse or other info are store in circular data
@@ -217,6 +213,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
 
     }
+
+    screen_shot(params){screen_shot(params)}
 
 
 

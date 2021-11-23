@@ -625,6 +625,7 @@ export default class Interface {
         var svgString = this.getSVGString(svg.node());
 
         if(format === 'svg') {
+
             var blob = new Blob([svgString], {"type": "image/svg+xml;base64,"+ btoa(svgString)});
             fs.saveAs(blob, name+".svg");
             svg.select("#exportLogo").remove();

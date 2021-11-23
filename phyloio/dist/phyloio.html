@@ -64,7 +64,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as image">
+                <a href="#" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as image">
                     <i class="bi-camera" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
@@ -207,6 +207,24 @@
     document.getElementById("menu_distance").onclick = function() {
         phylo.compute_distance()
     };
+
+    document.getElementById("menu_screenshot").onclick = function() {
+
+        if (phylo.settings.compareMode) {
+
+            var svg1 = phylo.bound_container[0].viewer.d3.select("#svg" + phylo.bound_container[0].viewer.uid)
+            var svg2 = phylo.bound_container[1].viewer.d3.select("#svg" + phylo.bound_container[1].viewer.uid)
+        }
+
+        else {
+            var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
+        }
+
+        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
+    };
+
+
+
 
 
     var start_phylo = function(compare){
