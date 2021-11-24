@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 var uid_model = 0
 import * as parser from 'biojs-io-newick';
-const { build_table } = require('./utils.js')
+const { build_table, parse_nhx } = require('./utils.js')
 
 export default class Model {
 
@@ -12,6 +12,7 @@ export default class Model {
             'data_type' : 'newick',
             'use_branch_lenght' : true,
             'display_internal_label' : false,
+            'display_duplication' : false,
             'has_branch_lenght' : true,
             'dessimode': false,
             'show_histogram' : false,
@@ -61,6 +62,8 @@ export default class Model {
         else{
             this.data = data
         }
+
+        console.log(this.data)
 
         this.rooted = this.data.children.length !== 3
 
@@ -239,6 +242,38 @@ export default class Model {
         p = this.traverse(p, this.set_cumulated_length , null)
 
         this.traverse(p, function(n,c){
+
+            if(n.data_nhx && Object.keys(n.data_nhx).length > 0){
+
+                n.extended_informations = {}
+
+                Object.entries(n.data_nhx).forEach(([key, value]) => {
+                    switch(key){
+                        case 'Ev':
+                            if (value == 'duplication') {
+                                n.duplication = true
+                            }
+                            n.extended_informations.events = value
+                            break;
+
+                        case 'D':
+                            if (value == 'Y') {
+                                n.duplication = true
+                            }
+                            else if (value == 'Y'){
+                                n.duplication = false
+                            }
+                            n.extended_informations.events = value
+                            break;
+                        default:
+                            n.extended_informations[key] = value
+                            break;
+                    }
+                });
+
+
+            }
+
             if (n.depth > this.settings.tree.max_depth){
                 this.settings.tree.max_depth = n.depth
             }
@@ -267,6 +302,10 @@ export default class Model {
 
         if (this.settings.data_type === "newick") {
             return parser.parse_newick(this.input_data);
+        }
+
+        else if (this.settings.data_type === "nhx") {
+            return parse_nhx(this.input_data);
         }
 
         else if (this.settings.data_type === "json") {

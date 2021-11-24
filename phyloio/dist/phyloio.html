@@ -78,6 +78,8 @@
 
             -->
         </ul>
+
+
         <div class="dropdown border-top">
             <a href="/" class="d-flex align-items-center justify-content-center p-3  text-decoration-none dropdown-toggle" style="color: white" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi-question-circle" style="font-size: 24px; color:white  "></i>
@@ -210,6 +212,7 @@
 
     document.getElementById("menu_screenshot").onclick = function() {
 
+
         if (phylo.settings.compareMode) {
 
             var svg1 = phylo.bound_container[0].viewer.d3.select("#svg" + phylo.bound_container[0].viewer.uid)
@@ -220,7 +223,7 @@
             var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
         }
 
-        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
+        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
     };
 
 

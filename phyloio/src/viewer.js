@@ -260,13 +260,11 @@ export default class Viewer {
 
 
         var self_render = this;
-
         var on_screen_text_size = this.compute_node_font_size()
         var subsampling_index = -1
         var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
         var real_node_radius = this.compute_node_radius()
-
-
+        var show_duplications = this.model.settings.display_duplication
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -306,7 +304,7 @@ export default class Viewer {
             .attr('class', 'node')
             .attr('r', 1e-6)
             .style("fill", function(d) {
-                return d._children ? "lightsteelblue" : "#fff";
+                return d.data.duplication && show_duplications  ? 'red' : d._children ? "lightsteelblue" : "#fff";
             });
 
         // Add labels for the nodes
@@ -370,7 +368,7 @@ export default class Viewer {
         this.nodeUpdate.select('circle.node')
             .attr('r', d => d._children || (!this.model.rooted && d.data.root ) ?  1e-6 : real_node_radius )
             .style("fill", function(d) {
-                return d._children ? "lightsteelblue" : "#666";
+                return d.data.duplication && show_duplications ? 'red' : d._children ? "lightsteelblue" : "#666";
             })
             .attr('cursor', 'pointer');
 
@@ -879,6 +877,12 @@ export default class Viewer {
 
         this.model.settings.display_internal_label = !this.model.settings.display_internal_label
         this.render(this.hierarchy)
+    }
+
+    toggle_duplication(){
+        this.model.settings.display_duplication = !this.model.settings.display_duplication
+        this.render(this.hierarchy)
+
     }
 
     // stack

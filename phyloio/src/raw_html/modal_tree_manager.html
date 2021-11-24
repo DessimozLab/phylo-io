@@ -1,54 +1,89 @@
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
 
+<div class="modal" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a new tree</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body">
 
-                <p><b>Compatible format</b>: Newick, NHX, phyloxml. </p>
 
-                <br>
 
-                <h5> <b>Add tree from string</b></h5>
 
-                <form>
-                    <div class="row">
-                        <div class="col-8">
-                            <textarea class="form-control" id="exampleFormControlTextarea1s" rows="3"></textarea>
-                            <small>Example: <a href="#" class="t1">tree #1</a>, <a href="#" class="t2">tree #2</a>, <a href="#" class="tbig">big tree</a>.</small>
-                        </div>
-                        <div class="col">
-                            <button type="button" id='add_tree_str_btn' class="btn btn-primary btn-reply ">Add this tree</button>
+                <div class="container-fluid">
+
+                    <p><strong>Compatible format:</strong> Newick, Extended Newick.</p>
+
+                    <div class="card"  style="border: none">
+                        <div class="card-body">
+                            <h4 class="card-title">Add a new tree from String</h4>
+                            <h6 class="card-subtitle mb-2 text-muted"><small>Example: <a href="#" class="t1">tree #1</a>, <a href="#" class="t2">tree #2</a>, <a href="#" class="tbig">big tree</a>, <a href="#" class="nhx_ex">Extended Newick</a>.</small></h6>
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <textarea class="form-control" id="exampleFormControlTextarea1s" rows="3"></textarea>
+
+                                </div>
+                                <div class="col-md-6">
+
+                                    <div class="input-group" style="justify-content: center;">
+                                        <select class="custom-select" id="add_tree_str_select">
+                                            <option selected value="newick">Newick</option>
+                                            <option value="nhx">Extended Newick</option>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <button type="button" id='add_tree_str_btn' class="btn btn-primary btn-reply ">Add this tree</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                </form>
 
 
+                    <div class="card" style="border: none" >
+                        <div class="card-body">
+                            <h4 class="card-title">Add a new tree from File</h4>
 
-                <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="file"  id='add_tree_file_input' class="form-control-file" id="exampleFormControlFile1">
+                                </div>
 
-                <h5> <b>Add tree from file</b></h5>
+                                <div class="col-md-6 ">
 
-                <form>
-                    <div class="row">
-                        <div class="col-8">
-                            <input type="file"  id='add_tree_file_input' class="form-control-file" id="exampleFormControlFile1">
-                        </div>
-                        <div class="col">
-                            <button type="button" id='add_tree_file_btn' class="btn btn-primary btn-reply ">Add this tree</button>
+                                    <div class="input-group" style="justify-content: center;">
+                                        <select class="custom-select" id="add_tree_file_select">
+                                            <option selected value="newick">Newick</option>
+                                            <option value="nhx">Extended Newick</option>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <button type="button" id='add_tree_file_btn' class="btn btn-primary btn-reply ">Add this tree</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                </form>
 
+                    <br>
+
+
+
+                </div>
 
 
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
 
 

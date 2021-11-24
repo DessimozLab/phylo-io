@@ -338,4 +338,55 @@ function screen_shot({ svg1, svg2, format } = {}){
     }
 }
 
-export {build_table, reroot_hierarchy, screen_shot};
+//Adapted from Extended Newick format parser in JavaScript.
+//Copyright (c) Miguel Pignatelli 2014 based on Jason Davies
+function parse_nhx(s) {
+    var ancestors = [];
+    var tree = {'data_nhx' : {}};
+    // var tokens = s.split(/\s*(;|\(|\)|,|:)\s*/);
+    //[&&NHX:D=N:G=ENSG00000139618:T=9606]
+    var tokens = s.split( /\s*(;|\(|\)|\[|\]|,|:|=)\s*/ );
+    for (var i=0; i<tokens.length; i++) {
+        var token = tokens[i];
+        switch (token) {
+            case '(': // new children
+                var subtree = {'data_nhx' : {}};
+                tree.children = [subtree];
+                ancestors.push(tree);
+                tree = subtree;
+                break;
+            case ',': // another branch
+                var subtree = {'data_nhx' : {}};
+                ancestors[ancestors.length-1].children.push(subtree);
+                tree = subtree;
+                break;
+            case ')': // optional name next
+                tree = ancestors.pop();
+                break;
+            case ':': // optional length next
+                break;
+            default:
+                var x = tokens[i-1];
+                // var x2 = tokens[i-2];
+                if (x == ')' || x == '(' || x == ',') {
+                    tree.name = token;
+                }
+                else if (x == ':') {
+                    var test_type = typeof token;
+                    if(!isNaN(token)){
+                        tree.branch_length = parseFloat(token);
+                    }
+                    // tree.length = parseFloat(token);
+                }
+                else if (x == '='){
+                    tree['data_nhx'][tokens[i-2]] = token
+                }
+                else {
+                    var test;
+                }
+        }
+    }
+    return tree;
+};
+
+export {build_table, reroot_hierarchy, screen_shot, parse_nhx};
