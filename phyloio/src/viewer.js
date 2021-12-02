@@ -265,6 +265,8 @@ export default class Viewer {
         var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
         var real_node_radius = this.compute_node_radius()
         var show_duplications = this.model.settings.display_duplication
+        var show_lt = this.model.settings.display_internal_label_left_top !== false
+        var show_lb = this.model.settings.display_internal_label_left_bottom !== false
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -273,7 +275,7 @@ export default class Viewer {
             }
             else{d.y = this.scale_branch_length(d.depth)}
 
-            if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
+            if (!(d.children || d._children)) {
                 subsampling_index += 1;
                 d.subsampled = (subsampling_index % subsampling_module === 0) ;
             }
@@ -307,8 +309,10 @@ export default class Viewer {
                 return d.data.duplication && show_duplications  ? 'red' : d._children ? "lightsteelblue" : "#fff";
             });
 
+
         // Add labels for the nodes
         nodeEnter.append('text')
+            .attr("class", "right")
             .attr("dy", ".35em")
             .style('font-size', d => {
                 return d.subsampled ? on_screen_text_size : '0px' ;
@@ -334,10 +338,59 @@ export default class Viewer {
             })
             .attr("text-anchor", function(d) {
                 //return "start";
-
                 return d.parent == null ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; });
+
+
+            nodeEnter.filter(function(d) { return (d.children || d._children); })
+                .append('text')
+                .attr("class", "left_top")
+                .attr("dy", ".35em")
+                .style('font-size', d => {
+                    return show_lt ? on_screen_text_size : '0px' ;
+                })
+                .attr("font-weight", (d) =>  {
+                    return 400
+                })
+                .attr("y", (d) => {
+                    return -13
+                })
+                .attr("x", function(d) {
+                    return  -13;
+                })
+                .attr("text-anchor", function(d) {
+                    return  "end"
+                })
+                .text( (d) => {
+                    return "";
+                })
+
+
+
+
+            nodeEnter.filter(function(d) { return (d.children || d._children); })
+                .append('text')
+                .attr("class", "left_bottom")
+                .attr("dy", ".35em")
+                .style('font-size', d => {
+                    return show_lb ? on_screen_text_size : '0px' ;
+                })
+                .attr("font-weight", (d) => {
+                    return 400
+                })
+                .attr("y", (d) => {
+                    return 13
+                })
+                .attr("x", function (d) {
+                    return -13;
+                })
+                .attr("text-anchor", function (d) {
+                    return "end"
+                })
+                .text( (d) => {
+                    return "";
+                })
 
         // create null triangle
         nodeEnter.append("path")
@@ -372,11 +425,28 @@ export default class Viewer {
             })
             .attr('cursor', 'pointer');
 
-        subsampling_index = -1
-        this.nodeUpdate.select('text')
+
+            this.nodeUpdate.select('text.right')
+                .style('font-size', d => {
+                    return d.subsampled ? on_screen_text_size : '0px';
+                })
+
+        this.nodeUpdate.select('text.left_top')
             .style('font-size', d => {
-                return d.subsampled ? on_screen_text_size : '0px' ;
+                return show_lt ? on_screen_text_size : '0px';
             })
+            .text( (d) => {
+                return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
+            })
+
+        this.nodeUpdate.select('text.left_bottom')
+            .style('font-size', d => {
+                return show_lb ? on_screen_text_size : '0px';
+            })
+            .text( (d) => {
+                return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
+            })
+
 
         // Remove any exiting nodes
         var nodeExit = node.exit().transition()
@@ -421,19 +491,35 @@ export default class Viewer {
 
                         var y = average(self_render.getChildLeaves(d)) -d.data.distance_to_root
 
-
-
                         var y_length = self_render.scale_branch_length(average(self_render.getChildLeaves(d))-d.data.distance_to_root)
                         var x_length =  self_render.model.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
 
 
                        d.data.triangle_height = x_length
-                        d3.select(nodes[i])
-                            .select("text")
-                            .attr("x", y_length + 13).attr("y", 0)
+
+                            d3.select(nodes[i])
+                                .select("text.right")
+                                .attr("x", y_length + 13).attr("y", 0)
+                                .style('font-size', d => {
+                                    return d.subsampled || true ? on_screen_text_size : '0px';
+                                })
+
+                        d3.select(nodes[i]).select('text.left_top')
                             .style('font-size', d => {
-                                return d.subsampled ? on_screen_text_size : '0px' ;
-                        })
+                                return show_lt ? on_screen_text_size : '0px';
+                            })
+                            .text( (d) => {
+                                return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
+                            })
+
+                        d3.select(nodes[i]).select('text.left_bottom')
+                            .style('font-size', d => {
+                                return show_lb ? on_screen_text_size : '0px';
+                            })
+                            .text( (d) => {
+                                return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
+                            })
+
 
                         return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
@@ -450,18 +536,6 @@ export default class Viewer {
 
 
 
-/*
-        this.nodeUpdate
-            .on('mouseover', (event,d)=>{
-                if(d.children || d._children) tip.show(event,d);
-            })
-            .on('mouseout', tip.hide)
-
-
-        this.nodeUpdate.call(tip)
-
-
- */
 
         // Add Stack
 
@@ -553,7 +627,8 @@ export default class Viewer {
             // update x pos with branch length
             this.nodes.forEach(d => {
 
-                if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
+                if (!(d.children || d._children)) {
+                //if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
                     subsampling_index += 1;
                     d.subsampled = (subsampling_index % subsampling_module === 0) ;
                 }
@@ -572,14 +647,18 @@ export default class Viewer {
                 return d.data.collapse || (!this.model.rooted && d.data.root) ? 1e-6 :  real_node_radius }
                 )
 
-            this.G.selectAll('g.node')
-                .selectAll('text')
-                .style('font-size', d => {
-
-                    return d.subsampled ? on_screen_text_size : '0px' ;
 
 
-            })
+                this.G.selectAll('g.node')
+                    .selectAll('text.right')
+                    .style('font-size', d => {
+
+                        return d.subsampled ? on_screen_text_size : '0px';
+
+
+                    })
+
+
         }
     }
 
@@ -1369,6 +1448,12 @@ export default class Viewer {
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
         var ew = this.model.settings.tree.line_width/k;
         return (ew > this.model.settings.tree.node_vertical_size/2) ? this.model.settings.tree.node_vertical_size/2 : ew
+    }
+
+    get_label_extended_information(node, type){
+
+        return (type == 'Name') ? node.data.name :  node.data.extended_informations[type]
+
     }
 
 };

@@ -697,6 +697,37 @@ export default class Interface {
             .attr('class', ' fas fa-undo ')
     }
 
+    toggle_select_node_face(cid){
+
+        var acc = document.getElementById("accordion_branch"+cid)
+
+
+        console.log(acc, acc.classList.contains('active'))
+
+        if (acc.classList.contains('active')) {
+
+            var top_off = acc.nextSibling.getBoundingClientRect().top + 14;
+
+            document.getElementById('selectlt' + cid).style.display = 'block';
+            document.getElementById('selectlb' + cid).style.display = 'block';
+            document.getElementById('selectr' + cid).style.display = 'block';
+
+            document.getElementById('selectlt' + cid).style.top = top_off + 50 + 'px';
+            document.getElementById('selectlb' + cid).style.top = top_off + 90 + 'px';
+            document.getElementById('selectr' + cid).style.top = top_off + 70 + 'px';
+
+            document.getElementById('selectlt' + cid).style.left = '63px';
+            document.getElementById('selectlb' + cid).style.left = '63px';
+            document.getElementById('selectr' + cid).style.left = '163px';
+
+        }
+        else{
+            document.getElementById('selectlt' + cid).style.display = 'none';
+            document.getElementById('selectlb' + cid).style.display = 'none';
+            document.getElementById('selectr' + cid).style.display = 'none';
+        }
+    }
+
     // SETTINGS
     add_settings() {
 
@@ -729,10 +760,9 @@ export default class Interface {
 
         // ADD THE ACCORDION SYSTEM todo close other when open one
 
-        this.menu_general_b = this.menu_settings.append('button').attr('class', 'accordion').text("Tree")
+        this.menu_general_b = this.menu_settings.append('button').attr('id', 'accordion_tree'+this.container_object.uid).attr('class', 'accordion').text("Tree")
         this.menu_general_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
-
-        this.menu_tree_b = this.menu_settings.append('button').attr('class', 'accordion').text("Branch & Labels")
+        this.menu_tree_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Branch & Labels")
         this.menu_tree_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
@@ -802,10 +832,12 @@ export default class Interface {
 
         // ADD LOGIC TO ACCORDION todo add it general or to this div only
         var acc = document.getElementById(this.container_object.div_id).getElementsByClassName("accordion");
+        var that = this;
         var i;
 
         for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function() {
+            acc[i].addEventListener("click", function(e) {
+
                 this.classList.toggle("active");
                 var panel = this.nextElementSibling;
                 if (panel.style.maxHeight) {
@@ -813,7 +845,13 @@ export default class Interface {
                 } else {
                     panel.style.maxHeight = panel.scrollHeight + "px";
                 }
+
+                setTimeout(that.toggle_select_node_face(that.container_object.uid), 500)
+
+
             });
+
+
         }
 
         // ADD TOGGLE BRANCH LENGTH
@@ -829,12 +867,14 @@ export default class Interface {
         this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 10, 400, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
             (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
 
+        // ADD SELECT LEFT NODE LABEL
+        this.add_node_face_UI(this.menu_tree_p, this.container_object.uid)
+
         // ADD TOGGLE INTERNAL LABEL
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_internal_label,"Show internal label",   this.viewer.toggle_internal_label.bind(this.viewer))
+        //this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_internal_label,"Show internal label",   this.viewer.toggle_internal_label.bind(this.viewer))
 
         // ADD TOGGLE DUPLICATION
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
-
 
         // ADD SLIDER NODE/LINE/TEXT
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
@@ -875,6 +915,104 @@ export default class Interface {
 
         parent.append('p').text(label).style("display", 'inline-block').style("margin-left", '12px')
         parent.append('br')
+
+    }
+
+    add_node_face_UI(parent,container_id){
+
+        var w = 220;
+        var h = 160;
+        var gutter = 20
+
+        var s = parent.append("svg")
+            .attr('display', 'block')
+            .attr("width", w )
+            .attr("height", h)
+
+        s.append('line')
+            .style("stroke", "black")
+            .style("stroke-width", 2)
+            .attr("x1", gutter/2)
+            .attr("y1", h/2)
+            .attr("x2", w/2)
+            .attr("y2", h/2);
+
+        s.append('line')
+            .style("stroke", "black")
+            .style("stroke-width", 2)
+            .attr("x1", w/2)
+            .attr("y1", gutter)
+            .attr("x2", w/2)
+            .attr("y2", h-gutter);
+
+        s.append('line')
+            .style("stroke", "black")
+            .style("stroke-width", 2)
+            .attr("x1", w/2)
+            .attr("y1", gutter)
+            .attr("x2", w-gutter)
+            .attr("y2", gutter);
+
+        s.append('line')
+            .style("stroke", "black")
+            .style("stroke-width", 2)
+            .attr("x1", w/2)
+            .attr("y1", h-gutter)
+            .attr("x2", w-gutter)
+            .attr("y2", h-gutter);
+
+        s.append('circle')
+            .attr('cx', w/2)
+            .attr('cy', h/2)
+            .attr('r', 5)
+            .attr('stroke', 'black')
+            .attr('fill', '#69a3b2');
+
+
+        var l = Array.from(this.viewer.model.labels)
+
+        var options = ["None","Name"]
+        options = options.concat(l)
+
+        var that = this
+
+        var selectlt = parent.append('select').attr('id','selectlt' + container_id ).attr('class','select dropdrop ').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_internal_label_left_top = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+
+        var selectlb = parent.append('select').attr('id','selectlb' + container_id ).attr('class','select dropdrop ').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_internal_label_left_bottom = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+
+        var selectr = parent.append('select').attr('id','selectr' + container_id ).attr('class','select dropdrop').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_internal_label = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+
+        selectlt.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+        selectlb.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+        selectr.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+
+
+
+
 
     }
 
@@ -1050,6 +1188,8 @@ export default class Interface {
 
         document.querySelector('#ex2'+ this.container_object.uid).addEventListener('click', event => {
 
+
+            this.container_object.add_tree(this.examples["nhx2"],{'data_type': 'nhx'})
             this.container_object.add_tree(this.examples["unrooted2"])
             this.container_object.add_tree(this.examples["small2"])
             this.container_object.add_tree(this.examples["stack"],{'data_type': 'json', 'use_branch_lenght': false, 'show_histogram':true, 'collapse_level': 2})

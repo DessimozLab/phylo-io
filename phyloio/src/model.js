@@ -12,6 +12,8 @@ export default class Model {
             'data_type' : 'newick',
             'use_branch_lenght' : true,
             'display_internal_label' : false,
+            'display_internal_label_left_top' : false,
+            'display_internal_label_left_bottom' : false,
             'display_duplication' : false,
             'has_branch_lenght' : true,
             'dessimode': false,
@@ -54,6 +56,7 @@ export default class Model {
         this.input_data = data;
         this.leaves = []
         this.similarity = []; // list of models id already process for topology BCN
+        this.labels = new Set();
 
         if (from_raw_data){
         this.data = this.factory(this.parse());
@@ -248,12 +251,16 @@ export default class Model {
                 n.extended_informations = {}
 
                 Object.entries(n.data_nhx).forEach(([key, value]) => {
+
+                    this.labels.add(key)
+
                     switch(key){
                         case 'Ev':
                             if (value == 'duplication') {
                                 n.duplication = true
                             }
                             n.extended_informations.events = value
+                            n.extended_informations[key] = value
                             break;
 
                         case 'D':
@@ -264,6 +271,7 @@ export default class Model {
                                 n.duplication = false
                             }
                             n.extended_informations.events = value
+                            n.extended_informations[key] = value
                             break;
                         default:
                             n.extended_informations[key] = value

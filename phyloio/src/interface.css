@@ -352,8 +352,11 @@ input:checked + .slider_t:before {
 
 body {font-family: Arial, Helvetica, sans-serif;}
 
+.dropdrop{
+    position: absolute;
+    display: none;
 
-
+}
 
 
 
