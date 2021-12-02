@@ -19,14 +19,13 @@
 
 
 <style>
-
     .nav-pills .nav-link {
         border-radius: 0 !important;
     }
+
 </style>
 
 <body>
-
 
 <main>
 
@@ -37,6 +36,7 @@
             <small style="font-size: xx-small; color: white">PHYLO.IO</small>
 
         </a>
+
         <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
             <li class="nav-item">
                 <a href="#" class="nav-link  py-3 border-bottom border-top" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
@@ -64,38 +64,25 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as image">
+                <a href="#" id="menu_screenshot" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as image">
                     <i class="bi-camera" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
 
-            <!--
-            <li>
-                <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Configure">
-                    <i class="bi-gear" style="font-size: 24px;color: white  "></i>
-                </a>
-            </li>
-
-            -->
         </ul>
 
 
         <div class="dropdown border-top">
-            <a href="/" class="d-flex align-items-center justify-content-center p-3  text-decoration-none dropdown-toggle" style="color: white" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" id='menu_help' class="d-flex align-items-center justify-content-center p-3  text-decoration-none " style="color: white" >
                 <i class="bi-question-circle" style="font-size: 24px; color:white  "></i>
             </a>
-            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser3">
-                <li><a class="dropdown-item" href="#">Help</a></li>
-                <li><a class="dropdown-item" href="#">About</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Contact us</a></li>
-            </ul>
+
         </div>
     </div>
 
 
-    <!-- Modal -->
-    <div class="modal" id="modalload" tabindex="-1">
+    <!-- Modals -->
+    <div class="modal" id="modal_load" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -115,11 +102,86 @@
         </div>
     </div>
 
+    <div class="modal" id="modal_share" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">XXXXXXXX</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    XXXXX
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">XXXX</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal" id="modal_distance" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">XXXXXXXX</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    XXXXX
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">XXXX</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal_screenshot" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Welcome to the Screenshot widget! </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <label for="s_format_r"><strong>Format:</strong> </label>
+
+                    <div class="btn-group" role="group" id="s_format_r" aria-label="Basic radio toggle button group">
+
+                        <input type="radio" class="btn-check" name="format_screen" id="btnradiosvg" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="btnradiosvg">SVG</label>
+
+                        <input type="radio" class="btn-check" name="format_screen" id="btnradiopng" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="btnradiopng">PNG</label>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  id="button_export_screenshot" class="btn btn-primary" data-bs-dismiss="modal">Export as Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal_help" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phylo.io help center</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Lorem ipsum..
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">I'm done!</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>
-
-
 
 
 <script>
@@ -132,20 +194,35 @@
         new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
+    // MODALS
+    document.getElementById("menu_load").onclick = function() {
+        $('#modal_load').modal('show');
+    };
+
+    document.getElementById("menu_share").onclick = function() {
+        $('#modal_share').modal('show');
+    };
+
+    document.getElementById("menu_distance").onclick = function() {
+        $('#modal_distance').modal('show');
+    };
+
+    document.getElementById("menu_screenshot").onclick = function() {
+        $('#modal_screenshot').modal('show');
+    };
+
+    document.getElementById("menu_help").onclick = function() {
+        $('#modal_help').modal('show');
+    };
+
+    // CLICK BINDING
     document.getElementById("menu_compare_mode").onclick = function() {
         compare = !compare
         start_phylo(compare)
     };
+
     document.getElementById("menu_save").onclick = function() {
         phylo.save_session()
-    };
-
-    document.getElementById("menu_share").onclick = async function() {
-
-    };
-
-    document.getElementById("menu_load").onclick = function() {
-        $('#modalload').modal('show');
     };
 
     document.getElementById('load_session_file').onclick = () => {
@@ -206,11 +283,7 @@
 
     }
 
-    document.getElementById("menu_distance").onclick = function() {
-        phylo.compute_distance()
-    };
-
-    document.getElementById("menu_screenshot").onclick = function() {
+    document.getElementById("button_export_screenshot").onclick = function() {
 
 
         if (phylo.settings.compareMode) {
@@ -223,12 +296,26 @@
             var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
         }
 
-        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
+        if (document.getElementById("btnradiosvg").checked){
+            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
+        }
+
+        else if (document.getElementById("btnradiopng").checked){
+            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
+        }
+
+
+
+
+    };
+
+    /*
+    document.getElementById("menu_distance").onclick = function() {
+        phylo.compute_distance()
     };
 
 
-
-
+     */
 
     var start_phylo = function(compare){
 
