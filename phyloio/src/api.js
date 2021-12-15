@@ -9,22 +9,34 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     constructor() {
         this.containers = {}; // {container id -> Container() }
         this.bound_container = []
+        this.session_token = null
+        this.session_url = null
         this.settings = {
+            'share_phylo': 'http://localhost:63342/phylo-io/phyloio/dist/phyloio.html/',
+            'share_post': 'http://localhost:8000/sharing/create/',
+            'share_get': 'http://localhost:8000/sharing/load/?session=',
+            'compute_RF': true,
+            'compute_Euc': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
 
 
     }
 
-    reset(){
+    reset(){ // !!!! KEEP ATTR UPDATED BETWEEN init and reset TODO AUTO THAT
         this.containers = {}; // {container id -> Container() }
         this.bound_container = []
+        this.session_token = null
+        this.session_url = null
         this.settings = {
+            'share_phylo': 'http://localhost:63342/phylo-io/phyloio/dist/phyloio.html',
+            'share_post': 'http://localhost:8000/sharing/create/',
+            'share_get': 'http://localhost:8000/sharing/load/?session=',
+            'compute_RF': true,
+            'compute_Euc': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
     }
-
-
 
     // create adn return a new container and add it the dict using its div id
     create_container(container_id){ // container_id -> str
@@ -62,8 +74,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         new keyboardManager(this);
     }
 
-    save_session(){ // TODO not working since collapse or other info are store in circular data
-
+    get_json_pickle(){
         var pickle = {
             "containers" : [],
             'settings' : this.settings
@@ -89,6 +100,11 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             })
         }
 
+        return JSON.stringify(pickle)
+    }
+
+    save_session(){ // TODO not working since collapse or other info are store in circular data
+
         function download(content, fileName, contentType) {
             var a = document.createElement("a");
             var file = new Blob([content], {type: contentType});
@@ -97,10 +113,9 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             a.click();
         }
 
-        let myString = JSON.stringify(pickle)
+        var myString = this.get_json_pickle()
 
         download(myString, 'session.phyloio', 'text/plain');
-
 
     }
 
@@ -216,7 +231,57 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
     screen_shot(params){screen_shot(params)}
 
+    generate_share_link(){
 
+        var that = this
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function () {
+
+            if (this.readyState != 4) return;
+
+            if (this.status == 201) {
+                var data = JSON.parse(this.responseText);
+
+                if (data.result = 'OK'){
+                    that.session_token = data.session
+                    that.session_url = that.settings.share_phylo + '?session=' + that.session_token
+                }
+            }
+        };
+
+        xhr.open("POST", this.settings.share_post, false);
+
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        var j = this.get_json_pickle()
+
+        xhr.send(j);
+
+}
+
+    get_share_data(session_token, callback=null){
+
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var j = xhr.responseText;
+                callback.apply(this,[j])
+            }
+        }
+
+        xhr.open('GET', this.settings.share_get + session_token, false);
+        xhr.send(null);
+
+
+
+
+
+
+
+    }
 
 
 }
