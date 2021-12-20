@@ -12,7 +12,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.session_token = null
         this.session_url = null
         this.settings = {
-            'share_phylo': 'https://zoo.vital-it.ch/phylo-io/index.html/',
+            'share_phylo': 'https://zoo.vital-it.ch/phylo-io/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'compute_RF': true,
