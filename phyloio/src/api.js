@@ -12,9 +12,9 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.session_token = null
         this.session_url = null
         this.settings = {
-            'share_phylo': 'http://localhost:63342/phylo-io/phyloio/dist/phyloio.html/',
-            'share_post': 'http://localhost:8000/sharing/create/',
-            'share_get': 'http://localhost:8000/sharing/load/?session=',
+            'share_phylo': 'https://zoo.vital-it.ch/phylo-io/index.html/',
+            'share_post': 'https://zoo.vital-it.ch/sharing/create/',
+            'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'compute_RF': true,
             'compute_Euc': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
