@@ -11,6 +11,11 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.bound_container = []
         this.session_token = null
         this.session_url = null
+        this.phylo_embedded = false
+        this.distance = {
+            'RF' : false,
+            "Euc": false,
+        }
         this.settings = {
             'share_phylo': 'https://zoo.vital-it.ch/phylo-io/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
@@ -28,10 +33,16 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.bound_container = []
         this.session_token = null
         this.session_url = null
+        this.phylo_embedded = false
+        this.distance = {
+            'RF' : false,
+            "Euc": false,
+        }
         this.settings = {
             'share_phylo': 'https://zoo.vital-it.ch/phylo-io/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
+            'no_distance_message': true,
             'compute_RF': true,
             'compute_Euc': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
@@ -68,6 +79,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                 container.viewer.render(container.viewer.hierarchy);
                 container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level)
             }
+
+            this.compute_distance()
 
         }
 
@@ -128,41 +141,73 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         if (!mod1.rooted || !mod2.rooted ) {
 
+            this.settings.no_distance_message = "Both trees need to be rooted."
+            this.distance.Euc = false
+            this.distance.RF = false
 
-            var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
-            var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
-
-
-            var intersection = leaves1.filter(value => leaves2.includes(value));
-
-            if (intersection.length > 0){
-
-
-
-                // reroot both of them
-                var hierarchy_mockup_rerooted1 = reroot_hierarchy(mod1.hierarchy_mockup, intersection[0])
-                var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.hierarchy_mockup, intersection[0])
-
-                console.log(hierarchy_mockup_rerooted1)
-
-
-                // build tables
-                var X1 = build_table(hierarchy_mockup_rerooted1)
-                var X2 = build_table(hierarchy_mockup_rerooted2)
-
-
-            }
-            else{
-                console.log("No leaves in common, impossible to compute phylogenetic distance")
-                return
+            if (this.phylo_embedded){
+                this.display_distance_window()
             }
 
+            return
+        }
 
+        var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
+        var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
+        var intersection = leaves1.filter(value => leaves2.includes(value));
+
+        if (intersection.length == 0){
+            this.settings.no_distance_message = "No leaves in common."
+            this.distance.Euc = false
+            this.distance.RF = false
+
+            if (this.phylo_embedded){
+                this.display_distance_window()
+            }
+
+            return
         }
-        else{
-            var X1 = mod1.table
-            var X2 = mod2.table
-        }
+
+            /*
+                        var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
+                        var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
+
+
+                        var intersection = leaves1.filter(value => leaves2.includes(value));
+
+                        if (intersection.length > 0){
+
+
+
+                            // reroot both of them
+                            var hierarchy_mockup_rerooted1 = reroot_hierarchy(mod1.hierarchy_mockup, intersection[0])
+                            var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.hierarchy_mockup, intersection[0])
+
+                            console.log(hierarchy_mockup_rerooted1)
+
+
+                            // build tables
+                            var X1 = build_table(hierarchy_mockup_rerooted1)
+                            var X2 = build_table(hierarchy_mockup_rerooted2)
+
+
+                        }
+                        else{
+                            this.settings.no_distance_message = "No leaves in common, impossible to compute phylogenetic distance"
+                            return
+                        }
+
+
+                    }
+                    else{
+
+                    }
+
+
+             */
+
+        var X1 = mod1.table
+        var X2 = mod2.table
 
         var n_good  = 0
         var euclidian = 0
@@ -218,13 +263,15 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         }
 
-        console.log(X1,X2)
-        console.log(euclidian, (X1.n_edges + X2.n_edges -2*n_good), X1.n_edges, X2.n_edges , n_good)
+        this.settings.no_distance_message = true
+        this.distance.Euc = euclidian
+        this.distance.RF = (X1.n_edges + X2.n_edges -2*n_good)
 
-        alert("RF: " + (X1.n_edges + X2.n_edges -2*n_good).toString() + '\n' + 'Euclidian: ' + euclidian.toString() )
+        console.log(euclidian,(X1.n_edges + X2.n_edges -2*n_good) )
 
-
-
+        if (this.phylo_embedded){
+            this.display_distance_window()
+        }
 
 
     }
@@ -275,6 +322,27 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         xhr.open('GET', this.settings.share_get + session_token, false);
         xhr.send(null);
 
+
+
+
+
+
+
+    }
+
+    display_distance_window(){
+        document.getElementById("distance_window").style.display  = (this.settings.compareMode &&  (this.settings.compute_RF || this.settings.compute_Euc)) ?  'block': 'none';
+
+        console.log(this.settings.no_distance_message)
+
+        if (this.settings.no_distance_message == true){
+            document.getElementById("mydivbody").innerHTML = " <p>Robinson-Foulds: "+ this.distance.RF +"</p>\n" +
+                "            <p>Euclidian: "+ this.distance.Euc +"</p>"
+        }
+        else {
+            console.log('error')
+            document.getElementById("mydivbody").innerHTML = this.settings.no_distance_message
+        }
 
 
 

@@ -4,6 +4,7 @@ import Interface from "./interface";
 const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table } = require('./utils.js')
 
+
 var uid_container = 0 // unique id generator is bound to a single Container()
 
 // Object that bind a div with a d3 Viewer() and one or multiple Model()
@@ -72,6 +73,14 @@ export default class Container {
             if (z) {
                 this.viewer.set_zoom(z.k, z.x, z.y)
             }
+
+            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+                phylo.compute_distance()
+            }
+
+
+
+
         }
 
     }
@@ -120,6 +129,9 @@ export default class Container {
             mod.table = build_table(mod.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
+            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+                phylo.compute_distance()
+            }
             this.viewer.render(this.viewer.hierarchy)
 
         }
@@ -130,6 +142,9 @@ export default class Container {
             mod.hierarchy_mockup = mod.build_hierarchy_mockup()
             mod.table = build_table(mod.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
+            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+                phylo.compute_distance()
+            }
             this.viewer.render(this.viewer.hierarchy)
         }
 

@@ -23,11 +23,52 @@
         border-radius: 0 !important;
     }
 
+    #distance_window {
+        position: absolute;
+        top: 30%;
+        left:50%;
+        z-index: 9;
+        background-color: rgba(235,235,235,0.95);
+        text-align: center;
+
+    }
+
+    #mydivheader {
+        padding: 10px;
+        cursor: move;
+        z-index: 1;
+        border: 1px solid #d3d3d3;
+
+        background-color: rgba(235,235,235,0.95);
+        color: rgb(85,85,85);
+    }
+
+    #mydivbody{
+        padding: 10px;
+        cursor: move;
+        z-index: 1;
+        background-color: rgba(235,235,235,0.95);
+        color: rgb(85,85,85);
+
+    }
+
 </style>
 
 <body>
 
 <main>
+
+
+    <!-- Draggable DIV -->
+    <div id="distance_window">
+        <!-- Include a header DIV with the same name as the draggable DIV, followed by "header" -->
+        <div id="mydivheader">Distance  <button class="btn" id="toggle_distance_window" style="float: right "><i id='icon_distance' class="bi-plus" style="color: white "></i></button> </div>
+        <div id="mydivbody" style="display: none"  >
+
+        </div>
+
+
+    </div>
 
     <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41);
 }">
@@ -216,8 +257,9 @@
         }
     }
 
-    var compare = false;
+    var compare = true;
     const phylo = PhyloIO.init()
+
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
@@ -254,6 +296,7 @@
         compare = !compare
         start_phylo(compare)
         display_distance_menu(compare)
+        phylo.display_distance_window()
     };
 
     document.getElementById("menu_save").onclick = function() {
@@ -307,9 +350,6 @@
                 display_distance_menu(phylo.settings.compareMode)
 
 
-
-
-
             }
             reader.onerror = function (evt) {
                 console.log("error reading file")
@@ -357,10 +397,12 @@
 
     $('#switchRF').on('change.bootstrapSwitch', function(e) {
         phylo.settings.compute_RF = e.target.checked
+        phylo.display_distance_window()
     });
 
     $('#switchEuc').on('change.bootstrapSwitch', function(e) {
         phylo.settings.compute_Euc = e.target.checked
+        phylo.display_distance_window()
     });
 
 
@@ -377,6 +419,7 @@
 
         phylo.reset()
         phylo.settings.compareMode = compare;
+        phylo.phylo_embedded = true
 
         var m = document.getElementsByTagName('main')[0]
 
@@ -395,7 +438,6 @@
 
         else {
 
-
             m.insertAdjacentHTML('beforeend', single_con_html)
 
             const c1 = phylo.create_container("containerS")
@@ -403,12 +445,15 @@
             phylo.start()
         }
 
+        phylo.display_distance_window()
+
         return phylo
 
 
     }
 
     start_phylo(compare)
+
 
     const entries = new URLSearchParams(window.location.search).entries();
 
@@ -453,7 +498,7 @@
 
                 display_distance_menu(phylo.settings.compareMode)
 
-                console.log('DONE')
+
             }
 
             phylo.get_share_data(entry[1], function(d){l(d)})
@@ -462,6 +507,63 @@
         }
 
     }
+
+    // Make the DIV element draggable:
+    dragElement(document.getElementById("distance_window"));
+    document.getElementById("toggle_distance_window").addEventListener('click', event => {
+
+        var d = document.getElementById("mydivbody")
+
+        d.style.display = d.style.display == 'none' ? 'block' : 'none'
+
+        document.getElementById("icon_distance").className = d.style.display == 'none' ? 'bi-plus' : 'bi-dash'
+
+
+
+    });
+
+    function dragElement(elmnt) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        if (document.getElementById(elmnt.id)) {
+            // if present, the header is where you move the DIV from:
+            document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+        } else {
+            // otherwise, move the DIV from anywhere inside the DIV:
+            elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            // set the element's new position:
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+
 
 
 
