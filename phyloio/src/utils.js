@@ -129,6 +129,8 @@ function reverse_order(child,parent){
 
 function reroot_hierarchy(hierarchy, leaf_name){
 
+
+
     let leaf = hierarchy.leaves().find(element => element.data.name == leaf_name );
 
     //  INVERT PATH TO ROOT
@@ -152,7 +154,6 @@ function reroot_hierarchy(hierarchy, leaf_name){
     if (c > -1) {
         ancestors[ancestors.length-2].children.splice(c, 1);
     }
-
     for (var j = 0; j < old_root_children.length; j++) {
 
         let parent = old_root_children[j]
@@ -161,7 +162,6 @@ function reroot_hierarchy(hierarchy, leaf_name){
         child.children.push(parent)
         parent.parent =child
     }
-
 
     return leaf
 }

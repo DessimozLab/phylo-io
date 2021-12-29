@@ -24,6 +24,12 @@ import './fontawesome/css/all.css'
 import API from './api.js'
 
 Object.values = Object.values || function(o){return Object.keys(o).map(function(k){return o[k]})};
+String.prototype.format = function () {
+  var i = 0, args = arguments;
+  return this.replace(/{}/g, function () {
+    return typeof args[i] != 'undefined' ? args[i++] : '';
+  });
+};
 
 const init = function(){
   return new API()

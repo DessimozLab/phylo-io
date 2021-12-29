@@ -129,7 +129,7 @@ export default class Container {
             mod.table = build_table(mod.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+            if (phylo.settings.compareMode && phylo.bound_container.includes(this)  ){
                 phylo.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -219,6 +219,17 @@ export default class Container {
         this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
         this.viewer.centerNode(n[0])
 
+
+    }
+
+    toggle_rooting(){
+        this.models[this.current_model].rooted = !this.models[this.current_model].rooted
+        this.interface = new Interface(this.viewer, this)
+        this.viewer.render(this.viewer.hierarchy)
+
+        if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+            phylo.compute_distance()
+        }
 
     }
 

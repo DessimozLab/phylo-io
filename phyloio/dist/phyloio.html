@@ -24,6 +24,7 @@
     }
 
     #distance_window {
+        border-radius: 8px;
         position: absolute;
         top: 30%;
         left:50%;
@@ -38,12 +39,13 @@
         cursor: move;
         z-index: 1;
         border: 1px solid #d3d3d3;
-
+        border-radius: 8px;
         background-color: rgba(235,235,235,0.95);
         color: rgb(85,85,85);
     }
 
     #mydivbody{
+        border-radius: 8px;
         padding: 10px;
         cursor: move;
         z-index: 1;
@@ -177,13 +179,21 @@
 
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switchRF" checked>
+
                         <label class="form-check-label" for="switchRF">Compute Robinson-Foulds (RF) distance</label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchClade" checked>
+                        <label class="form-check-label" for="switchClade">Compute Clade distance</label>
                     </div>
 
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switchEuc" checked>
                         <label class="form-check-label" for="switchEuc">Compute Euclidian distance</label>
                     </div>
+
+
 
                 </div>
                 <div class="modal-footer">
@@ -397,6 +407,11 @@
 
     $('#switchRF').on('change.bootstrapSwitch', function(e) {
         phylo.settings.compute_RF = e.target.checked
+        phylo.display_distance_window()
+    });
+
+    $('#switchClade').on('change.bootstrapSwitch', function(e) {
+        phylo.settings.compute_Clade = e.target.checked
         phylo.display_distance_window()
     });
 

@@ -15,13 +15,22 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.distance = {
             'RF' : false,
             "Euc": false,
+            "clade": false,
+            "RF_good" : false,
+            "RF_left" : false,
+            "RF_right" : false,
+            "Cl_good" : false,
+            "Cl_left" : false,
+            "Cl_right" : false,
         }
         this.settings = {
-            'share_phylo': 'https://zoo.vital-it.ch/phylo-io/',
+            'share_phylo': 'https://zoo.vital-it.ch/viewer/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
+            'no_distance_message': true,
             'compute_RF': true,
             'compute_Euc': true,
+            'compute_Clade': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
 
@@ -37,14 +46,22 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.distance = {
             'RF' : false,
             "Euc": false,
+            "clade": false,
+            "RF_good" : false,
+            "RF_left" : false,
+            "RF_right" : false,
+            "Cl_good" : false,
+            "Cl_left" : false,
+            "Cl_right" : false,
         }
         this.settings = {
-            'share_phylo': 'https://zoo.vital-it.ch/phylo-io/',
+            'share_phylo': 'https://zoo.vital-it.ch/viewer/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'no_distance_message': true,
             'compute_RF': true,
             'compute_Euc': true,
+            'compute_Clade': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
     }
@@ -134,11 +151,172 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
     compute_distance(){
 
+        this.distance.clade = false
+        this.distance.Cl_good = false
+        this.distance.Cl_left = false
+        this.distance.Cl_right = false
+        this.distance.RF = false
+        this.distance.RF_good = false
+        this.distance.RF_left = false
+        this.distance.RF_right = false
+        this.distance.Euc = false
+
+        if (this.bound_container[0].models.length == 0 || this.bound_container[1].length == 0) {
+            return
+        }
+
         var mod1 = this.bound_container[0].models[this.bound_container[0].current_model]
         var mod2 = this.bound_container[1].models[this.bound_container[1].current_model]
 
-        // HIERARCHY & TABLES
+        // Sanity check common leaves set --> warning message
 
+        var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
+        var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
+        var intersection = leaves1.filter(value => leaves2.includes(value));
+
+        if (intersection.length == 0){
+            this.settings.no_distance_message = "No leaves in common."
+            this.distance.Euc = false
+            this.distance.RF = false
+            this.distance.clade = false
+
+            if (this.phylo_embedded){
+                this.display_distance_window()
+            }
+
+            return
+        }
+
+
+
+        // if (Rooted vs Rooted) --> clade distance
+        if (mod1.rooted && mod2.rooted){
+            var r =  compute_RF_Euc(mod1.table,mod2.table)
+            this.settings.no_distance_message = true
+            this.distance.clade = r.RF
+            this.distance.Cl_good = r.good
+            this.distance.Cl_left = r.L
+            this.distance.Cl_right = r.R
+
+        }
+
+
+
+
+        // Reroot trees --> RF distance
+        //  if (Rooted vs Unrooted) --> warning message
+
+
+
+        // reroot both of them
+        var hierarchy_mockup_rerooted1 = reroot_hierarchy(mod1.build_hierarchy_mockup(), intersection[0])
+        var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.build_hierarchy_mockup(), intersection[0])
+
+
+
+        // build tables
+        var X1 = build_table(hierarchy_mockup_rerooted1)
+        var X2 = build_table(hierarchy_mockup_rerooted2)
+
+
+
+        var r2 =  compute_RF_Euc(mod1.table,mod2.table)
+
+
+
+        if (!mod1.rooted && mod2.rooted) {this.settings.no_distance_message = 'Be careful only the left tree is unrooted'}
+        else if (mod1.rooted && !mod2.rooted) {this.settings.no_distance_message = 'Be careful only the right tree is unrooted'}
+        else {this.settings.no_distance_message = true}
+
+        this.distance.RF = r2.RF
+        this.distance.RF_good = r2.good
+        this.distance.RF_left = r2.L
+        this.distance.RF_right = r2.R
+        this.distance.Euc = r2.E
+
+
+        if (this.phylo_embedded){
+            this.display_distance_window()
+        }
+
+
+
+        function compute_RF_Euc(X1,X2){
+            var X1 = mod1.table
+            var X2 = mod2.table
+
+            var n_good  = 0
+            var euclidian = 0
+
+            for (var i = 0; i < X1.table.length; i++) {
+                var s1 = X1.table[i][0]
+                var e1 = X1.table[i][1]
+                var w1 = Math.abs(e1-s1)
+
+                if (w1 > 0){
+
+                    var species =  X1.I2S.slice(s1,e1+1)
+                    var index = []
+
+                    for (const [name, idx] of Object.entries(X2.S2I)) {
+                        if (species.includes(name)) {index.push(idx)}
+                    }
+
+                    var s2 = Math.min.apply(null,index)
+                    var e2 = Math.max.apply(null,index)
+                    var w2 = Math.abs(e2-s2)
+
+                    if (w1 == w2) {
+
+                        if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
+                            n_good += 1
+                            euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
+                        }
+                        else if (X2.table[s2][0] == s2 && X2.table[s2][1] == e2){
+
+                            n_good += 1
+                            euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[s2][2]) )
+
+                        }
+                        else{
+                            euclidian += parseFloat(X1.table[i][2])
+                            euclidian += parseFloat(X2.table[e2][2])
+
+                        }
+
+                    }
+
+                    else{
+                        euclidian += parseFloat(X1.table[i][2])
+                        euclidian += parseFloat(X2.table[e2][2])
+                    }
+
+
+
+
+                }
+
+            }
+
+            return {
+                'E':euclidian.toFixed(2),
+                'RF': (X1.n_edges + X2.n_edges -2*n_good),
+                'good':n_good,
+                'L':X1.n_edges,
+                'R':X2.n_edges,
+
+            }
+        }
+
+
+
+
+
+
+        /*
+
+
+        // HIERARCHY & TABLES
         if (!mod1.rooted || !mod2.rooted ) {
 
             this.settings.no_distance_message = "Both trees need to be rooted."
@@ -168,7 +346,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             return
         }
 
-            /*
+
                         var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
                         var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
 
@@ -204,7 +382,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                     }
 
 
-             */
+
 
         var X1 = mod1.table
         var X2 = mod2.table
@@ -266,12 +444,15 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         this.settings.no_distance_message = true
         this.distance.Euc = euclidian
         this.distance.RF = (X1.n_edges + X2.n_edges -2*n_good)
+        this.distance.RF_good = n_good
+        this.distance.RF_left = X1.n_edges
+        this.distance.RF_right = X2.n_edges
 
         console.log(euclidian,(X1.n_edges + X2.n_edges -2*n_good) )
 
-        if (this.phylo_embedded){
-            this.display_distance_window()
-        }
+        */
+
+
 
 
     }
@@ -331,23 +512,34 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     display_distance_window(){
-        document.getElementById("distance_window").style.display  = (this.settings.compareMode &&  (this.settings.compute_RF || this.settings.compute_Euc)) ?  'block': 'none';
 
-        console.log(this.settings.no_distance_message)
+        var bool_distance_computed = (this.distance.RF !== false || this.distance.Euc !== false  || this.distance.clade !== false || this.settings.no_distance_message !== true   )
+        document.getElementById("distance_window").style.display  = (this.settings.compareMode && bool_distance_computed ) ?  'block': 'none';
 
-        if (this.settings.no_distance_message == true){
-            document.getElementById("mydivbody").innerHTML = " <p>Robinson-Foulds: "+ this.distance.RF +"</p>\n" +
-                "            <p>Euclidian: "+ this.distance.Euc +"</p>"
+        document.getElementById("mydivbody").innerHTML = " "
+
+        if (this.distance.RF !== false) {
+            document.getElementById("mydivbody").innerHTML += ' <p> RF: {} <br>'.format(this.distance.RF) +
+            ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.RF_good, this.distance.RF_left, Math.round(this.distance.RF_good /this.distance.RF_left*100) ) +
+                ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.RF_good, this.distance.RF_right, Math.round(this.distance.RF_good/this.distance.RF_right*100) ) +
+                ' </p>'
         }
-        else {
-            console.log('error')
-            document.getElementById("mydivbody").innerHTML = this.settings.no_distance_message
+
+        if (this.distance.clade !== false) {
+
+            document.getElementById("mydivbody").innerHTML += ' <p> Clade: {} <br>'.format(this.distance.clade) +
+                ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.RF_good /this.distance.Cl_left*100) ) +
+                ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.RF_good/this.distance.Cl_right*100) ) +
+                ' </p>'
         }
 
+        if (this.distance.Euc !== false) {
+            document.getElementById("mydivbody").innerHTML += ' <p> Euclidian: {} </p>'.format(this.distance.Euc);
+        }
 
-
-
-
+        if (this.settings.no_distance_message != true) {
+            document.getElementById("mydivbody").innerHTML += ' <p> Warning: {} </p>'.format(this.settings.no_distance_message);
+        }
 
     }
 

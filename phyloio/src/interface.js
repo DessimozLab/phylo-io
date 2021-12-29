@@ -336,6 +336,8 @@ export default class Interface {
     // BADGE ROOTING
     add_root_badge() {
 
+
+
         this.bottom_left.append('button')
             .attr('class', ' square_button')
             .style('padding', '4px')
@@ -344,9 +346,10 @@ export default class Interface {
             .style('color', 'white')
             .style('background', 'rgb(136, 136, 136)')
             .append("div")
+            .on('click', d => { return this.container_object.toggle_rooting()})
             .attr("class", "label")
             .append('small')
-            .text(this.viewer.model.rooted ? "Rooted Tree" : "Unrooted Tree")
+            .html(this.viewer.model.rooted ? 'Rooted Tree <i class=\"fas fa-sync-alt\"></i>' : 'Unrooted Tree <i class=\"fas fa-sync-alt\"></i> ')
     }
 
     // ZOOM
