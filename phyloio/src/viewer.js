@@ -46,6 +46,7 @@ export default class Viewer {
         // Settings
         this.settings = {
             'duration' : 500,
+            'max_visible_leaves' : 30,
             'style': {
                 'margin' : {top: 16, right: 16, bottom: 16, left: 96},
 
@@ -876,7 +877,64 @@ export default class Viewer {
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
 
+    get_number_visible_tree_tips_at_depth(depth){
+
+        var tips = 0;
+
+        this.model.traverse(this.model.data, function(node,children){
+
+            if (node.depth > depth) {return}
+
+            if (children == null || node.collapse == true) {
+                tips+=1
+            }
+            } )
+
+        return tips
+
+    }
+
     fit_to_viewer_height(){
+
+
+        // Increment Collapsed Depth until "Visible leaf" > "Max visible leaves"
+        var depth
+        for (depth = 1; depth < this.model.settings.tree.max_depth; depth++) {
+
+            var X = this.get_number_visible_tree_tips_at_depth(depth)
+            console.log(X, 'visible')
+            if (X > this.settings.max_visible_leaves) {
+                break
+            }
+        }
+        this.model.settings.collapse_level = depth
+        this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
+        this.set_data(this.model)
+        this.render(this.hierarchy)
+
+        // Adjust Zoom-y to fit height
+        var vh = this.height
+        var th = this.G.node().getBBox().height
+        var h_scale = vh/th
+
+       // this.svg.transition().call(this.zoom.scaleTo, 0.348)
+        this.svg.transition().call(this.zoom.scaleTo, h_scale)
+
+        // (Bonus: Adjust Zoom-x to fit width)
+
+        var vw = this.width
+        var tw = this.G.node().getBBox().width
+        var x_scale = tw/vw
+
+        console.log(x_scale, vw,tw)
+
+        var ns = this.model.settings.tree.node_horizontal_size
+
+        this.modify_node_size('horizontal', (ns * x_scale) )
+
+        alert('you need to click again if not correctly scale, currently debugged.')
+
+        /*
 
         var get_height = function(that,d,c){
 
@@ -914,6 +972,9 @@ export default class Viewer {
 
         this.build_d3_cluster()
         this.render(this.hierarchy)
+
+
+         */
 
 
     }
