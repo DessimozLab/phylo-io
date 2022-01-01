@@ -519,7 +519,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         document.getElementById("mydivbody").innerHTML = " "
 
         if (this.distance.RF !== false) {
-            document.getElementById("mydivbody").innerHTML += ' <p> RF: {} <br>'.format(this.distance.RF) +
+            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Robinson-Foulds:</strong> {} <br>'.format(this.distance.RF) +
             ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.RF_good, this.distance.RF_left, Math.round(this.distance.RF_good /this.distance.RF_left*100) ) +
                 ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.RF_good, this.distance.RF_right, Math.round(this.distance.RF_good/this.distance.RF_right*100) ) +
                 ' </p>'
@@ -527,18 +527,18 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         if (this.distance.clade !== false) {
 
-            document.getElementById("mydivbody").innerHTML += ' <p> Clade: {} <br>'.format(this.distance.clade) +
+            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Clade:</strong> {} <br>'.format(this.distance.clade) +
                 ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.RF_good /this.distance.Cl_left*100) ) +
                 ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.RF_good/this.distance.Cl_right*100) ) +
                 ' </p>'
         }
 
         if (this.distance.Euc !== false) {
-            document.getElementById("mydivbody").innerHTML += ' <p> Euclidian: {} </p>'.format(this.distance.Euc);
+            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Euclidian:</strong> {} </p>'.format(this.distance.Euc);
         }
 
         if (this.settings.no_distance_message != true) {
-            document.getElementById("mydivbody").innerHTML += ' <p> Warning: {} </p>'.format(this.settings.no_distance_message);
+            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Warning:</strong> {} </p>'.format(this.settings.no_distance_message);
         }
 
     }

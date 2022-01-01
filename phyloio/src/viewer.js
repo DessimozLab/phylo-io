@@ -297,7 +297,7 @@ export default class Viewer {
             })
             .on('click', (d, i) =>  {
 
-                if (i.parent != null) {this.click_nodes(d,i)}
+                if (i.parent != null && (i.children || i._children)) {this.click_nodes(d,i)}
 
             })
 
@@ -685,7 +685,7 @@ export default class Viewer {
                 action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
             },
             {
-                title: 'swap subtrees' ,
+                title: 'Swap subtrees' ,
                 action: () =>  {this.container_object.trigger_("swap", node.data, node)}
             },
             {
@@ -745,12 +745,12 @@ export default class Viewer {
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
 
         var fs = 20/k // scaled font size
-        var vps = 8/k // scaled vertical margin
+        var vps = 12/k // scaled vertical margin
         var hps = 10/k // scaled horizontal margin
         var rs = 8/k // scaled radius size
 
         var r = m.append('rect')
-            .attr('height', menu.length * (fs+vps))
+            .attr('height', menu.length * (fs+vps) + vps)
             .style('fill', "#eee")
             .attr('rx', rs)
             .attr('ry', rs)
@@ -759,10 +759,9 @@ export default class Viewer {
             .data(menu)
             .enter()
             .append('g')
-
             gg.attr('cursor', 'pointer')
             .attr('transform', function(d, i) {
-                return 'translate(' + hps + ',' + ((i + 1) * fs+vps) + ')';
+                return 'translate(' + hps + ',' + ((i + 1) * (fs+vps)) + ')';
             })
             .on('mouseover', function(d){
                 d3.select(this).style('fill', 'steelblue');
@@ -773,6 +772,8 @@ export default class Viewer {
             .on('click', function(d,i){
                 i.action(d);
             })
+
+        var close = null
 
         var t = gg.append('text')
             .attr('cursor', 'pointer')
@@ -787,13 +788,26 @@ export default class Viewer {
             })
 
         var w = 0;
+        var w_close = 0
 
         t.each(function(d){
             var l = this.getComputedTextLength();
             if (l > w) w = l;
+
+            if (d.title == "Close"){
+                w_close = l;
+            }
+
         })
 
-        r.attr('width', w + 2*hps);
+        var w_menu = w + 2*hps
+        r.attr('width', w_menu );
+
+        t.each(function(d){
+            if (d.title == "Close"){
+                d3.select(this).attr('transform', 'translate(' + (w - w_close)/2  + ',' + 0  + ')');
+            }
+        })
 
         m.attr('transform', 'translate(' + x  + ',' + y  + ')');
         m.style('display', 'block');
@@ -1088,10 +1102,15 @@ export default class Viewer {
         this.render(this.hierarchy)
     }
 
-    update_collapse_level(val){
+    update_collapse_level(val, refresh_interface){
+
+        var refresh_interface = (typeof refresh_interface !== 'undefined') ? refresh_interface : true;
+
+
+
         this.model.settings.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
-        this.set_data(this.model)
+        this.set_data(this.model, refresh_interface)
         this.render(this.hierarchy)
 
     }

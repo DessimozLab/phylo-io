@@ -221,9 +221,15 @@ export default class Interface {
                 elem.parentNode.removeChild(elem);
             });
             container_object.viewer.set_data(container_object.models[container_object.current_model]);
+            container_object.compute_topology_and_render_bounded_viewer()
             container_object.viewer.render(container_object.viewer.hierarchy);
             container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
+
+            if (phylo.settings.compareMode && phylo.bound_container.includes(container_object)){
+
+                phylo.compute_distance()
+            }
         }
 
 
@@ -898,7 +904,7 @@ export default class Interface {
         document.getElementById("slider_collapse_level_" + this.container_object.uid).onchange = (e) => {
 
 
-            this.viewer.update_collapse_level(e.target.value)
+            this.viewer.update_collapse_level(e.target.value, false)
             var lab = e.target.value == 0 ? "Autocollapse: Off" : "Autocollapse: " + this.viewer.model.settings.collapse_level;
 
             document.getElementById("slider_collapse_level_" + this.container_object.uid)
