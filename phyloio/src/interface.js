@@ -39,6 +39,7 @@ export default class Interface {
         this.remove_scale()
         this.container_d3.selectAll(".menu_settings").remove()
         this.container_d3.selectAll(".empty_message").remove()
+        this.container_d3.select('#histogram-legend').remove();
 
 
         if (empty_mode){

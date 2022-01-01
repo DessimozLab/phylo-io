@@ -74,7 +74,7 @@
 
     <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41);
 }">
-        <a href="#" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
+        <a href="https://zoo.vital-it.ch/viewer/" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
             <i class="bi-triangle" style="font-size: 24px;color: white  "></i>
             <small style="font-size: xx-small; color: white">PHYLO.IO</small>
 
@@ -157,7 +157,9 @@
                     <div class="d-grid gap-2 col-8 mx-auto">
                         <button class="btn btn-success" type="button" id="btn_share_link">Generate link</button>
                         <br>
-                        <p class="text-center" id="share_link"> </p>
+                        <a href='#' class="text-center" id="share_link"> </a>
+                        <button style="display: none" onclick="copy_clipboard('share_link', 'href')" class="btn btn-outline-dark " type="button" id="btn_share_copy">Copy Url to clipboard</button>
+
                     </div>
                     <br>
                 </div>
@@ -239,7 +241,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Lorem ipsum..
+                    Help section is under construction
                 </div>
                 <div class="modal-footer">
                     <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">I'm done!</button>
@@ -249,6 +251,24 @@
     </div>
 
 </main>
+
+
+<script>
+
+   var copy_clipboard = function(div_id, type){
+
+       var copyText = document.getElementById(div_id);
+
+       if (type == 'href'){
+           navigator.clipboard.writeText(copyText.href);
+       }
+       else {
+           navigator.clipboard.writeText(copyText.innerText);
+       }
+
+   }
+
+</script>
 
 
 <script>
@@ -400,6 +420,9 @@
         document.getElementById('share_link').style.width = document.getElementById('btn_share_link').offsetWidth + 'px'
         document.getElementById('share_link').style.wordWrap = 'break-word';
         document.getElementById("share_link").innerText = phylo.session_url
+        document.getElementById("share_link").href = phylo.session_url
+        document.getElementById("btn_share_copy").style.display = 'block'
+
 
     };
 
