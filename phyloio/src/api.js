@@ -105,6 +105,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     get_json_pickle(){
+
         var pickle = {
             "containers" : [],
             'settings' : this.settings
@@ -119,7 +120,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             let minput = []
 
             for (var j = 0; j < ms.length; j++) {
-
 
                 minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity()})
             }
@@ -542,6 +542,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         }
 
     }
+
+
 
 
 }

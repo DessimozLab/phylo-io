@@ -328,9 +328,28 @@
     // CLICK BINDING
     document.getElementById("menu_compare_mode").onclick = function() {
         compare = !compare
-        start_phylo(compare)
-        display_distance_menu(compare)
-        phylo.display_distance_window()
+
+
+        var data = JSON.parse(phylo.get_json_pickle())
+        data.settings.compareMode = compare
+
+        console.log(data)
+
+        if (compare){
+            data.containers.push({'models' : [],
+                'settings'  : null})
+
+
+        }
+        else {
+            var new_cont = data.containers[0]
+            new_cont.models =  new_cont.models.concat(data.containers[1].models)
+            data.containers = [new_cont]
+        }
+
+
+        start_with_json(data)
+
     };
 
     document.getElementById("menu_save").onclick = function() {
@@ -348,6 +367,10 @@
             reader.onload =  (evt) => {
 
                 var pickle = JSON.parse(evt.target.result)
+
+                start_with_json(pickle)
+
+                /*
 
                 for(var key in pickle.settings) {
                     var value = pickle.settings[key];
@@ -383,6 +406,8 @@
 
                 display_distance_menu(phylo.settings.compareMode)
 
+
+                 */
 
             }
             reader.onerror = function (evt) {
@@ -506,6 +531,10 @@
 
                 pickle = JSON.parse(pickle)
 
+                start_with_json(pickle)
+
+                /*
+
                 for(var key in pickle.settings) {
                     var value = pickle.settings[key];
                     phylo.settings[key] = value;
@@ -539,6 +568,8 @@
                 phylo.start(recompute=true)
 
                 display_distance_menu(phylo.settings.compareMode)
+
+                 */
 
 
             }
@@ -603,6 +634,48 @@
             document.onmouseup = null;
             document.onmousemove = null;
         }
+    }
+
+
+    function start_with_json(json){
+
+        for(var key in json.settings) {
+            var value = json.settings[key];
+            phylo.settings[key] = value;
+        }
+
+        start_phylo(phylo.settings.compareMode)
+
+
+        let cs = Object.values(json.containers)
+        let csp = Object.values(phylo.containers)
+
+        for (var i = 0; i < cs.length; i++) {
+
+            var ms = cs[i].models
+
+            if (ms.length > 0){
+
+                for (var j = 0; j < ms.length; j++) {
+                    csp[i].add_tree(ms[j].data, ms[j].settings, false)
+                    csp[i].models[csp[i].models.length-1].add_circularity_back()
+                }
+
+                container_object = csp[i]
+
+                container_object.viewer.set_data(container_object.models[container_object.current_model]);
+                container_object.viewer.render(container_object.viewer.hierarchy);
+                container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
+
+
+            }
+
+        }
+
+        phylo.start(recompute=true)
+
+        display_distance_menu(phylo.settings.compareMode)
+
     }
 
 

@@ -20,7 +20,7 @@ export default class Viewer {
         this.container_object = container // related Container()
         this.uid = uid_viewer ++; // unique viewer() id
         this.data; // current model.data used
-        this.model; // current model
+        this.model = false; // current model
 
         // D3
         this.d3 = d3 // d3.js instance that contain information about zoom, etc..
@@ -616,7 +616,7 @@ export default class Viewer {
             this.interface.update_scale_value(transform.k);
         }
 
-        if (typeof this.G != "undefined" ){
+        if (typeof this.G != "undefined" && this.model != false ){
 
             var on_screen_text_size = this.compute_node_font_size()
             var subsampling_index = -1
