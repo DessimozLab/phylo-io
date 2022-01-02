@@ -233,6 +233,11 @@ export default class Viewer {
         this.render_edges(source)
 
 
+        if (this.model.first_time_render) {
+            this.model.first_time_render = false
+            this.fit_to_viewer_height()
+
+        }
     }
 
     render_nodes(source){
@@ -905,7 +910,11 @@ export default class Viewer {
         );
 
 
-        return max_x - min_x
+        return {
+            'h':max_x - min_x,
+            'max_x':max_x ,
+            'min_x': min_x,
+        }
 
     }
 
@@ -944,20 +953,26 @@ export default class Viewer {
         this.set_data(this.model)
         this.render(this.hierarchy)
 
-
-        var estimated_height = this.get_height_hierarchy()
+        var r = this.get_height_hierarchy()
+        var estimated_height = r.h
 
         // Adjust Zoom-y to fit height
         var vh = this.height - 80 // MARGIN
         var th = estimated_height // this.G.node().getBBox().height
-
         var h_scale = vh/th
 
 
-       // this.svg.transition().call(this.zoom.scaleTo, 0.348)
-        this.svg.transition().call(this.zoom.scaleTo, h_scale)
 
-        // (Bonus: Adjust Zoom-x to fit width)
+        var x_tr = - this.hierarchy.x + 40
+        var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
+
+
+        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(x_tr , y_tr).scale(h_scale) )
+
+
+
+
+        /*
 
         var vw = this.width
         var tw = this.G.node().getBBox().width
@@ -968,6 +983,9 @@ export default class Viewer {
         var ns = this.model.settings.tree.node_horizontal_size
 
         this.modify_node_size('horizontal', (ns * x_scale) )
+
+
+         */
 
 
         //alert('BUG: You need to click again if its not correctly scaled, currently debugging that.')
