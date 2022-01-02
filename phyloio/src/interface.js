@@ -712,8 +712,6 @@ export default class Interface {
         var acc = document.getElementById("accordion_branch"+cid)
 
 
-        console.log(acc, acc.classList.contains('active'))
-
         if (acc.classList.contains('active')) {
 
             var top_off = acc.nextSibling.getBoundingClientRect().top + 14;
@@ -849,6 +847,7 @@ export default class Interface {
             acc[i].addEventListener("click", function(e) {
 
                 this.classList.toggle("active");
+
                 var panel = this.nextElementSibling;
                 if (panel.style.maxHeight) {
                     panel.style.maxHeight = null;
@@ -856,8 +855,20 @@ export default class Interface {
                     panel.style.maxHeight = panel.scrollHeight + "px";
                 }
 
-                setTimeout(that.toggle_select_node_face(that.container_object.uid), 500)
+                var checkExist = setInterval(function() {
 
+                    var obs_h = panel.style.maxHeight ? panel.getBoundingClientRect().height : 0
+                    var exp_h = panel.style.maxHeight ? panel.scrollHeight : 0
+
+                    if (obs_h == exp_h ) {
+                        that.toggle_select_node_face(that.container_object.uid)
+                        clearInterval(checkExist);
+                    }
+
+                    else {
+                        console.log(obs_h, exp_h )
+                    }
+                }, 200);
 
             });
 
