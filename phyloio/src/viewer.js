@@ -891,6 +891,24 @@ export default class Viewer {
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
 
+    get_height_hierarchy(){
+
+
+        var max_x = 0;
+        var min_x = 9999999999;
+
+        this.hierarchy.each(d => {
+
+            if(d.x > max_x){max_x= d.x}
+            if(d.x < min_x){min_x= d.x}
+        }
+        );
+
+
+        return max_x - min_x
+
+    }
+
     get_number_visible_tree_tips_at_depth(depth){
 
         var tips = 0;
@@ -912,7 +930,7 @@ export default class Viewer {
 
 
         // Increment Collapsed Depth until "Visible leaf" > "Max visible leaves"
-        var depth
+        var depth;
         for (depth = 1; depth < this.model.settings.tree.max_depth; depth++) {
 
             var X = this.get_number_visible_tree_tips_at_depth(depth)
@@ -926,10 +944,15 @@ export default class Viewer {
         this.set_data(this.model)
         this.render(this.hierarchy)
 
+
+        var estimated_height = this.get_height_hierarchy()
+
         // Adjust Zoom-y to fit height
-        var vh = this.height
-        var th = this.G.node().getBBox().height
+        var vh = this.height - 80 // MARGIN
+        var th = estimated_height // this.G.node().getBBox().height
+
         var h_scale = vh/th
+
 
        // this.svg.transition().call(this.zoom.scaleTo, 0.348)
         this.svg.transition().call(this.zoom.scaleTo, h_scale)
@@ -946,7 +969,8 @@ export default class Viewer {
 
         this.modify_node_size('horizontal', (ns * x_scale) )
 
-        alert('you need to click again if not correctly scale, currently debugged.')
+
+        //alert('BUG: You need to click again if its not correctly scaled, currently debugging that.')
 
         /*
 
