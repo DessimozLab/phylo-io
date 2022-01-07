@@ -68,8 +68,6 @@ export default class Interface {
         this.add_fit_height()
         this.add_zoom()
 
-
-
         // TOP LEFT
         this.add_data_icon()
 
@@ -509,6 +507,7 @@ export default class Interface {
                     b.addEventListener("click", function(e) {
                         /*insert the value for the autocomplete text field:*/
                         inp.value = this.getElementsByTagName("input")[0].value;
+                        document.getElementById('search_button_id').focus();
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
                         closeAllLists();
@@ -572,6 +571,8 @@ export default class Interface {
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
         });
+
+
     }
 
     add_search(){
@@ -583,8 +584,17 @@ export default class Interface {
             .attr('class', ' square_button search_input')
             .attr('id', "searchinp" + this.viewer.uid )
 
+        document.getElementById("searchinp" + this.viewer.uid).addEventListener("keyup", ({key}) => {
+            if (key === "Enter") {
+                this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+            }
+        })
+
         this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.suggestions)
+
+
         this.tr_buttons.append('button')
+            .attr('id', 'search_button_id')
             .attr('class', ' square_button search_button')
             .style('margin', '2px')
             .on("click", d => {
@@ -773,6 +783,9 @@ export default class Interface {
         this.menu_tree_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Branch & Labels")
         this.menu_tree_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
+        this.menu_search_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Search")
+        this.menu_search_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
         this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Bar Graph")
         this.menu_stack_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
@@ -834,9 +847,6 @@ export default class Interface {
 
 
         }
-
-        //this.menu_advanced_b = this.menu_settings.append('button').attr('class', 'accordion').text("Advanced")
-        //this.menu_advanced_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         // ADD LOGIC TO ACCORDION todo add it general or to this div only
         var acc = document.getElementById(this.container_object.div_id).getElementsByClassName("accordion");
@@ -922,6 +932,10 @@ export default class Interface {
                 .parentElement.previousSibling.innerHTML = lab;
 
             }
+
+
+        // ADD TOGGLE MULTIPLE SEARCH
+        this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
     }
 

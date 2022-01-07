@@ -121,7 +121,6 @@ export default class Viewer {
 
         this.build_d3_data();
 
-
         if (refresh_interface){
             this.interface = new Interface(this, this.container_object)
         }
@@ -238,6 +237,7 @@ export default class Viewer {
             this.fit_to_viewer_height()
 
         }
+
     }
 
     render_nodes(source){
@@ -461,6 +461,11 @@ export default class Viewer {
             d.y0 = d.y;
         });
 
+
+
+
+
+
     }
 
     render_edges(source){
@@ -489,7 +494,10 @@ export default class Viewer {
             .duration(this.settings.duration)
             .style('stroke', (d) => {
                 //console.log(d.data.elementS)
-                return d.data.elementS ? this.colorScale(d.data.elementS) : "#555"})
+                var c =  d.data.search_path ? '#FF0000' : d.data.elementS ? this.colorScale(d.data.elementS) : "#555";
+                return c
+            })
+
             .style('stroke-width',  real_edges_width)
             .attr('d', d => this.square_edges(d, d.parent))
 
@@ -842,7 +850,6 @@ export default class Viewer {
         for (depth = 1; depth < this.model.settings.tree.max_depth; depth++) {
 
             var X = this.get_number_visible_tree_tips_at_depth(depth)
-            console.log(X, 'visible')
             if (X > this.settings.max_visible_leaves) {
                 break
             }
@@ -980,6 +987,10 @@ export default class Viewer {
 
     }
 
+    toggle_multiple_search(){
+        this.model.settings.multiple_search = !this.model.settings.multiple_search
+    }
+
     // stack
 
     toggle_show_stack_number(){
@@ -1109,8 +1120,6 @@ export default class Viewer {
 
         //this.svg.transition().call(this.zoom.translateTo, source.y0,source.x0)
         this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(this.width/2-source.y0,this.height/2-source.x0).scale(1) )
-
-
 
     }
 
@@ -1583,6 +1592,10 @@ export default class Viewer {
                 return d.parent == null ? -13 : y_offset + 13;
             })
             .attr("y", 0)
+            .attr('fill', (d) => {
+                let c =  d.data.search_node ? "#FF0000"  : "#212529";
+                return c
+            })
             .style('font-size', d => {
                 return d.subsampled || d.children ? on_screen_text_size : '0px';
             })

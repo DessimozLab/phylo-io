@@ -19,6 +19,10 @@ export default class keyboardManager {
         document.onkeypress = function (e) {
              e = e || window.event;
 
+            const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+
+            if (formElements.includes(e.target.tagName)) {return}
+
             var shortcuts = {
                 // LEFT
                 "r": function(){self_km.left.viewer.centerNode(self_km.left.viewer.get_random_node())},

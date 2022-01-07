@@ -177,46 +177,61 @@ export default class Container {
 
     zoom_to_node(name){
 
-        function searchTree(obj,search,path){
-            if(obj.data.name === search){ //if search is found return, add the object to the path and return it
 
-                path.push(obj);
-                return path;
-            }
-            else if(obj.children || obj._children){ //if children are collapsed d3 object will have them instantiated as _children
-                var children = (obj.children) ? obj.children : obj._children;
-                for(var i=0;i<children.length;i++){
-                    path.push(obj);// we assume this path is the right one
-                    var found = searchTree(children[i],search,path);
-                    if(found){// we were right, this should return the bubbled-up path from the first if statement
-                        return found;
-                    }
-                    else{//we were wrong, remove this parent from the path and continue iterating
-                        path.pop();
-                    }
-                }
-            }
-            else{//not the right object, return false so it will continue to iterate in the loop
-                return false;
-            }
+        if(this.viewer.model.settings.multiple_search != true) {
+
+            this.viewer.hierarchy.each(function (d) {
+                d.data.search_path = false;
+                d.data.search_node = false;
+            })
         }
 
 
-        var p = searchTree(this.viewer.hierarchy, name, [])
+       function searchTree(obj,search,path){
+           if(obj.data.name === search){ //if search is found return, add the object to the path and return it
+
+               path.push(obj);
+               return path;
+           }
+           else if(obj.children || obj._children){ //if children are collapsed d3 object will have them instantiated as _children
+               var children = (obj.children) ? obj.children : obj._children;
+               for(var i=0;i<children.length;i++){
+                   path.push(obj);// we assume this path is the right one
+                   var found = searchTree(children[i],search,path);
+                   if(found){// we were right, this should return the bubbled-up path from the first if statement
+                       return found;
+                   }
+                   else{//we were wrong, remove this parent from the path and continue iterating
+                       path.pop();
+                   }
+               }
+           }
+           else{//not the right object, return false so it will continue to iterate in the loop
+               return false;
+           }
+       }
 
 
-        for(var i=1;i<p.length;i++){ // 1 is for skipping the root
-
-            this.models[this.current_model].collapse(p[i].data, false)
-            this.viewer.apply_collapse_from_data_to_d3(p[i].data, p[i])
+       var p = searchTree(this.viewer.hierarchy, name, [])
 
 
-        }
 
-        this.viewer.set_data(this.models[this.current_model])
-        this.viewer.render(this.viewer.hierarchy)
-        var n= []
-        this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
+       for(var i=1;i<p.length;i++){ // 1 is for skipping the root
+
+           this.models[this.current_model].collapse(p[i].data, false)
+           this.viewer.apply_collapse_from_data_to_d3(p[i].data, p[i])
+           p[i].data.search_path = true;
+
+
+       }
+
+       p[p.length-1].data.search_node = true;
+
+       this.viewer.set_data(this.models[this.current_model])
+       this.viewer.render(this.viewer.hierarchy)
+       var n= []
+       this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
+
         this.viewer.centerNode(n[0])
 
 

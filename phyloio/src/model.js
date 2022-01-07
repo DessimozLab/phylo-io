@@ -18,6 +18,7 @@ export default class Model {
             'display_duplication' : false,
             'has_branch_lenght' : true,
             'dessimode': false,
+            'multiple_search':false,
             'show_histogram' : false,
             'has_histogram_data' : false,
             'style': {},
