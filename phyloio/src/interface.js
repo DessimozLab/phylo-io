@@ -877,7 +877,7 @@ export default class Interface {
 
         // ADD TOGGLE BRANCH LENGTH
         if(this.viewer.model.settings.has_branch_lenght){
-            this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch lenght",   this.viewer.toggle_use_length.bind(this.viewer))
+            this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch length",   this.viewer.toggle_use_length.bind(this.viewer))
         }
 
 
