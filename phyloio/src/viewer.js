@@ -108,14 +108,6 @@ export default class Viewer {
         this.data = model.data;
         this.model = model;
 
-        if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) { // todo size according to stack size
-            this.model.settings.tree.node_vertical_size = 30;
-            this.model.settings.tree.node_horizontal_size = 150;
-        }
-        else {
-            this.model.settings.tree.node_vertical_size = 30;
-            this.model.settings.tree.node_horizontal_size = 40;
-        }
 
         this.d3_cluster.nodeSize([this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
 
@@ -875,6 +867,29 @@ export default class Viewer {
 
         this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(x_tr , y_tr).scale(h_scale) )
 
+
+        var w = 0
+
+
+        this.hierarchy.leaves().forEach((e) => {
+
+            let posy = e.y
+
+            if (e.data.collapse){
+                posy += e.data.triangle_width
+            }
+
+            w = posy > w ? posy : w
+        })
+
+        //console.log(w*h_scale, this.width - 80, (this.width - 80)/(w*h_scale) )
+
+        var ns = this.model.settings.tree.node_horizontal_size
+        var w_scale = (this.width - 80)/(w*h_scale)
+
+        this.modify_node_size('horizontal', (ns * w_scale) - ns )
+
+        console.log(this.model.settings.tree.node_horizontal_size)
 
 
 
