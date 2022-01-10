@@ -1079,6 +1079,16 @@ export default class Viewer {
         this.build_d3_cluster()
         this.render(this.hierarchy)
 
+        if (refresh_interface){
+            this.interface = new Interface(this, this.container_object)
+        }
+        else{
+            var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+            this.interface.update_scale_value(k);
+        }
+
+
+
     }
 
     update_font_size(val){
