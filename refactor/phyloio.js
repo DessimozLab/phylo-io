@@ -104,7 +104,7 @@ function Container(container_id){
             this.viewer.set_data(this.models[this.current_model])
             this.viewer.render(this.viewer.hierarchy)
 
-            var z = this.models[this.current_model].data.zoom
+            var z = this.models[this.current_model].zoom
 
             if (z) {this.viewer.set_zoom(z.k,z.x,z.y)}
         }
@@ -119,7 +119,7 @@ function Container(container_id){
             this.viewer.render(this.viewer.hierarchy);
 
 
-            var z = this.models[this.current_model].data.zoom
+            var z = this.models[this.current_model].zoom
 
             if (z) {this.viewer.set_zoom(z.k,z.x,z.y)}
         }
@@ -645,7 +645,7 @@ function Model(data, params){
     this.reroot = function(data){
 
         // extract meta data (zoom)
-        var meta = this.data.zoom;
+        var meta = this.zoom;
 
         // create new root r
         var root = {"children": [], "name": "", "branch_length": 0, "new": true}
@@ -725,7 +725,7 @@ function Model(data, params){
     }
     this.store_zoomTransform = function(zoom){
 
-        this.data.zoom = {
+        this.zoom = {
             "k":zoom.k,
             "x":zoom.x,
             "y":zoom.y,

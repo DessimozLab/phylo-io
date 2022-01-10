@@ -64,9 +64,11 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'compute_Clade': true,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
+
+
     }
 
-    // create adn return a new container and add it the dict using its div id
+    // create and return a new container and add it the dict using its div id
     create_container(container_id){ // container_id -> str
         let c = new Container(container_id);
         this.containers[container_id] = c;
@@ -121,7 +123,9 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             for (var j = 0; j < ms.length; j++) {
 
-                minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity()})
+                ms[j].store_zoomTransform(cs[i].viewer.d3.zoomTransform(cs[i].viewer.svg.node()))
+
+                minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity(), 'zoom': ms[j].zoom })
             }
 
             pickle.containers.push({

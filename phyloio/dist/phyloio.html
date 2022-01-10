@@ -595,6 +595,19 @@
 
     });
 
+
+
+    var doit;
+    window.onresize = function(){
+        clearTimeout(doit);
+        doit = setTimeout(refresh, 300);
+    };
+
+    //window.addEventListener('resize', refresh);
+
+
+    JSON.parse(phylo.get_json_pickle())
+
     function dragElement(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         if (document.getElementById(elmnt.id)) {
@@ -658,7 +671,10 @@
 
                 for (var j = 0; j < ms.length; j++) {
                     csp[i].add_tree(ms[j].data, ms[j].settings, false)
-                    csp[i].models[csp[i].models.length-1].add_circularity_back()
+                    var m = csp[i].models[csp[i].models.length-1]
+                    m.zoom = ms[j].zoom
+
+                    m.add_circularity_back()
                 }
 
                 container_object = csp[i]
@@ -675,6 +691,18 @@
         phylo.start(recompute=true)
 
         display_distance_menu(phylo.settings.compareMode)
+
+    }
+
+    function refresh(){
+
+
+
+        console.log('R')
+
+        var data = JSON.parse(phylo.get_json_pickle())
+        start_with_json(data)
+
 
     }
 

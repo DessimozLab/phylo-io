@@ -335,7 +335,7 @@ export default class Interface {
             .attr("class", "label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-arrows-alt-v ')
+            .attr('class', ' fas fa-arrows-alt ')
     }
 
     // BADGE ROOTING

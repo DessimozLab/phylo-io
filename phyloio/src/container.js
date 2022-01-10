@@ -69,7 +69,7 @@ export default class Container {
             this.viewer.render(this.viewer.hierarchy)
 
             // apply if any stored zoom information
-            var z = m.data.zoom
+            var z = m.zoom
             if (z) {
                 this.viewer.set_zoom(z.k, z.x, z.y)
             }

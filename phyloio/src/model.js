@@ -351,7 +351,7 @@ export default class Model {
     reroot(data){
 
         // extract meta data (zoom)
-        var meta = this.data.zoom;
+        var meta = this.zoom;
 
         // create new root r
         var root = {"children": [], "name": "", "branch_length": 0}
@@ -474,7 +474,7 @@ export default class Model {
 
     store_zoomTransform(zoom){
 
-        this.data.zoom = {
+        this.zoom = {
             "k":zoom.k,
             "x":zoom.x,
             "y":zoom.y,

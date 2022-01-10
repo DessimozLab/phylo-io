@@ -889,7 +889,6 @@ export default class Viewer {
 
         this.modify_node_size('horizontal', (ns * w_scale) - ns )
 
-        console.log(this.model.settings.tree.node_horizontal_size)
 
 
 

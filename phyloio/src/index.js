@@ -32,6 +32,7 @@ String.prototype.format = function () {
 };
 
 const init = function(){
+
   return new API()
 }
 
