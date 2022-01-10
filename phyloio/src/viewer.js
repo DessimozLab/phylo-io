@@ -1073,10 +1073,10 @@ export default class Viewer {
         var refresh_interface = (typeof refresh_interface !== 'undefined') ? refresh_interface : true;
 
 
-
         this.model.settings.collapse_level = val
         this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
-        this.set_data(this.model, refresh_interface)
+        //this.set_data(this.model, refresh_interface)
+        this.build_d3_cluster()
         this.render(this.hierarchy)
 
     }

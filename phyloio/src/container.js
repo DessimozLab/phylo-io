@@ -153,25 +153,38 @@ export default class Container {
     // collapse all node from depth todo create collapse/colllapse all function
     collapse_depth(depth, tree){
 
-
-
         var f
+
+        var model =  this.models[this.current_model];
+        var viewer = this.viewer;
 
 
         if (depth == 0 ){
 
-
             f = function(n,c) {
-                n.collapse = false
+                model.collapse(n.data, true)
+                viewer.apply_collapse_from_data_to_d3(n.data, n)
             }
         }
-        else(
+        else {
             f = function(n,c){
-                if (n.depth >= depth  ){n.collapse = true}
-                else{n.collapse = false}
-            })
 
-        this.models[this.current_model].traverse(tree, f )
+                if (n.depth >= depth  ){
+
+                    model.collapse(n.data, true)
+
+                }
+                else{
+                    model.collapse(n.data, false)
+                }
+
+                viewer.apply_collapse_from_data_to_d3(n.data, n)
+            }
+        }
+
+        this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy, f )
+
+
 
     }
 

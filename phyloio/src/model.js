@@ -209,6 +209,36 @@ export default class Model {
 
     }
 
+    traverse_hierarchy(o,func_pre, func_post) {
+
+        var children = o["children"] ? o["children"] : o["_children"]
+
+        if (func_pre){
+            func_pre.apply(this,[o,children])
+        }
+
+        if(children ){
+
+            for (var c in children) {
+
+                var child = children[c]
+
+                child = this.traverse(child, func_pre, func_post)
+
+                if (func_post) {
+                    func_post.apply(this,[child,o])
+                }
+
+
+            }
+
+
+        }
+
+        return o
+
+    }
+
     set_parent(node,parent){
         node.parent = parent
     }
