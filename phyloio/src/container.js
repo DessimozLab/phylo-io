@@ -42,6 +42,16 @@ export default class Container {
         if (rendering){
             this.viewer.render(this.viewer.hierarchy);
             this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
+
+            var z = this.models[this.current_model].zoom
+
+            if (z) {
+                console.log('start zoom', z)
+                this.viewer.set_zoom(z.k, z.x, z.y)
+            }
+            else{
+                console.log(z)
+            }
         }
 
         //this.viewer.zoom_by(0.4) #STACK

@@ -678,7 +678,7 @@
                 }
 
                 container_object = csp[i]
-
+                container_object.current_model = cs[i].current_model
                 container_object.viewer.set_data(container_object.models[container_object.current_model]);
                 container_object.viewer.render(container_object.viewer.hierarchy);
                 container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
@@ -696,9 +696,6 @@
 
     function refresh(){
 
-
-
-        console.log('R')
 
         var data = JSON.parse(phylo.get_json_pickle())
         start_with_json(data)

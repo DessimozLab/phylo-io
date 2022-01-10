@@ -224,8 +224,8 @@ export default class Viewer {
         this.render_edges(source)
 
 
-        if (this.model.first_time_render) {
-            this.model.first_time_render = false
+        if (this.model.settings.first_time_render) {
+            this.model.settings.first_time_render = false
             this.fit_to_viewer_height()
 
         }
@@ -551,6 +551,9 @@ export default class Viewer {
 
             this.node_face_update(this.G.selectAll('g.node'))
 
+            this.model.store_zoomTransform(transform)
+
+
 /*
 
                 this.G.selectAll('g.node')
@@ -565,6 +568,8 @@ export default class Viewer {
  */
 
         }
+
+
     }
 
     square_edges(s, d) {
@@ -1521,7 +1526,13 @@ export default class Viewer {
             .attr("class", "right")
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return d.subsampled ? on_screen_text_size : '0px' ;
+
+                var collapse_text = false
+                if (d.data.collapse){
+                    collapse_text = d.data.triangle_height >= on_screen_text_size ? true : false
+                }
+
+                return d.subsampled || collapse_text ? on_screen_text_size : '0px' ;
             })
             .attr("font-weight", (d) =>  {
                 return d.children || d._children ? 900 : 400
@@ -1621,7 +1632,16 @@ export default class Viewer {
                 return c
             })
             .style('font-size', d => {
-                return d.subsampled || d.children ? on_screen_text_size : '0px';
+
+                var collapse_text = false
+                if (d.data.collapse){
+                    collapse_text = d.data.triangle_height >= on_screen_text_size ? true : false
+                }
+
+                return d.subsampled || collapse_text || d.children ? on_screen_text_size : '0px' ;
+
+
+                //return d.subsampled || d.children ? on_screen_text_size : '0px';
             })
 
         nodes.select('text.left_top')

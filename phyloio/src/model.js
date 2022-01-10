@@ -8,8 +8,9 @@ export default class Model {
 
     constructor(data, settings, from_raw_data = true) {
 
-        this.first_time_render = true
+        this.zoom;
         this.settings = {
+            'first_time_render': true,
             'data_type' : 'newick',
             'use_branch_lenght' : true,
             'display_internal_label' : false,

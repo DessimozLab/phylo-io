@@ -123,15 +123,16 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             for (var j = 0; j < ms.length; j++) {
 
-                ms[j].store_zoomTransform(cs[i].viewer.d3.zoomTransform(cs[i].viewer.svg.node()))
 
                 minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity(), 'zoom': ms[j].zoom })
             }
 
             pickle.containers.push({
                 'models' : minput,
-                'settings'  : cs[i].settings
+                'settings'  : cs[i].settings,
+                'current_model': cs[i].current_model
             })
+
         }
 
         return JSON.stringify(pickle)
