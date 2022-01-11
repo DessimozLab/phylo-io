@@ -1047,6 +1047,14 @@ export default class Interface {
 
 
 
+        function selectElement(id, valueToSelect) {
+            let element = document.getElementById(id);
+            element.value = valueToSelect;
+        }
+
+        selectElement('selectr' + container_id, this.viewer.model.settings.display_internal_label == false ? "None" : this.viewer.model.settings.display_internal_label )
+        selectElement('selectlb' + container_id, this.viewer.model.settings.display_internal_label_left_bottom == false ? "None" : this.viewer.model.settings.display_internal_label_left_bottom )
+        selectElement('selectlt' + container_id, this.viewer.model.settings.display_internal_label_left_top == false ? "None" : this.viewer.model.settings.display_internal_label_left_top )
 
 
     }
