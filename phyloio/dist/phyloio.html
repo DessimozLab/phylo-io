@@ -116,6 +116,12 @@
                 </a>
             </li>
 
+            <li>
+                <a href="#" id="menu_keyboard" class="nav-link py-3 border-bottom" title="" id="menu_keyboard" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show keyboard shorcuts">
+                    <i class="bi-keyboard" style="font-size: 24px;color: white  "></i>
+                </a>
+            </li>
+
         </ul>
 
 
@@ -237,6 +243,39 @@
         </div>
     </div>
 
+    <div class="modal" id="modal_keyboard" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Keyboard shorcuts  </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+
+                    <h5>Left tree (or single mode)</h5>
+                    <p><strong>Tree Height: </strong> Use <kbd>w</kbd> to increase or <kbd>s</kbd> to decrease<br>
+                    <p><strong>Tree Width: </strong> Use <kbd>a</kbd> to increase or <kbd>d</kbd> to decrease<br>
+                    <p><strong>Tree Selection: </strong> Use <kbd>q</kbd> or <kbd>d</kbd> to change tree<br>
+
+                    <br>
+
+
+                    <h5>Right tree (only in compare mode)</h5>
+                    <p><strong>Tree Height: </strong> Use <kbd>i</kbd> to increase or <kbd>k</kbd> to decrease<br>
+                    <p><strong>Tree Width: </strong> Use <kbd>j</kbd> to increase or <kbd>l</kbd> to decrease<br>
+                    <p><strong>Tree Selection: </strong> Use <kbd>u</kbd> or <kbd>o</kbd> to change tree<br>
+
+
+                    </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">I'm done here</button>
+                </div>
+            </div>
+            </div>
+    </div>
+
+
     <div class="modal" id="modal_help" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -319,6 +358,10 @@
 
     document.getElementById("menu_screenshot").onclick = function() {
         $('#modal_screenshot').modal('show');
+    };
+
+    document.getElementById("menu_keyboard").onclick = function() {
+        $('#modal_keyboard').modal('show');
     };
 
     document.getElementById("menu_help").onclick = function() {

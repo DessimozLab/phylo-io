@@ -659,7 +659,7 @@ export default class Viewer {
         var rs = 8/k // scaled radius size
 
         var r = m.append('rect')
-            .attr('height', menu.length * (fs+vps) + vps)
+            .attr('height', menu.length * (fs+vps) + vps + 'px')
             .style('fill', "#eee")
             .attr('rx', rs)
             .attr('ry', rs)
@@ -690,37 +690,52 @@ export default class Viewer {
                 return d.title === "Close" ? 900 : 400
             })
             .style('font-size', d => {
-                return  fs;
+                return  fs + 'px';
             })
             .text(function(d) {
                 return d.title;
             })
 
-        var w = 0;
-        var w_close = 0
 
-        t.each(function(d){
-            var l = this.getComputedTextLength();
-            if (l > w) w = l;
-
-            if (d.title == "Close"){
-                w_close = l;
-            }
-
-        })
-
-        var w_menu = w + 2*hps
-        r.attr('width', w_menu );
-
-        t.each(function(d){
-            if (d.title == "Close"){
-                d3.select(this).attr('transform', 'translate(' + (w - w_close)/2  + ',' + 0  + ')');
-            }
-        })
-
+        r.attr('width', 20 );
         m.attr('transform', 'translate(' + x  + ',' + y  + ')');
         m.style('display', 'block');
         m.datum(event);
+
+
+
+        setTimeout(function(){
+
+            var w = 0;
+            var w_close = 0
+
+            t.each(function(d){
+
+                var l = d3.select(this).node().getComputedTextLength();
+                if (l > w) w = l;
+
+                if (d.title == "Close"){
+                    w_close = l;
+                }
+
+            })
+
+            var w_menu = w + 2*hps
+            r.attr('width', w_menu );
+
+            t.each(function(d){
+                if (d.title == "Close"){
+                    d3.select(this).attr('transform', 'translate(' + (w - w_close)/2  + ',' + 0  + ')');
+                }
+            })
+
+
+        }, 50)
+
+
+
+
+
     }
 
     apply_collapse_from_data_to_d3(data, d){
@@ -1529,7 +1544,7 @@ export default class Viewer {
 
                 var collapse_text = false
                 if (d.data.collapse){
-                    collapse_text = d.data.triangle_height >= on_screen_text_size ? true : false
+                    collapse_text = d.data.triangle_height >= on_screen_text_size + 'px' ? true : false
                 }
 
                 return d.subsampled || collapse_text ? on_screen_text_size : '0px' ;
@@ -1565,7 +1580,7 @@ export default class Viewer {
             .attr("class", "left_top")
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return show_lt ? on_screen_text_size : '0px' ;
+                return show_lt ? on_screen_text_size + 'px' : '0px' ;
             })
             .attr("font-weight", (d) =>  {
                 return 400
@@ -1588,7 +1603,7 @@ export default class Viewer {
             .attr("class", "left_bottom")
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return show_lb ? on_screen_text_size : '0px' ;
+                return show_lb ? on_screen_text_size + 'px': '0px' ;
             })
             .attr("font-weight", (d) => {
                 return 400
@@ -1635,10 +1650,10 @@ export default class Viewer {
 
                 var collapse_text = false
                 if (d.data.collapse){
-                    collapse_text = d.data.triangle_height >= on_screen_text_size ? true : false
+                    collapse_text = d.data.triangle_height >= on_screen_text_size + 'px' ? true : false
                 }
 
-                return d.subsampled || collapse_text || d.children ? on_screen_text_size : '0px' ;
+                return d.subsampled || collapse_text || d.children ? on_screen_text_size + 'px' : '0px' ;
 
 
                 //return d.subsampled || d.children ? on_screen_text_size : '0px';
@@ -1646,7 +1661,7 @@ export default class Viewer {
 
         nodes.select('text.left_top')
             .style('font-size', d => {
-                return show_lt ? on_screen_text_size : '0px';
+                return show_lt ? on_screen_text_size + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
@@ -1654,7 +1669,7 @@ export default class Viewer {
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
-                return show_lb ? on_screen_text_size : '0px';
+                return show_lb ? on_screen_text_size + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
