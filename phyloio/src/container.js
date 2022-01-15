@@ -172,7 +172,7 @@ export default class Container {
         if (depth == 0 ){
 
             f = function(n,c) {
-                model.collapse(n.data, true)
+                model.collapse(n.data, false)
                 viewer.apply_collapse_from_data_to_d3(n.data, n)
             }
         }
