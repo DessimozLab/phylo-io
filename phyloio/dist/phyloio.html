@@ -13,8 +13,7 @@
     <!-- JavaScript Bundle with Popper -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
-    <script src="bundle.js"></script>
-
+    <script src="phylo.js"></script>
 </head>
 
 
@@ -111,7 +110,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" id="menu_screenshot" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as image">
+                <a href="#" id="menu_screenshot" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as graphic">
                     <i class="bi-camera" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
@@ -402,7 +401,7 @@
     document.getElementById('load_session_file').onclick = () => {
         var file = document.getElementById('load_session_input').files[0];
 
-        $('#modalload').modal('hide');
+        $('#modal_load').modal('hide');
 
         if (file) {
             var reader = new FileReader();

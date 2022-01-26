@@ -86,10 +86,12 @@ export default class Viewer {
         this.svg_d3 = d3.select(this.svg)
 
         // G element for zoom/transform
-        this.G = this.svg.append("g")
-            .attr("id", "master_g" + this.uid)
-            .attr("transform", "translate("+ this.settings.style.margin.left + "," + (this.height/2 +  this.settings.style.margin.top) + ")")
-        this.G_d3 = d3.select(this.G);
+        //this.G = this.svg.append("g")
+        //    .attr("id", "master_g" + this.uid)
+        //    .attr("transform", "translate("+ this.settings.style.margin.left + "," + (this.height/2 +  this.settings.style.margin.top) + ")")
+        //this.G_d3 = d3.select(this.G);
+
+        this.build_master_g()
 
         // D3 TREE LAYOUT
         this.d3_cluster = d3.cluster()
@@ -118,6 +120,28 @@ export default class Viewer {
         }
 
 
+    }
+
+    remove_data(){
+
+        this.data = null;
+        this.model = null;
+        this.destroy_master_g()
+        this.build_master_g()
+
+    }
+
+    destroy_master_g(){
+        this.svg.select("#master_g" + this.uid).remove()
+        this.G = null
+        this.G_d3 = null
+    }
+
+    build_master_g(){
+        this.G = this.svg.append("g")
+            .attr("id", "master_g" + this.uid)
+            .attr("transform", "translate("+ this.settings.style.margin.left + "," + (this.height/2 +  this.settings.style.margin.top) + ")")
+        this.G_d3 = d3.select(this.G);
     }
 
     build_d3_data(){

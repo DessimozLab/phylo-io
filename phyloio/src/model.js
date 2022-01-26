@@ -10,6 +10,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'name': 'Untitled ' + uid_model,
             'first_time_render': true,
             'data_type' : 'newick',
             'use_branch_lenght' : true,

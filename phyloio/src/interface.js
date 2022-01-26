@@ -56,19 +56,19 @@ export default class Interface {
         this.top_right = this.add_top_right_container()
 
         // BOTTOM LEFT
-        if (this.container_object.models.length > 1) {
-            this.add_toggle()
-        }
         if (this.viewer.model.settings.use_branch_lenght) {
             this.scale_text = this.add_scale()
         }
-        this.add_root_badge()
+        //this.add_root_badge()
 
         // BOTTOM RIGHT
         this.add_fit_height()
         this.add_zoom()
 
         // TOP LEFT
+        if (this.container_object.models.length > 0) {
+            this.add_toggle()
+        }
         this.add_data_icon()
 
         // TOP RIGHT
@@ -125,8 +125,8 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-folder ')
-            .text(' Add tree')
+            .attr('class', ' fas fa-folder-plus ')
+
 
 
         let mod_html = 			"<!-- Modal -->\n" +
@@ -289,7 +289,7 @@ export default class Interface {
 
     // TOGGLE
     add_toggle(){
-        var sub_div =  this.bottom_left.append("div")
+        var sub_div =  this.top_left.append("div")
             .style( "display", "flex")
             .style('margin', '2px')
 
@@ -304,11 +304,65 @@ export default class Interface {
             .attr('class', ' fas fa-chevron-left ')
 
 
-        sub_div.append('button')
+        var sd = sub_div.append('div')
             .attr('class', ' square_button screen_toggle')
+
+
+        /*
+        sd.append("div")
+            .attr("class","label")
+            .style('display', 'inline')
+            .text(d => {return "[" + (this.container_object.current_model +1)  + " / "  + this.container_object.models.length + "] "})
+*/
+
+        sd.append("div")
+            .style('cursor', 'text')
+            .attr('id', 'input_edit_name'+ this.container_object.uid)
+            .attr("contenteditable","true")
+            .attr("class","label")
+            .style('display', 'inline')
+            .text(this.viewer.model.settings.name)
+
+
+
+        var ol = sd.append("ul").attr('class', "progress-indicator" )
+            .style('width', 'auto')
+            .style('min-width', "50px")
+
+        for (var i = 0; i < this.container_object.models.length; i++) {
+
+            let li = ol.append('li')
+
+            if (i == this.container_object.current_model){
+
+                li.attr('class','completed' )
+
+            }
+
+                li.append('span')
+                .attr('class','bubble' )
+
+        }
+
+
+        sub_div.append('button')
+            .attr('class', 'square_button')
+            .attr('id', 'button_edit_name_check'+ this.container_object.uid)
             .append("div")
             .attr("class","label")
-            .text(d => {return this.container_object.current_model +1  + " / "  + this.container_object.models.length})
+            .append('i')
+            .style('color', '#fff')
+            .attr('class', ' fas fa-check ')
+
+        sub_div.append('button')
+            .attr('class', 'square_button button_edit_name')
+            .attr('id', 'button_edit_name_trash'+ this.container_object.uid)
+            .append("div")
+            .attr("class","label")
+            .append('i')
+            .style('color', '#fff')
+            .attr('class', ' fas fa-trash ')
+
 
         sub_div.append('button')
             .attr('class', ' square_button')
@@ -318,6 +372,48 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-chevron-right ')
+
+
+        // bind events and action to editable div
+
+        var edit_name = document.querySelector('#input_edit_name'+ this.container_object.uid);
+        var edit_name_ok = document.querySelector('#button_edit_name_check'+ this.container_object.uid);
+        var edit_name_trash = document.querySelector('#button_edit_name_trash'+ this.container_object.uid);
+
+        edit_name.addEventListener("keypress", function (e) {
+            if (e.which == 13) {
+                event.preventDefault();
+                return false;
+            }
+
+
+            //You can add delete key event code as well over here for windows users.
+            if(edit_name.textContent.length === 20 && e.keyCode != 8) {
+                e.preventDefault();
+            }
+        });
+
+
+        edit_name.addEventListener('focus', (event) => {
+            edit_name_ok.style.display = 'inline';
+            edit_name_trash.style.display = 'inline';
+        });
+
+        edit_name.addEventListener('blur', (event) => {
+            setTimeout(function() {
+                edit_name_ok.style.display = 'none';
+                edit_name_trash.style.display = 'none';
+            }, 300);
+
+        });
+
+
+        edit_name_trash.addEventListener('click', (event) => {
+            this.container_object.remove_current_tree(true)
+
+        });
+
+
 
 
     }
@@ -385,7 +481,7 @@ export default class Interface {
     add_scale(){
 
         var scaleLineLateralPadding = 10
-        var scaleLineBottomPadding = 80
+        var scaleLineBottomPadding = 10
 
 
         var gg = this.viewer.svg_d3.node().append('g')

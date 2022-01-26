@@ -29,10 +29,28 @@
 .screen_toggle{
     cursor: default;
     background-color: #ffffff;
+margin-left: 4px;
+border-radius : 0px;
+    padding-bottom: 0px ;
+    padding-top: 0px ;
 }
 
 .screen_toggle:hover{
     background-color: #ffffff;
+}
+
+*[id^="button_edit_name_trash"]{
+    display: none;
+        border-radius: 0px;
+        background-color: #dc3545;
+        margin-left: 4px;
+        margin-right: 4px;
+}
+
+*[id^="button_edit_name_check"]{
+display: none;
+border-radius: 0px;
+background-color: #198754;
 }
 
 /* BRANCH SCALE */

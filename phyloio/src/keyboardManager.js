@@ -19,7 +19,7 @@ export default class keyboardManager {
         document.onkeypress = function (e) {
              e = e || window.event;
 
-            const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+            const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'DIV'];
 
             if (formElements.includes(e.target.tagName)) {return}
 

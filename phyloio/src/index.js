@@ -18,6 +18,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './style.css';
 import './interface.css';
+import './progress-wizard.min.css';
 import './fontawesome/css/all.css'
 
 

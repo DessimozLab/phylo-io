@@ -26,6 +26,44 @@ export default class Container {
         this.models.push(new Model(data, settings, from_raw_data))
     }
 
+    remove_current_tree(apply_change_UI){
+
+        var apply_change_UI = (typeof apply_change_UI !== 'undefined') ? apply_change_UI : false;
+
+        var current_model = this.models[this.current_model]
+
+        const index = this.models.indexOf(current_model);
+        if (index > -1) {
+            this.models.splice(index, 1);
+
+            if (this.current_model > this.models.length -1){
+                console.log('out of index - recalibrating');
+                this.current_model -= 1
+
+            }
+
+            if (apply_change_UI){
+                if (this.models.length == 0){
+
+                    this.current_model = 0
+
+                    this.viewer.remove_data()
+                    this.interface = new Interface(this.viewer, this, true)
+                }
+                else{
+                    this.shift_model(0, false)
+                }
+            }
+
+            console.log(this.current_model, this.models)
+
+        }
+
+
+
+
+    }
+
     // update the data viewer and render it
     start(rendering){
 
@@ -60,13 +98,18 @@ export default class Container {
     }
 
     // shift the pointer (if possible) in the model list and update viewer model
-    shift_model(offset) {
+    shift_model(offset, store_old) {
+
+        var store_old = (typeof store_old !== 'undefined') ? store_old : true;
+
 
         if (this.current_model + offset >= 0 && this.current_model + offset <= this.models.length -1 ) {
 
-            // store the current zoom information
-            var old_m = this.models[this.current_model]
-            old_m.store_zoomTransform(this.viewer.d3.zoomTransform(this.viewer.svg.node()))
+            if (store_old){
+                // store the current zoom information
+                var old_m = this.models[this.current_model]
+                old_m.store_zoomTransform(this.viewer.d3.zoomTransform(this.viewer.svg.node()))
+            }
 
             // update new model data to viewer
             this.current_model += offset;
