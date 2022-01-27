@@ -380,9 +380,12 @@ export default class Interface {
         var edit_name_ok = document.querySelector('#button_edit_name_check'+ this.container_object.uid);
         var edit_name_trash = document.querySelector('#button_edit_name_trash'+ this.container_object.uid);
 
-        edit_name.addEventListener("keypress", function (e) {
+        edit_name.addEventListener("keypress",  (e) => {
             if (e.which == 13) {
                 event.preventDefault();
+                edit_name_ok.style.display = 'none';
+                edit_name_trash.style.display = 'none';
+                this.viewer.model.set_name(edit_name.textContent)
                 return false;
             }
 
@@ -393,16 +396,16 @@ export default class Interface {
             }
         });
 
-
         edit_name.addEventListener('focus', (event) => {
             edit_name_ok.style.display = 'inline';
             edit_name_trash.style.display = 'inline';
         });
 
         edit_name.addEventListener('blur', (event) => {
-            setTimeout(function() {
+            setTimeout(() =>  {
                 edit_name_ok.style.display = 'none';
                 edit_name_trash.style.display = 'none';
+                edit_name.textContent = this.viewer.model.get_name()
             }, 300);
 
         });
@@ -410,6 +413,11 @@ export default class Interface {
 
         edit_name_trash.addEventListener('click', (event) => {
             this.container_object.remove_current_tree(true)
+
+        });
+
+        edit_name_ok.addEventListener('click', (event) => {
+            this.viewer.model.set_name(edit_name.textContent)
 
         });
 

@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 
 var uid_model = 0
+var uid_untitle_counter = 0
 import * as parser from 'biojs-io-newick';
 const { build_table, parse_nhx } = require('./utils.js')
 
@@ -10,7 +11,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
-            'name': 'Untitled ' + uid_model,
+            'name': null,
             'first_time_render': true,
             'data_type' : 'newick',
             'use_branch_lenght' : true,
@@ -55,6 +56,8 @@ export default class Model {
             }
 
         }
+
+        this.settings.name = this.settings.name ? this.settings.name : "Untitled " + uid_untitle_counter++
 
         this.uid = uid_model++;
         this.input_data = data;
@@ -182,6 +185,16 @@ export default class Model {
 
 
     }
+
+    get_name(){
+        return this.settings.name
+    }
+
+    set_name(name){
+        this.settings.name = name
+    }
+
+
 
     traverse(o,func_pre, func_post) {
 
