@@ -14,6 +14,9 @@ export default class Interface {
         this.viewer = v
         this.container_d3 = v.container_d3
 
+        //MISC
+        this.dismiss_blur = false
+
         this.examples={
             "small1": "((yli:1.0085614391793067,(((lel:0.2880678599618948,(cal:0.11643570498932501,ctr:0.12746420698315983):0.0877413194006926):0.12449843844102518,pst:0.20187483296288805):0.04951181210826987,(pgu:0.3208350693977453,dha:0.19121342958249643):0.0444880656387921):0.3761988962574594):0.22545281705785974,(((kla:0.32829009627835226,ago:0.35217085340006204):0.057415467336693615,(skl:0.15813405639248146,kwa:0.25658337062111586):0.04348414441988464):0.036897766465122404,(cgl:0.29957965624763355,(sca:0.24212307199678842,(sba:0.03984952076326609,(((sce:0.022286259220280224,spa:0.016875934069075366):0.01282179619059339,smi:0.03661027033511007):0.013312280806766753,sku:0.042685124078088485):0.014142671709463695):0.17548658899657893):0.03625000527459598):0.08921537612721808):0.22545281705785974):0;",
             "small2": "((sba:0.04645932805874481569,(smi:0.03315550229946162553,(spa:0.01466907419174275952,sce:0.02383733069302066895):0.01620853054082276729):0.01834962617511207497):0.06496501071301066799,(sca:0.21928497146352055047,((((ago:0.34529718349701971070,kla:0.26611733077459831520):0.04460721000595434249,(kwa:0.23458417353426505580,skl:0.38245746198409408256):0.02217438839159899949):0.02847427462232336726,(((pst:0.21220493191897629726,((cal:0.09792303271040220247,ctr:0.11778282966461572911):0.07993742108354510989,lel:0.23757786374413303321):0.09896075353236584438):0.04667831716440219020,(pgu:0.28475663985974825065,dha:0.17797706546403241346):0.04249479494672471491):0.29326816910580705278,yli:0.72911704942210797675):0.31199925135971823265):0.06946141605430436461,cgl:0.27125751484306920291):0.03678319509837457008):0.09011350505801994648,sku:3.28511106679567399524):0.0;",
@@ -575,6 +578,8 @@ export default class Interface {
 
     autocomplete(inp, arr) {
 
+        var that = this
+
 
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
@@ -599,19 +604,23 @@ export default class Interface {
             /*for each item in the array...*/
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
-                if (arr[i].substr(0, val.length).toUpperCase() === val.toUpperCase()) { // todo true regexp
+                if (arr[i].toUpperCase().includes(val.toUpperCase()) ){
+                //if (arr[i].substr(0, val.length).toUpperCase() === val.toUpperCase()) {
                     /*create a DIV element for each matching element:*/
                     b = document.createElement("DIV");
                     /*make the matching letters bold:*/
-                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].substr(val.length);
+                    var start_index = arr[i].toUpperCase().indexOf(val.toUpperCase())
+                    b.innerHTML += arr[i].substr(0, start_index);
+                    b.innerHTML += "<strong>" + arr[i].substr(start_index,  val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(start_index + val.length);
                     /*insert a input field that will hold the current array item's value:*/
                     b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                     /*execute a function when someone clicks on the item value (DIV element):*/
                     b.addEventListener("click", function(e) {
                         /*insert the value for the autocomplete text field:*/
+                        that.dismiss_blur = true
                         inp.value = this.getElementsByTagName("input")[0].value;
-                        document.getElementById('search_button_id').focus();
+                        document.getElementById('search_button_id'+ that.viewer.uid).focus();
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
                         closeAllLists();
@@ -684,31 +693,71 @@ export default class Interface {
 
         this.container_d3.selectAll("#searchinp" + this.viewer.uid).remove()
 
+        // add input
         this.search_input =  this.tr_buttons.append('input')
             .attr('class', ' square_button search_input')
+            .style('display', 'none')
             .attr('id', "searchinp" + this.viewer.uid )
 
-        document.getElementById("searchinp" + this.viewer.uid).addEventListener("keyup", ({key}) => {
-            if (key === "Enter") {
-                this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
-            }
-        })
+        var input_el = document.getElementById("searchinp" + this.viewer.uid );
 
-        this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.suggestions)
-
-
+        // add search button
         this.tr_buttons.append('button')
-            .attr('id', 'search_button_id')
+            .attr('id', 'search_button_id' + this.viewer.uid)
             .attr('class', ' square_button search_button')
+            .style('border-top-left-radius', '8px')
+            .style('border-bottom-left-radius', '8px')
             .style('margin', '2px')
             .on("click", d => {
-                this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                var display = input_el.style.display;
+
+                if (display == 'none'){
+                    let search_el = document.getElementById("search_button_id" + this.viewer.uid);
+
+
+                    input_el.style.display = 'inline-block';
+                    search_el.style.borderTopLeftRadius =  '0px';
+                    search_el.style.borderBottomLeftRadius = '0px';
+                }
+                else{
+                    this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                }
             })
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search ')
+
+
+        let search_el = document.getElementById("search_button_id" + this.viewer.uid);
+
+        this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.suggestions)
+
+        input_el.addEventListener("keyup", ({key}) => {
+            if (key === "Enter") {
+                this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+            }
+        })
+
+        input_el.addEventListener("blur", (e) => {
+
+            setTimeout(() => {
+
+                if (this.dismiss_blur){
+                    this.dismiss_blur = false
+
+                }
+                else{
+                    input_el.style.display = 'none';
+                    search_el.style.borderTopLeftRadius =  '8px';
+                    search_el.style.borderBottomLeftRadius = '8px';
+                    document.getElementById('searchinp' + this.viewer.uid + 'autocomplete-list').remove();
+
+                }
+            }, 200);
+
+        })
 
 
     }

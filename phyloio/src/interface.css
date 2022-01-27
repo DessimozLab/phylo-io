@@ -84,8 +84,7 @@ background-color: #198754;
 .search_button {
     margin: 2px;
     margin-left: 0 !important;
-    border-top-left-radius : 0;
-    border-bottom-left-radius : 0;
+
 }
 
 /* TOP RIGHT SUB MENU */
