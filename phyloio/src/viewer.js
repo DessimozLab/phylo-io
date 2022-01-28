@@ -327,6 +327,8 @@ export default class Viewer {
         nodeEnter.append('circle')
             .attr('class', 'node')
             .attr('r', 1e-6)
+            .style("stroke",  "transparent" )
+            .style("stroke-width",  "6px" )
             .style("fill", function(d) {
                 return d.data.duplication && show_duplications  ? 'red' : d._children ? "lightsteelblue" : "#fff";
             });
@@ -1556,6 +1558,8 @@ export default class Viewer {
 
     node_face_enter(nodeEnter){
 
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+
         var on_screen_text_size = this.compute_node_font_size()
         var show_lt = this.model.settings.display_internal_label_left_top !== false
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
@@ -1590,7 +1594,7 @@ export default class Viewer {
                 return 0
             })
             .attr("x", function(d) {
-                return d.parent == null ? -13 : 13;
+                return d.parent == null ? -13/k : 13/k;
             })
             .attr("text-anchor", function(d) {
                 //return "start";
@@ -1610,10 +1614,10 @@ export default class Viewer {
                 return 400
             })
             .attr("y", (d) => {
-                return -13
+                return -13/k
             })
             .attr("x", function(d) {
-                return  -13;
+                return  -13/k;
             })
             .attr("text-anchor", function(d) {
                 return  "end"
@@ -1636,7 +1640,7 @@ export default class Viewer {
                 return 13
             })
             .attr("x", function (d) {
-                return -13;
+                return -13/k;
             })
             .attr("text-anchor", function (d) {
                 return "end"
@@ -1649,7 +1653,7 @@ export default class Viewer {
     node_face_update(nodes){
 
         var on_screen_text_size = this.compute_node_font_size()
-
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
         var show_r = this.model.settings.display_internal_label !== false
         var show_lt = this.model.settings.display_internal_label_left_top !== false
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
@@ -1663,7 +1667,7 @@ export default class Viewer {
             })
             .attr("x", function(d) {
                 let y_offset = (typeof d.data.triangle_width !== 'undefined') ? d.data.triangle_width : 0;
-                return d.parent == null ? -13 : y_offset + 13;
+                return d.parent == null ? -13/k : y_offset + 13/k;
             })
             .attr("y", 0)
             .attr('fill', (d) => {
