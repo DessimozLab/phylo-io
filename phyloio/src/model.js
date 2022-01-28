@@ -372,6 +372,7 @@ export default class Model {
     }
 
     collapse(data, action){
+        if (!data.children){return}
         if (action) {data.collapse = true}
         else if (action == false){data.collapse = false}
         else{data.collapse ? data.collapse = false : data.collapse = true;}
@@ -380,9 +381,15 @@ export default class Model {
 
     collapseAll(data, action){
         if (action) {
-            this.traverse(data, function(n,c){n.collapse = true} , null)}
+            this.traverse(data, (n,c) => {
+                this.collapse(n, true)
+                //n.collapse = true
+            } , null)}
         else if (action == false){
-            this.traverse(data, function(n,c){n.collapse = false} , null)}
+            this.traverse(data, (n,c) => {
+                this.collapse(n, false)
+                //n.collapse = false
+            } , null)}
 
 
     }

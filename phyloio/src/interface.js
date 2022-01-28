@@ -721,6 +721,11 @@ export default class Interface {
                 }
                 else{
                     this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+
+                    input_el.style.display = 'none';
+                    search_el.style.borderTopLeftRadius =  '8px';
+                    search_el.style.borderBottomLeftRadius = '8px';
+                    document.getElementById('searchinp' + this.viewer.uid + 'autocomplete-list').remove();
                 }
             })
             .append("div")
