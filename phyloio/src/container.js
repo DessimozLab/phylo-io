@@ -243,6 +243,8 @@ export default class Container {
 
     zoom_to_node(name){
 
+        if (name === ''){return}
+
 
         if(this.viewer.model.settings.multiple_search != true) {
 
