@@ -104,7 +104,9 @@ export default class Interface {
             .attr("class","corner_placeholder top left")
     }
     add_top_right_container(){
-        var div =  this.container_d3.append("div").attr("class","corner_placeholder top right").style("display",'block')
+        var div =  this.container_d3.append("div").attr("class","corner_placeholder top right")
+            .style("flex-direction",'column')
+            .style("align-items",'end')
 
         this.tr_buttons = div.append("div").attr("class","tr-button")
 

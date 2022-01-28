@@ -90,6 +90,8 @@ background-color: #198754;
 /* TOP RIGHT SUB MENU */
 
 .tr-buttons{
+    flex-direction: column;
+    align-self: end;
     display: flex;}
 
 .tr-buttons  * {
