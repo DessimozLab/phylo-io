@@ -1012,7 +1012,7 @@ export default class Viewer {
 
     }
 
-    // TUNNING todo should be in COntroller
+    // TUNNING todo should be in Controller
     modify_node_size(axis, variation){
 
         if (axis === 'vertical') {
@@ -1619,16 +1619,16 @@ export default class Viewer {
             .attr("class", "left_top")
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return show_lt ? on_screen_text_size + 'px' : '0px' ;
+                return show_lt ? this.model.settings.tree.font_size + 'px' : '0px' ;
             })
             .attr("font-weight", (d) =>  {
                 return 400
             })
             .attr("y", (d) => {
-                return -13/k
+                return -13
             })
             .attr("x", function(d) {
-                return  -13/k;
+                return  -13;
             })
             .attr("text-anchor", function(d) {
                 return  "end"
@@ -1642,7 +1642,7 @@ export default class Viewer {
             .attr("class", "left_bottom")
             .attr("dy", ".35em")
             .style('font-size', d => {
-                return show_lb ? on_screen_text_size + 'px': '0px' ;
+                return show_lb ? this.model.settings.tree.font_size + 'px': '0px' ;
             })
             .attr("font-weight", (d) => {
                 return 400
@@ -1651,7 +1651,7 @@ export default class Viewer {
                 return 13
             })
             .attr("x", function (d) {
-                return -13/k;
+                return -13;
             })
             .attr("text-anchor", function (d) {
                 return "end"
@@ -1694,14 +1694,18 @@ export default class Viewer {
             })
             .style('font-size', d => {
 
-                return d.subsampled  || d.children ? on_screen_text_size + 'px' : '0px' ;
+                if (d.children){
+                    return show_r ? this.model.settings.tree.font_size + 'px' : '0px';
+                }
+
+                return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;
 
 
             })
 
         nodes.select('text.left_top')
             .style('font-size', d => {
-                return show_lt ? on_screen_text_size + 'px' : '0px';
+                return show_lt ? this.model.settings.tree.font_size + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
@@ -1709,7 +1713,7 @@ export default class Viewer {
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
-                return show_lb ? on_screen_text_size + 'px' : '0px';
+                return show_lb ? this.model.settings.tree.font_size + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
