@@ -28,9 +28,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'no_distance_message': true,
-            'compute_RF': true,
-            'compute_Euc': true,
-            'compute_Clade': true,
+            'compute_distance': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
 
@@ -59,9 +57,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'no_distance_message': true,
-            'compute_RF': true,
-            'compute_Euc': true,
-            'compute_Clade': true,
+            'compute_distance': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
 
@@ -99,7 +95,9 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                 container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level)
             }
 
-            this.compute_distance()
+            if (this.settings.compute_distance){
+                this.compute_distance()
+            }
 
         }
 
@@ -155,6 +153,10 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     compute_distance(){
+
+        if (!this.settings.compareMode){
+            return
+        }
 
         this.distance.clade = false
         this.distance.Cl_good = false

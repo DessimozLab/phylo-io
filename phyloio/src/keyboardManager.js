@@ -43,7 +43,10 @@ export default class keyboardManager {
                 "k": function(){self_km.right.viewer.modify_node_size( 'vertical',5)},
                 ";": function(){self_km.right.toggle_stack()},
 
-                "g": function(){phylo.compute_distance()}
+                "g": function(){
+                    phylo.settings.compute_distance = true;
+                    phylo.compute_distance()}
+
             }
 
             if (shortcuts.hasOwnProperty(e.key)){

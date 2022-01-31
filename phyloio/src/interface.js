@@ -229,8 +229,7 @@ export default class Interface {
             container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
 
-            if (phylo.settings.compareMode && phylo.bound_container.includes(container_object)){
-
+            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
                 phylo.compute_distance()
             }
         }

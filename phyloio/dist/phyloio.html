@@ -63,12 +63,12 @@
     <!-- Draggable DIV -->
     <div id="distance_window">
         <!-- Include a header DIV with the same name as the draggable DIV, followed by "header" -->
-        <div id="mydivheader"> <p style="margin-bottom: 0px"><strong> Distance <button class="btn" id="toggle_distance_window" >
-            <i id='icon_distance' class="bi-plus" ></i>
+        <div id="mydivheader"> <p style="margin-bottom: 0px"><strong> Distance <button class="btn" id="close_distance_window" >
+            <i id='icon_distance' class="bi-x-lg" ></i>
         </button></strong> </p>
 
         </div>
-        <div id="mydivbody" style="display: none"  >
+        <div id="mydivbody"  >
 
         </div>
 
@@ -323,9 +323,7 @@
         }
         else if (document.getElementById("li_distance").style.display === 'none'){
             document.getElementById("li_distance").style.display = 'block';
-            document.getElementById("menu_distance").onclick = function() {
-                $('#modal_distance').modal('show');
-            };
+
         }
     }
 
@@ -352,7 +350,8 @@
     };
 
     document.getElementById("menu_distance").onclick = function() {
-        $('#modal_distance').modal('show');
+        phylo.settings.compute_distance = true;
+        phylo.compute_distance()
     };
 
     document.getElementById("menu_screenshot").onclick = function() {
@@ -624,13 +623,12 @@
 
     // Make the DIV element draggable:
     dragElement(document.getElementById("distance_window"));
-    document.getElementById("toggle_distance_window").addEventListener('click', event => {
 
-        var d = document.getElementById("mydivbody")
+    document.getElementById("close_distance_window").addEventListener('click', event => {
 
-        d.style.display = d.style.display == 'none' ? 'block' : 'none'
+        document.getElementById("distance_window").style.display = 'none'
+        phylo.settings.compute_distance = false;
 
-        document.getElementById("icon_distance").className = d.style.display == 'none' ? 'bi-plus' : 'bi-dash'
 
 
 

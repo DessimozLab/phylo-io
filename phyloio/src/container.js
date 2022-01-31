@@ -127,7 +127,7 @@ export default class Container {
                 this.viewer.set_zoom(z.k, z.x, z.y)
             }
 
-            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
                 phylo.compute_distance()
             }
 
@@ -182,7 +182,7 @@ export default class Container {
             mod.table = build_table(mod.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compareMode && phylo.bound_container.includes(this)  ){
+            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
                 phylo.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -195,7 +195,7 @@ export default class Container {
             mod.hierarchy_mockup = mod.build_hierarchy_mockup()
             mod.table = build_table(mod.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
                 phylo.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -310,7 +310,7 @@ export default class Container {
         this.interface = new Interface(this.viewer, this)
         this.viewer.render(this.viewer.hierarchy)
 
-        if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+        if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
             phylo.compute_distance()
         }
 
