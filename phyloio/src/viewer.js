@@ -298,6 +298,12 @@ export default class Viewer {
             else{d.y = this.scale_branch_length(d.depth)}
 
             if (!d.children) {
+
+                if (d.data.collapse){
+                    d.subsampled  = d.data.triangle_height >= on_screen_text_size  ? true : false
+                    return
+                }
+
                 subsampling_index += 1;
                 d.subsampled = (subsampling_index % subsampling_module === 0) ;
             }
@@ -415,7 +421,7 @@ export default class Viewer {
                         var x_length =  self_render.model.settings.tree.node_vertical_size * Math.sqrt(self_render.getChildLeaves(d).length) * collapse_ratio_vertical
 
 
-                       d.data.triangle_height = x_length
+                       d.data.triangle_height = 2*x_length
                         d.data.triangle_width = y_length
 
                         this.node_face_update(d3.select(nodes[i]) )
@@ -558,7 +564,12 @@ export default class Viewer {
             this.nodes.forEach(d => {
 
                 if (!d.children) {
-                //if (!((d.children || d._children) && !this.model.settings.display_internal_label)) {
+
+                    if (d.data.collapse){
+                        d.subsampled  = d.data.triangle_height >= on_screen_text_size  ? true : false
+                        return
+                    }
+
                     subsampling_index += 1;
                     d.subsampled = (subsampling_index % subsampling_module === 0) ;
                 }
@@ -1661,6 +1672,13 @@ export default class Viewer {
         nodes.select('text.right')
             .text((d) => {
                 if (d.children || d._children){
+
+                    if (d.data.collapse){
+
+                        let l = d.data.leaves
+                        return '[' + l[0].name + '...' +  l[l.length-1].name + ']'
+                    }
+                    
                     return show_r ? this.get_label_extended_information(d, this.model.settings.display_internal_label) : '';
                 }
                 return d.data.name;
@@ -1676,15 +1694,9 @@ export default class Viewer {
             })
             .style('font-size', d => {
 
-                var collapse_text = false
-                if (d.data.collapse){
-                    collapse_text = d.data.triangle_height >= on_screen_text_size + 'px' ? true : false
-                }
-
-                return d.subsampled || collapse_text || d.children ? on_screen_text_size + 'px' : '0px' ;
+                return d.subsampled  || d.children ? on_screen_text_size + 'px' : '0px' ;
 
 
-                //return d.subsampled || d.children ? on_screen_text_size : '0px';
             })
 
         nodes.select('text.left_top')
