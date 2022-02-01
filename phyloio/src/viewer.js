@@ -299,8 +299,8 @@ export default class Viewer {
 
             if (!d.children) {
 
-                if (d.data.collapse){
-                    d.subsampled  = d.data.triangle_height >= on_screen_text_size  ? true : false
+                if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
+                    d.subsampled  = true
                     return
                 }
 
@@ -1676,7 +1676,7 @@ export default class Viewer {
                     if (d.data.collapse){
 
                         let l = d.data.leaves
-                        return '[' + l[0].name + '...' +  l[l.length-1].name + ']'
+                        return '[' + l[0].name + ' ... ' +  l[l.length-1].name + ']'
                     }
                     
                     return show_r ? this.get_label_extended_information(d, this.model.settings.display_internal_label) : '';

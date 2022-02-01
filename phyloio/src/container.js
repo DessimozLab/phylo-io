@@ -26,6 +26,10 @@ export default class Container {
         this.models.push(new Model(data, settings, from_raw_data))
     }
 
+    remove_all_trees(){
+        this.models = []
+    }
+
     remove_current_tree(apply_change_UI){
 
         var apply_change_UI = (typeof apply_change_UI !== 'undefined') ? apply_change_UI : false;

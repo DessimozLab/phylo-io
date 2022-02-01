@@ -565,15 +565,18 @@
     const entries = new URLSearchParams(window.location.search).entries();
 
     for(const entry of entries) {
+
         if (entry[0] === 'session'){
 
-            var l = function(pickle){
+            try {
 
-                pickle = JSON.parse(pickle)
+                var l = function (pickle) {
 
-                start_with_json(pickle)
+                    pickle = JSON.parse(pickle)
 
-                /*
+                    start_with_json(pickle)
+
+                    /*
 
                 for(var key in pickle.settings) {
                     var value = pickle.settings[key];
@@ -612,9 +615,15 @@
                  */
 
 
-            }
+                }
 
-            phylo.get_share_data(entry[1], function(d){l(d)})
+                phylo.get_share_data(entry[1], function (d) {
+                    l(d)
+                })
+
+            } catch (error) {
+                console.log('Data could not be fetched from phylo.io cloud')
+            }
 
 
         }
@@ -708,20 +717,24 @@
 
             if (ms.length > 0){
 
-                for (var j = 0; j < ms.length; j++) {
-                    csp[i].add_tree(ms[j].data, ms[j].settings, false)
-                    var m = csp[i].models[csp[i].models.length-1]
-                    m.zoom = ms[j].zoom
+                try {
+                    for (var j = 0; j < ms.length; j++) {
+                        csp[i].add_tree(ms[j].data, ms[j].settings, false)
+                        var m = csp[i].models[csp[i].models.length - 1]
+                        m.zoom = ms[j].zoom
 
-                    m.add_circularity_back()
-                }
+                        m.add_circularity_back()
+                    }
 
-                container_object = csp[i]
-                container_object.current_model = cs[i].current_model
-                container_object.viewer.set_data(container_object.models[container_object.current_model]);
-                container_object.viewer.render(container_object.viewer.hierarchy);
-                container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
-
+                    container_object = csp[i]
+                    container_object.current_model = cs[i].current_model
+                    container_object.viewer.set_data(container_object.models[container_object.current_model]);
+                    container_object.viewer.render(container_object.viewer.hierarchy);
+                    container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
+                } catch (error) {
+                console.log("Invalid data")
+                    csp[i].remove_all_trees()
+            }
 
             }
 
@@ -734,7 +747,6 @@
     }
 
     function refresh(){
-
 
         var data = JSON.parse(phylo.get_json_pickle())
         start_with_json(data)
@@ -753,4 +765,5 @@
 
 
 </body>
+
 </html>
