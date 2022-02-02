@@ -507,7 +507,7 @@ export default class Viewer {
             .attr("class", "link")
             .style("cursor","pointer")
             .style("fill","none")
-            .style('stroke-width',  this.model.settings.tree.line_width)
+            .style('stroke-width',  real_edges_width  )
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
 
@@ -522,7 +522,7 @@ export default class Viewer {
                 return c
             })
 
-            .style('stroke-width',  real_edges_width)
+            .style('stroke-width',  real_edges_width )
             .attr('d', d => this.square_edges(d, d.parent))
 
         linkUpdate.on('click', (d,i) =>  { this.click_edges(d,i)})
@@ -577,8 +577,6 @@ export default class Viewer {
 
             })
 
-            var real_edges_width = this.compute_edge_width()
-            this.G.selectAll('path.link').style('stroke-width',  real_edges_width)
 
             var real_node_radius = this.compute_node_radius()
             this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {
@@ -590,19 +588,11 @@ export default class Viewer {
 
             this.model.store_zoomTransform(transform)
 
-
-/*
-
-                this.G.selectAll('g.node')
-                    .selectAll('text.right')
-                    .style('font-size', d => {
-
-                        return d.subsampled ? on_screen_text_size : '0px';
+            var real_edges_width = this.compute_edge_width()
+            this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
 
 
-                    })
 
- */
 
         }
 
@@ -921,8 +911,8 @@ export default class Viewer {
         var x_tr = - this.hierarchy.x + 40
         var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
 
-
-        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(x_tr , y_tr).scale(h_scale) )
+        //this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(x_tr , y_tr).scale(h_scale) )
+        this.set_zoom(h_scale, x_tr, y_tr)
 
 
         var w = 0
@@ -939,75 +929,17 @@ export default class Viewer {
             w = posy > w ? posy : w
         })
 
-        //console.log(w*h_scale, this.width - 80, (this.width - 80)/(w*h_scale) )
 
         var ns = this.model.settings.tree.node_horizontal_size
         var w_scale = (this.width - 80)/(w*h_scale)
 
         this.modify_node_size('horizontal', (ns * w_scale) - ns )
 
+        var real_edges_width = this.compute_edge_width()
+        this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
 
 
 
-        /*
-
-        var vw = this.width
-        var tw = this.G.node().getBBox().width
-        var x_scale = tw/vw
-
-        console.log(x_scale, vw,tw)
-
-        var ns = this.model.settings.tree.node_horizontal_size
-
-        this.modify_node_size('horizontal', (ns * x_scale) )
-
-
-         */
-
-
-        //alert('BUG: You need to click again if its not correctly scaled, currently debugging that.')
-
-        /*
-
-        var get_height = function(that,d,c){
-
-            return that.model.settings.tree.node_vertical_size * Math.sqrt(that.getChildLeaves(d).length) * collapse_ratio_vertical
-        }
-
-
-        var vh = this.height
-        var th = this.G.node().getBBox().height
-        var m = vh - th
-
-        if (m >= 0){
-            console.log('need to zoom to fit')
-            return
-        }
-
-        m = -m
-
-        this.model.traverse(this.hierarchy, (d,c) => {
-
-
-            var ht  = d.data.leaves.length * this.model.settings.tree.node_vertical_size
-
-            if (ht < m) {
-
-
-                this.model.collapse(d.data, true)
-                this.apply_collapse_from_data_to_d3(d.data, d)
-
-                m -= ht
-                m += get_height(this, d, c) * this.model.settings.tree.node_vertical_size
-            }
-
-        })
-
-        this.build_d3_cluster()
-        this.render(this.hierarchy)
-
-
-         */
 
 
     }
