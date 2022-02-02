@@ -69,7 +69,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         let c = new Container(container_id);
         this.containers[container_id] = c;
 
-        if (this.bound_container.lenght < 2) {this.bound_container.push(c)}
+        if (this.bound_container.length < 2) {this.bound_container.push(c)}
         return c;
     }
 
@@ -509,10 +509,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         xhr.open('GET', this.settings.share_get + session_token, false);
         xhr.send(null);
-
-
-
-
 
 
 

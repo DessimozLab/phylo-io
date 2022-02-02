@@ -40,6 +40,7 @@ export default class Interface {
         this.container_d3.selectAll(".corner_placeholder").remove()
         this.container_d3.selectAll(".modal_data").remove()
         this.remove_scale()
+        this.remove_color_legend()
         this.container_d3.selectAll(".menu_settings").remove()
         this.container_d3.selectAll(".empty_message").remove()
         this.container_d3.select('#histogram-legend').remove();

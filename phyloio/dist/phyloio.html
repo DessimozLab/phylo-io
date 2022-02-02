@@ -60,6 +60,8 @@
 <main>
 
 
+
+
     <!-- Draggable DIV -->
     <div id="distance_window">
         <!-- Include a header DIV with the same name as the draggable DIV, followed by "header" -->
@@ -77,6 +79,9 @@
 
     <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41);
 }">
+
+
+
         <a href="https://zoo.vital-it.ch/viewer/" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
             <i class="bi-triangle" style="font-size: 24px;color: white  "></i>
             <small style="font-size: xx-small; color: white">PHYLO.IO</small>
@@ -291,6 +296,16 @@
             </div>
         </div>
     </div>
+
+
+    <div class="position-fixed top-50 start-50 translate-middle"  id="error_remote_data" style="display: none; z-index: 10000000">
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>OUPS!</strong>  <span id="error_message_remote"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
 
 </main>
 
@@ -568,62 +583,71 @@
 
         if (entry[0] === 'session'){
 
-            try {
-
-                var l = function (pickle) {
-
-                    pickle = JSON.parse(pickle)
-
-                    start_with_json(pickle)
-
-                    /*
-
-                for(var key in pickle.settings) {
-                    var value = pickle.settings[key];
-                    phylo.settings[key] = value;
-                }
-
-                start_phylo(phylo.settings.compareMode)
 
 
-                let cs = Object.values(pickle.containers)
-                let csp = Object.values(phylo.containers)
+            var l = function (pickle) {
 
-                for (var i = 0; i < cs.length; i++) {
+                pickle = JSON.parse(pickle)
 
-                    var ms = cs[i].models
+                start_with_json(pickle)
 
+                /*
 
-                    for (var j = 0; j < ms.length; j++) {
-                        csp[i].add_tree(ms[j].data, ms[j].settings, false)
-                        csp[i].models[csp[i].models.length-1].add_circularity_back()
-                    }
-
-                    container_object = csp[i]
-
-                    container_object.viewer.set_data(container_object.models[container_object.current_model]);
-                    container_object.viewer.render(container_object.viewer.hierarchy);
-                    container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
-
-
-                }
-
-                phylo.start(recompute=true)
-
-                display_distance_menu(phylo.settings.compareMode)
-
-                 */
-
-
-                }
-
-                phylo.get_share_data(entry[1], function (d) {
-                    l(d)
-                })
-
-            } catch (error) {
-                console.log('Data could not be fetched from phylo.io cloud')
+            for(var key in pickle.settings) {
+                var value = pickle.settings[key];
+                phylo.settings[key] = value;
             }
+
+            start_phylo(phylo.settings.compareMode)
+
+
+            let cs = Object.values(pickle.containers)
+            let csp = Object.values(phylo.containers)
+
+            for (var i = 0; i < cs.length; i++) {
+
+                var ms = cs[i].models
+
+
+                for (var j = 0; j < ms.length; j++) {
+                    csp[i].add_tree(ms[j].data, ms[j].settings, false)
+                    csp[i].models[csp[i].models.length-1].add_circularity_back()
+                }
+
+                container_object = csp[i]
+
+                container_object.viewer.set_data(container_object.models[container_object.current_model]);
+                container_object.viewer.render(container_object.viewer.hierarchy);
+                container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
+
+
+            }
+
+            phylo.start(recompute=true)
+
+            display_distance_menu(phylo.settings.compareMode)
+
+             */
+
+
+            }
+
+            phylo.get_share_data(entry[1], function (d) {
+
+                try {
+
+                    if (JSON.parse(d).result == 'Error'){
+                        throw new Error('Empty received data');
+                    }
+                    l(d)
+
+                } catch (error) {
+                    document.getElementById("error_remote_data").style.display = 'block';
+                    document.getElementById("error_message_remote").innerHTML = 'It seems your data was not found.'
+                }
+            })
+
+
 
 
         }
@@ -732,7 +756,9 @@
                     container_object.viewer.render(container_object.viewer.hierarchy);
                     container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
                 } catch (error) {
-                console.log("Invalid data")
+                    document.getElementById("error_remote_data").style.display = 'block';
+                    document.getElementById("error_message_remote").innerHTML = 'It seems the data is corrupted or obselete.'
+                    csp[i].current_model = 0
                     csp[i].remove_all_trees()
             }
 
