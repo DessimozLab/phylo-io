@@ -1377,10 +1377,12 @@ export default class Viewer {
         var height = 80;
         var svgHeight = height + 25;
         var legendRectSize = 20;
-        var margin = 25;
+        var left_margin = 25;
+        var top_margin = 50;
         var legendTxtSize = 13;
         // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
-        var legendTxtYPadding = Math.round(((legendRectSize - legendTxtSize) / 2) - 1);
+        var legendTxtYPadding = (legendRectSize + legendTxtSize) / 2
+
         if(this.model.settings.stack.type == "genes"){
             var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
         } else {
@@ -1390,13 +1392,11 @@ export default class Viewer {
         // to position legends correctly
         var rects = dataLabels.length - 1;
 
-        var dy = (this.height - height - 25)
 
-
-        var legendSvg = d3.select("#svg" + this.uid).append("svg")//.append("g").attr("transform", "translate(25," + dy  + ")")
+        var legendSvg = d3.select("#svg" + this.uid).append("svg")
             .attr("id", "histogram-legend")
-            .attr("x", margin)
-            .attr("y", margin)
+            .attr("x", left_margin)
+            .attr("y", top_margin)
             .attr("width", width + "px")
             .attr("height", svgHeight + "px")
 
@@ -1435,10 +1435,10 @@ export default class Viewer {
             })
             .attr('x', 110 + legendRectSize + 5)
             .attr('y', function(d, i){
-                return i * legendRectSize + legendTxtSize + legendTxtYPadding;
+                return i * legendRectSize + legendTxtYPadding;
             })
             .attr('text-anchor', 'start')
-            .attr('alignment-baseline', 'middle')
+            .attr('alignment-baseline', 'baseline')
             .attr("font-size", legendTxtSize).attr("stroke", "black");
 
 

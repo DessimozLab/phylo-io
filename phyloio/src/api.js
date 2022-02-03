@@ -196,23 +196,17 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
 
 
-        // if (Rooted vs Rooted) --> clade distance
-        if (mod1.rooted && mod2.rooted){
-            var r =  compute_RF_Euc(mod1.table,mod2.table)
-            this.settings.no_distance_message = true
-            this.distance.clade = r.RF
-            this.distance.Cl_good = r.good
-            this.distance.Cl_left = r.L
-            this.distance.Cl_right = r.R
 
-        }
+        // COMPUTE CLADE DISTANCE ON ACTUAL TOPOLOGY
+        var r =  compute_RF_Euc(mod1.table,mod2.table)
+        this.settings.no_distance_message = true
+        this.distance.clade = r.RF
+        this.distance.Cl_good = r.good
+        this.distance.Cl_left = r.L
+        this.distance.Cl_right = r.R
 
 
-
-
-        // Reroot trees --> RF distance
-        //  if (Rooted vs Unrooted) --> warning message
-
+        // COMPUTE RF ON UNROOTED TREE
 
 
         // reroot both of them
@@ -220,20 +214,14 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.build_hierarchy_mockup(), intersection[0])
 
 
-
         // build tables
         var X1 = build_table(hierarchy_mockup_rerooted1)
         var X2 = build_table(hierarchy_mockup_rerooted2)
+        var r2 =  compute_RF_Euc(X1,X2)
 
 
 
-        var r2 =  compute_RF_Euc(mod1.table,mod2.table)
-
-
-
-        if (!mod1.rooted && mod2.rooted) {this.settings.no_distance_message = 'Be careful only the left tree is unrooted'}
-        else if (mod1.rooted && !mod2.rooted) {this.settings.no_distance_message = 'Be careful only the right tree is unrooted'}
-        else {this.settings.no_distance_message = true}
+        this.settings.no_distance_message = true
 
         this.distance.RF = r2.RF
         this.distance.RF_good = r2.good
@@ -248,9 +236,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
 
 
+
         function compute_RF_Euc(X1,X2){
-            var X1 = mod1.table
-            var X2 = mod2.table
 
             var n_good  = 0
             var euclidian = 0
@@ -314,10 +301,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             }
         }
-
-
-
-
 
 
         /*
@@ -519,30 +502,61 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
         var bool_distance_computed = (this.distance.RF !== false || this.distance.Euc !== false  || this.distance.clade !== false || this.settings.no_distance_message !== true   )
         document.getElementById("distance_window").style.display  = (this.settings.compareMode && bool_distance_computed ) ?  'block': 'none';
 
-        document.getElementById("mydivbody").innerHTML = " "
+        var divdiv = document.getElementById("mydivbody");
+
+        divdiv.innerHTML = "<ol class=\"list-group \">\n"
+
 
         if (this.distance.RF !== false) {
-            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Robinson-Foulds:</strong> {} <br>'.format(this.distance.RF) +
-            ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.RF_good, this.distance.RF_left, Math.round(this.distance.RF_good /this.distance.RF_left*100) ) +
-                ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.RF_good, this.distance.RF_right, Math.round(this.distance.RF_good/this.distance.RF_right*100) ) +
-                ' </p>'
+
+            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
+                "    <div class=\"ms-2 me-auto\">\n" +
+                "      <div class=\"fw-bold\" style=\"text-align:left;\">Robinson-Foulds</div>\n" +
+                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.RF_good, this.distance.RF_left, Math.round(this.distance.RF_good /this.distance.RF_left*100) ) +
+                "      Right tree: {}/{} ({}%)\n".format(this.distance.RF_good, this.distance.RF_right, Math.round(this.distance.RF_good /this.distance.RF_right*100) ) +
+                "    </small> </div>\n" +
+                "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.RF) +
+                "  </li>"
         }
+
+
 
         if (this.distance.clade !== false) {
 
-            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Clade:</strong> {} <br>'.format(this.distance.clade) +
-                ' <small> Correct branch (Left tree): {}/{} ({}%) </small> <br>'.format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.RF_good /this.distance.Cl_left*100) ) +
-                ' <small> Correct branch (Right tree): {}/{} ({}%) </small>'.format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.RF_good/this.distance.Cl_right*100) ) +
-                ' </p>'
+
+            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
+                "    <div class=\"ms-2 me-auto\">\n" +
+                "      <div class=\"fw-bold\" style=\"text-align:left;\">Clade</div>\n" +
+                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.RF_good /this.distance.Cl_left*100) ) +
+                "      Right tree: {}/{} ({}%)\n".format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.RF_good/this.distance.Cl_right*100) ) +
+                "    </small> </div>\n" +
+                "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.clade) +
+                "  </li>"
+
+
         }
 
         if (this.distance.Euc !== false) {
-            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Euclidian:</strong> {} </p>'.format(this.distance.Euc);
+
+            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
+                "    <div class=\"ms-2 me-auto\">\n" +
+                "      <div class=\"fw-bold\" style=\"text-align:left;\">Euclidian</div> </div>\n" +
+                "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.Euc) +
+                "  </li>"
         }
 
         if (this.settings.no_distance_message != true) {
-            document.getElementById("mydivbody").innerHTML += ' <p> <strong>Warning:</strong> {} </p>'.format(this.settings.no_distance_message);
+            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
+                "    <div class=\"ms-2 me-auto\">\n" +
+                "      <div class=\"fw-bold\" style=\"text-align:left;\"><strong>Warning:</strong> {}</div> </div>\n".format(this.settings.no_distance_message)
+                "  </li>"
         }
+
+
+
+
+        divdiv.innerHTML +=   "</ol>"
+
 
     }
 

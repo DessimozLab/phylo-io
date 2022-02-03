@@ -129,6 +129,7 @@ export default class Container {
             var z = m.zoom
             if (z) {
                 this.viewer.set_zoom(z.k, z.x, z.y)
+
             }
 
             if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
