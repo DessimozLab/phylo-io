@@ -565,8 +565,8 @@ export default class Viewer {
 
                 if (!d.children) {
 
-                    if (d.data.collapse){
-                        d.subsampled  = d.data.triangle_height >= on_screen_text_size  ? true : false
+                    if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
+                        d.subsampled  = true
                         return
                     }
 
