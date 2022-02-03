@@ -140,6 +140,7 @@
 
     <!-- Modals -->
     <div class="modal" id="modal_load" tabindex="-1">
+
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -300,10 +301,6 @@
 
     <div class="position-fixed top-50 start-50 translate-middle"  id="error_remote_data" style="display: none; z-index: 10000000">
 
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>OUPS!</strong>  <span id="error_message_remote"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
     </div>
 
 
@@ -322,6 +319,20 @@
        else {
            navigator.clipboard.writeText(copyText.innerText);
        }
+
+   }
+
+   var create_alert = function(div, message){
+
+       var container = document.getElementById(div);
+
+
+       var h = ' <div class="alert alert-danger alert-dismissible show fade"  role="alert"> ' +
+           '<span>' +message+'</span>' +
+           ' <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> '
+            ' </div>'
+
+       container.innerHTML= h;
 
    }
 
@@ -383,27 +394,50 @@
 
     // CLICK BINDING
     document.getElementById("menu_compare_mode").onclick = function() {
-        compare = !compare
-
-
-        var data = JSON.parse(phylo.get_json_pickle())
-        data.settings.compareMode = compare
-
 
         if (compare){
+
+
+            message = '<strong>Attention!</strong> ' +
+            ' All data in the right viewer will be discarded ' +
+            '<button type="button" id="button_accept_compare_delete" class="btn btn-danger btn-sm">Accept</button>'
+
+
+            document.getElementById("error_remote_data").style.display = 'block';
+
+            create_alert('error_remote_data', message)
+
+            document.getElementById("button_accept_compare_delete").onclick = function() {
+
+                document.getElementById("error_remote_data").style.display = 'none';
+                document.getElementById("error_remote_data").innerHTML = '';
+
+                compare = !compare
+
+
+                var data = JSON.parse(phylo.get_json_pickle())
+                data.settings.compareMode = compare
+                data.containers = [data.containers[0]]
+
+                start_with_json(data)
+
+            }
+
+
+        }
+
+
+        else{
+            compare = !compare
+
+            var data = JSON.parse(phylo.get_json_pickle())
+            data.settings.compareMode = compare
+
             data.containers.push({'models' : [],
                 'settings'  : null})
 
-
+            start_with_json(data)
         }
-        else {
-            var new_cont = data.containers[0]
-            new_cont.models =  new_cont.models.concat(data.containers[1].models)
-            data.containers = [new_cont]
-        }
-
-
-        start_with_json(data)
 
     };
 
@@ -412,6 +446,7 @@
     };
 
     document.getElementById('load_session_file').onclick = () => {
+
         var file = document.getElementById('load_session_input').files[0];
 
         $('#modal_load').modal('hide');
@@ -642,8 +677,13 @@
                     l(d)
 
                 } catch (error) {
+
                     document.getElementById("error_remote_data").style.display = 'block';
-                    document.getElementById("error_message_remote").innerHTML = 'It seems your data was not found.'
+
+                    var message = '<strong>OUPS!</strong>  It seems your data was not found.'
+
+                    create_alert('error_remote_data', message)
+
                 }
             })
 
@@ -756,8 +796,14 @@
                     container_object.viewer.render(container_object.viewer.hierarchy);
                     container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
                 } catch (error) {
+
                     document.getElementById("error_remote_data").style.display = 'block';
-                    document.getElementById("error_message_remote").innerHTML = 'It seems the data is corrupted or obselete.'
+
+                    var message = ' <strong>OUPS!</strong>  It seems the data is corrupted or obselete.'
+
+                    create_alert('error_remote_data', message)
+
+
                     csp[i].current_model = 0
                     csp[i].remove_all_trees()
             }
