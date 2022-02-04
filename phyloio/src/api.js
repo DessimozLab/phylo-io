@@ -527,8 +527,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
                 "    <div class=\"ms-2 me-auto\">\n" +
                 "      <div class=\"fw-bold\" style=\"text-align:left;\">Clade</div>\n" +
-                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.RF_good /this.distance.Cl_left*100) ) +
-                "      Right tree: {}/{} ({}%)\n".format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.RF_good/this.distance.Cl_right*100) ) +
+                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.Cl_good /this.distance.Cl_left*100) ) +
+                "      Right tree: {}/{} ({}%)\n".format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.Cl_good/this.distance.Cl_right*100) ) +
                 "    </small> </div>\n" +
                 "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.clade) +
                 "  </li>"
