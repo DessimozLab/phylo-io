@@ -31,6 +31,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'compute_distance': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
+        this.undoing = false
 
 
     }
@@ -60,6 +61,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'compute_distance': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
+        this.undoing = false
 
 
     }

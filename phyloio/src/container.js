@@ -18,7 +18,24 @@ export default class Container {
         this.settings = {}; // per container settings
         this.current_model = 0; // current model index
         this.viewer = new Viewer(this); // attach Viewer()
+        this.history_actions = [] //  for Undo feature
 
+    }
+
+    add_action(name, fn_object, counter_fn, argu){
+
+        if (!phylo.undoing){
+            this.history_actions.push({'name': name, 'fonct':counter_fn, 'fonction_obj':fn_object, 'argu': argu})
+        }
+
+    }
+
+    get_last_action(){
+        return this.history_actions[this.history_actions.length-1]
+    }
+
+    pop_last_action(){
+        return this.history_actions.pop()
     }
 
     // create and add Model() configure with params
@@ -104,10 +121,13 @@ export default class Container {
     // shift the pointer (if possible) in the model list and update viewer model
     shift_model(offset, store_old) {
 
+
         var store_old = (typeof store_old !== 'undefined') ? store_old : true;
 
 
         if (this.current_model + offset >= 0 && this.current_model + offset <= this.models.length -1 ) {
+
+            this.add_action('Change tree',  this, this.shift_model, [-offset, store_old] )
 
             if (store_old){
                 // store the current zoom information

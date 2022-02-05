@@ -78,8 +78,8 @@ export default class Interface {
         // TOP RIGHT
         this.add_search()
         this.add_export()
-        //this.add_undo()
         this.add_settings()
+        this.add_undo()
 
         // COLOR LEGEND
         if (phylo.settings.compareMode){
@@ -870,6 +870,15 @@ export default class Interface {
         this.tr_buttons.append('button')
             .attr('class', ' square_button')
             .style('margin', '2px')
+            .on("click", d => {
+                phylo.undoing = true
+                var cta = this.container_object.pop_last_action();
+                if (cta) {
+                    console.log(cta)
+                    cta.fonct.apply(cta.fonction_obj, cta.argu);
+                }
+                phylo.undoing = false
+            })
             .append("div")
             .attr("class","label")
             .append('i')
