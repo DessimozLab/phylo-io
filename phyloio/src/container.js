@@ -22,10 +22,12 @@ export default class Container {
 
     }
 
-    add_action(name, fn_object, counter_fn, argu){
+    add_action(name, fn_object, counter_fn, argu, refresh_interface){
+
+        var refresh_interface = (typeof refresh_interface !== 'undefined') ? refresh_interface : false;
 
         if (!phylo.undoing){
-            this.history_actions.push({'name': name, 'fonct':counter_fn, 'fonction_obj':fn_object, 'argu': argu})
+            this.history_actions.push({'name': name, 'fonct':counter_fn, 'fonction_obj':fn_object, 'argu': argu, 'refresh_interface' : refresh_interface})
         }
 
     }

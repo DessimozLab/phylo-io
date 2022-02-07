@@ -313,13 +313,6 @@ export default class Interface {
             .attr('class', ' square_button screen_toggle')
 
 
-        /*
-        sd.append("div")
-            .attr("class","label")
-            .style('display', 'inline')
-            .text(d => {return "[" + (this.container_object.current_model +1)  + " / "  + this.container_object.models.length + "] "})
-*/
-
         sd.append("div")
             .style('cursor', 'text')
             .attr('id', 'input_edit_name'+ this.container_object.uid)
@@ -390,6 +383,8 @@ export default class Interface {
                 event.preventDefault();
                 edit_name_ok.style.display = 'none';
                 edit_name_trash.style.display = 'none';
+                var old_name = this.viewer.model.get_name()
+                this.container_object.add_action('Rename tree',  this.viewer.model, this.viewer.model.set_name, [old_name], true )
                 this.viewer.model.set_name(edit_name.textContent)
                 return false;
             }
@@ -422,6 +417,8 @@ export default class Interface {
         });
 
         edit_name_ok.addEventListener('click', (event) => {
+            var old_name = this.viewer.model.get_name()
+            this.container_object.add_action('Rename tree',  this.viewer.model, this.viewer.model.set_name, [old_name], true )
             this.viewer.model.set_name(edit_name.textContent)
 
         });
@@ -874,8 +871,13 @@ export default class Interface {
                 phylo.undoing = true
                 var cta = this.container_object.pop_last_action();
                 if (cta) {
-                    console.log(cta)
                     cta.fonct.apply(cta.fonction_obj, cta.argu);
+
+                    if (cta.refresh_interface){
+                        let empty = this.container_object.models.length <= 0
+                        this.container_object.interface = new Interface(this.viewer, this.container_object, empty )
+                    }
+
                 }
                 phylo.undoing = false
             })
