@@ -835,6 +835,13 @@ export default class Viewer {
 
     }
 
+    apply_unswap_from_data_to_d3(data, d){
+
+        var e = d.children.shift()
+        d.children.push(e)
+
+    }
+
     set_zoom(k,x,y) {
         d3.select('#svg' + this.uid )
             .transition()

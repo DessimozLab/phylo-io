@@ -400,6 +400,12 @@ export default class Model {
 
     }
 
+    unswap_subtrees(data){
+        var e = data.children.shift()
+        data.children.push(e)
+
+    }
+
     reroot(data){
 
         // extract meta data (zoom)

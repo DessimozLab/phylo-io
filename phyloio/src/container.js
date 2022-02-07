@@ -178,7 +178,7 @@ export default class Container {
         }
         else if (action === 'collapseAll') {
             this.add_action('Collapse All',  this, this.trigger_, ['expandAll', data, node] )
-            this.models[this.current_model].collapseAll(data, true)
+            m.collapseAll(data, true)
             this.viewer.apply_collapseAll_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
             this.viewer.render(node)
@@ -186,16 +186,25 @@ export default class Container {
         }
         else if (action === 'expandAll') {
             this.add_action('Expand All',  this, this.trigger_, ['collapseAll', data, node] )
-            this.models[this.current_model].collapseAll(data, false)
+            m.collapseAll(data, false)
             this.viewer.apply_expandAll_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
             this.viewer.render(node)
 
         }
         else if (action === 'swap') {
-
-            this.models[this.current_model].swap_subtrees(data)
+            this.add_action('Swap',  this, this.trigger_, ['unswap', data, node] )
+            m.swap_subtrees(data)
             this.viewer.apply_swap_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.compute_topology_and_render_bounded_viewer()
+            this.viewer.render(node)
+
+
+        }
+        else if (action === 'unswap') {
+            m.unswap_subtrees(data)
+            this.viewer.apply_unswap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
             this.compute_topology_and_render_bounded_viewer()
             this.viewer.render(node)
@@ -219,11 +228,10 @@ export default class Container {
 
         }
         else if (action === 'trim'){
-            var mod = this.models[this.current_model]
-            mod.trim(data)
-            this.viewer.set_data(mod)
-            mod.hierarchy_mockup = mod.build_hierarchy_mockup()
-            mod.table = build_table(mod.hierarchy_mockup)
+            m.trim(data)
+            this.viewer.set_data(m)
+            m.hierarchy_mockup = m.build_hierarchy_mockup()
+            m.table = build_table(m.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
             if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
                 phylo.compute_distance()
