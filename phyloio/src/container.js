@@ -78,8 +78,6 @@ export default class Container {
                 }
             }
 
-            console.log(this.current_model, this.models)
-
         }
 
 
@@ -168,14 +166,18 @@ export default class Container {
     // send action trigger to model, update the data/build d3 data & render the viewer
     trigger_(action, data, node){
 
+        var m = this.models[this.current_model];
+
         if (action === 'collapse') {
-            this.models[this.current_model].collapse(data)
+            this.add_action('Collapse',  this, this.trigger_, [action, data, node] )
+            m.collapse(data)
             this.viewer.apply_collapse_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
             this.viewer.render(node)
 
         }
         else if (action === 'collapseAll') {
+            this.add_action('Collapse All',  this, this.trigger_, ['expandAll', data, node] )
             this.models[this.current_model].collapseAll(data, true)
             this.viewer.apply_collapseAll_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
@@ -183,6 +185,7 @@ export default class Container {
 
         }
         else if (action === 'expandAll') {
+            this.add_action('Expand All',  this, this.trigger_, ['collapseAll', data, node] )
             this.models[this.current_model].collapseAll(data, false)
             this.viewer.apply_expandAll_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
