@@ -213,12 +213,12 @@ export default class Container {
         }
         else if (action === 'reroot'){
 
-            var mod = this.models[this.current_model]
-            mod.reroot(data)
-            mod.rooted = true
-            this.viewer.set_data(mod)
-            mod.hierarchy_mockup = mod.build_hierarchy_mockup()
-            mod.table = build_table(mod.hierarchy_mockup)
+            this.add_action('Reroot',  this, this.trigger_, ['reroot', this.viewer.hierarchy.children[0], null] )
+            m.reroot(data)
+            m.rooted = true
+            this.viewer.set_data(m)
+            m.hierarchy_mockup = m.build_hierarchy_mockup()
+            m.table = build_table(m.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
             if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
