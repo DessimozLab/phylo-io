@@ -497,37 +497,74 @@ export default class Model {
 
     }
 
-    trim(data){ // todo place at same position as father
-
-
-        function remove_child(parent, child){
-
-            const index = parent.children.indexOf(child);
-            if (index > -1) {
-                parent.children.splice(index, 1);
-            }
-
-        }
+    trim(branch){ // todo place at same position as father
 
         // source and target node of the clicked edges
-        var parent = data.data.parent
-        var child = data.data
+        var parent = branch.parent
+        var child = branch
 
-        remove_child(parent,child)
-
-        if (parent.children.length === 1) {
-            var single_child = parent.children[0]
-            single_child.branch_length += parent.branch_length
-            var grand_parent = parent.parent
-
-            remove_child(grand_parent, parent)
-            grand_parent.children.push(single_child)
-            single_child.parent = grand_parent
-
+        var untrim_data = {
+            "parent" : null,
+            "floating" : null,
+            "untrim_data" : null,
         }
 
 
+        if (parent.children.length > 2) {
+            this.detach_child(parent,child)
 
+            untrim_data.parent = parent;
+            untrim_data.floating = false;
+            untrim_data.child =  child;
+
+            return untrim_data;
+        }
+
+        else{
+            this.detach_child(parent.parent, parent)
+            var sibling = parent.children[0] == child ? parent.children[1] : parent.children[0]
+            this.detach_child(parent, sibling)
+            this.attach_child(parent.parent, sibling)
+
+            untrim_data.parent = parent.parent;
+            untrim_data.floating = parent;
+            untrim_data.child =  sibling;
+
+            return untrim_data;
+        }
+
+    }
+
+    untrim(parent, floating, child){
+
+
+
+        if (floating != false){
+            this.detach_child(parent,child)
+            this.attach_child(parent,floating)
+            this.attach_child(floating,child)
+        }
+        else {
+            this.attach_child(parent,child)
+        }
+    }
+
+    detach_child(parent, child){
+        const index = parent.children.indexOf(child);
+        if (index > -1) {
+            parent.children.splice(index, 1);
+        }
+    }
+
+    attach_child(parent,child_to_adopt){
+        parent.children.push(child_to_adopt);
+        child_to_adopt.parent = parent;
+    }
+
+    interleave_node(parent, to_insert,child){
+        this.detach_child(parent, child)
+        this.attach_child(parent,to_insert)
+        this.attach_child(to_insert, child)
     }
 
     store_zoomTransform(zoom){

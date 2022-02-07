@@ -228,7 +228,19 @@ export default class Container {
 
         }
         else if (action === 'trim'){
-            m.trim(data)
+            var untrim_data = m.trim(data.data)
+            this.add_action('Trim',  this, this.trigger_, ['untrim', untrim_data, null] )
+            this.viewer.set_data(m)
+            m.hierarchy_mockup = m.build_hierarchy_mockup()
+            m.table = build_table(m.hierarchy_mockup)
+            this.compute_topology_and_render_bounded_viewer(true)
+            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
+                phylo.compute_distance()
+            }
+            this.viewer.render(this.viewer.hierarchy)
+        }
+        else if (action === 'untrim'){
+            m.untrim(data.parent, data.floating, data.child)
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
