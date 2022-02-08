@@ -497,7 +497,7 @@ export default class Model {
 
     }
 
-    trim(branch){ // todo place at same position as father
+    trim(branch){
 
         // source and target node of the clicked edges
         var parent = branch.parent
@@ -507,11 +507,13 @@ export default class Model {
             "parent" : null,
             "floating" : null,
             "untrim_data" : null,
+            "index": null,
+            "root_mode": false,
         }
 
 
         if (parent.children.length > 2) {
-            this.detach_child(parent,child)
+            untrim_data.index = this.detach_child(parent,child)
 
             untrim_data.parent = parent;
             untrim_data.floating = false;
@@ -521,44 +523,82 @@ export default class Model {
         }
 
         else{
-            this.detach_child(parent.parent, parent)
-            var sibling = parent.children[0] == child ? parent.children[1] : parent.children[0]
-            this.detach_child(parent, sibling)
-            this.attach_child(parent.parent, sibling)
 
-            untrim_data.parent = parent.parent;
-            untrim_data.floating = parent;
-            untrim_data.child =  sibling;
+            if (typeof parent.parent == 'undefined'){ // parent is root
+                untrim_data.root_mode = true;
 
-            return untrim_data;
+                var sibling = parent.children[0] == child ? parent.children[1] : parent.children[0]
+                untrim_data.index = this.detach_child(parent, sibling)
+
+                this.data = sibling;
+
+                untrim_data.parent = null;
+                untrim_data.floating = parent;
+                untrim_data.child =  sibling;
+
+                return untrim_data;
+
+            }
+
+            else{
+
+                this.detach_child(parent.parent, parent)
+                var sibling = parent.children[0] == child ? parent.children[1] : parent.children[0]
+                untrim_data.index = this.detach_child(parent, sibling)
+                this.attach_child(parent.parent, sibling)
+
+                untrim_data.parent = parent.parent;
+                untrim_data.floating = parent;
+                untrim_data.child =  sibling;
+
+                return untrim_data;
+
+            }
+
+
         }
 
     }
 
-    untrim(parent, floating, child){
-
-
+    untrim(parent, floating, child, index, root_mode){
 
         if (floating != false){
-            this.detach_child(parent,child)
-            this.attach_child(parent,floating)
-            this.attach_child(floating,child)
+            if (root_mode){
+                this.data = floating
+                this.attach_child(floating,child, index)
+
+            }else{
+                this.detach_child(parent,child)
+                this.attach_child(parent,floating)
+                this.attach_child(floating,child, index)
+            }
+
         }
         else {
-            this.attach_child(parent,child)
+            this.attach_child(parent,child, index)
         }
     }
 
     detach_child(parent, child){
-        const index = parent.children.indexOf(child);
+        var index = parent.children.indexOf(child);
         if (index > -1) {
             parent.children.splice(index, 1);
         }
+        return index
     }
 
-    attach_child(parent,child_to_adopt){
-        parent.children.push(child_to_adopt);
-        child_to_adopt.parent = parent;
+    attach_child(parent,child_to_adopt, index){
+
+        if (typeof index !== 'undefined') {
+            parent.children.splice( index, 0, child_to_adopt );
+            child_to_adopt.parent = parent;
+
+        } else {
+            parent.children.push(child_to_adopt);
+            child_to_adopt.parent = parent;
+        }
+
+
     }
 
     interleave_node(parent, to_insert,child){

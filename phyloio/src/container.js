@@ -240,7 +240,7 @@ export default class Container {
             this.viewer.render(this.viewer.hierarchy)
         }
         else if (action === 'untrim'){
-            m.untrim(data.parent, data.floating, data.child)
+            m.untrim(data.parent, data.floating, data.child, data.index, data.root_mode)
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
