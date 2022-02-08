@@ -66,6 +66,8 @@ export default class Interface {
         //this.add_root_badge()
 
         // BOTTOM RIGHT
+
+        this.add_maximise()
         this.add_fit_height()
         this.add_zoom()
 
@@ -441,7 +443,23 @@ export default class Interface {
             .attr("class", "label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-arrows-alt ')
+            .attr('class', ' fas fa-compress ')
+    }
+
+    add_maximise() {
+
+        this.bottom_right.append('button')
+            .on('click', d => {
+                this.viewer.maximise_zoom()
+            })
+            .attr('class', ' square_button')
+            .style('margin', '2px')
+            .style('width', '32px')
+            .append("div")
+            .attr("class", "label")
+            .append('i')
+            .style('color', '#888')
+            .attr('class', ' fas fa-expand ')
     }
 
     // BADGE ROOTING

@@ -888,6 +888,42 @@ export default class Viewer {
 
     }
 
+    maximise_zoom(){
+
+
+        // Adjust Zoom-y to fit height
+        var r = this.get_height_hierarchy()
+        var vh = this.height - 80 // viewer
+        var th = (Math.abs(r.min_x)+Math.abs(r.max_x))
+        var h_scale = vh/th // ratio
+
+        var x_tr = - this.hierarchy.x + 40
+
+        var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
+        var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
+        this.set_zoom(h_scale, x_tr, y_tr)
+
+
+        var w = 0
+
+        this.hierarchy.leaves().forEach((e) => {
+            let posy = e.y
+            if (e.data.collapse){
+                posy += e.data.triangle_width
+            }
+            w = posy > w ? posy : w
+        })
+
+        var ns = this.model.settings.tree.node_horizontal_size
+        var w_scale = (this.width - 80)/(w*h_scale)
+
+        this.modify_node_size('horizontal', (ns * w_scale) - ns )
+
+        var real_edges_width = this.compute_edge_width()
+        this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
+
+    }
+
     fit_to_viewer_height(){
 
 
@@ -910,15 +946,17 @@ export default class Viewer {
 
         // Adjust Zoom-y to fit height
         var vh = this.height - 80 // MARGIN
-        var th = estimated_height // this.G.node().getBBox().height
+        var th = (Math.abs(r.min_x)+Math.abs(r.max_x))
+        //var th = estimated_height // this.G.node().getBBox().height
         var h_scale = vh/th
 
 
 
         var x_tr = - this.hierarchy.x + 40
-        var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
+        var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
+        var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
+        //var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
 
-        //this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(x_tr , y_tr).scale(h_scale) )
         this.set_zoom(h_scale, x_tr, y_tr)
 
 
