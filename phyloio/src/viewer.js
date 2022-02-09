@@ -890,7 +890,8 @@ export default class Viewer {
 
     maximise_zoom(){
 
-
+        var old_zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+        this.container_object.add_action('Stretch tree',  this, this.render_with_settings, [old_zoom.k, old_zoom.x,old_zoom.y,this.model.settings.tree.node_horizontal_size, []] )
         // Adjust Zoom-y to fit height
         var r = this.get_height_hierarchy()
         var vh = this.height - 80 // viewer
@@ -925,6 +926,10 @@ export default class Viewer {
     }
 
     fit_to_viewer_height(){
+
+        var collapsed = this.model.get_all_collapse(this.model.data)
+        var old_zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+        this.container_object.add_action('Compact tree',  this, this.render_with_settings, [old_zoom.k, old_zoom.x,old_zoom.y,this.model.settings.tree.node_horizontal_size, collapsed] )
 
 
         // Increment Collapsed Depth until "Visible leaf" > "Max visible leaves"
@@ -986,6 +991,27 @@ export default class Viewer {
 
 
 
+
+    }
+
+    render_with_settings(scale, x,y,node_size, collapsed){
+
+        if (collapsed.length > 0){
+            this.model.apply_collapse_to_list(collapsed)
+            this.set_data(this.model)
+            this.render(this.hierarchy)
+        }
+
+        this.set_zoom(scale, x, y)
+
+        var delta_node_size = -(this.model.settings.tree.node_horizontal_size - node_size)
+
+        if (delta_node_size!=0){
+            this.modify_node_size('horizontal',  -(this.model.settings.tree.node_horizontal_size - node_size)    )
+        }
+
+        var real_edges_width = this.compute_edge_width()
+        this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
 
     }
 

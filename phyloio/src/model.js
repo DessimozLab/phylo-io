@@ -105,87 +105,6 @@ export default class Model {
 
     }
 
-    OLD_build_table(){ // build table for RF
-
-        //console.log(this.data)
-        this.traverse(this.data, function(node,children){
-            delete node.left_
-            delete node.right_
-            delete node.weight_
-        }, null)
-
-        var n = this.data.leaves.length
-        var X = Array.from(new Array(n), _ => Array(2).fill(0));
-        var S2I = {} //Array(n).fill(0)
-        var I2S = Array(n).fill(0)
-        var n_edges = 0
-
-        var nz = []
-        this.traverse(this.data, null, function(node,children){nz.push(node)})
-        nz = nz.entries()
-
-        var n1 = nz.next()
-        var n2 = nz.next()
-        var i = 0
-
-        while (true) {
-            var node = n1.value[1]
-            var node2 = n2.value[1]
-            var p = node.parent
-            var ii;
-
-            // Do work
-            if (!(node.hasOwnProperty('children'))) {
-                I2S[i] = node.name
-                S2I[I2S[i]] = i
-                node.weight_ = 0
-                node.left_ = i
-                node.right_ = i
-                i += 1
-            }
-
-            // propagate up
-            if (typeof p != "undefined"){
-                p.left_ = p.hasOwnProperty('left_') ? Math.min(p.left_, node.left_) : node.left_
-                p.right_ = p.hasOwnProperty('right_') ? Math.max(p.right_, node.right_) : node.right_
-                if (p.hasOwnProperty('weight_')){ p.weight_ = p.weight_ + node.weight_ + 1} else {p.weight_ = node.weight_  +=1}
-            }
-
-            if (node.hasOwnProperty('children')) {
-
-                if( node2.hasOwnProperty('weight_') && node2.weight_ > 0 ){ii = node.left_} else { ii = node.right_}
-
-                X[ii][0] = node.left_
-                X[ii][1] = node.right_
-
-                n_edges += 1
-
-            }
-
-            n1 = n2
-            n2 = nz.next()
-
-            if (n2.done){
-                // process seed node, w=0
-                ii = node.right_
-                X[ii][0] = node.left_
-                X[ii][1] = node.right_
-                n_edges += 1
-                break
-            }
-
-
-
-
-
-
-        }
-
-        return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I}
-
-
-    }
-
     get_name(){
         return this.settings.name
     }
@@ -193,8 +112,6 @@ export default class Model {
     set_name(name){
         this.settings.name = name
     }
-
-
 
     traverse(o,func_pre, func_post) {
 
@@ -392,6 +309,29 @@ export default class Model {
             } , null)}
 
 
+    }
+
+    get_all_collapse(data){
+
+        var collapsed = []
+
+        this.traverse(data, (n,c) => {if (n.collapse){
+                collapsed.push(n)
+            }}, null)
+
+        return collapsed
+
+    }
+
+    apply_collapse_to_list(collapsed){
+        this.traverse(this.data, (n,c) => {
+            if (collapsed.includes(n)){
+                this.collapse(n, true)
+            }
+            else{
+                this.collapse(n, false)
+            }
+        } , null)
     }
 
     swap_subtrees(data){
