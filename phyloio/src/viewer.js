@@ -1068,10 +1068,12 @@ export default class Viewer {
     modify_node_size(axis, variation){
 
         if (axis === 'vertical') {
+            if ((this.model.settings.tree.node_vertical_size + variation) <= 0){return}
             this.model.settings.tree.node_vertical_size += variation
             this.interface.update_slider(this.interface.slider_v, this.model.settings.tree.node_vertical_size)
         }
         else if (axis === 'horizontal') {
+            if ((this.model.settings.tree.node_horizontal_size + variation) <= 0){return}
             this.model.settings.tree.node_horizontal_size += variation
             this.interface.update_slider(this.interface.slider_h, this.model.settings.tree.node_horizontal_size)
         }

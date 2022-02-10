@@ -405,6 +405,13 @@ export default class Container {
         }
     }
 
+    reroot_to_compared_tree(){
+        console.log('reroot')
+    }
+    reorder_to_compared_tree(){
+        console.log('reorder')
+    }
+
 };
 
 

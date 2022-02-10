@@ -1123,6 +1123,42 @@ export default class Interface {
             }
 
 
+        if (phylo.settings.compareMode) {
+            // equalize tree
+            this.menu_general_p.append("p").text('Equalize trees')
+                .style('margin-bottom', '0px')
+
+
+            this.equalize_div = this.menu_general_p.append('div')
+                .style('display', 'flex')
+                .style('margin-top', '0px')
+
+
+            this.equalize_div.append('button')
+                .attr('class', ' square_button')
+                .attr('id', 'equ_reroot' + this.viewer.uid)
+                .on("click", d => {
+                    this.container_object.reroot_to_compared_tree()
+                })
+                .style('margin', '2px')
+                .style('flex-grow', '1')
+                .append("text")
+                .text("Reroot")
+
+
+            this.equalize_div.append('button')
+                .attr('class', ' square_button')
+                .attr('id', 'equ_reorder' + this.viewer.uid)
+                .on("click", d => {
+                    this.container_object.reorder_to_compared_tree()
+                })
+                .style('margin', '2px')
+                .style('flex-grow', '1')
+                .append("text")
+                .text("Reorder")
+        }
+
+
         // ADD TOGGLE MULTIPLE SEARCH
         this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
@@ -1252,7 +1288,7 @@ export default class Interface {
 
         var f = f || function(){};
 
-        parent.append("p").text(label)
+        parent.append("p").text(label).style('margin-bottom','0px')
 
         var d = parent.append('div')
             .attr("class","slidecontainer")
@@ -1265,6 +1301,7 @@ export default class Interface {
             //.attr('step', step )
             .attr('id', id + this.container_object.uid )
             .on('click', (e) => { f(e)} )
+            .style('margin-bottom','12px')
 
         return input
 
