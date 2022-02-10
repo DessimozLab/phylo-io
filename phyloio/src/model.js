@@ -337,12 +337,13 @@ export default class Model {
     swap_subtrees(data){
          var e = data.children.pop()
         data.children.unshift(e)
-
+        data.leaves = this.get_leaves(data)
     }
 
     unswap_subtrees(data){
         var e = data.children.shift()
         data.children.push(e)
+        data.leaves = this.get_leaves(data)
 
     }
 

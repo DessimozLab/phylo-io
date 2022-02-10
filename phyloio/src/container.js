@@ -405,7 +405,7 @@ export default class Container {
         }
     }
 
-     reroot_to_compared_tree(){
+    reroot_to_compared_tree(){
 
 
         var con1 = phylo.bound_container[0]
@@ -418,7 +418,7 @@ export default class Container {
                 var model = ccc.viewer.model
 
                 var bcnode = model.data.children[0].elementBCN
-                if(bcnode && bcnode.parent ){
+                if(bcnode && bcnode.parent){
                     this.trigger_("reroot", bcnode)
                 }
             }
@@ -426,7 +426,81 @@ export default class Container {
     }
 
     reorder_to_compared_tree(){
-        console.log('reorder')
+
+        var con1 = phylo.bound_container[0]
+        var con2 =  phylo.bound_container[1]
+
+        if (con1 && con2){
+
+            if ( con1.models.length > 0 && con2.models.length > 0){
+                var ccc = (con1 == this) ? con2 : con1
+                var model_reference = ccc.viewer.model
+
+
+                this.viewer.model.traverse(this.viewer.model.data, null,  (child,d) => {
+
+
+
+                    if (child.children || child._children) {
+                        var leaves =   Array.from(child.leaves, (_, k) => _.name);
+                        var fixedLeaves = this.getCorrespondingNode(leaves, model_reference.data);
+
+                        if (leaves[0] !== fixedLeaves[0] && leaves[leaves.length - 1] !== fixedLeaves[fixedLeaves.length - 1]) {
+                            this.reorder_leaves(child);
+                        }
+                    }
+                })
+
+                this.viewer.set_data(this.viewer.model)
+                this.viewer.render(this.viewer.hierarchy)
+
+            }
+        }
+
+    }
+
+    getCorrespondingNode(treeLeaves, ifixedTree) {
+
+        var bestCorrespondingFixTreeLeaves = [];
+        var bestCount = 0;
+
+        this.viewer.model.traverse(ifixedTree, null,  (child,d) => {
+
+
+            if (child.children || child._children) {
+                var fixedTreeLeaves = Array.from(child.leaves, (_, k) => _.name);
+                var count = 0;
+                for (var i = 0; i < fixedTreeLeaves.length; i++) {
+                    if (treeLeaves.indexOf(fixedTreeLeaves[i]) !== -1) {
+                        count += 1;
+                    }
+                }
+
+                if (count > bestCount) {
+                    bestCorrespondingFixTreeLeaves = fixedTreeLeaves;
+                    bestCount = count;
+                }
+
+            }
+
+        })
+
+        return bestCorrespondingFixTreeLeaves;
+    }
+
+    reorder_leaves(d){
+
+        var bocal;
+
+        if (d.children) {bocal = d.children }
+        else if (d._children) {bocal = d._children }
+        else {return}
+
+        var e = bocal.pop()
+        bocal.unshift(e)
+        d.leaves = this.viewer.model.get_leaves(d)
+
+
     }
 
 };
