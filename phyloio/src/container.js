@@ -1,7 +1,7 @@
 import Viewer from './viewer.js'
 import Model from './model.js'
 import Interface from "./interface";
-const { compute_visible_topology_similarity } = require('./comparison.js')
+const { compute_visible_topology_similarity, BCN } = require('./comparison.js')
 const { build_table } = require('./utils.js')
 
 
@@ -213,7 +213,7 @@ export default class Container {
         }
         else if (action === 'reroot'){
 
-            this.add_action('Reroot',  this, this.trigger_, ['reroot', this.viewer.hierarchy.children[0], null] )
+            this.add_action('Reroot',  this, this.trigger_, ['reroot', this.viewer.hierarchy.children[0].data, null] )
             m.reroot(data)
             m.rooted = true
             this.viewer.set_data(m)
@@ -405,9 +405,26 @@ export default class Container {
         }
     }
 
-    reroot_to_compared_tree(){
-        console.log('reroot')
+     reroot_to_compared_tree(){
+
+
+        var con1 = phylo.bound_container[0]
+        var con2 =  phylo.bound_container[1]
+
+        if (con1 && con2){
+
+            if ( con1.models.length > 0 && con2.models.length > 0){
+                var ccc = (con1 == this) ? con2 : con1
+                var model = ccc.viewer.model
+
+                var bcnode = model.data.children[0].elementBCN
+                if(bcnode && bcnode.parent ){
+                    this.trigger_("reroot", bcnode)
+                }
+            }
+        }
     }
+
     reorder_to_compared_tree(){
         console.log('reorder')
     }

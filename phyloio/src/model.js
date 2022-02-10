@@ -356,8 +356,8 @@ export default class Model {
 
 
         // source and target node of the clicked edges
-        var parent = data.data.parent
-        var child = data.data
+        var parent = data.parent
+        var child = data
 
         // insert new root node between target and source and connect
         root.children.push(child)

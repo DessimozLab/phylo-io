@@ -66,10 +66,6 @@ function assign_correspondingLeaf(t1,t2){
  */
 function getVisibleBCNs(tree1, tree2, recalculate) {
 
-    if (recalculate === undefined) {
-        recalculate = true;
-    }
-
     function getAllBCNs(d, t) {
 
         var children =  getChildren(d);
@@ -87,6 +83,10 @@ function getVisibleBCNs(tree1, tree2, recalculate) {
             }
             return;
         }
+    }
+
+    if (recalculate === undefined) {
+        recalculate = true;
     }
 
     getAllBCNs(tree1.data, tree2);
@@ -220,4 +220,4 @@ function getChildren(d) {
 
 
 
-export { compute_visible_topology_similarity, compute_similarity_container_pair  };
+export { compute_visible_topology_similarity, compute_similarity_container_pair, BCN  };

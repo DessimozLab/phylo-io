@@ -699,7 +699,7 @@ export default class Viewer {
         var menu = [{
             title: 'Reroot' ,
             action: () =>  {
-                this.container_object.trigger_("reroot", event.path[0].__data__)
+                this.container_object.trigger_("reroot", event.path[0].__data__.data)
             }
         },
             {
