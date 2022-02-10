@@ -236,6 +236,9 @@ export default class Viewer {
 
         d3.selectAll("#menu-node").remove()
 
+
+        //this.render_tooltip()
+
         // Get the nodes and edges
         this.nodes = this.d3_cluster_data.descendants();
         this.nodes = this.nodes.sort((a,b) => {return a.x - b.x})
@@ -254,6 +257,31 @@ export default class Viewer {
 
         }
 
+    }
+
+    render_tooltip(){
+
+        var idd = "tooltip" + this.uid
+
+        d3.selectAll("#" + idd).remove()
+
+        this.tooltip = this.d3.select('body').append("div")
+            .style("opacity", 0)
+            .style("position", 'absolute')
+            .attr("class", "tooltip")
+            .attr("id", idd)
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "1px")
+            .style("border-radius", "5px")
+            .style("padding", "10px")
+
+
+    }
+
+    set_tooltip_text(node){
+        console.log(node)
+        this.tooltip.html(node)
     }
 
     render_nodes(source){
@@ -327,6 +355,27 @@ export default class Viewer {
                 if (i.parent != null && (i.children || i._children)) {this.click_nodes(d,i)}
 
             })
+            /* GOOD FOR TOOLTIP
+            .on('mouseover', (d, i) => {
+                this.tooltip.transition().duration(50)
+                    .style('opacity', 0.9)
+                    .style('left', (d.pageX + 12) +  'px')
+                    .style('top', d.pageY  + 'px');
+
+
+                this.set_tooltip_text(i);
+            })
+            .on('mousemove', d => {
+                this.tooltip
+                    .style('left', (d.pageX + 12) +  'px')
+                    .style('top', d.pageY + 'px');
+            })
+            .on('mouseout', () => {
+                this.tooltip
+                    .style('opacity', 0);
+            });
+
+             */
 
 
         // Add Circle for the nodes
