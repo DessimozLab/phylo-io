@@ -258,6 +258,10 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                         if (species.includes(name)) {index.push(idx)}
                     }
 
+                    if (index.length <= 0) {
+                        continue
+                    }
+
                     var s2 = Math.min.apply(null,index)
                     var e2 = Math.max.apply(null,index)
                     var w2 = Math.abs(e2-s2)

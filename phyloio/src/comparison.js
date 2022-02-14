@@ -53,7 +53,7 @@ function assign_correspondingLeaf(t1,t2){
         for (var j = 0; j < t2.leaves.length; j++) {
             if (t1.leaves[i].name === t2.leaves[j].name) {
                 t1.leaves[i].correspondingLeaf[t2.uid] = t2.leaves[j];
-                t1.leaves[j].correspondingLeaf[t1.uid] = t2.leaves[i];
+                t2.leaves[j].correspondingLeaf[t1.uid] = t1.leaves[i];
             }
         }
     }
