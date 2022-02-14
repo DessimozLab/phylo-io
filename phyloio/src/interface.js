@@ -1074,6 +1074,9 @@ export default class Interface {
 
         }
 
+        this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.mirror,"Mirror tree",   this.viewer.toggle_mirror.bind(this.viewer))
+
+
         // ADD TOGGLE BRANCH LENGTH
         if(this.viewer.model.settings.has_branch_lenght){
             this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch length",   this.viewer.toggle_use_length.bind(this.viewer))

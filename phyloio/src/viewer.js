@@ -286,37 +286,13 @@ export default class Viewer {
 
     render_nodes(source){
 
-
-        var tip = d3tip()
-            .attr('class', 'd3-tip')
-            .html((EVENT,d)=> {
-
-                var html = "<b>Click to (un)collapse </b> <hr>"
-
-                if (typeof d.data.evolutionaryEvents != "undefined" ){
-
-
-                    html += 'duplicated genes: '  + d.data.evolutionaryEvents.duplicated + '<br>'
-                    html += 'duplications: '  + d.data.evolutionaryEvents.duplications + '<br>'
-                    html += 'gained genes: '  + d.data.evolutionaryEvents.gained + '<br>'
-                    html += 'lost/loss: '  + d.data.evolutionaryEvents.lost + '<br>'
-                    html += 'retained genes: '  + d.data.evolutionaryEvents.retained + '<br>'
-
-                }
-
-
-
-                return html });
-
-
         var self_render = this;
         var on_screen_text_size = this.compute_node_font_size()
         var subsampling_index = -1
         var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
         var real_node_radius = this.compute_node_radius()
         var show_duplications = this.model.settings.display_duplication
-        var show_lt = this.model.settings.display_internal_label_left_top !== false
-        var show_lb = this.model.settings.display_internal_label_left_bottom !== false
+        var mirror_factor = this.model.settings.mirror ? -1 : 1
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -348,7 +324,7 @@ export default class Viewer {
             .attr('class', 'node')
             .attr("id", d => {return  this.uid + "_" + d.ID})
             .attr("transform", function(d) {
-                return "translate(" + source.y0 + "," + source.x0 + ")";
+                return "translate(" + mirror_factor*source.y0 + "," + source.x0 + ")";
             })
             .on('click', (d, i) =>  {
 
@@ -411,7 +387,7 @@ export default class Viewer {
         this.nodeUpdate.transition()
             .duration(this.settings.duration)
             .attr("transform", function(d) {
-                return "translate(" + d.y + "," + d.x + ")";
+                return "translate(" + mirror_factor*d.y + "," + d.x + ")";
             });
 
 
@@ -432,7 +408,6 @@ export default class Viewer {
             .attr("transform", function(d) {
                 return "translate(" + source.y + "," + source.x + ")";
             })
-            .call(tip.hide)
             .remove();
 
 
@@ -504,7 +479,7 @@ export default class Viewer {
                          */
 
 
-                        return "M" + 0 + "," + 0 + "L" + y_length + "," + (-x_length) + "L" + y_length + "," + (x_length) + "L" + 0 + "," + 0;
+                        return "M" + 0 + "," + 0 + "L" + mirror_factor*y_length + "," + (-x_length) + "L" + mirror_factor*y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
 
             }
@@ -518,7 +493,6 @@ export default class Viewer {
         })
 
         // Add Stack
-
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
             this.nodeUpdate.filter(function(d){
                 return d.stackData && d.data.depth > 0
@@ -531,7 +505,7 @@ export default class Viewer {
         // Store the old positions for transition.
         this.nodes.forEach(function(d){
             d.x0 = d.x;
-            d.y0 = d.y;
+            d.y0 = mirror_factor * d.y;
         });
 
 
@@ -544,7 +518,7 @@ export default class Viewer {
     render_edges(source){
 
         var self_render = this;
-
+        var mirror_factor = this.model.settings.mirror ? -1 : 1
         var real_edges_width = this.compute_edge_width()
 
         // Update the links...
@@ -650,7 +624,9 @@ export default class Viewer {
 
     square_edges(s, d) {
 
-        return   "M" + s.y + "," + s.x + "L" + d.y + "," + s.x + "L" + d.y + "," + d.x;
+        var mirror_factor = this.model.settings.mirror ? -1 : 1
+
+        return   "M" + mirror_factor*s.y + "," + s.x + "L" + mirror_factor*d.y + "," + s.x + "L" + mirror_factor*d.y + "," + d.x;
     }
 
     click_nodes(event, node) {
@@ -701,8 +677,7 @@ export default class Viewer {
             action: () =>  {
                 this.container_object.trigger_("reroot", event.path[0].__data__.data)
             }
-        },
-            {
+        }, {
                 title: 'Trim branch' ,
                 action: () =>  {
                     this.container_object.trigger_("trim", event.path[0].__data__)
@@ -714,10 +689,23 @@ export default class Viewer {
             }
         }]
 
-        this.create_menu_click(menu, xy[0],xy[1], event, edge)
+        if(this.model.settings.mirror){
+            var x=  -xy[0]
+            var y = xy[1]
+        }
+        else{
+            var x=  xy[0]
+            var y = xy[1]
+        }
+
+        this.create_menu_click(menu,x,y, event, edge)
     }
 
     create_menu_click(menu, x ,y, event, e){
+
+        if (this.model.settings.mirror){
+            x=-x;
+        }
 
         d3.select("#menu-node").remove()
 
@@ -892,6 +880,9 @@ export default class Viewer {
     }
 
     set_zoom(k,x,y) {
+
+        var x = this.model.settings.mirror ? this.width - x: x
+
         d3.select('#svg' + this.uid )
             .transition()
             .duration(this.settings.duration)
@@ -1098,6 +1089,18 @@ export default class Viewer {
 
         this.build_d3_data()
         this.render(this.hierarchy)
+    }
+
+    toggle_mirror(){
+        this.model.settings.mirror = !this.model.settings.mirror
+
+        this.build_d3_data()
+        this.render(this.hierarchy)
+
+        var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+        this.set_zoom(zoom.k,zoom.x,zoom.y)
+
+
     }
 
     toggle_internal_label(){
@@ -1628,6 +1631,7 @@ export default class Viewer {
         var on_screen_text_size = this.compute_node_font_size()
         var show_lt = this.model.settings.display_internal_label_left_top !== false
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
+        var mirror_factor = this.model.settings.mirror ? true : false;
 
         // Add labels for the nodes
         nodeEnter.append('text')
@@ -1659,11 +1663,10 @@ export default class Viewer {
                 return 0
             })
             .attr("x", function(d) {
-                return d.parent == null ? -13/k : 13/k;
+                return d.parent == null || mirror_factor ? -13/k : 13/k;
             })
             .attr("text-anchor", function(d) {
-                //return "start";
-                return d.parent == null ? "end" : "start"; // todo better deal with internal name
+                return d.parent == null || mirror_factor ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; });
 
@@ -1682,10 +1685,11 @@ export default class Viewer {
                 return -13
             })
             .attr("x", function(d) {
-                return  -13;
+                return mirror_factor ? 13 : -13;
             })
             .attr("text-anchor", function(d) {
-                return  "end"
+
+                return mirror_factor ? "start" : "end"
             })
             .text( (d) => {
                 return "";
@@ -1705,10 +1709,11 @@ export default class Viewer {
                 return 13
             })
             .attr("x", function (d) {
-                return -13;
+                return mirror_factor ? 13 : -13;
             })
             .attr("text-anchor", function (d) {
-                return "end"
+
+                return mirror_factor ? "start" : "end"
             })
             .text( (d) => {
                 return "";
@@ -1722,6 +1727,7 @@ export default class Viewer {
         var show_r = this.model.settings.display_internal_label !== false
         var show_lt = this.model.settings.display_internal_label_left_top !== false
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
+        var mirror_factor = this.model.settings.mirror;
 
         nodes.select('text.right')
             .text((d) => {
@@ -1739,6 +1745,11 @@ export default class Viewer {
             })
             .attr("x", function(d) {
                 let y_offset = (typeof d.data.triangle_width !== 'undefined') ? d.data.triangle_width : 0;
+
+                if (mirror_factor){
+                    return  -(y_offset + 13/k);
+                }
+
                 return d.parent == null ? -13/k : y_offset + 13/k;
             })
             .attr("y", 0)

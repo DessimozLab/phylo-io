@@ -11,6 +11,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'mirror': false,
             'name': null,
             'first_time_render': true,
             'data_type' : 'newick',
