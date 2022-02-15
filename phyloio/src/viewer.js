@@ -1210,6 +1210,11 @@ export default class Viewer {
         this.render(this.hierarchy)
     }
 
+    update_font_size_node(val){
+        this.model.settings.style.font_size_internal = val
+        this.render(this.hierarchy)
+    }
+
     toggle_dessimode(){
         this.model.settings.dessimode = !this.model.settings.dessimode
 
@@ -1647,7 +1652,8 @@ export default class Viewer {
                 return d.subsampled || collapse_text ? on_screen_text_size : '0px' ;
             })
             .attr("font-weight", (d) =>  {
-                return d.children || d._children ? 900 : 400
+                return  400
+                //return d.children || d._children ? 900 : 400
             })
             .attr("y", (d) => {
                 if (d.parent == null){return 0}
@@ -1675,8 +1681,9 @@ export default class Viewer {
             .append('text')
             .attr("class", "left_top")
             .attr("dy", ".35em")
+            .attr("alignment-baseline", "ideographic" )
             .style('font-size', d => {
-                return show_lt ? this.model.settings.tree.font_size + 'px' : '0px' ;
+                return show_lt ? this.model.settings.style.font_size_internal + 'px' : '0px' ;
             })
             .attr("font-weight", (d) =>  {
                 return 400
@@ -1699,14 +1706,15 @@ export default class Viewer {
             .append('text')
             .attr("class", "left_bottom")
             .attr("dy", ".35em")
+            .attr("alignment-baseline", "hanging" )
             .style('font-size', d => {
-                return show_lb ? this.model.settings.tree.font_size + 'px': '0px' ;
+                return show_lb ? this.model.settings.style.font_size_internal + 'px': '0px' ;
             })
             .attr("font-weight", (d) => {
                 return 400
             })
             .attr("y", (d) => {
-                return 13
+                return 0
             })
             .attr("x", function (d) {
                 return mirror_factor ? 13 : -13;
@@ -1760,7 +1768,7 @@ export default class Viewer {
             .style('font-size', d => {
 
                 if (d.children){
-                    return show_r ? this.model.settings.tree.font_size + 'px' : '0px';
+                    return show_r ? this.model.settings.style.font_size_internal + 'px' : '0px';
                 }
 
                 return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;
@@ -1770,7 +1778,7 @@ export default class Viewer {
 
         nodes.select('text.left_top')
             .style('font-size', d => {
-                return show_lt ? this.model.settings.tree.font_size + 'px' : '0px';
+                return show_lt ? this.model.settings.style.font_size_internal+ 'px' : '0px';
             })
             .text( (d) => {
                 return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
@@ -1778,7 +1786,7 @@ export default class Viewer {
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
-                return show_lb ? this.model.settings.tree.font_size + 'px' : '0px';
+                return show_lb ? this.model.settings.style.font_size_internal + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';

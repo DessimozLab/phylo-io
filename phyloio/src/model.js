@@ -25,7 +25,9 @@ export default class Model {
             'multiple_search':false,
             'show_histogram' : false,
             'has_histogram_data' : false,
-            'style': {},
+            'style': {
+                'font_size_internal' : 14,
+            },
             'tree': {
                 'node_vertical_size' : 30,
                 'node_horizontal_size' : 40,
