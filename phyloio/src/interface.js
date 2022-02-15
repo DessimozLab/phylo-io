@@ -1128,6 +1128,9 @@ export default class Interface {
         // ADD TOGGLE DUPLICATION
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
 
+        // ADD TOGGLE LEAF LABEL
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show Leaves",   this.viewer.toggle_leaves.bind(this.viewer))
+
         // ADD SLIDER NODE/LINE/TEXT
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})

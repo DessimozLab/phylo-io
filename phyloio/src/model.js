@@ -11,6 +11,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'display_leaves' : true,
             'mirror': false,
             'name': null,
             'first_time_render': true,

@@ -301,6 +301,11 @@ export default class Viewer {
             }
             else{d.y = this.scale_branch_length(d.depth)}
 
+            if (!this.model.settings.display_leaves){
+                d.subsampled = false;
+                return
+            }
+
             if (!d.children) {
 
                 if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
@@ -585,6 +590,13 @@ export default class Viewer {
 
             // update x pos with branch length
             this.nodes.forEach(d => {
+
+
+                if (!this.model.settings.display_leaves){
+                    d.subsampled = false;
+                    return
+                }
+
 
                 if (!d.children) {
 
@@ -1111,6 +1123,12 @@ export default class Viewer {
 
     toggle_duplication(){
         this.model.settings.display_duplication = !this.model.settings.display_duplication
+        this.render(this.hierarchy)
+
+    }
+
+    toggle_leaves(){
+        this.model.settings.display_leaves = !this.model.settings.display_leaves
         this.render(this.hierarchy)
 
     }
@@ -1649,7 +1667,7 @@ export default class Viewer {
                     collapse_text = d.data.triangle_height >= on_screen_text_size + 'px' ? true : false
                 }
 
-                return d.subsampled || collapse_text ? on_screen_text_size : '0px' ;
+                return d.subsampled || collapse_text   ? on_screen_text_size : '0px' ;
             })
             .attr("font-weight", (d) =>  {
                 return  400
