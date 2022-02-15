@@ -1,10 +1,15 @@
 import * as fs from 'file-saver';
 import * as d3 from 'd3';
+import * as bootstrap from 'bootstrap';
 
 // D3 viewer Interface that render UI elements(buttons, slider, menu)
 export default class Interface {
 
     constructor(v,c, empty_mode){
+
+        if (c.interface && c.interface.tooltip_add_tree){
+            c.interface.tooltip_add_tree.tip.remove()
+        }
 
         var empty_mode = (typeof empty_mode !== 'undefined') ? empty_mode : false;
 
@@ -46,9 +51,20 @@ export default class Interface {
         this.container_d3.select('#histogram-legend').remove();
 
 
+        if (phylo.phylo_embedded &&  !empty_mode){
+
+                tooltip_object[0].hide()
+                tooltip_object[3].hide()
+
+
+        }
+
+
+
         if (empty_mode){
             this.top_left = this.add_top_left_container()
             this.add_data_icon()
+            this.tooltip_add_tree.show()
             this.add_empty_message()
             return
         }
@@ -129,13 +145,20 @@ export default class Interface {
             .style('margin', '2px')
             .attr('data-bs-toggle', 'modal')
             .attr('data-bs-target', '#exampleModal' + this.container_object.uid)
+            .attr('data-bs-placement', 'right')
+            .attr('title', 'Add a new tree')
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-folder-plus ')
 
+        if (this.tooltip_add_tree){
+            this.tooltip_add_tree.tip.remove()
+        }
 
+
+        this.tooltip_add_tree = new bootstrap.Tooltip(document.getElementById('buttonmodal_' + this.container_object.div_id))
 
         let mod_html = 			"<!-- Modal -->\n" +
             "<div class=\"modal\" id=\"exampleModal\" tabindex=\"-1\">\n" +
@@ -1436,6 +1459,16 @@ export default class Interface {
 
 
         this.container_d3.selectAll(".empty_message").remove()
+
+        if (phylo.phylo_embedded){
+
+            if (phylo.bound_container[0]==this.container_object){
+                tooltip_object[0].show()
+                tooltip_object[3].show()
+                }
+
+        }
+
 
 
         this.viewer.svg_d3.node().append('g')

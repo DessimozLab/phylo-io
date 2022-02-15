@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="phyloio.css">
 
     <!-- JavaScript Bundle with Popper -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="phylo.js"></script>
 </head>
@@ -352,9 +353,10 @@
     const phylo = PhyloIO.init()
 
 
+    const tooltip_object = []
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl)
+        tooltip_object.push(new bootstrap.Tooltip(tooltipTriggerEl));
     })
 
     if (!compare){
@@ -413,6 +415,12 @@
                 var data = JSON.parse(phylo.get_json_pickle())
                 data.settings.compareMode = compare
                 data.containers = [data.containers[0]]
+
+                var c  = phylo.containers["containerR"]
+
+                if (c.interface && c.interface.tooltip_add_tree){
+                    c.interface.tooltip_add_tree.tip.remove()
+                }
 
                 start_with_json(data)
 
