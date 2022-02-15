@@ -638,6 +638,10 @@ export default class Interface {
                         that.dismiss_blur = true
                         inp.value = this.getElementsByTagName("input")[0].value;
                         document.getElementById('search_button_id'+ that.viewer.uid).focus();
+
+                        that.container_object.zoom_to_node(inp.value)
+                        that.viewer.maximise_zoom()
+
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
                         closeAllLists();
@@ -738,6 +742,7 @@ export default class Interface {
                 }
                 else{
                     this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                    this.viewer.maximise_zoom()
 
                     input_el.style.display = 'none';
                     search_el.style.borderTopLeftRadius =  '8px';
@@ -759,6 +764,7 @@ export default class Interface {
         input_el.addEventListener("keyup", ({key}) => {
             if (key === "Enter") {
                 this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                this.viewer.maximise_zoom()
             }
         })
 
