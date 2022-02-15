@@ -1446,7 +1446,13 @@ export default class Interface {
             .attr("fill", "#333")
             .attr('text-anchor', 'middle')
             .style('font-size', '1.2em')
-            .html('No tree here ! Use "Add tree" button or example below. ')
+            .html('No tree here ! You can <a href="#" id="add_tree_link' + this.container_object.uid +'">add a tree</a> or use examples below.')
+
+        document.querySelector('#add_tree_link'+ this.container_object.uid).addEventListener('click', event => {
+            $('#exampleModal' + this.container_object.uid).modal('show')
+        });
+
+
 
         this.viewer.svg_d3.node().append('text')
             .attr("class", 'empty_message')
