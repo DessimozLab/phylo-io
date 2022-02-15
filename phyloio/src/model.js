@@ -193,29 +193,42 @@ export default class Model {
     factory(json){ // todo do one traversal with all in one function
 
         var p;
+        var add_data_label = false;
 
         //has_branch_lenght
         if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
+        else { this.labels.add('Length')}
+
+
 
         // if branch size is not used put 1
         if (!this.settings.has_branch_lenght) {
             p = this.traverse(json, function(n,c){n.branch_length=1})
-            //console.log("t1")
             p.branch_length = 0 // root
         }
 
         // set parent attribute
         p = this.traverse(json, null , this.set_parent)
-        //console.log("t2")
 
         // compute cumulated  lenght
         p = this.traverse(p, this.set_cumulated_length , null)
 
         this.traverse(p, function(n,c){
 
-            if(n.data_nhx && Object.keys(n.data_nhx).length > 0){
+            n.extended_informations = {}
 
-                n.extended_informations = {}
+
+            if(n.branch_length){
+                n.extended_informations['Length'] = n.branch_length;
+            }
+
+            if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
+                n.extended_informations['Data'] = n.name;
+                console.log(n.name)
+                add_data_label = true;
+            }
+
+            if(n.data_nhx && Object.keys(n.data_nhx).length > 0){
 
                 Object.entries(n.data_nhx).forEach(([key, value]) => {
 
@@ -249,6 +262,8 @@ export default class Model {
 
             }
 
+            if(add_data_label) { this.labels.add('Data')}
+
             if (n.depth > this.settings.tree.max_depth){
                 this.settings.tree.max_depth = n.depth
             }
@@ -265,7 +280,6 @@ export default class Model {
         this.suggestions = [] // autocomplete name
         this.traverse(json, function(n,c){
             if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
-        //console.log("t5")
         return p
     }
 

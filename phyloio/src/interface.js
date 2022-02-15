@@ -1269,7 +1269,7 @@ export default class Interface {
 
         var l = Array.from(this.viewer.model.labels)
 
-        var options = ["None","Name"]
+        var options = ["None"]
         options = options.concat(l)
 
         var that = this
