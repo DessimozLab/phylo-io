@@ -50,7 +50,7 @@ export default class Interface {
         this.container_d3.selectAll(".empty_message").remove()
         this.container_d3.select('#histogram-legend').remove();
 
-
+/*
         if (phylo.phylo_embedded &&  !empty_mode){
 
                 tooltip_object[0].hide()
@@ -59,6 +59,8 @@ export default class Interface {
 
         }
 
+
+ */
 
 
         if (empty_mode){
@@ -1004,6 +1006,9 @@ export default class Interface {
         this.menu_search_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Search")
         this.menu_search_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
+        this.menu_coloring_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Coloring")
+        this.menu_coloring_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
         this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Bar Graph")
         this.menu_stack_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
@@ -1200,6 +1205,136 @@ export default class Interface {
         // ADD TOGGLE MULTIPLE SEARCH
         this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
+
+        // COLORING
+
+        var drop = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','8px')
+
+        drop.append('label').text("Data");
+
+        var that = this;
+
+        var selectcoloring = drop.append('select')
+            .attr('id','selectcoloring' + this.container_object.uid )
+            .attr('class','select')
+            .style('float','right')
+            .on('change', function(){
+
+                that.viewer.model.settings.style.color_accessor =  this.value === 'Topology' ? null : this.value;
+                that.viewer.set_color_scale();
+                that.viewer.render(that.viewer.hierarchy)
+
+                that.remove_color_legend()
+                if(that.viewer.model.settings.style.color_accessor){
+                    that.add_color_legend()
+                }
+
+        })
+
+        var color_label = Array.from(this.viewer.model.colorlabels)
+
+        var options = ["Topology"]
+        options = options.concat(color_label)
+
+        selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+
+        var domain = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','12px')
+
+        domain.append('label').text("# domain");
+
+        domain.append('input')
+                .attr('id','inputcoloring' + this.container_object.uid )
+                .attr('type','number')
+                .attr('name','quantity')
+                .attr('min','2')
+                .attr('value', this.viewer.model.settings.style.number_domain)
+                .attr('max','5')
+                .style('float','right')
+                .on('change', (d) => {
+                    this.viewer.model.settings.style.number_domain =  document.getElementById('inputcoloring' + this.container_object.uid ).value;
+                    this.create_color_picker()
+                    this.viewer.set_color_scale();
+                    this.viewer.render(this.viewer.hierarchy)
+
+                    this.remove_color_legend()
+                    this.add_color_legend()
+
+                })
+
+
+        this.color = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','8px')
+
+        this.color.append('label').text("Color");
+
+        this.colorspan = this.color.append("span");
+
+        this.create_color_picker()
+
+        }
+
+    create_color_picker(){
+
+
+        this.colorspan.html("")
+
+        var number = this.viewer.model.settings.style.number_domain;
+        var default_color = this.viewer.model.settings.style.color_domain_default;
+        var w = Math.round(135/number);
+        var color = []
+
+        switch (number) {
+            case '2':
+                color = [default_color[0], default_color[4]]
+                break;
+            case '3':
+                color = [default_color[0],default_color[2], default_color[4]]
+                break;
+            case '4':
+                color = [default_color[0],default_color[1],default_color[2], default_color[4]]
+                break;
+            case '5':
+                color = default_color
+
+        }
+
+
+
+         for (let i = 0; i < number; i++) {
+             var idd = 'color_picker_' + this.viewer.container_object.uid + '_' + i;
+             this.colorspan.append("span").style('display',' inline-block').style('float','right')
+                 .html("  <input class='colpicker' type=\"color\"  id=\""+idd+"\"  style='width:" + w +"px;'name=\"favcolor\" value=\"" + color[i] + "\">")
+
+             d3.select("#" + idd).on('change', () => {
+                this.update_color_pickers()
+                 this.viewer.set_color_scale();
+                 this.viewer.render(this.viewer.hierarchy)
+                 this.remove_color_legend()
+                 this.add_color_legend()
+             })
+
+         }
+
+
+
+
+         this.viewer.model.settings.style.color_domain = color;
+
+    }
+
+    update_color_pickers(){
+
+        var new_col = []
+        this.colorspan.selectAll(".colpicker").each(function(d){
+            new_col.push(this.value)
+        })
+
+        this.viewer.model.settings.style.color_domain = new_col
     }
 
     add_swicth_UI(parent, checked, label, f){
@@ -1466,7 +1601,8 @@ export default class Interface {
 
         this.container_d3.selectAll(".empty_message").remove()
 
-        if (phylo.phylo_embedded){
+
+        /*if (phylo.phylo_embedded){
 
             if (phylo.bound_container[0]==this.container_object){
                 tooltip_object[0].show()
@@ -1474,6 +1610,8 @@ export default class Interface {
                 }
 
         }
+
+         */
 
 
 

@@ -62,13 +62,8 @@ export default class Viewer {
         this.width = parseFloat(window.getComputedStyle(this.container).width)  -  this.settings.style.margin.left - 2*this.settings.style.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - 2*this.settings.style.margin.top - this.settings.style.margin.bottom;
 
-        var colorScaleDomain = [1, 0.8, 0.6, 0.4, 0.2, 0];
-        var colorScaleRange = ['rgb(37,52,148)', 'rgb(44,127,184)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(255,255,204)'];
-
-        this.colorScale = d3.scaleLinear()
-            .domain(colorScaleDomain)
-            .range(colorScaleRange);
-
+        this.colorScale;
+        this.set_color_scale()
 
         // ZOOM
         this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
@@ -544,12 +539,7 @@ export default class Viewer {
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
-            .style('stroke', (d) => {
-                //console.log(d.data.elementS)
-                var c =  d.data.search_path ? '#FF0000' : d.data.elementS ? this.colorScale(d.data.elementS) : "#555";
-                return c
-            })
-
+            .style('stroke', (d) => {return this.color_edge(d);})
             .style('stroke-width',  real_edges_width )
             .attr('d', d => this.square_edges(d, d.parent))
 
@@ -560,6 +550,88 @@ export default class Viewer {
             .duration(this.settings.duration)
             .attr('d', d => this.square_edges({x: source.x, y: source.y}, {x: source.x, y: source.y}))
             .remove();
+
+    }
+
+    color_edge(edge){
+
+        if (edge.data.search_path){ return '#FF0000'}
+
+        else if (this.model.settings.style.color_accessor !== null){
+
+            var v = edge.data.extended_informations[this.model.settings.style.color_accessor];
+            if (typeof v == "undefined" ) {return "#555"}
+            else {return this.colorScale(v)}
+
+        }
+
+        else if (edge.data.elementS) {
+            return this.colorScale(edge.data.elementS)
+        }
+
+        else {
+            return "#555"
+        }
+
+    }
+
+    set_color_scale(){
+
+        var colorScaleDomain = false;
+        var colorScaleRange;
+        var intercolor;
+        var number;
+
+        if (typeof this.model != "undefined" && this.model) {
+
+            number = this.model.settings.style.number_domain
+
+
+            if (this.model.settings.style.color_accessor != null ) {
+
+                var ms = this.model.settings.style
+                var ca = ms.color_accessor;
+                intercolor = d3.interpolate(ms.color_extent_min[ca], ms.color_extent_max[ca])
+                colorScaleRange = this.model.settings.style.color_domain;
+
+            }
+
+            else {
+                intercolor = d3.interpolate(1, 0)
+                colorScaleRange = this.model.settings.style.color_domain;
+            }
+
+
+        }
+        else {
+            number = '5';
+            colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
+            intercolor = d3.interpolate(1, 0);
+        }
+
+
+
+        switch (number) {
+            case '2':
+                colorScaleDomain = [intercolor(0), intercolor(1)]
+                break;
+            case '3':
+                colorScaleDomain = [intercolor(0), intercolor(0,5) ,  intercolor(1)]
+                break;
+            case '4':
+                colorScaleDomain = [intercolor(0), intercolor(0,33), intercolor(0,66) ,  intercolor(1)]
+                break;
+            case '5':
+                colorScaleDomain = [intercolor(0), intercolor(0,25) ,intercolor(0,5) ,intercolor(0,75) ,  intercolor(1)]
+
+        }
+
+
+        this.colorScale = d3.scaleLinear()
+            .domain(colorScaleDomain)
+            .range(colorScaleRange);
+
+
 
     }
 
@@ -596,6 +668,7 @@ export default class Viewer {
                     d.subsampled = false;
                     return
                 }
+
 
 
                 if (!d.children) {

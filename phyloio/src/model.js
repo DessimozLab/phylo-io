@@ -28,6 +28,13 @@ export default class Model {
             'has_histogram_data' : false,
             'style': {
                 'font_size_internal' : 14,
+                'color_accessor' : null,
+                'color_extent_min': {},
+                'color_extent_max':{},
+                'number_domain':'5',
+                'color_domain':['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'],
+                'color_domain_default':['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'],
+
             },
             'tree': {
                 'node_vertical_size' : 30,
@@ -68,6 +75,9 @@ export default class Model {
         this.leaves = []
         this.similarity = []; // list of models id already process for topology BCN
         this.labels = new Set();
+        this.colorlabels = new Set();
+
+
 
         if (from_raw_data){
         this.data = this.factory(this.parse());
@@ -193,11 +203,15 @@ export default class Model {
     factory(json){ // todo do one traversal with all in one function
 
         var p;
-        var add_data_label = false;
 
         //has_branch_lenght
         if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
-        else { this.labels.add('Length')}
+        else {
+            this.labels.add('Length')
+            this.colorlabels.add('Length')
+            this.settings.style.color_extent_max['Length'] = 0;
+            this.settings.style.color_extent_min['Length'] = 1000000000;
+        }
 
 
 
@@ -220,12 +234,36 @@ export default class Model {
 
             if(n.branch_length){
                 n.extended_informations['Length'] = n.branch_length;
+                if (this.settings.style.color_extent_max['Length'] < n.branch_length){
+                    this.settings.style.color_extent_max['Length'] = n.branch_length
+                }
+
+                if (this.settings.style.color_extent_min['Length'] > n.branch_length){
+                    this.settings.style.color_extent_min['Length'] = n.branch_length
+                }
             }
 
             if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
                 n.extended_informations['Data'] = n.name;
-                console.log(n.name)
-                add_data_label = true;
+                this.labels.add('Data')
+
+                if (!isNaN(n.name)){
+
+                    if (!this.colorlabels.has('Data')){
+                        this.colorlabels.add('Data');
+                        this.settings.style.color_extent_max['Data'] = 0;
+                        this.settings.style.color_extent_min['Data'] = 1000000000;
+                    }
+
+                    if (this.settings.style.color_extent_max['Data'] <n.name){
+                        this.settings.style.color_extent_max['Data'] = n.name
+                    }
+
+                    if (this.settings.style.color_extent_min['Data'] > n.name){
+                        this.settings.style.color_extent_min['Data'] = n.name
+                    }
+
+                }
             }
 
             if(n.data_nhx && Object.keys(n.data_nhx).length > 0){
@@ -262,7 +300,6 @@ export default class Model {
 
             }
 
-            if(add_data_label) { this.labels.add('Data')}
 
             if (n.depth > this.settings.tree.max_depth){
                 this.settings.tree.max_depth = n.depth
