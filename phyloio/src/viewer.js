@@ -1468,7 +1468,7 @@ export default class Viewer {
 
     compute_color_map_stack(){
 
-        var l = this.settings.stack.settings.labels
+        var l = this.settings.stack.labels
         var c = this.settings.stack.colors
 
         var colMap =  c.reduce(function(colMap, col, index) {
