@@ -1280,7 +1280,7 @@ export default class Interface {
 
         })
 
-        var color_label = Array.from(this.viewer.model.colorlabels)
+        var color_label = Array.from(this.viewer.model.settings.colorlabels)
 
         var options = ["Topology"]
         options = options.concat(color_label)
@@ -1449,7 +1449,7 @@ export default class Interface {
             .attr('fill', '#69a3b2');
 
 
-        var l = Array.from(this.viewer.model.labels)
+        var l = Array.from(this.viewer.model.settings.labels)
 
         var options = ["None"]
         options = options.concat(l)

@@ -11,6 +11,8 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+           'labels' : new Set(),
+            'colorlabels' : new Set(),
             'display_leaves' : true,
             'mirror': false,
             'name': null,
@@ -74,8 +76,6 @@ export default class Model {
         this.input_data = data;
         this.leaves = []
         this.similarity = []; // list of models id already process for topology BCN
-        this.labels = new Set();
-        this.colorlabels = new Set();
 
 
 
@@ -207,8 +207,8 @@ export default class Model {
         //has_branch_lenght
         if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
         else {
-            this.labels.add('Length')
-            this.colorlabels.add('Length')
+            this.settings.labels.add('Length')
+            this.settings.colorlabels.add('Length')
             this.settings.style.color_extent_max['Length'] = 0;
             this.settings.style.color_extent_min['Length'] = 1000000000;
         }
@@ -245,12 +245,12 @@ export default class Model {
 
             if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
                 n.extended_informations['Data'] = n.name;
-                this.labels.add('Data')
+                this.settings.labels.add('Data')
 
                 if (!isNaN(n.name)){
 
-                    if (!this.colorlabels.has('Data')){
-                        this.colorlabels.add('Data');
+                    if (!this.settings.colorlabels.has('Data')){
+                        this.settings.colorlabels.add('Data');
                         this.settings.style.color_extent_max['Data'] = 0;
                         this.settings.style.color_extent_min['Data'] = 1000000000;
                     }
@@ -270,7 +270,7 @@ export default class Model {
 
                 Object.entries(n.data_nhx).forEach(([key, value]) => {
 
-                    this.labels.add(key)
+                    this.settings.labels.add(key)
 
                     switch(key){
                         case 'Ev':
