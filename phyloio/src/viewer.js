@@ -110,6 +110,8 @@ export default class Viewer {
 
         this.build_d3_data();
 
+        this.set_color_scale()
+
         if (refresh_interface){
             this.interface = new Interface(this, this.container_object)
         }
@@ -591,13 +593,18 @@ export default class Viewer {
 
                 var ms = this.model.settings.style
                 var ca = ms.color_accessor;
-                intercolor = d3.interpolate(ms.color_extent_min[ca], ms.color_extent_max[ca])
+                if (ms.color_extent_max[ca] == ms.color_extent_min[ca]){
+                    intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_max[ca]-1)
+                }else{
+                    intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_min[ca])
+                }
+
                 colorScaleRange = this.model.settings.style.color_domain;
 
             }
 
             else {
-                intercolor = d3.interpolate(1, 0)
+                intercolor = d3.interpolate(1,0)
                 colorScaleRange = this.model.settings.style.color_domain;
             }
 
@@ -616,13 +623,13 @@ export default class Viewer {
                 colorScaleDomain = [intercolor(0), intercolor(1)]
                 break;
             case '3':
-                colorScaleDomain = [intercolor(0), intercolor(0,5) ,  intercolor(1)]
+                colorScaleDomain = [intercolor(0), intercolor(0.5) ,  intercolor(1)]
                 break;
             case '4':
-                colorScaleDomain = [intercolor(0), intercolor(0,33), intercolor(0,66) ,  intercolor(1)]
+                colorScaleDomain = [intercolor(0), intercolor(0.33), intercolor(0.66) ,  intercolor(1)]
                 break;
             case '5':
-                colorScaleDomain = [intercolor(0), intercolor(0,25) ,intercolor(0,5) ,intercolor(0,75) ,  intercolor(1)]
+                colorScaleDomain = [intercolor(0), intercolor(0.25) ,intercolor(0.5) ,intercolor(0.75) ,  intercolor(1)]
 
         }
 

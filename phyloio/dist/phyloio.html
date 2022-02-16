@@ -433,6 +433,13 @@
         else{
             compare = !compare
 
+            var c = phylo.containers["containerS"];
+
+
+            if (c.interface && c.interface.tooltip_add_tree){
+                c.interface.tooltip_add_tree.tip.remove()
+            }
+
             var data = JSON.parse(phylo.get_json_pickle())
             data.settings.compareMode = compare
 
