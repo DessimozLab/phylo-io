@@ -11,7 +11,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
-           'labels' : new Set(),
+            'labels' : new Set(),
             'colorlabels' : new Set(),
             'display_leaves' : true,
             'mirror': false,

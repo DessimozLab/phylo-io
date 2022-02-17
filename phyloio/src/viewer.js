@@ -581,7 +581,7 @@ export default class Viewer {
 
         var colorScaleDomain = false;
         var colorScaleRange;
-        var intercolor;
+        this.intercolor;
         var number;
 
         if (typeof this.model != "undefined" && this.model) {
@@ -594,9 +594,9 @@ export default class Viewer {
                 var ms = this.model.settings.style
                 var ca = ms.color_accessor;
                 if (ms.color_extent_max[ca] == ms.color_extent_min[ca]){
-                    intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_max[ca]-1)
+                    this.intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_max[ca]-1)
                 }else{
-                    intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_min[ca])
+                    this.intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_min[ca])
                 }
 
                 colorScaleRange = this.model.settings.style.color_domain;
@@ -604,7 +604,7 @@ export default class Viewer {
             }
 
             else {
-                intercolor = d3.interpolate(1,0)
+                this.intercolor = d3.interpolate(1,0)
                 colorScaleRange = this.model.settings.style.color_domain;
             }
 
@@ -613,23 +613,23 @@ export default class Viewer {
         else {
             number = '5';
             colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
-            intercolor = d3.interpolate(1, 0);
+            this.intercolor = d3.interpolate(1, 0);
         }
 
 
 
         switch (number) {
             case '2':
-                colorScaleDomain = [intercolor(0), intercolor(1)]
+                colorScaleDomain = [this.intercolor(0), this.intercolor(1)]
                 break;
             case '3':
-                colorScaleDomain = [intercolor(0), intercolor(0.5) ,  intercolor(1)]
+                colorScaleDomain = [this.intercolor(0), this.intercolor(0.5) ,  this.intercolor(1)]
                 break;
             case '4':
-                colorScaleDomain = [intercolor(0), intercolor(0.33), intercolor(0.66) ,  intercolor(1)]
+                colorScaleDomain = [this.intercolor(0), this.intercolor(0.33), this.intercolor(0.66) ,  this.intercolor(1)]
                 break;
             case '5':
-                colorScaleDomain = [intercolor(0), intercolor(0.25) ,intercolor(0.5) ,intercolor(0.75) ,  intercolor(1)]
+                colorScaleDomain = [this.intercolor(0), this.intercolor(0.25) ,this.intercolor(0.5) ,this.intercolor(0.75) ,  this.intercolor(1)]
 
         }
 

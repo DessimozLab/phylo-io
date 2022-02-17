@@ -581,8 +581,9 @@ export default class Interface {
         let top_padding = 16;
         let left_padding = 16;
         let width = 16;
-        let height = 104;
+        let height = 100;
         let gutter = 8;
+        let rect_height = height/100;
 
         let x = d3.scaleLinear()
             .domain([-1, this.viewer.colorScale.range().length - 1])
@@ -591,13 +592,24 @@ export default class Interface {
         let gg = this.viewer.svg_d3.node().append('g')
             .attr("class", 'colorlegend')
 
+
+        var values = []
+
+        for (let i = 0; i < 100; i++) {
+            let n = this.viewer.intercolor((i/100).toFixed(2));
+            values.push(this.viewer.colorScale(n));
+        }
+
             gg.selectAll("rect")
-            .data(this.viewer.colorScale.range())
+            //.data(this.viewer.colorScale.range())
+            .data(values)
             .join("rect")
             .attr("x", left_padding)
-            .attr("y", (d, i) => x(i - 1))
+            //.attr("y", (d, i) => x(i - 1)-((2*width-rect_height)*i))
+            .attr("y", (d, i) => (this.viewer.height/2-height) + i)
             .attr("width", width)
-            .attr("height",(d, i) => x(i) - x(i - 1))
+            //.attr("height",(d, i) => x(i) - x(i - 1))
+            .attr("height", rect_height)
             .attr("fill", d => d);
 
         gg.append("text")
@@ -611,7 +623,6 @@ export default class Interface {
 
                 if (ms.color_accessor){
                     var n = ms.color_extent_max[ms.color_accessor];
-                    console.log(n);
                     return Number.isInteger(n) ? n : parseFloat(n).toFixed(3);
 
                 }
@@ -1688,7 +1699,7 @@ export default class Interface {
 
 
             document.querySelector('#ex1'+ this.container_object.uid).addEventListener('click', event => {
-                this.container_object.add_tree(this.examples["rokas"])
+                this.container_object.add_tree(this.examples["r2t"])
                 this.container_object.add_tree(this.examples["unrooted1"])
                 this.container_object.add_tree(this.examples["small1"])
 
@@ -1698,7 +1709,7 @@ export default class Interface {
 
         document.querySelector('#ex2'+ this.container_object.uid).addEventListener('click', event => {
 
-            this.container_object.add_tree(this.examples["r2t"])
+            this.container_object.add_tree(this.examples["rokas"])
             this.container_object.add_tree(this.examples["nhx2"],{'data_type': 'nhx'})
             this.container_object.add_tree(this.examples["unrooted2"])
             this.container_object.add_tree(this.examples["small2"])
