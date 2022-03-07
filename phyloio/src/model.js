@@ -64,8 +64,22 @@ export default class Model {
         if (settings) {
 
             for(var key in settings) {
-                var value = settings[key];
-                this.settings[key] = value;
+
+                if (key == 'labels_array'){
+                    var value = settings[key];
+                    this.settings['labels'] = new Set(value);
+                }
+                if (key == 'colorlabels_array'){
+                    var value = settings[key];
+                    this.settings['colorlabels'] = new Set(value);
+                }
+
+                else{
+                    var value = settings[key];
+                    this.settings[key] = value;
+                }
+
+
             }
 
         }

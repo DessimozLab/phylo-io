@@ -123,8 +123,12 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             for (var j = 0; j < ms.length; j++) {
 
+                var s = ms[j].settings
+                s.labels_array = [...s.labels];
+                s.colorlabels_array = [...s.colorlabels];
+                minput.push({'settings':s, 'data':ms[j].remove_circularity(), 'zoom': ms[j].zoom })
 
-                minput.push({'settings':ms[j].settings, 'data':ms[j].remove_circularity(), 'zoom': ms[j].zoom })
+
             }
 
             pickle.containers.push({
