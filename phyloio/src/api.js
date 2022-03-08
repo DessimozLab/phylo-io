@@ -37,6 +37,14 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
     }
 
     reset(){ // !!!! KEEP ATTR UPDATED BETWEEN init and reset TODO AUTO THAT
+
+        //remove tooltips
+        for (const [uid, container] of Object.entries(this.containers)) {
+            if (container.interface && container.interface.tooltip_add_tree){
+                container.interface.tooltip_add_tree.tip.remove()
+            }
+        }
+
         this.containers = {}; // {container id -> Container() }
         this.bound_container = []
         this.session_token = null
@@ -311,146 +319,6 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
             }
         }
-
-
-        /*
-
-
-        // HIERARCHY & TABLES
-        if (!mod1.rooted || !mod2.rooted ) {
-
-            this.settings.no_distance_message = "Both trees need to be rooted."
-            this.distance.Euc = false
-            this.distance.RF = false
-
-            if (this.phylo_embedded){
-                this.display_distance_window()
-            }
-
-            return
-        }
-
-        var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
-        var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
-        var intersection = leaves1.filter(value => leaves2.includes(value));
-
-        if (intersection.length == 0){
-            this.settings.no_distance_message = "No leaves in common."
-            this.distance.Euc = false
-            this.distance.RF = false
-
-            if (this.phylo_embedded){
-                this.display_distance_window()
-            }
-
-            return
-        }
-
-
-                        var leaves1 = mod1.hierarchy_mockup.leaves().map(x => x.data.name);
-                        var leaves2 = mod2.hierarchy_mockup.leaves().map(x => x.data.name);
-
-
-                        var intersection = leaves1.filter(value => leaves2.includes(value));
-
-                        if (intersection.length > 0){
-
-
-
-                            // reroot both of them
-                            var hierarchy_mockup_rerooted1 = reroot_hierarchy(mod1.hierarchy_mockup, intersection[0])
-                            var hierarchy_mockup_rerooted2 = reroot_hierarchy(mod2.hierarchy_mockup, intersection[0])
-
-                            console.log(hierarchy_mockup_rerooted1)
-
-
-                            // build tables
-                            var X1 = build_table(hierarchy_mockup_rerooted1)
-                            var X2 = build_table(hierarchy_mockup_rerooted2)
-
-
-                        }
-                        else{
-                            this.settings.no_distance_message = "No leaves in common, impossible to compute phylogenetic distance"
-                            return
-                        }
-
-
-                    }
-                    else{
-
-                    }
-
-
-
-
-        var X1 = mod1.table
-        var X2 = mod2.table
-
-        var n_good  = 0
-        var euclidian = 0
-
-        for (var i = 0; i < X1.table.length; i++) {
-            var s1 = X1.table[i][0]
-            var e1 = X1.table[i][1]
-            var w1 = Math.abs(e1-s1)
-
-            if (w1 > 0){
-
-                var species =  X1.I2S.slice(s1,e1+1)
-                var index = []
-
-                for (const [name, idx] of Object.entries(X2.S2I)) {
-                    if (species.includes(name)) {index.push(idx)}
-                }
-
-                var s2 = Math.min.apply(null,index)
-                var e2 = Math.max.apply(null,index)
-                var w2 = Math.abs(e2-s2)
-
-                if (w1 == w2) {
-
-                    if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
-                        n_good += 1
-                        euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
-                    }
-                    else if (X2.table[s2][0] == s2 && X2.table[s2][1] == e2){
-
-                        n_good += 1
-                        euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[s2][2]) )
-
-                    }
-                    else{
-                        console.log(X1.table[i][2],X2.table[e2][2] )
-                        euclidian += parseFloat(X1.table[i][2])
-                        euclidian += parseFloat(X2.table[e2][2])
-
-                    }
-
-                }
-
-                else{
-                    euclidian += parseFloat(X1.table[i][2])
-                    euclidian += parseFloat(X2.table[e2][2])
-                }
-
-
-
-
-            }
-
-        }
-
-        this.settings.no_distance_message = true
-        this.distance.Euc = euclidian
-        this.distance.RF = (X1.n_edges + X2.n_edges -2*n_good)
-        this.distance.RF_good = n_good
-        this.distance.RF_left = X1.n_edges
-        this.distance.RF_right = X2.n_edges
-
-        console.log(euclidian,(X1.n_edges + X2.n_edges -2*n_good) )
-
-        */
 
 
 
