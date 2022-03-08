@@ -176,7 +176,8 @@ function addLogo(svg) {
 
 function getSVGString( svgNode ) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-    var cssStyleText = getCSSStyles( svgNode );
+    var cssStyleText = getCSSStyles(svgNode);
+    cssStyleText += "* {font-family:Helvetica}"
     appendCSS( cssStyleText, svgNode );
 
     var serializer = new XMLSerializer();
