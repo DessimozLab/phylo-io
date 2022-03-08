@@ -532,7 +532,7 @@ export default class Viewer {
             .attr("class", "link")
             .style("cursor","pointer")
             .style("fill","none")
-            .style('stroke-width',  real_edges_width  )
+            .style('stroke-width',  real_edges_width + 'px'   )
             .attr('d', d => this.square_edges(
                 {x: source.x0, y: source.y0},{x: source.x0, y: source.y0}))
 
@@ -542,7 +542,7 @@ export default class Viewer {
         linkUpdate.transition()
             .duration(this.settings.duration)
             .style('stroke', (d) => {return this.color_edge(d);})
-            .style('stroke-width',  real_edges_width )
+            .style('stroke-width',  real_edges_width + 'px'  )
             .attr('d', d => this.square_edges(d, d.parent))
 
         linkUpdate.on('click', (d,i) =>  { this.click_edges(d,i)})
