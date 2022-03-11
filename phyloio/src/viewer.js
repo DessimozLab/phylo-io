@@ -340,6 +340,7 @@ export default class Viewer {
             .on('mouseover', (d, i) => {
                 if (this.model.settings.show_tooltips){
                     this.tooltip.transition().duration(50)
+                        .style('display', 'block')
                         .style('opacity', 0.9)
                         .style('left', (d.pageX + 12) +  'px')
                         .style('top', d.pageY  + 'px');
@@ -357,7 +358,7 @@ export default class Viewer {
             .on('mouseout', () => {
                 if (this.model.settings.show_tooltips) {
                     this.tooltip
-                        .style('opacity', 0);
+                        .style('display', 'none');
                 }
             });
 
@@ -781,6 +782,12 @@ export default class Viewer {
                     this.container_object.trigger_("trim", event.path[0].__data__)
                 }
             },{
+            title: 'Open as new tree' ,
+            action: () =>  {
+                this.container_object.create_model_from_hierarchy_node(event.path[0].__data__)
+            }
+        },
+            {
             title: 'Close' ,
             action: () =>  {
                 d3.select("#menu-node").remove()

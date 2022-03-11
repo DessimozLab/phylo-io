@@ -1,6 +1,7 @@
 
 body{
-    background-color: #dddd
+    background-color: #dddd;
+    overflow: hidden;
 }
 
 .overlaid{

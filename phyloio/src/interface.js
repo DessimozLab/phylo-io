@@ -8,7 +8,13 @@ export default class Interface {
     constructor(v,c, empty_mode){
 
         if (c.interface && c.interface.tooltip_add_tree){
-            c.interface.tooltip_add_tree.tip.remove()
+            try {
+                c.interface.tooltip_add_tree.tip.remove()
+            }
+            catch (error) {
+
+            }
+
         }
 
         var empty_mode = (typeof empty_mode !== 'undefined') ? empty_mode : false;

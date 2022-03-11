@@ -503,6 +503,29 @@ export default class Container {
 
     }
 
+    create_model_from_hierarchy_node(node){
+
+        var data = Object.assign({}, node.data);
+
+        this.viewer.model.traverse(data, function(n,c){
+            n.parent=null;
+            n.leaves=null;
+            n.correspondingLeaf = {}
+            n.elementBCN = null})
+
+        var data = JSON.parse(JSON.stringify(data)) // Object.assign({}, node.data);
+
+        var model = this.viewer.model;
+        this.add_tree(data, model.settings, false)
+
+        this.models[this.models.length-1].add_circularity_back()
+
+        this.interface = new Interface(this.viewer, this)
+
+
+
+    }
+
 };
 
 
