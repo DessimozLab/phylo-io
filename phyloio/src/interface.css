@@ -127,6 +127,16 @@ background-color: #198754;
 /* Accordion system for settings */
 .menu_settings{
     border-radius: 4px;
+    background-color: #aaa;
+    overflow-y: scroll;
+    max-height:95vh;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.menu_settings::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
 }
 
 /* Style the buttons that are used to open and close the accordion panel */
@@ -373,7 +383,7 @@ input:checked + .slider_t:before {
 body {font-family: Arial, Helvetica, sans-serif;}
 
 .dropdrop{
-    position: absolute;
+    position: relative;
     display: none;
 
 }

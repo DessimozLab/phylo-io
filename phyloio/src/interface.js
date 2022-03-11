@@ -997,19 +997,17 @@ export default class Interface {
 
         if (acc.classList.contains('active')) {
 
-            var top_off = acc.nextSibling.getBoundingClientRect().top + 14;
-
             document.getElementById('selectlt' + cid).style.display = 'block';
             document.getElementById('selectlb' + cid).style.display = 'block';
             document.getElementById('selectr' + cid).style.display = 'block';
 
-            document.getElementById('selectlt' + cid).style.top = top_off + 50 + 'px';
-            document.getElementById('selectlb' + cid).style.top = top_off + 90 + 'px';
-            document.getElementById('selectr' + cid).style.top = top_off + 70 + 'px';
+            document.getElementById('selectlt' + cid).style.top = -112 + 'px';
+            document.getElementById('selectlb' + cid).style.top = -90 + 'px';
+            document.getElementById('selectr' + cid).style.top = -130 + 'px';
 
-            document.getElementById('selectlt' + cid).style.left = '63px';
-            document.getElementById('selectlb' + cid).style.left = '63px';
-            document.getElementById('selectr' + cid).style.left = '163px';
+            document.getElementById('selectlt' + cid).style.left = '30px';
+            document.getElementById('selectlb' + cid).style.left = '30px';
+            document.getElementById('selectr' + cid).style.left = '130px';
 
         }
         else{
@@ -1045,7 +1043,6 @@ export default class Interface {
 
         // add the menu
         this.menu_settings = this.tr_menus.append('div')
-            .style("background-color", '#aaa')
             .attr('class', 'menu_settings')
 
 
@@ -1141,6 +1138,10 @@ export default class Interface {
                     panel.style.maxHeight = panel.scrollHeight + "px";
                 }
 
+                that.toggle_select_node_face(that.container_object.uid)
+
+                /*
+
                 var checkExist = setInterval(function() {
 
                     var obs_h = panel.style.maxHeight ? panel.getBoundingClientRect().height : 0
@@ -1155,6 +1156,8 @@ export default class Interface {
                         console.log(obs_h, exp_h )
                     }
                 }, 200);
+
+                 */
 
             });
 
