@@ -1007,9 +1007,9 @@ export default class Interface {
             document.getElementById('selectlb' + cid).style.display = 'block';
             document.getElementById('selectr' + cid).style.display = 'block';
 
-            document.getElementById('selectlt' + cid).style.top = -112 + 'px';
-            document.getElementById('selectlb' + cid).style.top = -90 + 'px';
-            document.getElementById('selectr' + cid).style.top = -130 + 'px';
+            document.getElementById('selectlt' + cid).style.top = -90 + 'px';
+            document.getElementById('selectlb' + cid).style.top = -40 + 'px';
+            document.getElementById('selectr' + cid).style.top = -60 + 'px';
 
             document.getElementById('selectlt' + cid).style.left = '30px';
             document.getElementById('selectlb' + cid).style.left = '30px';
