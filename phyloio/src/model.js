@@ -19,6 +19,7 @@ export default class Model {
             'first_time_render': true,
             'data_type' : 'newick',
             'use_branch_lenght' : true,
+            'show_tooltips' : true,
             'display_internal_label' : false,
             'display_internal_label_left_top' : false,
             'display_internal_label_left_bottom' : false,

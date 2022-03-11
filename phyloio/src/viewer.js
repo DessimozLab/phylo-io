@@ -234,7 +234,7 @@ export default class Viewer {
         d3.selectAll("#menu-node").remove()
 
 
-        //this.render_tooltip()
+        this.render_tooltip()
 
         // Get the nodes and edges
         this.nodes = this.d3_cluster_data.descendants();
@@ -277,8 +277,14 @@ export default class Viewer {
     }
 
     set_tooltip_text(node){
-        console.log(node)
-        this.tooltip.html(node)
+
+        var html = "";
+
+        for (var [key, value] of Object.entries(node.data.extended_informations)) {
+            html += `${key}: ${value} <br>`
+        }
+
+        this.tooltip.html(html);
     }
 
     render_nodes(source){
@@ -329,31 +335,31 @@ export default class Viewer {
                 return "translate(" + mirror_factor*source.y0 + "," + source.x0 + ")";
             })
             .on('click', (d, i) =>  {
-
                 if (i.parent != null && (i.children || i._children)) {this.click_nodes(d,i)}
-
             })
-            /* GOOD FOR TOOLTIP
             .on('mouseover', (d, i) => {
-                this.tooltip.transition().duration(50)
-                    .style('opacity', 0.9)
-                    .style('left', (d.pageX + 12) +  'px')
-                    .style('top', d.pageY  + 'px');
+                if (this.model.settings.show_tooltips){
+                    this.tooltip.transition().duration(50)
+                        .style('opacity', 0.9)
+                        .style('left', (d.pageX + 12) +  'px')
+                        .style('top', d.pageY  + 'px');
+                    this.set_tooltip_text(i);
+                }
 
-
-                this.set_tooltip_text(i);
             })
             .on('mousemove', d => {
-                this.tooltip
-                    .style('left', (d.pageX + 12) +  'px')
-                    .style('top', d.pageY + 'px');
+                if (this.model.settings.show_tooltips) {
+                    this.tooltip
+                        .style('left', (d.pageX + 12) + 'px')
+                        .style('top', d.pageY + 'px');
+                }
             })
             .on('mouseout', () => {
-                this.tooltip
-                    .style('opacity', 0);
+                if (this.model.settings.show_tooltips) {
+                    this.tooltip
+                        .style('opacity', 0);
+                }
             });
-
-             */
 
 
         // Add Circle for the nodes
@@ -1209,6 +1215,12 @@ export default class Viewer {
 
     toggle_leaves(){
         this.model.settings.display_leaves = !this.model.settings.display_leaves
+        this.render(this.hierarchy)
+
+    }
+
+    toggle_tooltips(){
+        this.model.settings.show_tooltips = !this.model.settings.show_tooltips
         this.render(this.hierarchy)
 
     }
