@@ -260,7 +260,7 @@ export default class Viewer {
 
         var idd = "tooltip" + this.uid
 
-        d3.selectAll("#" + idd).remove()
+        d3.selectAll(".tooltip").remove()
 
         this.tooltip = this.d3.select('body').append("div")
             .style("opacity", 0)
@@ -309,7 +309,13 @@ export default class Viewer {
                 return
             }
 
-            if (!d.children) {
+
+            if (!this.model.settings.subsample_label){
+                d.subsampled = true;
+                return
+            }
+
+            if (!d.children ) {
 
                 if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
                     d.subsampled  = true
@@ -678,14 +684,19 @@ export default class Viewer {
             this.nodes.forEach(d => {
 
 
-                if (!this.model.settings.display_leaves){
+                if (!this.model.settings.display_leaves ){
                     d.subsampled = false;
+                    return
+                }
+
+                if (!this.model.settings.subsample_label){
+                    d.subsampled = true;
                     return
                 }
 
 
 
-                if (!d.children) {
+                if (!d.children ) {
 
                     if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
                         d.subsampled  = true
@@ -1232,6 +1243,12 @@ export default class Viewer {
 
     }
 
+    toggle_subsample(){
+        this.model.settings.subsample_label = !this.model.settings.subsample_label
+        this.render(this.hierarchy)
+
+    }
+
     toggle_multiple_search(){
         this.model.settings.multiple_search = !this.model.settings.multiple_search
     }
@@ -1707,6 +1724,11 @@ export default class Viewer {
     compute_node_font_size(){
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+
+        if (!this.model.settings.subsample_label){
+           k=1
+        }
+
         var fs =  this.model.settings.tree.font_size/k ;
 
         return fs

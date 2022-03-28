@@ -1195,6 +1195,9 @@ export default class Interface {
         // ADD TOGGLE DUPLICATION
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
 
+        // ADD TOGGLE tooltips
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.subsample_label,"Subsample Labels",   this.viewer.toggle_subsample.bind(this.viewer))
+
 
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.show_tooltips,"Show tooltips",   this.viewer.toggle_tooltips.bind(this.viewer))
