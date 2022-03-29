@@ -257,7 +257,7 @@
                     <h5>Left tree (or single mode)</h5>
                     <p><strong>Tree Height: </strong> Use <kbd>w</kbd> to increase or <kbd>s</kbd> to decrease<br>
                     <p><strong>Tree Width: </strong> Use <kbd>a</kbd> to increase or <kbd>d</kbd> to decrease<br>
-                    <p><strong>Tree Selection: </strong> Use <kbd>q</kbd> or <kbd>d</kbd> to change tree<br>
+                    <p><strong>Tree Selection: </strong> Use <kbd>q</kbd> or <kbd>e</kbd> to change tree<br>
 
                     <br>
 
@@ -453,6 +453,8 @@
 
     document.getElementById("menu_save").onclick = function() {
         phylo.save_session()
+        refresh()
+
     };
 
     document.getElementById('load_session_file').onclick = () => {
@@ -546,6 +548,15 @@
     document.getElementById("btn_share_link").onclick = function() {
 
         phylo.generate_share_link()
+
+        var s_url = JSON.parse(JSON.stringify(phylo.session_url));
+
+            refresh()
+
+        phylo.session_url = s_url
+
+        console.log(phylo.session_url)
+
         document.getElementById('share_link').style.width = document.getElementById('btn_share_link').offsetWidth + 'px'
         document.getElementById('share_link').style.wordWrap = 'break-word';
         document.getElementById("share_link").innerText = phylo.session_url
@@ -621,13 +632,11 @@
 
     start_phylo(compare)
 
-
     const entries = new URLSearchParams(window.location.search).entries();
 
     for(const entry of entries) {
 
         if (entry[0] === 'session'){
-
 
 
             var l = function (pickle) {
@@ -779,6 +788,7 @@
             phylo.settings[key] = value;
         }
 
+
         start_phylo(phylo.settings.compareMode)
 
 
@@ -796,7 +806,6 @@
                         csp[i].add_tree(ms[j].data, ms[j].settings, false)
                         var m = csp[i].models[csp[i].models.length - 1]
                         m.zoom = ms[j].zoom
-
                         m.add_circularity_back()
                     }
 
@@ -831,6 +840,7 @@
     function refresh(){
 
         var data = JSON.parse(phylo.get_json_pickle())
+
         start_with_json(data)
 
 

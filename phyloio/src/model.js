@@ -100,6 +100,10 @@ export default class Model {
         }
         else{
             this.data = data
+            data.leaves = this.get_leaves(data)
+            this.traverse(data, function(n,c){
+                n.leaves = this.get_leaves(n)
+            })
         }
 
         this.data.root = true;
@@ -688,8 +692,6 @@ export default class Model {
 
 
     })
-
-
         return l
     }
 

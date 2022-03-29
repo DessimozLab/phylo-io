@@ -147,7 +147,23 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
         }
 
-        return JSON.stringify(pickle)
+        var string_pickle = JSON.stringify(pickle);
+
+        for (var i = 0; i < cs.length; i++) {
+
+            let ms = cs[i].models
+
+            for (var j = 0; j < ms.length; j++) {
+
+                ms[j].add_circularity_back()
+
+
+            }
+
+        }
+
+        return string_pickle
+
     }
 
     save_session(){ // TODO not working since collapse or other info are store in circular data
