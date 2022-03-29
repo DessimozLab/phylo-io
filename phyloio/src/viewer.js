@@ -782,20 +782,24 @@ export default class Viewer {
 
         var xy = t.invert([event.pageX-px,event.pageY-py]);
 
+        // because Chrome returns a MouseEvent for d3.event while Firefox returns a click. \o/
+        var node_from_event = event.path ? event.path[0].__data__ : event.target.__data__
+
         var menu = [{
             title: 'Reroot' ,
             action: () =>  {
-                this.container_object.trigger_("reroot", event.path[0].__data__.data)
+                this.container_object.trigger_("reroot", node_from_event.data)
             }
         }, {
                 title: 'Trim branch' ,
                 action: () =>  {
-                    this.container_object.trigger_("trim", event.path[0].__data__)
+                    this.container_object.trigger_("trim", node_from_event)
                 }
             },{
             title: 'Open as new tree' ,
             action: () =>  {
-                this.container_object.create_model_from_hierarchy_node(event.path[0].__data__)
+                this.container_object.create_model_from_hierarchy_node(node_from_event)
+
             }
         },
             {

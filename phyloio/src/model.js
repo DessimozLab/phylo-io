@@ -97,13 +97,12 @@ export default class Model {
 
         if (from_raw_data){
         this.data = this.factory(this.parse());
-        this.data.root = true;
         }
         else{
             this.data = data
         }
 
-
+        this.data.root = true;
         this.rooted = this.data.children.length !== 3
 
         this.hierarchy_mockup = this.build_hierarchy_mockup()

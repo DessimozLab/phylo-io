@@ -54,6 +54,8 @@ export default class Interface {
         this.container_d3.selectAll(".empty_message").remove()
         this.container_d3.select('#histogram-legend').remove();
 
+        this.container_d3.select("#menu-node").remove()
+
 /*
         if (phylo.phylo_embedded &&  !empty_mode){
 
