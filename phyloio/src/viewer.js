@@ -1887,6 +1887,10 @@ export default class Viewer {
                     if (d.data.collapse){
 
                         let l = d.data.leaves
+
+                        if (l.length <= 0){
+                            d.data.leaves = this.model.get_leaves(d.data)
+                        }
                         return '[' + l[0].name + ' ... ' +  l[l.length-1].name + ']'
                     }
                     
