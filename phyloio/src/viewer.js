@@ -357,7 +357,7 @@ export default class Viewer {
                 return "translate(" + mirror_factor*source.y0 + "," + source.x0 + ")";
             })
             .on('click', (d, i) =>  {
-                if (i.parent != null && (i.children || i._children)) {this.click_nodes(d,i)}
+                if (i.children || i._children) {this.click_nodes(d,i)}
             })
             .on('mouseover', (d, i) => {
 
@@ -758,31 +758,53 @@ export default class Viewer {
 
     click_nodes(event, node) {
 
-
-        var menu = [
-            {
-                title: node.data.collapse ? 'Expand' : 'Collapse' ,
-                action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
-            },
-            {
-                title: 'Collapse All' ,
-                action: () =>  {this.container_object.trigger_("collapseAll", node.data, node)}
-            },
-            {
-                title: 'Expand All' ,
-                action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
-            },
-            {
-                title: 'Swap subtrees' ,
-                action: () =>  {this.container_object.trigger_("swap", node.data, node)}
-            },
-            {
-                title: 'Close' ,
-                action: () =>  {
-                    d3.select("#menu-node").remove()
+        if (node.parent != null){
+            var menu = [
+                {
+                    title: node.data.collapse ? 'Expand' : 'Collapse' ,
+                    action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
+                },
+                {
+                    title: 'Collapse All' ,
+                    action: () =>  {this.container_object.trigger_("collapseAll", node.data, node)}
+                },
+                {
+                    title: 'Expand All' ,
+                    action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
+                },
+                {
+                    title: 'Swap subtrees' ,
+                    action: () =>  {this.container_object.trigger_("swap", node.data, node)}
+                },
+                {
+                    title: 'Close' ,
+                    action: () =>  {
+                        d3.select("#menu-node").remove()
+                    }
                 }
-            }
-        ]
+            ]
+        }
+        else { // root
+            var menu = [
+                {
+                    title: 'Expand All' ,
+                    action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
+                },
+                {
+                    title: 'Swap subtrees' ,
+                    action: () =>  {this.container_object.trigger_("swap", node.data, node)}
+                },
+                {
+                    title: 'Close' ,
+                    action: () =>  {
+                        d3.select("#menu-node").remove()
+                    }
+                }
+            ]
+        }
+
+
+
 
         this.create_menu_click(menu, node.y,node.x,event,node)
 

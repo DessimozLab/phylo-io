@@ -337,6 +337,11 @@
 
 <script>
 
+    $(window).bind('beforeunload', function() {
+        // do something, preferably ajax request etc
+        return 'are you sure?';
+    });
+
 
     var display_distance_menu = function(compare){
 
@@ -845,6 +850,8 @@
 
 
     }
+
+
 
 
 
