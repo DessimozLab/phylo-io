@@ -281,7 +281,23 @@ export default class Viewer {
         var html = "";
 
         for (var [key, value] of Object.entries(node.data.extended_informations)) {
-            html += `${key}: ${value} <br>`
+
+            if  ((/^-?[\d]*(\.[\d]+)?$/g).test(value)) {
+
+                if (value % 1 === 0) {
+                    html += `${key}: ${value} <br>`
+                }
+
+                else{
+                    console.log(value)
+                    html += `${key}: ${parseFloat(value).toFixed(3)} <br>`
+                }
+            }
+            else{
+                html += `${key}: ${value} <br>`
+            }
+
+
         }
 
         this.tooltip.html(html);
@@ -344,6 +360,7 @@ export default class Viewer {
                 if (i.parent != null && (i.children || i._children)) {this.click_nodes(d,i)}
             })
             .on('mouseover', (d, i) => {
+
                 if (this.model.settings.show_tooltips){
                     this.tooltip.transition().duration(50)
                         .style('display', 'block')
@@ -1812,7 +1829,8 @@ export default class Viewer {
                 return 0
             })
             .attr("x", function(d) {
-                return d.parent == null || mirror_factor ? -13/k : 13/k;
+                var scale = (d.children || d._children) ? 1 : k
+                return d.parent == null || mirror_factor ? -13/scale : 13/scale;
             })
             .attr("text-anchor", function(d) {
                 return d.parent == null || mirror_factor ? "end" : "start"; // todo better deal with internal name
@@ -1824,7 +1842,7 @@ export default class Viewer {
             .append('text')
             .attr("class", "left_top")
             .attr("dy", ".35em")
-            .attr("alignment-baseline", "ideographic" )
+            //.attr("alignment-baseline", "ideographic" )
             .style('font-size', d => {
                 return show_lt ? this.model.settings.style.font_size_internal + 'px' : '0px' ;
             })
@@ -1835,7 +1853,7 @@ export default class Viewer {
                 return -13
             })
             .attr("x", function(d) {
-                return mirror_factor ? 13 : -13;
+                return mirror_factor ? 8 : -8;
             })
             .attr("text-anchor", function(d) {
 
@@ -1849,7 +1867,7 @@ export default class Viewer {
             .append('text')
             .attr("class", "left_bottom")
             .attr("dy", ".35em")
-            .attr("alignment-baseline", "hanging" )
+            //.attr("alignment-baseline", "hanging" )
             .style('font-size', d => {
                 return show_lb ? this.model.settings.style.font_size_internal + 'px': '0px' ;
             })
@@ -1857,10 +1875,10 @@ export default class Viewer {
                 return 400
             })
             .attr("y", (d) => {
-                return 0
+                return 13
             })
             .attr("x", function (d) {
-                return mirror_factor ? 13 : -13;
+                return mirror_factor ? 8 : -8;
             })
             .attr("text-anchor", function (d) {
 
@@ -1901,11 +1919,13 @@ export default class Viewer {
             .attr("x", function(d) {
                 let y_offset = (typeof d.data.triangle_width !== 'undefined') ? d.data.triangle_width : 0;
 
+                var scale = (d.children || d._children) ? 1 : k
+
                 if (mirror_factor){
-                    return  -(y_offset + 13/k);
+                    return  -(y_offset + 13/scale);
                 }
 
-                return d.parent == null ? -13/k : y_offset + 13/k;
+                return d.parent == null ? -13/scale : y_offset + 13/scale;
             })
             .attr("y", 0)
             .attr('fill', (d) => {

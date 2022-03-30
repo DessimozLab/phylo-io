@@ -1217,7 +1217,7 @@ export default class Interface {
         this.slider_t = this.add_slider_UI(this.menu_tree_p, "Leaf label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
             (e ) =>{this.viewer.update_font_size(e.target.value)})
 
-        this.slider_i = this.add_slider_UI(this.menu_tree_p, "Node label size", 1, this.viewer.model.settings.tree.node_vertical_size*2, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_text_node_size_",
+        this.slider_i = this.add_slider_UI(this.menu_tree_p, "Node label size", 1, this.viewer.model.settings.tree.node_vertical_size*2, this.viewer.model.settings.style.font_size_internal, 1, "slider_text_node_size_",
             (e ) =>{this.viewer.update_font_size_node(e.target.value)})
 
         // COLLAPSE
