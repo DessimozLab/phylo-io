@@ -26,6 +26,7 @@ export default class Model {
             'display_internal_label_left_bottom' : false,
             'display_duplication' : false,
             'has_branch_lenght' : true,
+            'has_duplications' : false,
             'dessimode': false,
             'multiple_search':false,
             'show_histogram' : false,
@@ -295,6 +296,7 @@ export default class Model {
                         case 'Ev':
                             if (value == 'duplication') {
                                 n.duplication = true
+                                this.settings.has_duplications = true;
                             }
                             n.extended_informations.events = value
                             n.extended_informations[key] = value
@@ -303,9 +305,11 @@ export default class Model {
                         case 'D':
                             if (value == 'Y') {
                                 n.duplication = true
+                                this.settings.has_duplications = true;
                             }
                             else if (value == 'Y'){
                                 n.duplication = false
+                                this.settings.has_duplications = true;
                             }
                             n.extended_informations.events = value
                             n.extended_informations[key] = value

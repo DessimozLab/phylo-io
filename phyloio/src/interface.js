@@ -1208,9 +1208,11 @@ export default class Interface {
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.show_tooltips,"Show tooltips",   this.viewer.toggle_tooltips.bind(this.viewer))
 
+        if (this.viewer.model.settings.has_duplications){
+            // ADD TOGGLE DUPLICATION
+            this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
 
-        // ADD TOGGLE DUPLICATION
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
+        }
 
         // ADD SLIDER NODE/LINE/TEXT
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
