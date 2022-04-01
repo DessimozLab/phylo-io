@@ -1,6 +1,7 @@
 import Viewer from './viewer.js'
 import Model from './model.js'
 import Interface from "./interface";
+import * as bootstrap from "bootstrap";
 const { compute_visible_topology_similarity, BCN } = require('./comparison.js')
 const { build_table } = require('./utils.js')
 

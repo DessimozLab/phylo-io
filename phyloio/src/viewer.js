@@ -830,7 +830,7 @@ export default class Viewer {
                 this.container_object.trigger_("reroot", node_from_event.data)
             }
         }, {
-                title: 'Trim branch' ,
+                title: 'Trim subtree' ,
                 action: () =>  {
                     this.container_object.trigger_("trim", node_from_event)
                 }
@@ -1248,6 +1248,8 @@ export default class Viewer {
 
         this.build_d3_data()
         this.render(this.hierarchy)
+
+        this.maximise_zoom()
     }
 
     toggle_mirror(){

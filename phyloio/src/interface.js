@@ -484,6 +484,9 @@ export default class Interface {
                 this.viewer.maximise_zoom()
             })
             .attr('class', ' square_button')
+            .attr('id', 'button_maximise_zoom_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'left')
+            .attr('title', 'Fit tree into viewer (no collapse/expand)')
             .style('margin', '2px')
             .style('width', '32px')
             .append("div")
@@ -491,6 +494,9 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-expand ')
+
+        this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('button_maximise_zoom_' + this.container_object.div_id))
+
     }
 
     // BADGE ROOTING
@@ -1172,14 +1178,12 @@ export default class Interface {
 
         }
 
-        this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.mirror,"Mirror tree",   this.viewer.toggle_mirror.bind(this.viewer))
-
-
         // ADD TOGGLE BRANCH LENGTH
         if(this.viewer.model.settings.has_branch_lenght){
             this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch length",   this.viewer.toggle_use_length.bind(this.viewer))
         }
 
+        this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.mirror,"Mirror tree",   this.viewer.toggle_mirror.bind(this.viewer))
 
         // ADD SLIDER RESIZE X/Y
         this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 2, 1000, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
@@ -1194,18 +1198,19 @@ export default class Interface {
         // ADD TOGGLE INTERNAL LABEL
         //this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_internal_label,"Show internal label",   this.viewer.toggle_internal_label.bind(this.viewer))
 
-        // ADD TOGGLE DUPLICATION
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
 
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.subsample_label,"Subsample Labels",   this.viewer.toggle_subsample.bind(this.viewer))
 
+        // ADD TOGGLE LEAF LABEL
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show Leaves Labels",   this.viewer.toggle_leaves.bind(this.viewer))
 
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.show_tooltips,"Show tooltips",   this.viewer.toggle_tooltips.bind(this.viewer))
 
-        // ADD TOGGLE LEAF LABEL
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show Leaves Labels",   this.viewer.toggle_leaves.bind(this.viewer))
+
+        // ADD TOGGLE DUPLICATION
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_duplication,"Show duplications",   this.viewer.toggle_duplication.bind(this.viewer))
 
         // ADD SLIDER NODE/LINE/TEXT
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
