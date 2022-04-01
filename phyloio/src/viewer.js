@@ -1290,7 +1290,18 @@ export default class Viewer {
 
     toggle_subsample(){
         this.model.settings.subsample_label = !this.model.settings.subsample_label
+        var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
+
+        if(this.model.settings.subsample_label){
+            this.model.settings.tree.font_size = this.model.settings.tree.font_size*k
+        }
+        else{
+            this.model.settings.tree.font_size = this.model.settings.tree.font_size/k
+        }
+
         this.render(this.hierarchy)
+
+        this.interface.update_slider(this.interface.slider_t, this.model.settings.tree.font_size)
 
     }
 
@@ -1404,9 +1415,6 @@ export default class Viewer {
             if (r > 50) {alert("[Common] If I may just give a little feedback... [ following 1200 lines truncated]")}
             else if (r > 10) {alert("[Rare] If I may just give a little feedback... [ following 1200 lines truncated]")}
             else{alert("[Lengendary] Have you heard about banana ?")}
-
-
-
 
 
         }
