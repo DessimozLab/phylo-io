@@ -289,7 +289,7 @@ export default class Viewer {
                 }
 
                 else{
-                    console.log(value)
+                    //console.log(value)
                     html += `${key}: ${parseFloat(value).toFixed(3)} <br>`
                 }
             }
@@ -312,6 +312,7 @@ export default class Viewer {
         var real_node_radius = this.compute_node_radius()
         var show_duplications = this.model.settings.display_duplication
         var mirror_factor = this.model.settings.mirror ? -1 : 1
+        var deepest_tip = 0;
 
         // update x pos with branch length
         this.nodes.forEach(d => {
@@ -341,7 +342,6 @@ export default class Viewer {
                 subsampling_index += 1;
                 d.subsampled = (subsampling_index % subsampling_module === 0) ;
             }
-
 
         })
 
@@ -418,7 +418,7 @@ export default class Viewer {
         // Transition to the proper position for the node
         this.nodeUpdate.transition()
             .duration(this.settings.duration)
-            .attr("transform", function(d) {
+            .attr("transform", (d) =>  {
                 return "translate(" + mirror_factor*d.y + "," + d.x + ")";
             });
 
@@ -482,33 +482,7 @@ export default class Viewer {
 
                         this.node_face_update(d3.select(nodes[i]) )
 
-                        /*
 
-                            d3.select(nodes[i])
-                                .select("text.right")
-                                .attr("x", y_length + 13).attr("y", 0)
-                                .style('font-size', d => {
-                                    return d.subsampled || true ? on_screen_text_size : '0px';
-                                })
-
-                        d3.select(nodes[i]).select('text.left_top')
-                            .style('font-size', d => {
-                                return show_lt ? on_screen_text_size : '0px';
-                            })
-                            .text( (d) => {
-                                return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
-                            })
-
-                        d3.select(nodes[i]).select('text.left_bottom')
-                            .style('font-size', d => {
-                                return show_lb ? on_screen_text_size : '0px';
-                            })
-                            .text( (d) => {
-                                return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
-                            })
-
-
-                         */
 
 
                         return "M" + 0 + "," + 0 + "L" + mirror_factor*y_length + "," + (-x_length) + "L" + mirror_factor*y_length + "," + (x_length) + "L" + 0 + "," + 0;
@@ -523,6 +497,45 @@ export default class Viewer {
                     });
             }
         })
+
+        // align to tip
+
+        if (this.model.settings.align_tip){
+            // update x pos with branch length
+            this.nodes.forEach(d => {
+
+                var distance_root_to_tip = this.scale_branch_length(d.data.distance_to_root) + (d.data.triangle_width ? d.data.triangle_width : 0)
+
+                if (deepest_tip <distance_root_to_tip ){
+                    deepest_tip =  distance_root_to_tip
+                }
+            })
+
+            // Transition to the proper position for the node
+            this.nodeUpdate.transition()
+                .duration(this.settings.duration)
+                .attr("transform", (d) =>  {
+
+                    if (d.children ){
+                        return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
+                    }
+
+                    else if (d._children) {
+                        d.off_set_to_tip =   deepest_tip - this.scale_branch_length(d.data.distance_to_root) - d.data.triangle_width
+                        return "translate(" + (mirror_factor*(d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                    }
+
+                    else {
+                        d.off_set_to_tip =  deepest_tip - this.scale_branch_length(d.data.distance_to_root)
+                        return "translate(" + (mirror_factor* (d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                    }
+
+
+
+
+                });
+        }
+
 
         // Add Stack
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
@@ -753,7 +766,15 @@ export default class Viewer {
 
         var mirror_factor = this.model.settings.mirror ? -1 : 1
 
-        return   "M" + mirror_factor*s.y + "," + s.x + "L" + mirror_factor*d.y + "," + s.x + "L" + mirror_factor*d.y + "," + d.x;
+
+        if (!this.model.settings.align_tip || isNaN(s.off_set_to_tip) ){
+            return   "M" + mirror_factor*s.y + "," + s.x + "L" + mirror_factor*d.y + "," + s.x + "L" + mirror_factor*d.y + "," + d.x;
+
+        }
+        else {
+            console.log(d)
+            return "M" + (mirror_factor * (s.y +  s.off_set_to_tip)) + "," + s.x + "L" + mirror_factor * d.y + "," + s.x + "L" + mirror_factor * d.y  + "," + d.x;
+        }
     }
 
     click_nodes(event, node) {
@@ -803,10 +824,25 @@ export default class Viewer {
             ]
         }
 
+        var t = this.d3.zoomTransform(this.svg.node())
 
+        let div_i = this.container_object.div_id;
 
+        let py = document.getElementById(div_i).offsetTop
+        let px = document.getElementById(div_i).offsetLeft
 
-        this.create_menu_click(menu, node.y,node.x,event,node)
+        var xy = t.invert([event.pageX-px,event.pageY-py]);
+
+        if(this.model.settings.mirror){
+            var x=  -xy[0]
+            var y = xy[1]
+        }
+        else{
+            var x=  xy[0]
+            var y = xy[1]
+        }
+
+        this.create_menu_click(menu, x,y,event,node)
 
     }
 
@@ -1250,6 +1286,12 @@ export default class Viewer {
         this.render(this.hierarchy)
 
         this.maximise_zoom()
+    }
+
+    toggle_align_tip(){
+        this.model.settings.align_tip = !this.model.settings.align_tip
+
+        this.render(this.hierarchy)
     }
 
     toggle_mirror(){

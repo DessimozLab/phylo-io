@@ -1188,6 +1188,8 @@ export default class Interface {
             this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.use_branch_lenght,"Use branch length",   this.viewer.toggle_use_length.bind(this.viewer))
         }
 
+        this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.align_tip,"Align leaves",   this.viewer.toggle_align_tip.bind(this.viewer))
+
         this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.mirror,"Mirror tree",   this.viewer.toggle_mirror.bind(this.viewer))
 
         // ADD SLIDER RESIZE X/Y

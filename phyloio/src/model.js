@@ -30,6 +30,7 @@ export default class Model {
             'dessimode': false,
             'multiple_search':false,
             'show_histogram' : false,
+            'align_tip' : false,
             'has_histogram_data' : false,
             'style': {
                 'font_size_internal' : 14,
