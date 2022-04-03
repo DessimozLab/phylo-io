@@ -1258,8 +1258,21 @@ export default class Viewer {
         this.build_d3_data()
         this.render(this.hierarchy)
 
-        var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
-        this.set_zoom(zoom.k,zoom.x,zoom.y)
+        if (this.model.settings.mirror){
+            var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+            this.set_zoom(zoom.k,zoom.x,zoom.y)
+        }
+        else{
+            var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+            this.set_zoom(zoom.k,this.width- zoom.x,zoom.y)
+        }
+
+
+
+
+
+
+
 
 
     }

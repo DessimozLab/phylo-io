@@ -468,6 +468,9 @@ export default class Interface {
                 this.viewer.fit_to_viewer_height()
             })
             .attr('class', ' square_button')
+            .attr('id', 'buttonfitviewer_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'left')
+            .attr('title', 'Optimise view (possible collapse/expand)')
             .style('margin', '2px')
             .style('width', '32px')
             .append("div")
@@ -475,6 +478,9 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-compress ')
+
+        this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('buttonfitviewer_' + this.container_object.div_id))
+
     }
 
     add_maximise() {
