@@ -252,6 +252,7 @@ export default class Interface {
         const add_tree_helpers = function(container_object, str, format){
 
             container_object.add_tree(str, {'data_type':format})
+            container_object.current_model =  container_object.models.length-1
 
             document.querySelector('#exampleModal'+ container_object.uid).style.display =  'none'
             document.querySelectorAll('.modal-backdrop').forEach(elem => {
@@ -273,8 +274,6 @@ export default class Interface {
 
             let s = document.getElementById("exampleFormControlTextarea1s" + this.container_object.uid).value
             var option = document.getElementById('add_tree_str_select' + this.container_object.uid).value
-
-
             add_tree_helpers(this.container_object, s, option)
         }
 
