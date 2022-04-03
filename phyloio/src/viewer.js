@@ -772,7 +772,6 @@ export default class Viewer {
 
         }
         else {
-            console.log(d)
             return "M" + (mirror_factor * (s.y +  s.off_set_to_tip)) + "," + s.x + "L" + mirror_factor * d.y + "," + s.x + "L" + mirror_factor * d.y  + "," + d.x;
         }
     }

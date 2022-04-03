@@ -3,7 +3,8 @@ import Model from './model.js'
 import Interface from "./interface";
 import * as bootstrap from "bootstrap";
 const { compute_visible_topology_similarity, BCN } = require('./comparison.js')
-const { build_table } = require('./utils.js')
+const { build_table, save_file_as } = require('./utils.js')
+var parser = require("biojs-io-newick");
 
 
 var uid_container = 0 // unique id generator is bound to a single Container()
@@ -526,6 +527,14 @@ export default class Container {
 
         this.interface = new Interface(this.viewer, this)
 
+
+
+    }
+
+    export_as_newick(){
+        var nwk = parser.parse_json(this.viewer.model.remove_circularity())
+
+        save_file_as(this.viewer.model.settings.name  + ".nwk", nwk)
 
 
     }

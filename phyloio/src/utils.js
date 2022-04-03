@@ -275,8 +275,6 @@ function svgString2Image( svgString, width, height, format, callback ) {
 
 function screen_shot({ svg1, svg2, format } = {}){
 
-    console.log(svg1, svg2, format)
-
     addLogo(svg1);
     var name1 = svg1.attr("id");
     var svgString1 = getSVGString(svg1.node());
@@ -390,4 +388,19 @@ function parse_nhx(s) {
     return tree;
 };
 
-export {build_table, reroot_hierarchy, screen_shot, parse_nhx};
+function save_file_as(filename, data) {
+    const blob = new Blob([data], {type: 'text/csv'});
+    if(window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    }
+    else{
+        const elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = filename;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
+    }
+}
+
+export {build_table, reroot_hierarchy, screen_shot, parse_nhx, save_file_as};

@@ -72,7 +72,7 @@ export default class Interface {
         if (empty_mode){
             this.top_left = this.add_top_left_container()
             this.add_data_icon()
-            this.tooltip_add_tree.show()
+            //this.tooltip_add_tree.show()
             this.add_empty_message()
             return
         }
@@ -147,8 +147,8 @@ export default class Interface {
 
         this.container_d3.select("#exampleModal" + this.container_object.uid).remove()
 
-        this.top_left.append('button')
-            .attr('class', ' square_button')
+        var b = this.top_left.append('button')
+            .attr('class', ' square_button dashed_button')
             .attr('id', 'buttonmodal_' + this.container_object.div_id )
             .style('margin', '2px')
             .attr('data-bs-toggle', 'modal')
@@ -157,16 +157,16 @@ export default class Interface {
             .attr('title', 'Add a new tree')
             .append("div")
             .attr("class","label")
-            .append('i')
-            .style('color', '#888')
-            .attr('class', ' fas fa-folder-plus ')
+
+            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add new tree")
+
 
         if (this.tooltip_add_tree){
             this.tooltip_add_tree.tip.remove()
         }
 
 
-        this.tooltip_add_tree = new bootstrap.Tooltip(document.getElementById('buttonmodal_' + this.container_object.div_id))
+        //this.tooltip_add_tree = new bootstrap.Tooltip(document.getElementById('buttonmodal_' + this.container_object.div_id))
 
         let mod_html = 			"<!-- Modal -->\n" +
             "<div class=\"modal\" id=\"exampleModal\" tabindex=\"-1\">\n" +
@@ -921,13 +921,10 @@ export default class Interface {
 
         // ADD THE ACCORDION SYSTEM
 
-        this.menu_exportfile_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as file")
-        this.menu_exportfile_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        this.menu_exportimage_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as Graphic")
+        this.menu_exportimage_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
-
-
-
-        this.export_as = this.menu_exportfile_p.append('div')
+        this.export_as = this.menu_exportimage_p.append('div')
             .style('display', 'flex')
 
         this.export_as.append('button') // todo clean click
@@ -950,6 +947,24 @@ export default class Interface {
             .style('flex-grow', '1')
             .append("text")
             .text("SVG")
+
+
+
+        this.menu_exportfile_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as file")
+        this.menu_exportfile_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
+        this.export_as = this.menu_exportfile_p.append('div')
+            .style('display', 'flex')
+
+        this.export_as.append('button') // todo clean click
+            .attr('class', ' square_button')
+            .on("click", d => {
+                this.container_object.export_as_newick()
+            })
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append("text")
+            .text("Newick")
 
     }
 
