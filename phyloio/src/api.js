@@ -360,6 +360,10 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
                     that.session_url = that.settings.share_phylo + '?session=' + that.session_token
                 }
             }
+
+            if (this.status == 400) {
+                return
+            }
         };
 
         xhr.open("POST", this.settings.share_post, false);

@@ -135,51 +135,84 @@
 
 
     <!-- Modals -->
-    <div class="modal" id="modal_load" tabindex="-1">
 
-        <div class="modal-dialog">
+
+    <div class="modal" id="modal_phylo_session" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg ">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Load a phylo.io session</h5>
+                    <h5 class="modal-title"><b>Export, Load or Share your phylo.io session ! </b></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
-                    <div class="input-group">
-                        <input type="file" class="form-control" id="load_session_input" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+
+                    <div class="container-fluid">
+
+                        <div class="row" style="margin-bottom: 32px">
+                            <div class="col" >
+                                <p>  Export this session as</p>
+                                <div class="text-center">
+                                        <button type="button" id="export_as_text" class="btn btn-outline-primary">.phyloio (text)</button>
+                                        <button type="button" id='button_export_screenshot_png' class="btn btn-outline-primary">.PNG</button>
+                                        <button type="button" id='button_export_screenshot_svg' class="btn btn-outline-primary">.SVG</button>
+                                </div>
+                            </div>
+                            <div class="col-1 my-auto "><p class="align-middle" style="margin: 0px;"><b>OR</b></p></div>
+                            <div class="col">
+                                <p>  Upload your own session</p>
+
+                                <div class="input-group mb-3" style="padding-left: 24px;">
+                                    <input class="form-control" type="file" id="load_session_input">                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" id="load_session_file" type="button">OK</button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 32px">
+                            <p>Here, you can copy sharing link</p>
+
+                            <div class="card text-center" style="margin-left: 24px" >
+                                <div class="card-body">
+
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <i class="bi-link-45deg" ></i>
+                                        </div>
+                                        <div class="col-9" style="overflow: scroll;">
+                                            <a href="#" class="card-link" id="share_link" style="white-space: nowrap;"></a>
+
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="copy_clipboard('share_link', 'href')">copy</button>
+                                        </div>
+                                    </div>
+
+
+
+
+
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
+
+
+                    </div>
+
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="load_session_file" class="btn btn-primary">Load the session</button>
-                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="modal" id="modal_share" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Generate a link to share this session </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <br>
-                    <div class="d-grid gap-2 col-8 mx-auto">
-                        <button class="btn btn-success" type="button" id="btn_share_link">Generate link</button>
-                        <br>
-                        <a href='#' class="text-center" id="share_link"> </a>
-                        <button style="display: none" onclick="copy_clipboard('share_link', 'href')" class="btn btn-outline-dark " type="button" id="btn_share_copy">Copy Url to clipboard</button>
-
-                    </div>
-                    <br>
-                </div>
-                <div class="modal-footer">
-                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">I'm done</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="modal" id="modal_distance" tabindex="-1">
         <div class="modal-dialog">
@@ -211,34 +244,6 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">I'm done here</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="modal_screenshot" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Screenshot settings </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <label for="s_format_r"><strong>Format:</strong> </label>
-
-                    <div class="btn-group" role="group" id="s_format_r" aria-label="Basic radio toggle button group">
-
-                        <input type="radio" class="btn-check" name="format_screen" id="btnradiosvg" autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="btnradiosvg">SVG</label>
-
-                        <input type="radio" class="btn-check" name="format_screen" id="btnradiopng" autocomplete="off">
-                        <label class="btn btn-outline-primary" for="btnradiopng">PNG</label>
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button"  id="button_export_screenshot" class="btn btn-primary" data-bs-dismiss="modal">Export as Image</button>
                 </div>
             </div>
         </div>
@@ -276,7 +281,6 @@
             </div>
     </div>
 
-
     <div class="modal" id="modal_help" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -293,7 +297,6 @@
             </div>
         </div>
     </div>
-
 
     <div class="position-fixed top-50 start-50 translate-middle"  id="error_remote_data" style="display: none; z-index: 10000000">
 
@@ -370,11 +373,13 @@
 
     // MODALS
     document.getElementById("menu_load").onclick = function() {
-        $('#modal_load').modal('show');
+        //$('#modal_load').modal('show');
+        $('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_share").onclick = function() {
-        $('#modal_share').modal('show');
+        //$('#modal_share').modal('show');
+        $('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_distance").onclick = function() {
@@ -383,7 +388,8 @@
     };
 
     document.getElementById("menu_screenshot").onclick = function() {
-        $('#modal_screenshot').modal('show');
+        //$('#modal_screenshot').modal('show');
+        $('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_keyboard").onclick = function() {
@@ -457,16 +463,19 @@
     };
 
     document.getElementById("menu_save").onclick = function() {
-        phylo.save_session()
-        refresh()
+        $('#modal_phylo_session').modal('show');
 
     };
+    document.getElementById('export_as_text').onclick = () => {
+        phylo.save_session()
+        refresh()
+    }
 
     document.getElementById('load_session_file').onclick = () => {
 
         var file = document.getElementById('load_session_input').files[0];
 
-        $('#modal_load').modal('hide');
+        $('#modal_phylo_session').modal('hide');
 
         if (file) {
             var reader = new FileReader();
@@ -477,44 +486,7 @@
 
                 start_with_json(pickle)
 
-                /*
 
-                for(var key in pickle.settings) {
-                    var value = pickle.settings[key];
-                    phylo.settings[key] = value;
-                }
-
-                start_phylo(phylo.settings.compareMode)
-
-
-                let cs = Object.values(pickle.containers)
-                let csp = Object.values(phylo.containers)
-
-                for (var i = 0; i < cs.length; i++) {
-
-                    var ms = cs[i].models
-
-
-                    for (var j = 0; j < ms.length; j++) {
-                        csp[i].add_tree(ms[j].data, ms[j].settings, false)
-                        csp[i].models[csp[i].models.length-1].add_circularity_back()
-                    }
-
-                    container_object = csp[i]
-
-                    container_object.viewer.set_data(container_object.models[container_object.current_model]);
-                    container_object.viewer.render(container_object.viewer.hierarchy);
-                    container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
-
-
-                }
-
-                phylo.start(recompute=true)
-
-                display_distance_menu(phylo.settings.compareMode)
-
-
-                 */
 
             }
             reader.onerror = function (evt) {
@@ -522,9 +494,12 @@
             }
         }
 
+
+
+
     }
 
-    document.getElementById("button_export_screenshot").onclick = function() {
+    document.getElementById("button_export_screenshot_svg").onclick = function() {
 
 
         if (phylo.settings.compareMode) {
@@ -537,39 +512,45 @@
             var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
         }
 
-        if (document.getElementById("btnradiosvg").checked){
-            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
-        }
-
-        else if (document.getElementById("btnradiopng").checked){
-            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
-        }
-
+        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
 
 
 
     };
 
-    document.getElementById("btn_share_link").onclick = function() {
+    document.getElementById("button_export_screenshot_png").onclick = function() {
+
+
+        if (phylo.settings.compareMode) {
+
+            var svg1 = phylo.bound_container[0].viewer.d3.select("#svg" + phylo.bound_container[0].viewer.uid)
+            var svg2 = phylo.bound_container[1].viewer.d3.select("#svg" + phylo.bound_container[1].viewer.uid)
+        }
+
+        else {
+            var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
+        }
+
+        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
+
+    };
+
+    var myModalEl = document.getElementById('modal_phylo_session')
+    myModalEl.addEventListener('shown.bs.modal', function (event) {
 
         phylo.generate_share_link()
 
         var s_url = JSON.parse(JSON.stringify(phylo.session_url));
 
-            refresh()
+        refresh()
 
         phylo.session_url = s_url
 
-        console.log(phylo.session_url)
-
-        document.getElementById('share_link').style.width = document.getElementById('btn_share_link').offsetWidth + 'px'
-        document.getElementById('share_link').style.wordWrap = 'break-word';
         document.getElementById("share_link").innerText = phylo.session_url
         document.getElementById("share_link").href = phylo.session_url
-        document.getElementById("btn_share_copy").style.display = 'block'
 
+    })
 
-    };
 
     // SWITCH BINDING
 
