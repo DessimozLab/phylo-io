@@ -168,86 +168,97 @@ export default class Interface {
 
         //this.tooltip_add_tree = new bootstrap.Tooltip(document.getElementById('buttonmodal_' + this.container_object.div_id))
 
-        let mod_html = 			"<!-- Modal -->\n" +
-            "<div class=\"modal\" id=\"exampleModal\" tabindex=\"-1\">\n" +
-            "<div class=\"modal-dialog modal-lg\">\n" +
-            "<div class=\"modal-content\">\n" +
-            "<div class=\"modal-header\">\n" +
-            "<h5 class=\"modal-title\">Add a new tree</h5>\n" +
-            "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n" +
-            "</div>\n" +
-            "<div class=\"modal-body\">\n" +
-            "<div class=\"container-fluid\">\n" +
-            "<p><strong>Compatible format:</strong> Newick, Extended Newick.</p>\n" +
-            "<div class=\"card\"  style=\"border: none\">\n" +
-            "<div class=\"card-body\">\n" +
-            "<h4 class=\"card-title\">Add a new tree from String</h4>\n" +
-            "<h6 class=\"card-subtitle mb-2 text-muted\"><small>Example: <a href=\"#\" class=\"t1\">tree #1</a>, <a href=\"#\" class=\"t2\">tree #2</a>, <a href=\"#\" class=\"tbig\">big tree</a>, <a href=\"#\" class=\"nhx_ex\">Extended Newick</a>.</small></h6>\n" +
-            "<div class=\"row align-items-center\">\n" +
-            "<div class=\"col-md-6\">\n" +
-            "<textarea class=\"form-control\" id=\"exampleFormControlTextarea1s\" rows=\"3\"></textarea>\n" +
-            "</div>\n" +
-            "<div class=\"col-md-6\">\n" +
-            "<div class=\"input-group\" style=\"justify-content: center;\">\n" +
-            "<select class=\"custom-select\" id=\"add_tree_str_select\">\n" +
-            "<option selected value=\"newick\">Newick</option>\n" +
-            "<option value=\"nhx\">Extended Newick</option>\n" +
-            "</select>\n" +
-            "<div class=\"input-group-append\">\n" +
-            "<button type=\"button\" id='add_tree_str_btn' class=\"btn btn-primary btn-reply \">Add this tree</button>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "<div class=\"card\" style=\"border: none\" >\n" +
-            "<div class=\"card-body\">\n" +
-            "<h4 class=\"card-title\">Add a new tree from File</h4>\n" +
-            "<div class=\"row\">\n" +
-            "<div class=\"col-md-6\">\n" +
-            "<input type=\"file\"  id='add_tree_file_input' class=\"form-control-file\" id=\"exampleFormControlFile1\">\n" +
-            "</div>\n" +
-            "<div class=\"col-md-6 \">\n" +
-            "<div class=\"input-group\" style=\"justify-content: center;\">\n" +
-            "<select class=\"custom-select\" id=\"add_tree_file_select\">\n" +
-            "<option selected value=\"newick\">Newick</option>\n" +
-            "<option value=\"nhx\">Extended Newick</option>\n" +
-            "</select>\n" +
-            "<div class=\"input-group-append\">\n" +
-            "<button type=\"button\" id='add_tree_file_btn' class=\"btn btn-primary btn-reply \">Add this tree</button>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "<br>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "<div class=\"modal-footer\">\n" +
-            "<button type=\"button\"  class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n" +
-            "</div>\n"
+        let mod_html = 				"<!-- Modal -->" +
+            "" +
+            "<div class=\"modal\" id=\"exampleModal\" tabindex=\"-1\">" +
+            "    <div class=\"modal-dialog modal-dialog-centered modal-lg\">" +
+            "        <div class=\"modal-content\">" +
+            "" +
+            "            <div class=\"modal-body\">" +
+            "" +
+            "" +
+            "                <div class=\"container-fluid\">" +
+            "" +
+            "" +
+            "                    <h4><b>Step 1:</b> add data from text or file</h4>" +
+            "                    <br>" +
+            "" +
+            "                    <div class=\"row\" style=\" margin-left: 24px\">" +
+            "                        <div class=\"col\" >" +
+            "                            <textarea class=\"form-control\" placeholder=\"Paste or type your tree here\" id=\"exampleFormControlTextarea1s\" rows=\"3\"></textarea>" +
+            "" +
+            "" +
+            "                        </div>" +
+            "                        <div class=\"col-1 my-auto \"><p class=\"align-middle\" style=\"margin: 0px;\"><b>OR</b></p></div>" +
+            "                        <div class=\"col my-auto\">" +
+            "" +
+            "                            <div class=\"input-group mb-3\" style=\"padding-left: 24px;\">" +
+            "                                <input class=\"form-control\" type=\"file\" id=\"add_tree_file_input\">                                    <div class=\"input-group-append\">" +
+            "                            </div>" +
+            "                            </div>" +
+            "" +
+            "" +
+            "                        </div>" +
+            "                    </div>" +
+            "" +
+            "                    <div class=\"row\" style=\"margin-left: 24px\">" +
+            "                        <div class=\"col\" >" +
+            "                            <h6 class=\"card-subtitle mb-2 text-muted\" style=\"margin-top: 6px\"><small>Example: <a href=\"#\" class=\"t1\">tree #1</a>, <a href=\"#\" class=\"t2\">tree #2</a>, <a href=\"#\" class=\"tbig\">big tree</a>, <a href=\"#\" class=\"nhx_ex\">Extended Newick</a>.</small></h6>" +
+            "                        </div>" +
+            "                    </div>" +
+            "" +
+            "                    <br>" +
+            "" +
+            "" +
+            "" +
+            "" +
+            "                    <br>" +
+            "                    <h4><b>Step 2:</b> Choose data format to add the tree</h4>" +
+            "" +
+            "" +
+            "" +
+            "                    <div class=\"text-center\">" +
+            "                        <button type=\"button\" id='button_add_tree_newick' class=\"btn btn-outline-primary\">Newick</button>" +
+            "                        <button type=\"button\" id='button_add_tree_extended_newick' class=\"btn btn-outline-primary\">Extended Newick</button>" +
+            "" +
+            "                    </div>" +
+            "" +
+            "" +
+            "" +
+            "                </div>" +
+            "                <br>" +
+            "" +
+            "" +
+            "" +
+            "            </div>" +
+            "" +
+            "            <div class=\"modal-footer\">" +
+            "                <p class=\"me-auto\"><strong>Compatible format:</strong> Newick, Extended Newick.</p>" +
+            "" +
+            "                <button type=\"button\"  class=\"btn btn-sm btn-primary\" data-bs-dismiss=\"modal\">Close</button>" +
+            "            </div>" +
+            "" +
+            "        </div>" +
+            "    </div>" +
+            "</div>" +
+            "" +
+            "" +
+            "" +
+            "" +
+            "" +
+            "" +
+            "" +
+            ""
 
-        mod_html = mod_html.replace('exampleModalLabel', 'exampleModalLabel' + this.container_object.uid)
         mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
-        mod_html = mod_html.replace('exampleFormControlFile1', 'exampleFormControlFile1' + this.container_object.uid)
-        mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
-        mod_html = mod_html.replace('add_tree_file_btn', 'add_tree_file_btn' + this.container_object.uid)
-        mod_html = mod_html.replace('add_tree_file_select', 'add_tree_file_select' + this.container_object.uid)
-        mod_html = mod_html.replace('add_tree_str_btn', 'add_tree_str_btn' + this.container_object.uid)
-        mod_html = mod_html.replace('add_tree_str_select', 'add_tree_str_select' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
-
-
+        mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
+        mod_html = mod_html.replace('button_add_tree_newick', 'button_add_tree_newick' + this.container_object.uid)
+        mod_html = mod_html.replace('button_add_tree_extended_newick', 'button_add_tree_extended_newick' + this.container_object.uid)
 
         let content = document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
         var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
-
 
         const add_tree_helpers = function(container_object, str, format){
 
@@ -269,25 +280,22 @@ export default class Interface {
             }
         }
 
-
-        document.getElementById('add_tree_str_btn' + this.container_object.uid).onclick = () => {
-
+        const add_data_from_modal =  (format) => {
             let s = document.getElementById("exampleFormControlTextarea1s" + this.container_object.uid).value
-            var option = document.getElementById('add_tree_str_select' + this.container_object.uid).value
-            add_tree_helpers(this.container_object, s, option)
-        }
 
+            if (s.length > 0){
+                add_tree_helpers(this.container_object, s, format)
+                return
+            }
 
-        document.getElementById('add_tree_file_btn' + this.container_object.uid).onclick = () => {
             var file = document.getElementById('add_tree_file_input' + this.container_object.uid).files[0];
-            var option = document.getElementById('add_tree_file_select' + this.container_object.uid).value
-
 
             if (file) {
                 var reader = new FileReader();
                 reader.readAsText(file, "UTF-8");
                 reader.onload =  (evt) => {
-                    add_tree_helpers(this.container_object, evt.target.result, option)
+                    add_tree_helpers(this.container_object, evt.target.result, format)
+                    return
                 }
                 reader.onerror = function (evt) {
                     console.log("error reading file")
@@ -297,6 +305,17 @@ export default class Interface {
 
 
         }
+
+        // if click on newick
+        document.getElementById('button_add_tree_newick' + this.container_object.uid).onclick = () => {
+            add_data_from_modal('newick')
+        }
+
+        // if click on nhx
+        document.getElementById('button_add_tree_extended_newick' + this.container_object.uid).onclick = () => {
+            add_data_from_modal('nhx')
+        }
+
 
         modmod.getElementsByClassName('t1')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
@@ -316,7 +335,6 @@ export default class Interface {
         };
 
         modmod.getElementsByClassName('nhx_ex')[0].onclick = () => {
-            document.getElementById('add_tree_str_select'+ this.container_object.uid).value='nhx';
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.nhx
         };
 
@@ -950,7 +968,7 @@ export default class Interface {
 
 
 
-        this.menu_exportfile_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as file")
+        this.menu_exportfile_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as Text")
         this.menu_exportfile_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.export_as = this.menu_exportfile_p.append('div')
