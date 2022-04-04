@@ -11,10 +11,13 @@ var uid_container = 0 // unique id generator is bound to a single Container()
 
 // Object that bind a div with a d3 Viewer() and one or multiple Model()
 export default class Container {
+    get uid() {
+        return this._uid;
+    }
 
     constructor(container_id) {
 
-        this.uid = uid_container++; // unique container id
+        this._uid = uid_container++; // unique container id
         this.div_id = container_id; // related div id
         this.models = []; // list of Model()
         this.settings = {}; // per container settings
