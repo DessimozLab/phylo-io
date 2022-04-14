@@ -158,7 +158,7 @@ export default class Interface {
             .append("div")
             .attr("class","label")
 
-            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add new tree")
+            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add tree")
 
 
         if (this.tooltip_add_tree){
@@ -216,13 +216,8 @@ export default class Interface {
             "                    <h4><b>Step 2:</b> Choose data format to add the tree</h4>" +
             "" +
             "" +
-            "" +
-            "                    <div class=\"text-center\">" +
-            "                        <button type=\"button\" id='button_add_tree_newick' class=\"btn btn-outline-primary\">Newick</button>" +
-            "                        <button type=\"button\" id='button_add_tree_extended_newick' class=\"btn btn-outline-primary\">Extended Newick</button>" +
-            "" +
-            "                    </div>" +
-            "" +
+            '<div class="text-center"><select style="margin-left: 24px;" class="custom-select" id="add_tree_str_select"> <option selected value="newick">Newick</option> <option value="nhx">Extended Newick</option> </select></div>'
+              +
             "" +
             "" +
             "                </div>" +
@@ -234,8 +229,9 @@ export default class Interface {
             "" +
             "            <div class=\"modal-footer\">" +
             "                <p class=\"me-auto\"><strong>Compatible format:</strong> Newick, Extended Newick.</p>" +
-            "" +
-            "                <button type=\"button\"  class=\"btn btn-sm btn-primary\" data-bs-dismiss=\"modal\">Close</button>" +
+
+            '<button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Cancel</button>' +
+        '<button type="button" id="modal_add_tree_final_button" class="btn btn-sm btn-success">Add tree</button>' +
             "            </div>" +
             "" +
             "        </div>" +
@@ -253,8 +249,8 @@ export default class Interface {
         mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
         mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
-        mod_html = mod_html.replace('button_add_tree_newick', 'button_add_tree_newick' + this.container_object.uid)
-        mod_html = mod_html.replace('button_add_tree_extended_newick', 'button_add_tree_extended_newick' + this.container_object.uid)
+        mod_html = mod_html.replace('add_tree_str_select', 'add_tree_str_select' + this.container_object.uid)
+        mod_html = mod_html.replace('modal_add_tree_final_button', 'modal_add_tree_final_button' + this.container_object.uid)
 
         let content = document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
@@ -306,15 +302,18 @@ export default class Interface {
 
         }
 
-        // if click on newick
-        document.getElementById('button_add_tree_newick' + this.container_object.uid).onclick = () => {
-            add_data_from_modal('newick')
+
+
+
+        document.getElementById('modal_add_tree_final_button' + this.container_object.uid).onclick = () => {
+            var e = document.getElementById('add_tree_str_select' + this.container_object.uid);
+
+            add_data_from_modal(e.value)
         }
 
-        // if click on nhx
-        document.getElementById('button_add_tree_extended_newick' + this.container_object.uid).onclick = () => {
-            add_data_from_modal('nhx')
-        }
+
+
+
 
 
         modmod.getElementsByClassName('t1')[0].onclick = () => {
@@ -928,7 +927,7 @@ export default class Interface {
             .attr("class", "label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-save ')
+            .attr('class', ' fas fa-download ')
 
 
         // add the sub menu container
