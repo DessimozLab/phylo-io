@@ -87,12 +87,12 @@
         <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
             <li class="nav-item">
                 <a href="#" class="nav-link  py-3 border-bottom border-top" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
-                    <i class="bi-upload" style="font-size: 24px;color: white "></i>
+                    <i class="bi-file-earmark-arrow-up" style="font-size: 24px;color: white "></i>
                 </a>
             </li>
             <li>
                 <a href="#" class="nav-link py-3 border-bottom" id="menu_save" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Save Session">
-                    <i class="bi-download" style="font-size: 24px;color: white  "></i>
+                    <i class="bi-file-earmark-arrow-down" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
             <li>
@@ -142,7 +142,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg ">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><b>Export, Load or Share your phylo.io session ! </b></h5>
+                    <h5 class="modal-title"><b>Load your phylo.io session</b></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -151,17 +151,7 @@
                     <div class="container-fluid">
 
                         <div class="row" style="margin-bottom: 32px">
-                            <div class="col" >
-                                <p>  Export this session as</p>
-                                <div class="text-center">
-                                        <button type="button" id="export_as_text" class="btn btn-outline-primary">.phyloio (text)</button>
-                                        <button type="button" id='button_export_screenshot_png' class="btn btn-outline-primary">.PNG</button>
-                                        <button type="button" id='button_export_screenshot_svg' class="btn btn-outline-primary">.SVG</button>
-                                </div>
-                            </div>
-                            <div class="col-1 my-auto "><p class="align-middle" style="margin: 0px;"><b>OR</b></p></div>
                             <div class="col">
-                                <p>  Upload your own session</p>
 
                                 <div class="input-group mb-3" style="padding-left: 24px;">
                                     <input class="form-control" type="file" id="load_session_input">                                    <div class="input-group-append">
@@ -169,12 +159,41 @@
                                     </div>
                                 </div>
 
+                                <div class="alert alert-warning" role="alert">
+                                    <strong>Warning:</strong> Here you can only load .phyloio file that are generated from the download button
+                                    on the left menu. It will reset the current phylo.io session and load all data and settings from the file erasing if any data you have already load.
+                                   <b>If you only want to add a new tree please use the "add tree" button on the top left of each viewer. </b>
+                                </div>
+
 
                             </div>
                         </div>
 
+
+                    </div>
+
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+
+    <div class="modal" id="modal_share" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Share your phylo.io session </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <br>
+                    <div class=" gap-2 col-8 mx-auto">
                         <div style="margin-bottom: 32px">
-                            <p>You can share your session using the share link below</p>
 
                             <div class="card text-center" style="margin-left: 24px" >
                                 <div class="card-body">
@@ -193,28 +212,24 @@
                                     </div>
 
 
-
-
-
                                 </div>
                             </div>
 
                         </div>
                     </div>
 
-
-
-                    </div>
-
-
                 </div>
-
             </div>
+
+
+
         </div>
+
+
     </div>
 
     <div class="modal" id="modal_distance" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Phylogenetic distance settings</h5>
@@ -249,7 +264,7 @@
     </div>
 
     <div class="modal" id="modal_keyboard" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Keyboard shorcuts  </h5>
@@ -281,7 +296,7 @@
     </div>
 
     <div class="modal" id="modal_help" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Phylo.io help center</h5>
@@ -292,6 +307,38 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">I'm done!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal_screenshot" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Screenshot settings </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p> Here, you will make a screenshot of the current phylo.io view. This means that if the compare mode is activated it will
+                        export as image both viewers. If you want each individual viewer to be exported as single image please use  <i class=" fas fa-download " style="color: rgb(136, 136, 136);"></i> at the top righ of
+                        each viewers.</p>
+
+                    <label for="s_format_r" style="margin-left: 24px"><strong>Format:</strong> </label>
+
+
+                    <div class="btn-group" style="margin-left: 12px"  role="group" id="s_format_r" aria-label="Basic radio toggle button group">
+
+                        <input type="radio" class="btn-check" name="format_screen" id="btnradiosvg" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="btnradiosvg">SVG</label>
+
+                        <input type="radio" class="btn-check" name="format_screen" id="btnradiopng" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="btnradiopng">PNG</label>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  id="button_export_screenshot" class="btn btn-primary" data-bs-dismiss="modal">Export as Image</button>
                 </div>
             </div>
         </div>
@@ -377,8 +424,8 @@
     };
 
     document.getElementById("menu_share").onclick = function() {
-        //$('#modal_share').modal('show');
-        $('#modal_phylo_session').modal('show');
+        $('#modal_share').modal('show');
+        //$('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_distance").onclick = function() {
@@ -387,8 +434,8 @@
     };
 
     document.getElementById("menu_screenshot").onclick = function() {
-        //$('#modal_screenshot').modal('show');
-        $('#modal_phylo_session').modal('show');
+        $('#modal_screenshot').modal('show');
+        //$('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_keyboard").onclick = function() {
@@ -462,13 +509,10 @@
     };
 
     document.getElementById("menu_save").onclick = function() {
-        $('#modal_phylo_session').modal('show');
-
-    };
-    document.getElementById('export_as_text').onclick = () => {
         phylo.save_session()
         refresh()
-    }
+
+    };
 
     document.getElementById('load_session_file').onclick = () => {
 
@@ -498,7 +542,7 @@
 
     }
 
-    document.getElementById("button_export_screenshot_svg").onclick = function() {
+    document.getElementById("button_export_screenshot").onclick = function() {
 
 
         if (phylo.settings.compareMode) {
@@ -511,30 +555,22 @@
             var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
         }
 
-        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
+        if (document.getElementById("btnradiosvg").checked){
+            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'svg'})
+        }
+
+        else if (document.getElementById("btnradiopng").checked){
+            phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
+        }
+
+
 
 
 
     };
 
-    document.getElementById("button_export_screenshot_png").onclick = function() {
 
-
-        if (phylo.settings.compareMode) {
-
-            var svg1 = phylo.bound_container[0].viewer.d3.select("#svg" + phylo.bound_container[0].viewer.uid)
-            var svg2 = phylo.bound_container[1].viewer.d3.select("#svg" + phylo.bound_container[1].viewer.uid)
-        }
-
-        else {
-            var svg1 = Object.values(phylo.containers)[0].viewer.d3.select("#svg" + Object.values(phylo.containers)[0].viewer.uid)
-        }
-
-        phylo.screen_shot({ svg1: svg1,svg2: svg2,format: 'png'})
-
-    };
-
-    var myModalEl = document.getElementById('modal_phylo_session')
+    var myModalEl = document.getElementById('modal_share')
     myModalEl.addEventListener('shown.bs.modal', function (event) {
 
         phylo.generate_share_link()
