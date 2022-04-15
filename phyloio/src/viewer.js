@@ -1078,8 +1078,6 @@ export default class Viewer {
         var x = this.model.settings.mirror ? this.width - x: x
 
         d3.select('#svg' + this.uid )
-            .transition()
-            .duration(this.settings.duration)
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
 
