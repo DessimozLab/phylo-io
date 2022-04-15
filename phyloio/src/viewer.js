@@ -501,39 +501,83 @@ export default class Viewer {
         // align to tip
 
         if (this.model.settings.align_tip){
-            // update x pos with branch length
-            this.nodes.forEach(d => {
 
-                var distance_root_to_tip = this.scale_branch_length(d.data.distance_to_root) + (d.data.triangle_width ? d.data.triangle_width : 0)
+            if (this.model.settings.has_branch_lenght && this.model.settings.use_branch_lenght) {
 
-                if (deepest_tip <distance_root_to_tip ){
-                    deepest_tip =  distance_root_to_tip
-                }
-            })
+                // update y pos with branch length
+                this.nodes.forEach(d => {
 
-            // Transition to the proper position for the node
-            this.nodeUpdate.transition()
-                .duration(this.settings.duration)
-                .attr("transform", (d) =>  {
+                    var distance_root_to_tip = this.scale_branch_length(d.data.distance_to_root) + (d.data.triangle_width ? d.data.triangle_width : 0)
 
-                    if (d.children ){
-                        return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
+                    if (deepest_tip <distance_root_to_tip ){
+                        deepest_tip =  distance_root_to_tip
                     }
+                })
 
-                    else if (d._children) {
-                        d.off_set_to_tip =   deepest_tip - this.scale_branch_length(d.data.distance_to_root) - d.data.triangle_width
-                        return "translate(" + (mirror_factor*(d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                // Transition to the proper position for the node
+                this.nodeUpdate.transition()
+                    .duration(this.settings.duration)
+                    .attr("transform", (d) =>  {
+
+                        if (d.children ){
+                            return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
+                        }
+
+                        else if (d._children) {
+                            d.off_set_to_tip =   deepest_tip - this.scale_branch_length(d.data.distance_to_root) - d.data.triangle_width
+                            return "translate(" + (mirror_factor*(d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                        }
+
+                        else {
+                            d.off_set_to_tip =  deepest_tip - this.scale_branch_length(d.data.distance_to_root)
+                            return "translate(" + (mirror_factor* (d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                        }
+
+
+
+
+                    });
+            }
+            else{
+
+                // update y pos with branch length
+                this.nodes.forEach(d => {
+
+                    var distance_root_to_tip = this.scale_branch_length(d.data.depth) + (d.data.triangle_width ? d.data.triangle_width : 0)
+
+                    if (deepest_tip <distance_root_to_tip ){
+                        deepest_tip =  distance_root_to_tip
                     }
+                })
 
-                    else {
-                        d.off_set_to_tip =  deepest_tip - this.scale_branch_length(d.data.distance_to_root)
-                        return "translate(" + (mirror_factor* (d.y + d.off_set_to_tip)) + "," + d.x + ")";
-                    }
+                // Transition to the proper position for the node
+                this.nodeUpdate.transition()
+                    .duration(this.settings.duration)
+                    .attr("transform", (d) =>  {
+
+                        if (d.children ){
+                            return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
+                        }
+
+                        else if (d._children) {
+                            d.off_set_to_tip =   deepest_tip - this.scale_branch_length(d.data.depth) - d.data.triangle_width
+                            return "translate(" + (mirror_factor*(d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                        }
+
+                        else {
+                            d.off_set_to_tip =  deepest_tip - this.scale_branch_length(d.data.depth)
+                            return "translate(" + (mirror_factor* (d.y + d.off_set_to_tip)) + "," + d.x + ")";
+                        }
 
 
 
 
-                });
+                    });
+            }
+
+
+
+
         }
 
 
