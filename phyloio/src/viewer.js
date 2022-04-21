@@ -175,12 +175,17 @@ export default class Viewer {
 
         // compute the branch length from the root till each nodes (d.branch_size)
         this.max_length = 0
+        this.max_depth = 0
         this.hierarchy.eachBefore(d => {
             if (d.parent) {
                 d.branch_size = d.parent.branch_size + d.data.branch_length
                 if (d.branch_size > this.max_length) {
                     this.max_length = d.branch_size
                 }
+                if (d.depth > this.max_depth) {
+                    this.max_depth = d.depth
+                }
+
             } else {
                 d.branch_size = 0
             }
@@ -225,7 +230,11 @@ export default class Viewer {
             }
         })
 
+
+
+
         this.scale_branch_length = d3.scaleLinear().domain([0, this.max_length]).range([this.d3_cluster_data.y, max_y])
+        this.scale_branch_depth = d3.scaleLinear().domain([0, this.max_depth]).range([this.d3_cluster_data.y, max_y])
     }
 
     // RENDERING
@@ -319,7 +328,9 @@ export default class Viewer {
             if (this.model.settings.has_branch_lenght && this.model.settings.use_branch_lenght) {
                 d.y = this.scale_branch_length(d.branch_size)
             }
-            else{d.y = this.scale_branch_length(d.depth)}
+            else{
+                d.y = this.scale_branch_depth(d.depth)
+            }
 
             if (!this.model.settings.display_leaves){
                 d.subsampled = false;
@@ -543,7 +554,7 @@ export default class Viewer {
                 // update y pos with branch length
                 this.nodes.forEach(d => {
 
-                    var distance_root_to_tip = this.scale_branch_length(d.data.depth) + (d.data.triangle_width ? d.data.triangle_width : 0)
+                    var distance_root_to_tip = this.scale_branch_depth(d.data.depth) + (d.data.triangle_width ? d.data.triangle_width : 0)
 
                     if (deepest_tip <distance_root_to_tip ){
                         deepest_tip =  distance_root_to_tip
@@ -560,12 +571,12 @@ export default class Viewer {
                         }
 
                         else if (d._children) {
-                            d.off_set_to_tip =   deepest_tip - this.scale_branch_length(d.data.depth) - d.data.triangle_width
+                            d.off_set_to_tip =   deepest_tip - this.scale_branch_depth(d.data.depth) - d.data.triangle_width
                             return "translate(" + (mirror_factor*(d.y + d.off_set_to_tip)) + "," + d.x + ")";
                         }
 
                         else {
-                            d.off_set_to_tip =  deepest_tip - this.scale_branch_length(d.data.depth)
+                            d.off_set_to_tip =  deepest_tip - this.scale_branch_depth(d.data.depth)
                             return "translate(" + (mirror_factor* (d.y + d.off_set_to_tip)) + "," + d.x + ")";
                         }
 
