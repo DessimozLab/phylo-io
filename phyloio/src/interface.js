@@ -351,11 +351,17 @@ export default class Interface {
         sub_div.append('button')
             .on('click', d => {return this.container_object.shift_model(-1)})
             .attr('class', ' square_button')
+            .attr('id', 'buttontoggleleft_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'Load previous tree')
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-chevron-left ')
+
+        this.tooltip_shiftleft = new bootstrap.Tooltip(document.getElementById('buttontoggleleft_' + this.container_object.div_id))
+
 
 
         var sd = sub_div.append('div')
@@ -414,11 +420,17 @@ export default class Interface {
         sub_div.append('button')
             .attr('class', ' square_button')
             .on('click', d => { return this.container_object.shift_model(1)})
+            .attr('id', 'buttonshiftright_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'Load next tree')
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-chevron-right ')
+
+        this.tooltip_shiftright = new bootstrap.Tooltip(document.getElementById('buttonshiftright_' + this.container_object.div_id))
+
 
 
         // bind events and action to editable div
@@ -546,6 +558,9 @@ export default class Interface {
         this.bottom_right.append('button')
             .on('click', d => {return this.viewer.zoom_in()})
             .attr('class', ' square_button')
+            .attr('id', 'buttonzoomplus_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'left')
+            .attr('title', 'Zoom in')
             .style('margin', '2px')
             .append("div")
             .attr("class","label")
@@ -553,15 +568,24 @@ export default class Interface {
             .style('color', '#888')
             .attr('class', ' fas fa-search-plus ')
 
+        this.tooltip_zoomplus = new bootstrap.Tooltip(document.getElementById('buttonzoomplus_' + this.container_object.div_id))
+
+
         this.bottom_right.append('button')
             .on('click', d => {return this.viewer.zoom_out()})
             .attr('class', ' square_button')
             .style('margin', '2px')
+            .attr('id', 'buttonzoomminus_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'left')
+            .attr('title', 'Zoom out')
             .append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search-minus ')
+
+        this.tooltip_zoomminus = new bootstrap.Tooltip(document.getElementById('buttonzoomminus_' + this.container_object.div_id))
+
     }
 
     // SCALE
@@ -840,6 +864,9 @@ export default class Interface {
         this.tr_buttons.append('button')
             .attr('id', 'search_button_id' + this.viewer.uid)
             .attr('class', ' square_button search_button')
+            .attr('id', 'buttonsearch_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'search for label')
             .style('border-top-left-radius', '8px')
             .style('border-bottom-left-radius', '8px')
             .style('margin', '2px')
@@ -869,6 +896,9 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search ')
+
+        this.tooltip_search = new bootstrap.Tooltip(document.getElementById('buttonsearch_' + this.container_object.div_id))
+
 
 
         let search_el = document.getElementById("search_button_id" + this.viewer.uid);
@@ -910,6 +940,8 @@ export default class Interface {
         // add the button
         var ex_b = this.tr_buttons.append('button')
             .attr('id', 'button_export' + this.container_object.uid)
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'Export this tree as graphic or text file')
 
             ex_b.attr('class', ' square_button')
             .style('margin', '2px')
@@ -928,6 +960,10 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-download ')
+
+
+        this.tooltip_export = new bootstrap.Tooltip(document.getElementById('button_export' + this.container_object.uid))
+
 
 
         // add the sub menu container
@@ -1019,6 +1055,9 @@ export default class Interface {
     add_undo(){
         this.tr_buttons.append('button')
             .attr('class', ' square_button')
+            .attr('id', 'buttonundo_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'bottom')
+            .attr('title',  d=> { return  this.container_object.history_actions.length > 0 ? 'Undo ' + this.container_object.get_last_action().name :  'Nothing to undo' })
             .style('margin', '2px')
             .on("click", d => {
                 phylo.undoing = true
@@ -1039,6 +1078,9 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-undo ')
+
+        this.tooltip_undo = new bootstrap.Tooltip(document.getElementById('buttonundo_' + this.container_object.div_id))
+
     }
 
     toggle_select_node_face(cid){
@@ -1073,6 +1115,9 @@ export default class Interface {
 
         // add the buttons
         var set_b = this.tr_buttons.append('button')
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'Viewer settings')
+
         set_b.attr('class', ' square_button')
         set_b.attr('id', 'button_settings' + this.container_object.uid)
             .style('margin', '2px')
@@ -1091,6 +1136,9 @@ export default class Interface {
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-sliders-h ')
+
+        this.tooltip_settings = new bootstrap.Tooltip(document.getElementById('button_settings' + this.container_object.uid))
+
 
         // add the menu
         this.menu_settings = this.tr_menus.append('div')
