@@ -67,6 +67,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'no_distance_message': true,
             'compute_distance': false,
+            'sync_zoom': false,
+            'syncing_zoom': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
         this.undoing = false

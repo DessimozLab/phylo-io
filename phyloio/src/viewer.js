@@ -260,6 +260,7 @@ export default class Viewer {
         if (this.model.settings.first_time_render) {
             this.model.settings.first_time_render = false
             this.fit_to_viewer_height()
+            this.container_object.history_actions = []
 
         }
 
@@ -808,6 +809,29 @@ export default class Viewer {
 
             var real_edges_width = this.compute_edge_width()
             this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
+
+
+            // if lock zoom activate
+            if (phylo.settings.compareMode && phylo.settings.sync_zoom && !phylo.settings.syncing_zoom){
+
+                phylo.settings.syncing_zoom = true
+
+                var other_container = phylo.bound_container[0] === this.container_object ? phylo.bound_container[1] : phylo.bound_container[0]
+
+                if (other_container.models.length > 0 && other_container.viewer.model != false){
+                    var t = other_container.viewer.d3.zoomTransform(other_container.viewer.svg.node())
+
+                    var ratio = this.max_length / other_container.viewer.max_length
+
+
+                    other_container.viewer.set_zoom(transform.k/ratio,t.x,t.y)
+
+                }
+                phylo.settings.syncing_zoom = false
+
+
+
+            }
 
 
 

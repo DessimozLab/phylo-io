@@ -106,10 +106,17 @@
                 </a>
             </li>
             <li id="li_distance">
-                <a href="#" id="menu_distance" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Distance">
+                <a href="#" id="menu_distance" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show phylogenetic distance">
                     <i class="bi-rulers" style="font-size: 24px;color: white  "></i>
                 </a>
             </li>
+
+            <li id="li_lock">
+                <a href="#" id="menu_lock" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Synchronize zoom between viewer">
+                    <i class="bi-lock" style="font-size: 24px;color: white  "></i>
+                </a>
+            </li>
+
             <li>
                 <a href="#" id="menu_screenshot" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as graphic">
                     <i class="bi-camera" style="font-size: 24px;color: white  "></i>
@@ -396,11 +403,15 @@
 
         if (!compare){
             document.getElementById("li_distance").style.display = 'none'
+            document.getElementById("li_lock").style.display = 'none'
         }
         else if (document.getElementById("li_distance").style.display === 'none'){
             document.getElementById("li_distance").style.display = 'block';
+            document.getElementById("li_lock").style.display = 'block';
 
         }
+
+        update_lock()
     }
 
     var compare = false;
@@ -415,6 +426,9 @@
 
     if (!compare){
         document.getElementById("li_distance").style.display = 'none'
+        document.getElementById("li_lock").style.display = 'none'
+
+        update_lock()
     }
 
     // MODALS
@@ -431,6 +445,20 @@
     document.getElementById("menu_distance").onclick = function() {
         phylo.settings.compute_distance = true;
         phylo.compute_distance()
+    };
+
+    document.getElementById("menu_lock").onclick = function() {
+        phylo.settings.sync_zoom = !phylo.settings.sync_zoom;
+
+        if (phylo.settings.sync_zoom && phylo.bound_container[0].models.length > 0 && phylo.bound_container[1].models.length > 0 ){
+            var c0 = phylo.bound_container[0]
+            var t = c0.viewer.d3.zoomTransform(c0.viewer.svg.node())
+            c0.viewer.set_zoom(t.k,t.x,t.y)
+        }
+
+
+
+        update_lock()
     };
 
     document.getElementById("menu_screenshot").onclick = function() {
@@ -863,6 +891,22 @@
         var data = JSON.parse(phylo.get_json_pickle())
 
         start_with_json(data)
+
+
+    }
+
+
+    function update_lock(){
+
+
+        if (phylo.settings.sync_zoom){
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-lock" style="font-size: 24px;color: white  "></i>'
+        }
+
+        else {
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-unlock" style="font-size: 24px;color: white  "></i>'
+        }
+
 
 
     }
