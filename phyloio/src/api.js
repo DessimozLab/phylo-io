@@ -29,6 +29,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'no_distance_message': true,
             'compute_distance': false,
+            'sync_zoom': false,
+            'syncing_zoom': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
         this.undoing = false
@@ -60,17 +62,13 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             "Cl_good" : false,
             "Cl_left" : false,
             "Cl_right" : false,
-        }
-        this.settings = {
-            'share_phylo': 'https://zoo.vital-it.ch/viewer/',
-            'share_post': 'https://zoo.vital-it.ch/sharing/create/',
-            'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
+        };
+        let default_settings = {
             'no_distance_message': true,
             'compute_distance': false,
-            'sync_zoom': false,
-            'syncing_zoom': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
+        this.settings = {...this.settings, ...default_settings};
         this.undoing = false
 
 
