@@ -96,10 +96,12 @@ export default class Interface {
         this.add_zoom()
 
         // TOP LEFT
-        if (this.container_object.models.length > 0) {
-            this.add_toggle()
+        if (!phylo.settings.phylostratigraphy) {
+            if (this.container_object.models.length > 0) {
+                this.add_toggle()
+            }
+            this.add_data_icon()
         }
-        this.add_data_icon()
 
         // TOP RIGHT
         this.add_search()
@@ -111,6 +113,15 @@ export default class Interface {
         if (phylo.settings.compareMode || this.viewer.model.settings.style.color_accessor !== null){
             this.add_color_legend()
         }
+
+        // Add Stack
+        if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram){
+
+            this.add_histogram_legend();
+
+        }
+
+
 
     }
 
@@ -140,6 +151,97 @@ export default class Interface {
         this.tr_menus = div.append("div").attr("class","tr-menus")
 
         return div
+    }
+
+    add_histogram_legend() {
+
+
+        d3.select('#histogram-legend').remove();
+
+        var width = 230;
+        var height = 80;
+        var svgHeight = height + 25;
+        var legendRectSize = 20;
+        var left_margin = 25;
+        var top_margin = 50;
+
+        if (phylo.settings.phylostratigraphy){
+            top_margin = 25;
+        }
+
+        var legendTxtSize = 13;
+        // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
+        var legendTxtYPadding = (legendRectSize + legendTxtSize) / 2
+
+        if(this.viewer.model.settings.stack.type == "genes"){
+            var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
+        } else {
+            var dataLabels = ["Gains", "Duplications", "Losses" ]
+        }
+
+        // to position legends correctly
+        var rects = dataLabels.length - 1;
+
+
+        var legendSvg = this.viewer.svg.append("svg")
+            .attr("id", "histogram-legend")
+            .attr("x", left_margin)
+            .attr("y", top_margin)
+            .attr("width", width + "px")
+            .attr("height", svgHeight + "px")
+            .append("g")
+
+
+        legendSvg.append("line")
+            .attr("x1", 0)
+            .attr("y1", rects * legendRectSize)
+            .attr("x2", 200)
+            .attr("y2", rects * legendRectSize)
+            .attr("class", "divline")
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+        legendSvg.selectAll('rect')
+            .data(dataLabels)
+            .enter()
+            .append('rect')
+            .attr('x', 110)
+            .attr('y', function(d, i){
+                return i * legendRectSize;
+            })
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .attr('fill', (d, i, node) => {
+                return this.viewer.settings.stack.colorMap[d];
+            });
+
+        legendSvg.selectAll('text')
+            .data(dataLabels)
+            .enter()
+            .append('text')
+            .text(function(d){
+                return d;
+            })
+            .attr('x', 110 + legendRectSize + 5)
+            .attr('y', function(d, i){
+                return i * legendRectSize + legendTxtYPadding;
+            })
+            .attr('text-anchor', 'start')
+            .attr('alignment-baseline', 'baseline')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+
+        legendSvg
+            .append('text')
+            .attr("class", "legendGeneTotal")
+            .text("Total # of "+this.viewer.model.settings.stack.type)
+            .attr('x', 0)
+            .attr('y', rects * legendRectSize - 5)
+            .attr('text-anchor', 'start')
+            .attr("font-size", legendTxtSize).attr("stroke", "black");
+
+        d3.selectAll(".legendGeneTotal").moveToFront();
+
     }
 
     // DATA ICON
@@ -620,10 +722,12 @@ export default class Interface {
 
     }
     remove_scale(){this.container_d3.select(".scale").remove()}
+
     update_scale_value(zoom_scale){
         this.scale_text.text(this.compute_scale(zoom_scale))
 
     }
+
     compute_scale(zoom_scale){
         var zoom_scale = zoom_scale || 1;
         return (this.viewer.scale_branch_length.invert(this.scale_pixel_length)/zoom_scale).toFixed(4);
@@ -1173,12 +1277,12 @@ export default class Interface {
             this.slider_sts = this.add_slider_UI(this.menu_stack_p, "Label size", 6, 40, this.viewer.model.settings.stack.legendTxtSize, 1, "slider_stack_text_size_",
                 (e ) =>{this.viewer.update_stack_font(e.target.value)})
 
-            this.menu_stack_p.append("p").text('Labels')
+            this.menu_stack_p.append("p").text('Labels').style('margin-bottom', "0px")
 
 
             this.stack_type = this.menu_stack_p.append('div')
                 .style('display', 'flex')
-                .style('margin-top', "14px")
+                .style('margin-bottom', "14px")
 
 
 

@@ -259,10 +259,26 @@ export default class Viewer {
 
         if (this.model.settings.first_time_render) {
             this.model.settings.first_time_render = false
-            this.fit_to_viewer_height()
-            this.container_object.history_actions = []
+
+            if (phylo.settings.phylostratigraphy){
+
+
+                source.children.forEach(element =>
+                    this.container_object.trigger_("collapseAll", element.data, element));
+
+                this.maximise_zoom()
+                this.svg.call(this.zoom.scaleBy, 0.5)
+                this.container_object.history_actions = []
+
+            }
+
+            else{
+                this.fit_to_viewer_height()
+
+            }
 
         }
+
 
     }
 
@@ -290,24 +306,42 @@ export default class Viewer {
 
         var html = "";
 
-        for (var [key, value] of Object.entries(node.data.extended_informations)) {
+        if (phylo.settings.phylostratigraphy){
 
-            if  ((/^-?[\d]*(\.[\d]+)?$/g).test(value)) {
+            var datum = node.data.evolutionaryEvents
 
-                if (value % 1 === 0) {
+            html += `<b># Events</b> <br>`
+            html += `Gains: ${datum.gained} <br>`
+            html += `Duplications: ${datum.duplications} <br>`
+            html += `Losses: ${datum.lost} <br> <br>`
+
+            html += `<b># Genes</b> <br>`
+            html += `Gained: ${datum.gained} <br>`
+            html += `Duplicated: ${datum.duplicated} <br>`
+            html += `Retained: ${datum.retained} <br>`
+            html += `Lost: ${datum.lost} <br>`
+        }
+
+        else {
+            for (var [key, value] of Object.entries(node.data.extended_informations)) {
+
+                if  ((/^-?[\d]*(\.[\d]+)?$/g).test(value)) {
+
+                    if (value % 1 === 0) {
+                        html += `${key}: ${value} <br>`
+                    }
+
+                    else{
+                        //console.log(value)
+                        html += `${key}: ${parseFloat(value).toFixed(3)} <br>`
+                    }
+                }
+                else{
                     html += `${key}: ${value} <br>`
                 }
 
-                else{
-                    //console.log(value)
-                    html += `${key}: ${parseFloat(value).toFixed(3)} <br>`
-                }
-            }
-            else{
-                html += `${key}: ${value} <br>`
-            }
 
-
+            }
         }
 
         this.tooltip.html(html);
@@ -372,14 +406,23 @@ export default class Viewer {
                 if (i.children || i._children) {this.click_nodes(d,i)}
             })
             .on('mouseover', (d, i) => {
-
                 if (this.model.settings.show_tooltips){
+
+                    var target = d.target || d.srcElement;
+
+                    if (phylo.settings.phylostratigraphy && target.nodeName != 'rect' ) {
+                        return
+                    }
+
                     this.tooltip.transition().duration(50)
                         .style('display', 'block')
                         .style('opacity', 0.9)
                         .style('left', (d.pageX + 12) +  'px')
                         .style('top', d.pageY  + 'px');
-                    this.set_tooltip_text(i);
+
+                        this.set_tooltip_text(i);
+
+
                 }
 
             })
@@ -595,13 +638,13 @@ export default class Viewer {
 
         // Add Stack
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram){
+
             this.nodeUpdate.filter(function(d){
                 return d.stackData && d.data.depth > 0
-            }).each((d, i, nodes) => {this.render_stack(nodes[i],d)}
-            );
+            }).each((d, i, nodes) => {this.render_stack(nodes[i],d)});
 
-            this.addMainLegend()
         }
+
 
         // Store the old positions for transition.
         this.nodes.forEach(function(d){
@@ -644,7 +687,9 @@ export default class Viewer {
             .style('stroke-width',  real_edges_width + 'px'  )
             .attr('d', d => this.square_edges(d, d.parent))
 
-        linkUpdate.on('click', (d,i) =>  { this.click_edges(d,i)})
+        linkUpdate.on('click', (d,i) =>  {
+            if (phylo.settings.phylostratigraphy){return}
+            this.click_edges(d,i)})
 
         // Remove any exiting links
         var linkExit = link.exit().transition()
@@ -858,6 +903,7 @@ export default class Viewer {
     click_nodes(event, node) {
 
         if (node.parent != null){
+
             var menu = [
                 {
                     title: node.data.collapse ? 'Expand' : 'Collapse' ,
@@ -937,6 +983,8 @@ export default class Viewer {
 
         // because Chrome returns a MouseEvent for d3.event while Firefox returns a click. \o/
         var node_from_event = event.path ? event.path[0].__data__ : event.target.__data__
+
+
 
         var menu = [{
             title: 'Reroot' ,
@@ -1519,7 +1567,10 @@ export default class Viewer {
         }
         else{
             var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
-            this.interface.update_scale_value(k);
+            if (this.interface && this.model.settings.use_branch_lenght){
+                this.interface.update_scale_value(k);
+            }
+
         }
 
 
@@ -1604,8 +1655,6 @@ export default class Viewer {
         var ms = this.model.settings.stack
         var data = e.stackData[ms.type];
         var stackGroup  = this.d3.select(d);
-
-
 
 
 
@@ -1817,92 +1866,6 @@ export default class Viewer {
         return data;
     }
 
-    addMainLegend() {
-
-        d3.select('#histogram-legend').remove();
-
-        var width = 230;
-        var height = 80;
-        var svgHeight = height + 25;
-        var legendRectSize = 20;
-        var left_margin = 25;
-        var top_margin = 50;
-        var legendTxtSize = 13;
-        // center text in the middle of the legend colored rectangle, rounding it to smaller Y-value
-        var legendTxtYPadding = (legendRectSize + legendTxtSize) / 2
-
-        if(this.model.settings.stack.type == "genes"){
-            var dataLabels = ["Gained", "Duplicated", "Retained", "Lost" ]
-        } else {
-            var dataLabels = ["Gains", "Duplications", "Losses" ]
-        }
-
-        // to position legends correctly
-        var rects = dataLabels.length - 1;
-
-
-        var legendSvg = d3.select("#svg" + this.uid).append("svg")
-            .attr("id", "histogram-legend")
-            .attr("x", left_margin)
-            .attr("y", top_margin)
-            .attr("width", width + "px")
-            .attr("height", svgHeight + "px")
-
-            .append("g")
-
-
-        legendSvg.append("line")
-            .attr("x1", 0)
-            .attr("y1", rects * legendRectSize)
-            .attr("x2", 200)
-            .attr("y2", rects * legendRectSize)
-            .attr("class", "divline")
-            .attr("stroke-width", 2)
-            .attr("stroke", "black");
-
-        legendSvg.selectAll('rect')
-            .data(dataLabels)
-            .enter()
-            .append('rect')
-            .attr('x', 110)
-            .attr('y', function(d, i){
-                return i * legendRectSize;
-            })
-            .attr('width', legendRectSize)
-            .attr('height', legendRectSize)
-            .attr('fill', (d, i, node) => {
-                return this.settings.stack.colorMap[d];
-            });
-
-        legendSvg.selectAll('text')
-            .data(dataLabels)
-            .enter()
-            .append('text')
-            .text(function(d){
-                return d;
-            })
-            .attr('x', 110 + legendRectSize + 5)
-            .attr('y', function(d, i){
-                return i * legendRectSize + legendTxtYPadding;
-            })
-            .attr('text-anchor', 'start')
-            .attr('alignment-baseline', 'baseline')
-            .attr("font-size", legendTxtSize).attr("stroke", "black");
-
-
-        legendSvg
-            .append('text')
-            .attr("class", "legendGeneTotal")
-            .text("Total # of "+this.model.settings.stack.type)
-            .attr('x', 0)
-            .attr('y', rects * legendRectSize - 5)
-            .attr('text-anchor', 'start')
-            .attr("font-size", legendTxtSize).attr("stroke", "black");
-
-        d3.selectAll(".legendGeneTotal").moveToFront();
-
-    }
-
     isOdd(num) { return num % 2;}
 
     compute_node_font_size(){
@@ -2067,11 +2030,16 @@ export default class Viewer {
 
                     if (d.data.collapse){
 
+                        if (phylo.settings.phylostratigraphy){
+                            return d.data.name
+                        }
+
                         let l = d.data.leaves
 
                         if (l.length <= 0){
                             d.data.leaves = this.model.get_leaves(d.data)
                         }
+
                         return '[' + l[0].name + ' ... ' +  l[l.length-1].name + ']'
                     }
                     

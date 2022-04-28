@@ -110,7 +110,6 @@ export default class Container {
             var z = this.models[this.current_model].zoom
 
             if (z) {
-                //console.log('start zoom', z)
                 this.viewer.set_zoom(z.k, z.x, z.y)
             }
             else{

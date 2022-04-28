@@ -24,6 +24,7 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             "Cl_right" : false,
         }
         this.settings = {
+            'phylostratigraphy' : false,
             'share_phylo': 'https://zoo.vital-it.ch/viewer/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
