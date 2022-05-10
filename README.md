@@ -1,10 +1,10 @@
 # Phylo.io
 A web app and library for visualising and comparing phylogenetic trees.
 
-##Demo
+## Demo
 The app can be accessed at [beta.phylo.io](https://beta.phylo.io/).
 
-##Quick Start
+## Quick Start
 **Easy:** import directly the phylo.js from CDN. It contains all phylo.io requires (.js, .css and font/icons)
 ```html
 <script src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@refactor/dist/phylo.js"></script>
@@ -21,7 +21,7 @@ Then, you just to need import the freshly built phylo.js
 ```
 **Attention, it will also generate a folder named fonts that needs to be in the same folder as phylo.js**
 
-##Initialisation
+## Initialisation
 First, you need to create an instance of PhyloIO:
 ```js
     const  phylo = PhyloIO.init() 
