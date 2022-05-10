@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Phylo.io </title>
+
+    <script src="phylo.js"></script>
+
+</head>
+
+<body >
+
+<div id="container1_stack" style=" display: inline-block;width: 100%;height: 100vh;background-color: #fff;">
+</div>
+
+
+
+
+    <script>
+    var  phylo = PhyloIO.init()
+
+    phylo.settings.phylostratigraphy = true
+
+    var c1 = phylo.create_container("container1_stack")
+
+    var custom_settings = {
+        'display_leaves' : true,
+        'mirror': false,
+        'name': 'phylostratigraphy',
+        'first_time_render': true,
+        'data_type' : 'json',
+        'use_branch_lenght' : false,
+        'show_tooltips' : true,
+        'subsample_label' : true,
+        'display_internal_label' : false,
+        'display_internal_label_left_top' : false,
+        'display_internal_label_left_bottom' : false,
+        'display_duplication' : false,
+        'has_branch_lenght' : false,
+        'has_duplications' : false,
+        'multiple_search':false,
+        'show_histogram' : true,
+        'align_tip' : false,
+        'has_histogram_data' : true,
+        'style': {
+            'font_size_internal' : 14,
+            'color_accessor' : null,
+            'color_extent_min': {},
+            'color_extent_max':{},
+            'number_domain':'5',
+            'color_domain':['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'],
+            'color_domain_default':['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'],
+
+        },
+        'tree': {
+            'node_vertical_size' : 30,
+            'node_horizontal_size' : 50,
+            'node_radius' : 6, // move to style
+            'line_width' : 3,// move to style
+            'font_size':14, // move to style
+            'max_depth' : 0,
+        },
+        'collapse_level': 1,
+        'stack' : {
+            'type': 'genes',//'events',
+            'showHistogramValues' : false,
+            'showHistogramSummaryValue' : true,
+            'legendTxtSize' : 12,
+            'margin' : 8,
+            'xInitialRightMargin' : 25,
+            'stackHeight' : 50,
+            'stackWidth' : 50,
+            'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
+
+        },
+    }
+    const t_stack = {"children": [{"children": [{"children": [{"children": [{"id": "HALHT", "last_updated": "Aug 20, 2012", "name": "Haloarcula hispanica (strain ATCC 33960 / DSM 4426 / JCM 8911 / NBRC 102182 / NCIMB 2187 / VKM B-1755)", "nr_proteins": 3855, "release": "18-OCT-2011 (Rel. 110, Last updated, Version 2)", "source": "EBI", "taxid": 634497}, {"id": "HALMA", "last_updated": "Mar 25, 2014", "name": "Haloarcula marismortui (strain ATCC 43049 / DSM 3752 / JCM 8966 / VKM B-1809)", "nr_proteins": 4231, "release": "02-FEB-2014 (Rel. 119, Last updated, Version 9)", "source": "EBI", "taxid": 272569}], "name": "Haloarcula", "taxid": 2237, "nr_hogs": 4107, "evolutionaryEvents": {"gained": 178, "retained": 3532, "duplicated": 397, "lost": 1508, "duplications": 166}}, {"id": "HALMD", "last_updated": "Nov 23, 2009", "name": "Halomicrobium mukohataei (strain ATCC 700874 / DSM 12286 / JCM 9738 / NCIMB 13541)", "nr_proteins": 3168, "release": "03-NOV-2009 (Rel. 113, Last updated, Version 1)", "source": "Genome Reviews", "taxid": 485914}, {"id": "HALUD", "last_updated": "Nov 23, 2009", "name": "Halorhabdus utahensis (strain DSM 12940 / JCM 11049 / AX-2)", "nr_proteins": 2998, "release": "03-NOV-2009 (Rel. 113, Last updated, Version 1)", "source": "Genome Reviews", "taxid": 519442}, {"children": [{"id": "NATM8", "last_updated": "Oct 27, 2014", "name": "Natronomonas moolapensis (strain DSM 18674 / JCM 14361 / 8.8.11)", "nr_proteins": 2852, "release": "27-FEB-2014 (Rel. 119, Last updated, Version 4)", "source": "EBI", "taxid": 268739}, {"id": "NATPD", "last_updated": "Mar 25, 2014", "name": "Natronomonas pharaonis (strain ATCC 35678 / DSM 2160 / CIP 103997 / NBRC 14720 / NCIMB 2260 / Gabara)", "nr_proteins": 2824, "release": "07-MAR-2014 (Rel. 120, Last updated, Version 14)", "source": "EBI", "taxid": 348780}], "name": "Natronomonas", "taxid": 63743, "nr_hogs": 3156, "evolutionaryEvents": {"gained": 93, "lost": 2294, "duplicated": 254, "retained": 2809, "duplications": 103}}], "name": "Haloarculaceae", "taxid": 1963268, "nr_hogs": 5206, "evolutionaryEvents": {"gained": 273, "retained": 4584, "duplicated": 349, "lost": 1040, "duplications": 163}}, {"children": [{"id": "HALJB", "last_updated": "Dec 23, 2010", "name": "Halalkalicoccus jeotgali (strain DSM 18796 / CECT 7217 / JCM 14584 / KCTC 4019 / B3)", "nr_proteins": 3779, "release": "30-NOV-2010 (Rel. 127, Last updated, Version 2)", "source": "Genome Reviews", "taxid": 795797}, {"children": [{"id": "HALS3", "last_updated": "May  8, 2008", "name": "Halobacterium salinarum (strain ATCC 29341 / DSM 671 / R1)", "nr_proteins": 2742, "release": "29-APR-2008 (Rel. 90, Last updated, Version 1)", "source": "Genome Reviews", "taxid": 478009}, {"id": "HALSA", "last_updated": "Mar 25, 2014", "name": "Halobacterium salinarum (strain ATCC 700922 / JCM 11081 / NRC-1)", "nr_proteins": 2418, "release": "03-FEB-2014 (Rel. 119, Last updated, Version 7)", "source": "EBI", "taxid": 64091}], "name": "Halobacterium salinarum", "taxid": 2242, "nr_hogs": 2540, "evolutionaryEvents": {"gained": 201, "retained": 2202, "duplicated": 137, "lost": 1437, "duplications": 62}}], "name": "Halobacteriaceae", "taxid": 2236, "nr_hogs": 3701, "evolutionaryEvents": {"gained": 13, "retained": 3605, "duplicated": 83, "lost": 2142, "duplications": 40}}], "name": "Halobacteriales", "taxid": 2235, "nr_hogs": 5787, "evolutionaryEvents": {"gained": 118, "retained": 5120, "lost": 1677, "duplicated": 549, "duplications": 228}}, {"children": [{"children": [{"children": [{"id": "HALMT", "last_updated": "Nov 30, 2012", "name": "Haloferax mediterranei (strain ATCC 33500 / DSM 1411 / JCM 8866 / NBRC 14739 / NCIMB 2177 / R-4)", "nr_proteins": 3861, "release": "02-AUG-2012 (Rel. 113, Last updated, Version 3)", "source": "EBI", "taxid": 523841}, {"id": "HALVD", "last_updated": "Jul 20, 2010", "name": "Haloferax volcanii (strain ATCC 29605 / DSM 3757 / JCM 8879 / NBRC 14742 / NCIMB 2012 / VKM B-1768 / DS2)", "nr_proteins": 3986, "release": "13-JUL-2010 (Rel. 123, Last updated, Version 2)", "source": "Genome Reviews", "taxid": 309800}], "name": "Haloferax", "taxid": 2251, "nr_hogs": 4166, "evolutionaryEvents": {"gained": 107, "retained": 3786, "lost": 1192, "duplicated": 273, "duplications": 108}}, {"id": "HALBP", "last_updated": "Aug 20, 2012", "name": "Halogeometricum borinquense (strain ATCC 700274 / DSM 11551 / JCM 10706 / PR3)", "nr_proteins": 3894, "release": "24-NOV-2010 (Rel. 106, Last updated, Version 1)", "source": "EBI", "taxid": 469382}, {"children": [{"id": "HALWD", "last_updated": "Sep 26, 2006", "name": "Haloquadratum walsbyi (strain DSM 16790 / HBSQ001)", "nr_proteins": 2819, "release": "24-JUL-2006 (Rel. 88, Last updated, Version 2)", "source": "EBI", "taxid": 362976}, {"id": "HALWC", "last_updated": "Apr  2, 2012", "name": "Haloquadratum walsbyi (strain DSM 16854 / JCM 12705 / C23)", "nr_proteins": 2974, "release": "15-MAR-2012 (Rel. 112, Last updated, Version 4)", "source": "EBI", "taxid": 768065}], "name": "Haloquadratum walsbyi", "taxid": 293091, "nr_hogs": 2819, "evolutionaryEvents": {"gained": 209, "retained": 2443, "lost": 2564, "duplicated": 167, "duplications": 79}}], "name": "Haloferacaceae", "taxid": 1644056, "nr_hogs": 5086, "evolutionaryEvents": {"gained": 222, "duplicated": 385, "retained": 4479, "lost": 571, "duplications": 174}}, {"id": "HALLT", "last_updated": "Jun 22, 2009", "name": "Halorubrum lacusprofundi (strain ATCC 49239 / DSM 5036 / JCM 8891 / ACAM 34)", "nr_proteins": 3493, "release": "16-JUN-2009 (Rel. 107, Last updated, Version 3)", "source": "Genome Reviews", "taxid": 416348}], "name": "Haloferacales", "taxid": 1644055, "nr_hogs": 5224, "evolutionaryEvents": {"gained": 94, "retained": 4671, "lost": 2155, "duplicated": 459, "duplications": 199}}, {"children": [{"id": "HALXS", "last_updated": "Aug 20, 2012", "name": "Halopiger xanaduensis (strain DSM 18323 / JCM 14033 / SH-6)", "nr_proteins": 4221, "release": "23-NOV-2011 (Rel. 110, Last updated, Version 2)", "source": "EBI", "taxid": 797210}, {"id": "HALTV", "last_updated": "Jun 11, 2010", "name": "Haloterrigena turkmenica (strain ATCC 51198 / DSM 5511 / NCIMB 13204 / VKM B-1734)", "nr_proteins": 3739, "release": "25-MAY-2010 (Rel. 121, Last updated, Version 2)", "source": "Genome Reviews", "taxid": 543526}, {"id": "HALRX", "last_updated": "Dec 18, 2013", "name": "Halovivax ruber (strain DSM 18193 / JCM 13892 / XH-70)", "nr_proteins": 3099, "release": "18-JUL-2013 (Rel. 117, Last updated, Version 2)", "source": "EBI", "taxid": 797302}, {"children": [{"id": "NATA1", "last_updated": "Aug 10, 2017", "name": "Natrialba asiatica (strain ATCC 700177 / DSM 12278 / JCM 9576 / FERM P-10747 / NBRC 102637 / 172P1)", "nr_proteins": 4176, "release": "Ensembl Bacteria 36; ASM33755v1", "source": "EnsemblGenomes", "taxid": 29540}, {"id": "NATMM", "last_updated": "Jul 20, 2010", "name": "Natrialba magadii (strain ATCC 43099 / DSM 3394 / CIP 104546 / JCM 8861/ NBRC 102185 / NCIMB 2190 / MS3)", "nr_proteins": 3558, "release": "13-JUL-2010 (Rel. 123, Last updated, Version 2)", "source": "Genome Reviews", "taxid": 547559}], "name": "Natrialba", "taxid": 63742, "nr_hogs": 4283, "evolutionaryEvents": {"gained": 51, "lost": 2216, "retained": 3820, "duplicated": 412, "duplications": 148}}, {"children": [{"id": "NATP1", "last_updated": "Oct 27, 2014", "name": "Natrinema pellirubrum (strain DSM 15624 / CIP 106293 / JCM 10476 / NCIMB 786 / 157)", "nr_proteins": 4138, "release": "23-JUL-2013 (Rel. 117, Last updated, Version 2)", "source": "EBI", "taxid": 797303}, {"id": "NATSJ", "last_updated": "Oct 27, 2014", "name": "Natrinema sp. (strain J7-2)", "nr_proteins": 4296, "release": "15-MAY-2014 (Rel. 120, Last updated, Version 6)", "source": "EBI", "taxid": 406552}], "name": "Natrinema", "taxid": 88723, "nr_hogs": 4304, "evolutionaryEvents": {"gained": 52, "retained": 3748, "lost": 2241, "duplicated": 504, "duplications": 195}}, {"id": "NATGS", "last_updated": "Oct 27, 2014", "name": "Natronobacterium gregoryi (strain ATCC 43098 / DSM 3393 / CCM 3738 / CIP 104747 / JCM 8860 / NBRC 102187 / NCIMB 2189 / SP2)", "nr_proteins": 3624, "release": "18-JUL-2013 (Rel. 117, Last updated, Version 2)", "source": "EBI", "taxid": 797304}], "name": "Natrialbaceae", "taxid": 1644061, "nr_hogs": 6184, "evolutionaryEvents": {"gained": 842, "duplicated": 729, "retained": 4613, "lost": 2106, "duplications": 306}}], "name": "Halobacteria", "taxid": 183963, "nr_hogs": 7025, "evolutionaryEvents": {"gained": 2357, "lost": 6118, "retained": 2767, "duplicated": 1901, "duplications": 605}}
+
+    c1.add_tree(t_stack,custom_settings)
+
+    phylo.start()
+
+
+</script>
+
+</body>
+
+</html>

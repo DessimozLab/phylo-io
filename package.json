@@ -1,6 +1,6 @@
 {
   "name": "phyloio",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "private": "true",
   "scripts": {
@@ -11,13 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3",
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@fortawesome/free-brands-svg-icons": "^5.15.3",
-    "@fortawesome/free-regular-svg-icons": "^5.15.3",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "css-loader": "^5.2.4",
-    "d3-v6-tip": "^1.0.9",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
     "style-loader": "^2.0.0",
@@ -25,9 +19,15 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@popperjs/core": "^2.10.2",
     "biojs-io-newick": "^1.5.0",
     "bootstrap": "^5.1.2",
-    "d3": "6.6.0"
+    "d3": "6.6.0",
+    "d3-v6-tip": "^1.0.9"
   }
 }
