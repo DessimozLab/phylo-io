@@ -2,6 +2,7 @@ import Container from './container.js'
 const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table, reroot_hierarchy, screen_shot } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
+import FileSaver from 'file-saver' ;
 
 // class to handle user interaction to init and set up phyloIO instance
 export default class API { // todo ultime ! phylo is used ase reference from .html not goood
@@ -169,17 +170,8 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
     save_session(){ // TODO not working since collapse or other info are store in circular data
 
-        function download(content, fileName, contentType) {
-            var a = document.createElement("a");
-            var file = new Blob([content], {type: contentType});
-            a.href = URL.createObjectURL(file);
-            a.download = fileName;
-            a.click();
-        }
-
-        var myString = this.get_json_pickle()
-
-        download(myString, 'session.phyloio', 'text/plain');
+        var blob = new Blob([this.get_json_pickle()], {type: "text/plain;charset=utf-8"});
+        FileSaver.saveAs(blob, "Session.phyloio");
 
     }
 
