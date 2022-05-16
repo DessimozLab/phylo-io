@@ -1,8 +1,7 @@
 {
   "name": "phyloio",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
-  "private": "true",
   "scripts": {
     "test": "./node_modules/.bin/mocha test/testSuite.js",
     "build": "webpack"
@@ -28,6 +27,7 @@
     "biojs-io-newick": "^1.5.0",
     "bootstrap": "^5.1.2",
     "d3": "6.6.0",
-    "d3-v6-tip": "^1.0.9"
+    "d3-v6-tip": "^1.0.9",
+    "phyloio": "^2.0.0"
   }
 }
