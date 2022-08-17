@@ -1941,6 +1941,15 @@ export default class Viewer {
                 return  400
                 //return d.children || d._children ? 900 : 400
             })
+            .attr('fill', (d) => {
+                if (!d.children && !d._children){
+                    var colcol = this.model.get_color_mapping(d.data.name)
+                    if (colcol){
+                        return colcol}
+                }
+
+                return "#212529";
+            })
             .attr("y", (d) => {
                 if (d.parent == null){return 0}
                 else if (d.children || d._children){
@@ -2060,6 +2069,11 @@ export default class Viewer {
             })
             .attr("y", 0)
             .attr('fill', (d) => {
+                if (!d.children && !d._children){
+                    var colcol = this.model.get_color_mapping(d.data.name)
+                    if (colcol){
+                        return colcol}
+                }
                 let c =  d.data.search_node ? "#FF0000"  : "#212529";
                 return c
             })
