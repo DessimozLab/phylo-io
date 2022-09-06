@@ -4,56 +4,30 @@ const { build_table, reroot_hierarchy, screen_shot } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
 import FileSaver from 'file-saver' ;
 
-// class to handle user interaction to init and set up phyloIO instance
-export default class API { // todo ultime ! phylo is used ase reference from .html not goood
+// Main class of phylo.io
+export default class API { // todo: phylo is used ase reference from .html not goood
 
     constructor() {
-        this.containers = {}; // {container id -> Container() }
-        this.bound_container = []
-        this.session_token = null
-        this.session_url = null
-        this.phylo_embedded = false
-        this.distance = {
-            'RF' : false,
-            "Euc": false,
-            "clade": false,
-            "RF_good" : false,
-            "RF_left" : false,
-            "RF_right" : false,
-            "Cl_good" : false,
-            "Cl_left" : false,
-            "Cl_right" : false,
-        }
+
         this.settings = {
             'phylostratigraphy' : false,
             'share_phylo': 'https://zoo.vital-it.ch/viewer/',
             'share_post': 'https://zoo.vital-it.ch/sharing/create/',
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
-            'no_distance_message': true,
-            'compute_distance': false,
             'sync_zoom': false,
             'syncing_zoom': false,
-            "compareMode" : false, // compare for each pair of tree topological similarity
         };
-        this.undoing = false
 
+        this.set_default_parameters() // Settings that can be reset later on (e.g. switch single to compare mode)
 
     }
 
-    reset(){ // !!!! KEEP ATTR UPDATED BETWEEN init and reset TODO AUTO THAT
-
-        //remove tooltips
-        for (const [uid, container] of Object.entries(this.containers)) {
-            if (container.interface && container.interface.tooltip_add_tree){
-                container.interface.tooltip_add_tree.tip.remove()
-            }
-        }
-
+    set_default_parameters(){
         this.containers = {}; // {container id -> Container() }
-        this.bound_container = []
-        this.session_token = null
-        this.session_url = null
-        this.phylo_embedded = false
+        this.bound_container = [] // pair of container used for distance computation
+        this.session_token = null // unique session token for cloud saving
+        this.session_url = null // url for cloud saving
+        this.phylo_embedded = false // phylo.io website mode
         this.distance = {
             'RF' : false,
             "Euc": false,
@@ -64,16 +38,15 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
             "Cl_good" : false,
             "Cl_left" : false,
             "Cl_right" : false,
-        };
+        } //
+
         let default_settings = {
             'no_distance_message': true,
             'compute_distance': false,
             "compareMode" : false, // compare for each pair of tree topological similarity
         };
         this.settings = {...this.settings, ...default_settings};
-        this.undoing = false
-
-
+        this.undoing = false // specify is we are undoing an action to prevent infinite looping
     }
 
     // create and return a new container and add it the dict using its div id
@@ -450,8 +423,5 @@ export default class API { // todo ultime ! phylo is used ase reference from .ht
 
 
     }
-
-
-
 
 }

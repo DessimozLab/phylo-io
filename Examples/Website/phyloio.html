@@ -503,9 +503,6 @@
 
                 var c  = phylo.containers["containerR"]
 
-                if (c.interface && c.interface.tooltip_add_tree){
-                    c.interface.tooltip_add_tree.tip.remove()
-                }
 
                 start_with_json(data)
 
@@ -519,11 +516,6 @@
             compare = !compare
 
             var c = phylo.containers["containerS"];
-
-
-            if (c.interface && c.interface.tooltip_add_tree){
-                c.interface.tooltip_add_tree.tip.remove()
-            }
 
             var data = JSON.parse(phylo.get_json_pickle())
             data.settings.compareMode = compare
@@ -644,7 +636,7 @@
         var single_con_html = "<div class=\"p-2 flex-grow-1\" id=\"containerS\" style=\"height: 100%; width: 100%; background-color: white;\"></div>"
 
 
-        phylo.reset()
+        phylo.set_default_parameters()
         phylo.settings.compareMode = compare;
         phylo.phylo_embedded = true
 

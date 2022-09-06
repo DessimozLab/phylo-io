@@ -7,16 +7,6 @@ export default class Interface {
 
     constructor(v,c, empty_mode){
 
-        if (c.interface && c.interface.tooltip_add_tree){
-            try {
-                c.interface.tooltip_add_tree.tip.remove()
-            }
-            catch (error) {
-
-            }
-
-        }
-
         var empty_mode = (typeof empty_mode !== 'undefined') ? empty_mode : false;
 
         this.scale_pixel_length = 120;
@@ -72,7 +62,6 @@ export default class Interface {
         if (empty_mode){
             this.top_left = this.add_top_left_container()
             this.add_data_icon()
-            //this.tooltip_add_tree.show()
             this.add_empty_message()
             return
         }
@@ -263,90 +252,83 @@ export default class Interface {
             b.html("  <i class='fas fa-plus' style='color:#888'></i> Add tree")
 
 
-        if (this.tooltip_add_tree){
-            this.tooltip_add_tree.tip.remove()
-        }
+        let mod_html = `
+<div class="modal" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-body">
 
 
-        //this.tooltip_add_tree = new bootstrap.Tooltip(document.getElementById('buttonmodal_' + this.container_object.div_id))
+                <div class="container-fluid">
 
-        let mod_html = 				"<!-- Modal -->" +
-            "" +
-            "<div class=\"modal\" id=\"exampleModal\" tabindex=\"-1\">" +
-            "    <div class=\"modal-dialog modal-dialog-centered modal-lg\">" +
-            "        <div class=\"modal-content\">" +
-            "" +
-            "            <div class=\"modal-body\">" +
-            "" +
-            "" +
-            "                <div class=\"container-fluid\">" +
-            "" +
-            "" +
-            "                    <h4><b>Step 1:</b> add data from text or file</h4>" +
-            "                    <br>" +
-            "" +
-            "                    <div class=\"row\" style=\" margin-left: 24px\">" +
-            "                        <div class=\"col\" >" +
-            "                            <textarea class=\"form-control\" placeholder=\"Paste or type your tree here\" id=\"exampleFormControlTextarea1s\" rows=\"3\"></textarea>" +
-            "" +
-            "" +
-            "                        </div>" +
-            "                        <div class=\"col-1 my-auto \"><p class=\"align-middle\" style=\"margin: 0px;\"><b>OR</b></p></div>" +
-            "                        <div class=\"col my-auto\">" +
-            "" +
-            "                            <div class=\"input-group mb-3\" style=\"padding-left: 24px;\">" +
-            "                                <input class=\"form-control\" type=\"file\" id=\"add_tree_file_input\">                                    <div class=\"input-group-append\">" +
-            "                            </div>" +
-            "                            </div>" +
-            "" +
-            "" +
-            "                        </div>" +
-            "                    </div>" +
-            "" +
-            "                    <div class=\"row\" style=\"margin-left: 24px\">" +
-            "                        <div class=\"col\" >" +
-            "                            <h6 class=\"card-subtitle mb-2 text-muted\" style=\"margin-top: 6px\"><small>Example: <a href=\"#\" class=\"t1\">tree #1</a>, <a href=\"#\" class=\"t2\">tree #2</a>, <a href=\"#\" class=\"tbig\">big tree</a>, <a href=\"#\" class=\"nhx_ex\">Extended Newick</a>.</small></h6>" +
-            "                        </div>" +
-            "                    </div>" +
-            "" +
-            "                    <br>" +
-            "" +
-            "" +
-            "" +
-            "" +
-            "                    <br>" +
-            "                    <h4><b>Step 2:</b> Choose data format to add the tree</h4>" +
-            "" +
-            "" +
-            '<div class="text-center"><select style="margin-left: 24px;" class="custom-select" id="add_tree_str_select"> <option selected value="newick">Newick</option> <option value="nhx">Extended Newick</option> </select></div>'
-              +
-            "" +
-            "" +
-            "                </div>" +
-            "                <br>" +
-            "" +
-            "" +
-            "" +
-            "            </div>" +
-            "" +
-            "            <div class=\"modal-footer\">" +
-            "                <p class=\"me-auto\"><strong>Compatible format:</strong> Newick, Extended Newick.</p>" +
 
-            '<button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Cancel</button>' +
-        '<button type="button" id="modal_add_tree_final_button" class="btn btn-sm btn-success">Add tree</button>' +
-            "            </div>" +
-            "" +
-            "        </div>" +
-            "    </div>" +
-            "</div>" +
-            "" +
-            "" +
-            "" +
-            "" +
-            "" +
-            "" +
-            "" +
-            ""
+                    <h4><b>Step 1:</b> add data from text or file</h4>
+                    <br>
+
+                    <div class="row" style=" margin-left: 24px">
+                        <div class="col" >
+                            <textarea class="form-control" placeholder="Paste or type your tree here" id="exampleFormControlTextarea1s" rows="3"></textarea>
+
+
+                        </div>
+                        <div class="col-1 my-auto "><p class="align-middle" style="margin: 0px;"><b>OR</b></p></div>
+                        <div class="col my-auto">
+
+                            <div class="input-group mb-3" style="padding-left: 24px;">
+                                <input class="form-control" type="file" id="add_tree_file_input">                                    <div class="input-group-append">
+                            </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-left: 24px">
+                        <div class="col" >
+                            <h6 class="card-subtitle mb-2 text-muted" style="margin-top: 6px"><small>Example: <a href="#" class="t1">tree #1</a>, <a href="#" class="t2">tree #2</a>, <a href="#" class="tbig">big tree</a>, <a href="#" class="nhx_ex">Extended Newick</a>.</small></h6>
+                        </div>
+                    </div>
+
+                    <br>
+
+
+
+
+                    <br>
+                    <h4><b>Step 2:</b> Choose data format to add the tree</h4>
+
+
+
+                    <div class="text-center">
+
+                        <select class="custom-select" id="add_tree_str_select" style="margin-left: 24px;">
+                            <option selected value="newick">Newick</option>
+                            <option value="nhx">Extended Newick</option>
+                        </select>
+
+
+                    </div>
+
+
+
+                </div>
+                <br>
+
+
+
+            </div>
+
+            <div class="modal-footer">
+                <p class="me-auto"><strong>Compatible format:</strong> Newick, Extended Newick.</p>
+                <button type="button"  class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="modal_add_tree_final_button" class="btn btn-sm btn-success" >Add tree</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+`
 
         mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
@@ -405,8 +387,6 @@ export default class Interface {
         }
 
 
-
-
         document.getElementById('modal_add_tree_final_button' + this.container_object.uid).onclick = () => {
             var e = document.getElementById('add_tree_str_select' + this.container_object.uid);
 
@@ -415,28 +395,30 @@ export default class Interface {
 
 
 
-
-
-
         modmod.getElementsByClassName('t1')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
+            document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'newick'
         };
 
 
         modmod.getElementsByClassName('t1')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
+            document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'newick'
         };
 
         modmod.getElementsByClassName('t2')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small2
+            document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'newick'
         };
 
         modmod.getElementsByClassName('tbig')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.big
+            document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'newick'
         };
 
         modmod.getElementsByClassName('nhx_ex')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.nhx
+            document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'nhx'
         };
 
 
