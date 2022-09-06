@@ -11,6 +11,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'color_mapping' : {},
             'labels' : new Set(),
             'colorlabels' : new Set(),
             'display_leaves' : true,
@@ -137,6 +138,18 @@ export default class Model {
 
 
         }
+
+    }
+
+    add_color_mapping(leaf_name, color){
+        this.settings.color_mapping[leaf_name] = color
+    }
+
+    get_color_mapping(leaf_name){
+        if (leaf_name in this.settings.color_mapping){
+            return this.settings.color_mapping[leaf_name]
+        }
+        return null
 
     }
 

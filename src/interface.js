@@ -1459,6 +1459,56 @@ export default class Interface {
 
         // COLORING
 
+        // TMP todo redo
+
+        var meta_file = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','8px')
+
+        meta_file.append('p').text("Color Scheme");
+
+        meta_file.append('input')
+                .attr('id','fileinputcolor' + this.container_object.uid )
+                .attr('type','file')
+                .attr('name','myfile')
+            .on('change', d => {
+
+                var reader = new FileReader();
+                var that = this
+
+                var file = document.getElementById('fileinputcolor' + this.container_object.uid).files[0];
+
+                reader.addEventListener("load", parseFile, false);
+                if (file) {
+                    reader.readAsText(file);
+
+                }
+
+                this.viewer.render(this.viewer.hierarchy)
+
+
+
+
+
+                function parseFile(){
+                   d3.tsvParse(reader.result, (d) => {
+
+                        if (d['color']){
+                            that.viewer.model.add_color_mapping(d['id'],d['color'])
+                        }
+
+                    });
+
+                   console.log(that.viewer.model.settings.color_mapping)
+
+
+                }
+            })
+                .style('float','right')
+
+
+
+
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
             .style('margin','8px')
