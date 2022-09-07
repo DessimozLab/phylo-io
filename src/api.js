@@ -51,7 +51,7 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
     // create and return a new container and add it the dict using its div id
     create_container(container_id){ // container_id -> str
-        let c = new Container(container_id);
+        let c = new Container(container_id, this);
         this.containers[container_id] = c;
 
         if (this.bound_container.length < 2) {this.bound_container.push(c)}
@@ -73,7 +73,7 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
         if (this.settings.compareMode && con1.models.length > 0 && con2.models.length > 0 ){
 
-            compute_visible_topology_similarity(recompute)
+            compute_visible_topology_similarity(this, recompute)
 
             for (const [uid, container] of cs) {
                 container.viewer.render(container.viewer.hierarchy);
@@ -363,6 +363,24 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
     display_distance_window(){
 
+
+        function create_html_distance(title, d1, d2, d3, d4, d5, d6, d7){
+
+            return `<li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                        <div class="fw-bold" style="text-align:left;">${title}</div>
+                        
+                        <span style="display: flex"><small>Left tree: ${d1}/${d2} (${d3}%) </small> </span>
+                        <span style="display: flex"><small>Right tree: ${d4}/${d5} (${d6}%) </small> </span>
+                        
+                       
+                        </div>
+                         <span class="badge bg-primary rounded-pill">${d7}</span>  
+                        </li>`
+        }
+
+
+
         var bool_distance_computed = (this.distance.RF !== false || this.distance.Euc !== false  || this.distance.clade !== false || this.settings.no_distance_message !== true   )
         document.getElementById("distance_window").style.display  = (this.settings.compareMode && bool_distance_computed ) ?  'block': 'none';
 
@@ -371,32 +389,26 @@ export default class API { // todo: phylo is used ase reference from .html not g
         divdiv.innerHTML = "<ol class=\"list-group \">\n"
 
 
+
+
         if (this.distance.RF !== false) {
 
-            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
-                "    <div class=\"ms-2 me-auto\">\n" +
-                "      <div class=\"fw-bold\" style=\"text-align:left;\">Robinson-Foulds</div>\n" +
-                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.RF_good, this.distance.RF_left, Math.round(this.distance.RF_good /this.distance.RF_left*100) ) +
-                "      Right tree: {}/{} ({}%)\n".format(this.distance.RF_good, this.distance.RF_right, Math.round(this.distance.RF_good /this.distance.RF_right*100) ) +
-                "    </small> </div>\n" +
-                "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.RF) +
-                "  </li>"
+            divdiv.innerHTML += create_html_distance('Robinson-Foulds',
+                this.distance.RF_good, this.distance.RF_left,
+                Math.round(this.distance.RF_good /this.distance.RF_left*100),this.distance.RF_good, this.distance.RF_right,
+                Math.round(this.distance.RF_good /this.distance.RF_right*100),this.distance.RF
+            )
+
+
+
+
         }
-
-
 
         if (this.distance.clade !== false) {
 
-
-            divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
-                "    <div class=\"ms-2 me-auto\">\n" +
-                "      <div class=\"fw-bold\" style=\"text-align:left;\">Clade</div>\n" +
-                "      <small>Left tree: {}/{} ({}%)\n <br>".format(this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.Cl_good /this.distance.Cl_left*100) ) +
-                "      Right tree: {}/{} ({}%)\n".format(this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.Cl_good/this.distance.Cl_right*100) ) +
-                "    </small> </div>\n" +
-                "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.clade) +
-                "  </li>"
-
+            divdiv.innerHTML += create_html_distance('Clade',this.distance.Cl_good, this.distance.Cl_left, Math.round(this.distance.Cl_good /this.distance.Cl_left*100),
+                this.distance.Cl_good, this.distance.Cl_right, Math.round(this.distance.Cl_good/this.distance.Cl_right*100), this.distance.clade
+            )
 
         }
 
@@ -415,9 +427,6 @@ export default class API { // todo: phylo is used ase reference from .html not g
                 "      <div class=\"fw-bold\" style=\"text-align:left;\"><strong>Warning:</strong> {}</div> </div>\n".format(this.settings.no_distance_message)
                 "  </li>"
         }
-
-
-
 
         divdiv.innerHTML +=   "</ol>"
 

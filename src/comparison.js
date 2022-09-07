@@ -1,21 +1,18 @@
 
-function compute_visible_topology_similarity(recompute=true){
-
-
-
+function compute_visible_topology_similarity(api, recompute=true){
 
     // If no container selected for comparison, takes first two
-    if (phylo.bound_container.length < 2){
+    if (api.bound_container.length < 2){
 
-        let cs = Object.values(phylo.containers)
+        let cs = Object.values(api.containers)
 
-        phylo.bound_container = []
-        phylo.bound_container.push(cs[0])
-        phylo.bound_container.push(cs[1])
+        api.bound_container = []
+        api.bound_container.push(cs[0])
+        api.bound_container.push(cs[1])
     }
 
-    var con1 = phylo.bound_container[0]
-    var con2 =  phylo.bound_container[1]
+    var con1 = api.bound_container[0]
+    var con2 =  api.bound_container[1]
 
     // check if already computed
     var todo1 = !(con2.viewer.model.similarity.includes(con1.viewer.model.uid))

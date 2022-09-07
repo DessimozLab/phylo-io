@@ -15,7 +15,7 @@ export default class Container {
         return this._uid;
     }
 
-    constructor(container_id) {
+    constructor(container_id, api) {
 
         this._uid = uid_container++; // unique container id
         this.div_id = container_id; // related div id
@@ -24,6 +24,7 @@ export default class Container {
         this.current_model = 0; // current model index
         this.viewer = new Viewer(this); // attach Viewer()
         this.history_actions = [] //  for Undo feature
+        this.api = api
 
     }
 
@@ -31,7 +32,7 @@ export default class Container {
 
         var refresh_interface = (typeof refresh_interface !== 'undefined') ? refresh_interface : false;
 
-        if (!phylo.undoing){
+        if (!this.api.undoing){
             this.history_actions.push({'name': name, 'fonct':counter_fn, 'fonction_obj':fn_object, 'argu': argu, 'refresh_interface' : refresh_interface})
         }
 
@@ -156,8 +157,8 @@ export default class Container {
 
             }
 
-            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-                phylo.compute_distance()
+            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.compute_distance()
             }
 
 
@@ -225,8 +226,8 @@ export default class Container {
             m.table = build_table(m.hierarchy_mockup)
 
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-                phylo.compute_distance()
+            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
 
@@ -238,8 +239,8 @@ export default class Container {
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-                phylo.compute_distance()
+            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -249,8 +250,8 @@ export default class Container {
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
             this.compute_topology_and_render_bounded_viewer(true)
-            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-                phylo.compute_distance()
+            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.compute_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -364,8 +365,8 @@ export default class Container {
         this.interface = new Interface(this.viewer, this)
         this.viewer.render(this.viewer.hierarchy)
 
-        if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-            phylo.compute_distance()
+        if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+            this.api.compute_distance()
         }
 
     }
@@ -389,17 +390,17 @@ export default class Container {
     compute_topology_and_render_bounded_viewer(recompute=true){ // change to als eby default and deal with elementS -> one vlue instead of model uid to val
 
         // if bound container and compare mode activate, we need to update it too
-        if (phylo.settings.compareMode && phylo.bound_container.includes(this)){
+        if (this.api.settings.compareMode && this.api.bound_container.includes(this)){
 
 
 
-            var con1 = phylo.bound_container[0]
-            var con2 =  phylo.bound_container[1]
+            var con1 = this.api.bound_container[0]
+            var con2 =  this.api.bound_container[1]
 
 
 
             if ( con1.models.length > 0 && con2.models.length > 0){
-                compute_visible_topology_similarity(recompute)
+                compute_visible_topology_similarity(this.api, recompute)
 
 
             var ccc = (con1 == this) ? con2 : con1
@@ -412,8 +413,8 @@ export default class Container {
     reroot_to_compared_tree(){
 
 
-        var con1 = phylo.bound_container[0]
-        var con2 =  phylo.bound_container[1]
+        var con1 = this.api.bound_container[0]
+        var con2 =  this.api.bound_container[1]
 
         if (con1 && con2){
 
@@ -431,8 +432,8 @@ export default class Container {
 
     reorder_to_compared_tree(){
 
-        var con1 = phylo.bound_container[0]
-        var con2 =  phylo.bound_container[1]
+        var con1 = this.api.bound_container[0]
+        var con2 =  this.api.bound_container[1]
 
         if (con1 && con2){
 

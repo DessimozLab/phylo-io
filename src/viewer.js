@@ -260,7 +260,7 @@ export default class Viewer {
         if (this.model.settings.first_time_render) {
             this.model.settings.first_time_render = false
 
-            if (phylo.settings.phylostratigraphy){
+            if (this.container_object.api.settings.phylostratigraphy){
 
 
                 source.children.forEach(element =>
@@ -306,7 +306,7 @@ export default class Viewer {
 
         var html = "";
 
-        if (phylo.settings.phylostratigraphy){
+        if (this.container_object.api.settings.phylostratigraphy){
 
             var datum = node.data.evolutionaryEvents
 
@@ -410,7 +410,7 @@ export default class Viewer {
 
                     var target = d.target || d.srcElement;
 
-                    if (phylo.settings.phylostratigraphy && target.nodeName != 'rect' ) {
+                    if (this.container_object.api.settings.phylostratigraphy && target.nodeName != 'rect' ) {
                         return
                     }
 
@@ -688,7 +688,7 @@ export default class Viewer {
             .attr('d', d => this.square_edges(d, d.parent))
 
         linkUpdate.on('click', (d,i) =>  {
-            if (phylo.settings.phylostratigraphy){return}
+            if (this.container_object.api.settings.phylostratigraphy){return}
             this.click_edges(d,i)})
 
         // Remove any exiting links
@@ -857,11 +857,11 @@ export default class Viewer {
 
 
             // if lock zoom activate
-            if (phylo.settings.compareMode && phylo.settings.sync_zoom && !phylo.settings.syncing_zoom){
+            if (this.container_object.api.settings.compareMode && this.container_object.api.settings.sync_zoom && !this.container_object.api.settings.syncing_zoom){
 
-                phylo.settings.syncing_zoom = true
+                this.container_object.api.settings.syncing_zoom = true
 
-                var other_container = phylo.bound_container[0] === this.container_object ? phylo.bound_container[1] : phylo.bound_container[0]
+                var other_container = this.container_object.api.bound_container[0] === this.container_object ? this.container_object.api.bound_container[1] : this.container_object.api.bound_container[0]
 
                 if (other_container.models.length > 0 && other_container.viewer.model != false){
                     var t = other_container.viewer.d3.zoomTransform(other_container.viewer.svg.node())
@@ -872,7 +872,7 @@ export default class Viewer {
                     other_container.viewer.set_zoom(transform.k/ratio,t.x,t.y)
 
                 }
-                phylo.settings.syncing_zoom = false
+                this.container_object.api.settings.syncing_zoom = false
 
 
 
@@ -1910,9 +1910,7 @@ export default class Viewer {
     }
 
     get_label_extended_information(node, type){
-
         return (type == 'Name') ? node.data.name :  node.data.extended_informations[type]
-
     }
 
     node_face_enter(nodeEnter){
@@ -2039,7 +2037,7 @@ export default class Viewer {
 
                     if (d.data.collapse){
 
-                        if (phylo.settings.phylostratigraphy){
+                        if (this.container_object.api.settings.phylostratigraphy){
                             return d.data.name
                         }
 

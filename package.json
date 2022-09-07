@@ -24,7 +24,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@popperjs/core": "^2.10.2",
     "biojs-io-newick": "^1.5.0",
-    "bootstrap": "^5.1.2",
+    "bootstrap": "5.1.2",
     "d3": "6.6.0",
     "d3-v6-tip": "^1.0.9",
     "file-saver": "^2.0.5"

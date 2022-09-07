@@ -263,7 +263,7 @@ export default class Interface {
                 <div class="container-fluid">
 
 
-                    <h4><b>Step 1:</b> add data from text or file</h4>
+                    <h4><b>Step 1:</b> Add data from text or file</h4>
                     <br>
 
                     <div class="row" style=" margin-left: 24px">

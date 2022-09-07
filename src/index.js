@@ -14,7 +14,7 @@ contains a Viewer instance. Each Viewer (and by consequent Container) can have m
 
 
 import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
 import './style.css';
 import './interface.css';
