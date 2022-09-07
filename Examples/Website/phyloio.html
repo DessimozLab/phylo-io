@@ -73,8 +73,7 @@
 
     </div>
 
-    <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41);
-}">
+    <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41); overflow: scroll">
 
 
 
@@ -88,44 +87,52 @@
             <li class="nav-item">
                 <a href="#" class="nav-link  py-3 border-bottom border-top" id="menu_load"  aria-current="page"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Load Session" >
                     <i class="bi-file-earmark-arrow-up" style="font-size: 24px;color: white "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Load</p>
                 </a>
             </li>
             <li>
                 <a href="#" class="nav-link py-3 border-bottom" id="menu_save" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Save Session">
                     <i class="bi-file-earmark-arrow-down" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Save</p>
                 </a>
             </li>
             <li>
                 <a href="#" class="nav-link py-3 border-bottom" id="menu_share" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Share Session">
                     <i class="bi-share" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >share</p>
                 </a>
             </li>
             <li>
                 <a href="#" id="menu_compare_mode" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Switch between single & compare mode">
                     <i class="bi-layout-split" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Compare mode</p>
                 </a>
             </li>
             <li id="li_distance">
                 <a href="#" id="menu_distance" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show phylogenetic distance">
                     <i class="bi-rulers" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Distance</p>
                 </a>
             </li>
 
             <li id="li_lock">
                 <a href="#" id="menu_lock" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Synchronize zoom between viewer">
                     <i class="bi-lock" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Lock Zoom</p>
                 </a>
             </li>
 
             <li>
                 <a href="#" id="menu_screenshot" class="nav-link py-3 border-bottom" title="" id="menu_screenshot" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Export as graphic">
                     <i class="bi-camera" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Export</p>
                 </a>
             </li>
 
             <li>
                 <a href="#" id="menu_keyboard" class="nav-link py-3 border-bottom" title="" id="menu_keyboard" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show keyboard shorcuts">
                     <i class="bi-keyboard" style="font-size: 24px;color: white  "></i>
+                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Shortcuts</p>
                 </a>
             </li>
 
@@ -417,12 +424,15 @@
     var compare = false;
     const phylo = PhyloIO.init()
 
+    /*
 
     const tooltip_object = []
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         tooltip_object.push(new bootstrap.Tooltip(tooltipTriggerEl));
     })
+
+    */
 
     if (!compare){
         document.getElementById("li_distance").style.display = 'none'
@@ -892,11 +902,11 @@
 
 
         if (phylo.settings.sync_zoom){
-            document.getElementById('menu_lock').innerHTML = '<i class="bi-lock" style="font-size: 24px;color: white  "></i>'
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-lock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small; color: white; margin-bottom:0px" >Unlock Zoom</p>'
         }
 
         else {
-            document.getElementById('menu_lock').innerHTML = '<i class="bi-unlock" style="font-size: 24px;color: white  "></i>'
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-unlock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small; color: white; margin-bottom:0px" >Lock Zoom</p>'
         }
 
 

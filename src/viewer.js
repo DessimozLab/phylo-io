@@ -402,6 +402,9 @@ export default class Viewer {
             .attr("transform", function(d) {
                 return "translate(" + mirror_factor*source.y0 + "," + source.x0 + ")";
             })
+            .on("mousedown", function(d,i) {
+               d.stopPropagation();
+            })
             .on('click', (d, i) =>  {
                 if (i.children || i._children) {this.click_nodes(d,i)}
             })
@@ -1290,7 +1293,6 @@ export default class Viewer {
         var old_zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
         this.container_object.add_action('Compact tree',  this, this.render_with_settings, [old_zoom.k, old_zoom.x,old_zoom.y,this.model.settings.tree.node_horizontal_size, collapsed] )
 
-
         // Increment Collapsed Depth until "Visible leaf" > "Max visible leaves"
         var depth;
         for (depth = 1; depth < this.model.settings.tree.max_depth; depth++) {
@@ -1300,6 +1302,7 @@ export default class Viewer {
                 break
             }
         }
+
         this.model.settings.collapse_level = depth
         this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
         this.set_data(this.model)
