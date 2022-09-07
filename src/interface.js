@@ -1391,7 +1391,7 @@ export default class Interface {
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})
 
-        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Edge width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
+        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Line width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
             (e ) =>{this.viewer.update_line_width(e.target.value)})
 
         this.slider_t = this.add_slider_UI(this.menu_tree_p, "Leaf label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",

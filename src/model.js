@@ -445,8 +445,14 @@ export default class Model {
         var meta = this.zoom;
 
         // create new root r
-        var root = {"children": [], "name": "", "branch_length": 0}
 
+        var root = {"children": [], "name": "", "branch_length": 0, "extended_informations": {}}
+
+        for (var key in data.extended_informations) {
+            if (data.extended_informations.hasOwnProperty(key)) {
+                root.extended_informations[key] =  null
+            }
+        }
 
         // source and target node of the clicked edges
         var parent = data.parent
@@ -489,10 +495,6 @@ export default class Model {
         }
 
         // Remove old root
-
-
-
-
         var r = parent
         var p = parent.parent
         const ce = parent.parent.children.indexOf(r);
