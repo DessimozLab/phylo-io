@@ -48,6 +48,8 @@ export default class Viewer {
             'duration' : 500,
             'max_visible_leaves' : 30,
             'style': {
+                'offset_top_fit': 140,
+                'translate_top_fit': 60,
                 'margin' : {top: 16, right: 16, bottom: 16, left: 96},
 
             },
@@ -1256,11 +1258,11 @@ export default class Viewer {
         this.container_object.add_action('Stretch tree',  this, this.render_with_settings, [old_zoom.k, old_zoom.x,old_zoom.y,this.model.settings.tree.node_horizontal_size, []] )
         // Adjust Zoom-y to fit height
         var r = this.get_height_hierarchy()
-        var vh = this.height - 80 // viewer
+        var vh = this.height - this.settings.style.offset_top_fit
         var th = (Math.abs(r.min_x)+Math.abs(r.max_x))
         var h_scale = vh/th // ratio
 
-        var x_tr = - this.hierarchy.x + 40
+        var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
 
         var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
         var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
@@ -1303,23 +1305,21 @@ export default class Viewer {
             }
         }
 
-        this.model.settings.collapse_level = depth
-        this.container_object.collapse_depth(this.model.settings.collapse_level, this.model.data)
-        this.set_data(this.model)
-        this.render(this.hierarchy)
+        this.update_collapse_level(depth, true)
+
 
         var r = this.get_height_hierarchy()
         var estimated_height = r.h
 
         // Adjust Zoom-y to fit height
-        var vh = this.height - 80 // MARGIN
+        var vh = this.height - this.settings.style.offset_top_fit // MARGIN
         var th = (Math.abs(r.min_x)+Math.abs(r.max_x))
         //var th = estimated_height // this.G.node().getBBox().height
         var h_scale = vh/th
 
 
 
-        var x_tr = - this.hierarchy.x + 40
+        var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
         var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
         var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
         //var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
