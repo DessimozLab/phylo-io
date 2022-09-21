@@ -68,7 +68,11 @@ export default class Viewer {
         this.set_color_scale()
 
         // ZOOM
-        this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
+        this.zoom = d3.zoom()
+            .on("end", (d, i) =>  { return this.zoom_scale_elements(d,i)})
+            .on("zoom", (d, i) =>  { return this.zoomed(d,i)})
+
+        this.zooming = false
 
         // SVG
         this.svg = this.container_d3.append("svg")
@@ -141,6 +145,8 @@ export default class Viewer {
             .attr("id", "master_g" + this.uid)
             .attr("transform", "translate("+ this.settings.style.margin.left + "," + (this.height/2 +  this.settings.style.margin.top) + ")")
         this.G_d3 = d3.select(this.G);
+
+
     }
 
     build_d3_data(){
@@ -801,8 +807,77 @@ export default class Viewer {
         return spacer;
     }
 
+    zoom_scale_elements({transform}){
+
+
+
+
+
+
+        if (typeof this.G != "undefined" && this.model != false ){
+
+
+
+            if (this.zooming) {
+
+                var on_screen_text_size = this.compute_node_font_size()
+                var subsampling_index = -1
+                var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
+
+                // update x pos with branch length
+                this.nodes.forEach(d => {
+
+
+                    if (!this.model.settings.display_leaves ){
+                        d.subsampled = false;
+                        return
+                    }
+
+                    if (!this.model.settings.subsample_label){
+                        d.subsampled = true;
+                        return
+                    }
+
+
+
+                    if (!d.children ) {
+
+                        if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
+                            d.subsampled  = true
+                            return
+                        }
+
+                        subsampling_index += 1;
+                        d.subsampled = (subsampling_index % subsampling_module === 0) ;
+                    }
+
+
+                })
+
+
+                var real_node_radius = this.compute_node_radius()
+                this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {
+
+                    return d.data.collapse || (!this.model.rooted && d.data.root) ? 1e-6 :  real_node_radius }
+                )
+
+                this.node_face_update(this.G.selectAll('g.node'))
+
+                var real_edges_width = this.compute_edge_width()
+                this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
+
+                this.zooming = false
+            }
+
+        }
+
+    }
+
     zoomed({transform}) {
 
+        if (!this.zooming){
+            this.zooming = this.model.zoom ? transform.k = this.model.zoom.k : false
+        }
 
         d3.select("#master_g" + this.uid).attr("transform", transform);
 
@@ -812,53 +887,7 @@ export default class Viewer {
 
         if (typeof this.G != "undefined" && this.model != false ){
 
-            var on_screen_text_size = this.compute_node_font_size()
-            var subsampling_index = -1
-            var subsampling_module = 1 + Math.floor((on_screen_text_size)/this.model.settings.tree.node_vertical_size)
-
-            // update x pos with branch length
-            this.nodes.forEach(d => {
-
-
-                if (!this.model.settings.display_leaves ){
-                    d.subsampled = false;
-                    return
-                }
-
-                if (!this.model.settings.subsample_label){
-                    d.subsampled = true;
-                    return
-                }
-
-
-
-                if (!d.children ) {
-
-                    if (d.data.collapse && d.data.triangle_height >= on_screen_text_size){
-                        d.subsampled  = true
-                        return
-                    }
-
-                    subsampling_index += 1;
-                    d.subsampled = (subsampling_index % subsampling_module === 0) ;
-                }
-
-
-            })
-
-
-            var real_node_radius = this.compute_node_radius()
-            this.G.selectAll('g.node').selectAll('circle').attr('r', (d) => {
-
-                return d.data.collapse || (!this.model.rooted && d.data.root) ? 1e-6 :  real_node_radius }
-                )
-
-            this.node_face_update(this.G.selectAll('g.node'))
-
             this.model.store_zoomTransform(transform)
-
-            var real_edges_width = this.compute_edge_width()
-            this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
 
 
             // if lock zoom activate
@@ -882,9 +911,6 @@ export default class Viewer {
 
 
             }
-
-
-
 
         }
 
