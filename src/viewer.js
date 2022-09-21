@@ -68,11 +68,7 @@ export default class Viewer {
         this.set_color_scale()
 
         // ZOOM
-        this.zoom = d3.zoom()
-            .on("end", (d, i) =>  { return this.zoom_scale_elements(d,i)})
-            .on("zoom", (d, i) =>  { return this.zoomed(d,i)})
-
-        this.zooming = false
+        this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
 
         // SVG
         this.svg = this.container_d3.append("svg")
@@ -807,18 +803,20 @@ export default class Viewer {
         return spacer;
     }
 
-    zoom_scale_elements({transform}){
+    zoomed({transform}) {
+
+        var zooming = this.model.zoom ? transform.k != this.model.zoom.k : false;
 
 
+        d3.select("#master_g" + this.uid).attr("transform", transform);
 
-
-
+        if (this.interface && this.model.settings.use_branch_lenght) {
+            this.interface.update_scale_value(transform.k);
+        }
 
         if (typeof this.G != "undefined" && this.model != false ){
 
-
-
-            if (this.zooming) {
+            if (zooming){
 
                 var on_screen_text_size = this.compute_node_font_size()
                 var subsampling_index = -1
@@ -866,28 +864,13 @@ export default class Viewer {
                 var real_edges_width = this.compute_edge_width()
                 this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
 
-                this.zooming = false
             }
 
-        }
 
-    }
-
-    zoomed({transform}) {
-
-        if (!this.zooming){
-            this.zooming = this.model.zoom ? transform.k = this.model.zoom.k : false
-        }
-
-        d3.select("#master_g" + this.uid).attr("transform", transform);
-
-        if (this.interface && this.model.settings.use_branch_lenght) {
-            this.interface.update_scale_value(transform.k);
-        }
-
-        if (typeof this.G != "undefined" && this.model != false ){
 
             this.model.store_zoomTransform(transform)
+
+
 
 
             // if lock zoom activate
@@ -911,6 +894,9 @@ export default class Viewer {
 
 
             }
+
+
+
 
         }
 

@@ -111,6 +111,7 @@ export default class Model {
 
         this.data.root = true;
         this.rooted = this.data.children.length !== 3
+        this.big_tree = (this.leaves.length > 1000)
 
         this.hierarchy_mockup = this.build_hierarchy_mockup()
         this.table = build_table(this.hierarchy_mockup)
