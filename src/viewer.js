@@ -68,7 +68,9 @@ export default class Viewer {
         this.set_color_scale()
 
         // ZOOM
+        this.force_zoom_rescaling = false
         this.zoom = d3.zoom().on("zoom", (d, i) =>  { return this.zoomed(d,i)} )
+
 
         // SVG
         this.svg = this.container_d3.append("svg")
@@ -106,6 +108,19 @@ export default class Viewer {
 
         this.data = model.data;
         this.model = model;
+
+        if (this.model.big_tree) {
+            this.zoom = d3.zoom()
+                .on("zoom", (d, i) => {
+                    return this.zoomed(d, i)
+                })
+                .on("end", (d, i) => {
+                    return (this.force_zoom_rescaling = true, this.zoomed(d, i),this.force_zoom_rescaling = false);
+                    }
+                )
+
+            this.svg.call(this.zoom)
+        }
 
 
         this.d3_cluster.nodeSize([this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
@@ -816,7 +831,7 @@ export default class Viewer {
 
         if (typeof this.G != "undefined" && this.model != false ){
 
-            if (zooming){
+            if ((zooming && !this.model.big_tree) || this.force_zoom_rescaling) {
 
                 var on_screen_text_size = this.compute_node_font_size()
                 var subsampling_index = -1
