@@ -204,7 +204,7 @@ export default class Model {
 
                 var child = children[c]
 
-                child = this.traverse(child, func_pre, func_post)
+                child = this.traverse_hierarchy(child, func_pre, func_post)
 
                 if (func_post) {
                     func_post.apply(this,[child,o])

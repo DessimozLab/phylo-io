@@ -291,7 +291,7 @@ export default class Container {
             }
         }
 
-        this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy,null,  f )
+        this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy,  f )
 
 
 
