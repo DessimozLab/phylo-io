@@ -2,6 +2,7 @@ import Viewer from './viewer.js'
 import Model from './model.js'
 import Interface from "./interface";
 import * as bootstrap from "bootstrap";
+import * as d3 from "d3";
 const { compute_visible_topology_similarity, BCN } = require('./comparison.js')
 const { build_table, save_file_as } = require('./utils.js')
 var parser = require("biojs-io-newick");
@@ -386,6 +387,95 @@ export default class Container {
 
 
     }
+
+    // INTERFACE CONTROL
+
+    modify_node_size_percent(percent, axis ){
+
+        var model = this.models[this.current_model]
+
+        if (axis === 'vertical') {
+            model.settings.tree.node_vertical_size = model.settings.tree.node_vertical_size * (1 + percent)
+        }
+        else if (axis === 'horizontal') {
+            model.settings.tree.node_horizontal_size = model.settings.tree.node_horizontal_size * (1 + percent)
+        }
+
+        this.viewer.d3_cluster.nodeSize([ model.settings.tree.node_vertical_size,model.settings.tree.node_horizontal_size])
+        this.viewer.build_d3_cluster()
+        this.viewer.render(this.viewer.hierarchy)
+
+        if (this.viewer.interface && model.settings.use_branch_lenght) {
+            var k = this.viewer.d3.zoomTransform(d3.select("#master_g" + this.viewer.uid).node()).k
+            this.viewer.interface.update_scale_value(k);
+        }
+
+    }
+
+    modify_node_size(axis, variation){
+
+        var model = this.models[this.current_model]
+        var viewer = this.viewer
+
+        if (axis === 'vertical') {
+            if ((model.settings.tree.node_vertical_size + variation) <= 0){return}
+            model.settings.tree.node_vertical_size += variation
+        }
+        else if (axis === 'horizontal') {
+            if ((model.settings.tree.node_horizontal_size + variation) <= 0){return}
+            model.settings.tree.node_horizontal_size += variation
+        }
+
+        viewer.d3_cluster.nodeSize([ model.settings.tree.node_vertical_size,model.settings.tree.node_horizontal_size])
+        viewer.build_d3_cluster()
+        viewer.render(viewer.hierarchy)
+
+
+        if (viewer.interface && model.settings.use_branch_lenght) {
+            var k = viewer.d3.zoomTransform(d3.select("#master_g" + viewer.uid).node()).k
+            viewer.interface.update_scale_value(k);
+        }
+
+    }
+
+    update_node_radius_percent(percent){
+
+        var model = this.models[this.current_model]
+        var viewer = this.viewer
+
+        model.settings.tree.node_radius =  model.settings.tree.node_radius * (1 + percent)
+        viewer.render(viewer.hierarchy)
+    }
+
+    update_line_width_percent(percent){
+        var model = this.models[this.current_model]
+        var viewer = this.viewer
+
+        model.settings.tree.line_width = model.settings.tree.line_width * (1 + percent)
+        viewer.render(viewer.hierarchy)
+    }
+
+    update_font_size(val){
+        this.viewer.model.settings.tree.font_size = val
+        this.viewer.render(this.viewer.hierarchy)
+    }
+
+    update_font_size_node(val){
+        this.viewer.model.settings.style.font_size_internal = val
+        this.viewer.render(this.viewer.hierarchy)
+    }
+
+    update_font_size_leaf_percent(val){
+        this.viewer.model.settings.tree.font_size = this.viewer.model.settings.tree.font_size  * (1 + val)
+        this.viewer.render(this.viewer.hierarchy)
+    }
+
+    update_font_size_node_percent(val){
+        this.viewer.model.settings.style.font_size_internal = this.viewer.model.settings.style.font_size_internal * (1 + val)
+        this.viewer.render(this.viewer.hierarchy)
+    }
+
+    //
 
     compute_topology_and_render_bounded_viewer(recompute=true){ // change to als eby default and deal with elementS -> one vlue instead of model uid to val
 

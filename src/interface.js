@@ -80,6 +80,9 @@ export default class Interface {
 
         // BOTTOM RIGHT
 
+        if (this.viewer.model.big_tree){
+            this.add_rescale_zoom()
+        }
         this.add_maximise()
         this.add_fit_height()
         this.add_zoom()
@@ -570,6 +573,31 @@ export default class Interface {
 
 
 
+
+    }
+
+    add_rescale_zoom(){
+
+        this.bottom_right.append('button')
+            .on('click', d => {
+
+                this.viewer.force_zoom_rescaling = true;
+                this.viewer.zoomed( {'transform':this.viewer.d3.zoomTransform(this.viewer.svg.node())});
+                this.viewer.force_zoom_rescaling = false;
+            })
+            .attr('class', ' square_button')
+            .attr('id', 'buttonscaleviewer_' + this.container_object.div_id )
+            .attr('data-bs-placement', 'left')
+            .attr('title', 'Optimise text size')
+            .style('margin', '2px')
+            .style('width', '32px')
+            .append("div")
+            .attr("class", "label")
+            .append('i')
+            .style('color', '#888')
+            .attr('class', ' fas fa-text-height ')
+
+        this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('buttonscaleviewer_' + this.container_object.div_id))
 
     }
 
@@ -1359,11 +1387,18 @@ export default class Interface {
         this.add_swicth_UI(this.menu_general_p, this.viewer.model.settings.mirror,"Mirror tree",   this.viewer.toggle_mirror.bind(this.viewer))
 
         // ADD SLIDER RESIZE X/Y
+        /*
         this.slider_v = this.add_slider_UI(this.menu_general_p, "Tree height", 2, 1000, this.viewer.model.settings.tree.node_vertical_size, 1, "slider_node_vertical_size_",
             (e ) =>{this.viewer.modify_node_size('vertical', e.target.value - this.viewer.model.settings.tree.node_vertical_size)})
 
         this.slider_h = this.add_slider_UI(this.menu_general_p, "Tree width", 2, 1000, this.viewer.model.settings.tree.node_horizontal_size, 1, "slider_node_horyzontal_size_",
             (e ) =>{this.viewer.modify_node_size('horizontal', e.target.value - this.viewer.model.settings.tree.node_horizontal_size)})
+  */
+
+
+        this.buttons_height = this.add_quartet_buttons(this.menu_general_p, "Tree height", "buton_vertical_size_", this.container_object.modify_node_size_percent, 'vertical')
+        this.buttons_width = this.add_quartet_buttons(this.menu_general_p, "Tree width", "buton_horyzontal_size_", this.container_object.modify_node_size_percent, 'horizontal')
+
 
         // ADD SELECT LEFT NODE LABEL
         this.add_node_face_UI(this.menu_tree_p, this.container_object.uid)
@@ -1388,17 +1423,29 @@ export default class Interface {
         }
 
         // ADD SLIDER NODE/LINE/TEXT
+        /*
         this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})
 
         this.slider_l = this.add_slider_UI(this.menu_tree_p, "Line width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
             (e ) =>{this.viewer.update_line_width(e.target.value)})
 
-        this.slider_t = this.add_slider_UI(this.menu_tree_p, "Leaf label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
+               this.slider_t = this.add_slider_UI(this.menu_tree_p, "Leaf label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
             (e ) =>{this.viewer.update_font_size(e.target.value)})
 
         this.slider_i = this.add_slider_UI(this.menu_tree_p, "Node label size", 1, this.viewer.model.settings.tree.node_vertical_size*2, this.viewer.model.settings.style.font_size_internal, 1, "slider_text_node_size_",
             (e ) =>{this.viewer.update_font_size_node(e.target.value)})
+
+         */
+
+        this.add_quartet_buttons(this.menu_tree_p, "Node Radius", "buton_node_radius_", this.container_object.update_node_radius_percent )
+        this.add_quartet_buttons(this.menu_tree_p, "Line width", "buton_line_width_", this.container_object.update_line_width_percent)
+        this.add_quartet_buttons(this.menu_tree_p, "Leaf label size", "buton_leaf_label_size_", this.container_object.update_font_size_leaf_percent)
+        this.add_quartet_buttons(this.menu_tree_p, "Node label size", "buton_node_label_", this.container_object.update_font_size_node_percent)
+
+
+
+
 
         // COLLAPSE
 
@@ -1461,6 +1508,9 @@ export default class Interface {
 
         // TMP todo redo
 
+
+        /*
+
         var meta_file = this.menu_coloring_p.append('div')
             .style('display','block')
             .style('margin','8px')
@@ -1508,6 +1558,8 @@ export default class Interface {
 
 
 
+
+         */
 
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
@@ -1758,11 +1810,85 @@ export default class Interface {
 
     }
 
+
+    add_quartet_buttons(parent, label, id, f, aux){
+
+        var f = f || function(){};
+        var aux = aux || null;
+
+        parent.append("p").text(label)
+            .style('margin-bottom','0px')
+            .style('font-weight','bold')
+
+        var buttons = parent.append('div')
+            .style('display', 'flex')
+            .style('margin-top', '0px')
+            .style('margin-bottom', '4px')
+
+
+        buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'first' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,-0.50, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append('i')
+            .style('color', '#888')
+            .style('font-size', '15px')
+            .attr('class', ' fas fa-minus ')
+
+        buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'second' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,-0.20, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append('i')
+            .style('color', '#888')
+            .style('font-size', '12px')
+            .attr('class', ' fas fa-minus ')
+
+        buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'third' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,0.20, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append('i')
+            .style('color', '#888')
+            .style('font-size', '12px')
+            .attr('class', ' fas fa-plus ')
+
+        buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'fourth' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,0.50, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append('i')
+            .style('color', '#888')
+            .style('font-size', '15px')
+            .attr('class', ' fas fa-plus ')
+
+        return buttons
+
+
+
+    }
+
     add_slider_UI(parent, label, min, max, current, step, id, f){
 
         var f = f || function(){};
 
-        parent.append("p").text(label).style('margin-bottom','0px')
+        parent.append("p").text(label).style('margin-bottom','0px').style('font-weight','bold')
 
         var d = parent.append('div')
             .attr("class","slidecontainer")

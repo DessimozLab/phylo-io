@@ -109,20 +109,6 @@ export default class Viewer {
         this.data = model.data;
         this.model = model;
 
-        if (this.model.big_tree) {
-            this.zoom = d3.zoom()
-                .on("zoom", (d, i) => {
-                    return this.zoomed(d, i)
-                })
-                .on("end", (d, i) => {
-                    return (this.force_zoom_rescaling = true, this.zoomed(d, i),this.force_zoom_rescaling = false);
-                    }
-                )
-
-            this.svg.call(this.zoom)
-        }
-
-
         this.d3_cluster.nodeSize([this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
 
         this.build_d3_data();
@@ -464,7 +450,10 @@ export default class Viewer {
 
 
         // Add Circle for the nodes
-        nodeEnter.append('circle')
+        nodeEnter.filter(function(d){
+            return (d.children || d._children)
+        })
+            .append('circle')
             .attr('class', 'node')
             .attr('r', 1e-6)
             .style("stroke",  "transparent" )
@@ -1309,7 +1298,7 @@ export default class Viewer {
         var ns = this.model.settings.tree.node_horizontal_size
         var w_scale = (this.width - 80)/(w*h_scale)
 
-        this.modify_node_size('horizontal', (ns * w_scale) - ns )
+        this.container_object.modify_node_size('horizontal', (ns * w_scale) - ns )
 
         var real_edges_width = this.compute_edge_width()
         this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
@@ -1372,7 +1361,7 @@ export default class Viewer {
         var ns = this.model.settings.tree.node_horizontal_size
         var w_scale = (this.width - 80)/(w*h_scale)
 
-        this.modify_node_size('horizontal', (ns * w_scale) - ns )
+        this.container_object.modify_node_size('horizontal', (ns * w_scale) - ns )
 
         var real_edges_width = this.compute_edge_width()
         this.G.selectAll('path.link').style('stroke-width',  real_edges_width + 'px')
@@ -1396,7 +1385,7 @@ export default class Viewer {
         var delta_node_size = -(this.model.settings.tree.node_horizontal_size - node_size)
 
         if (delta_node_size!=0){
-            this.modify_node_size('horizontal',  -(this.model.settings.tree.node_horizontal_size - node_size)    )
+            this.container.modify_node_size('horizontal',  -(this.model.settings.tree.node_horizontal_size - node_size)    )
         }
 
         var real_edges_width = this.compute_edge_width()
@@ -1405,17 +1394,18 @@ export default class Viewer {
     }
 
     // TUNNING todo should be in Controller
+    /*
     modify_node_size(axis, variation){
 
         if (axis === 'vertical') {
             if ((this.model.settings.tree.node_vertical_size + variation) <= 0){return}
             this.model.settings.tree.node_vertical_size += variation
-            this.interface.update_slider(this.interface.slider_v, this.model.settings.tree.node_vertical_size)
+            //this.interface.update_slider(this.interface.slider_v, this.model.settings.tree.node_vertical_size)
         }
         else if (axis === 'horizontal') {
             if ((this.model.settings.tree.node_horizontal_size + variation) <= 0){return}
             this.model.settings.tree.node_horizontal_size += variation
-            this.interface.update_slider(this.interface.slider_h, this.model.settings.tree.node_horizontal_size)
+            //this.interface.update_slider(this.interface.slider_h, this.model.settings.tree.node_horizontal_size)
         }
 
         this.d3_cluster.nodeSize([ this.model.settings.tree.node_vertical_size,this.model.settings.tree.node_horizontal_size])
@@ -1429,6 +1419,8 @@ export default class Viewer {
         }
 
     }
+
+     */
 
     toggle_use_length(){
         this.model.settings.use_branch_lenght = !this.model.settings.use_branch_lenght
@@ -1510,7 +1502,7 @@ export default class Viewer {
 
         this.render(this.hierarchy)
 
-        this.interface.update_slider(this.interface.slider_t, this.model.settings.tree.font_size)
+        //this.interface.update_slider(this.interface.slider_t, this.model.settings.tree.font_size)
 
     }
 
@@ -1571,15 +1563,6 @@ export default class Viewer {
         this.render(this.hierarchy)
     }
 
-    update_node_radius(val){
-        this.model.settings.tree.node_radius = val
-        this.render(this.hierarchy)
-    }
-
-    update_line_width(val){
-        this.model.settings.tree.line_width = val
-        this.render(this.hierarchy)
-    }
 
     update_collapse_level(val, refresh_interface){
 
@@ -1607,15 +1590,7 @@ export default class Viewer {
 
     }
 
-    update_font_size(val){
-        this.model.settings.tree.font_size = val
-        this.render(this.hierarchy)
-    }
 
-    update_font_size_node(val){
-        this.model.settings.style.font_size_internal = val
-        this.render(this.hierarchy)
-    }
 
     toggle_dessimode(){
         this.model.settings.dessimode = !this.model.settings.dessimode
