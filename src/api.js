@@ -107,7 +107,7 @@ export default class API { // todo: phylo is used ase reference from .html not g
             for (var j = 0; j < ms.length; j++) {
 
                 var s = ms[j].settings
-                s.labels_array = [...s.labels];
+                s.labels_array = [...s.labels_node];
                 s.colorlabels_array = [...s.colorlabels];
                 minput.push({'settings':s, 'data':ms[j].remove_circularity(), 'zoom': ms[j].zoom })
 

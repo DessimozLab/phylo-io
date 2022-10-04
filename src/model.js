@@ -11,8 +11,8 @@ export default class Model {
 
         this.zoom;
         this.settings = {
-            'color_mapping' : {},
-            'labels' : new Set(),
+            'labels_node' : new Set(),
+            'labels_leaf' : new Set(),
             'colorlabels' : new Set(),
             'display_leaves' : true,
             'mirror': false,
@@ -32,6 +32,8 @@ export default class Model {
             'multiple_search':false,
             'show_histogram' : false,
             'align_tip' : false,
+            'use_meta_for_leaf' : true,
+            'use_meta_for_node' : false,
             'has_histogram_data' : false,
             'style': {
                 'font_size_internal' : 14,
@@ -142,17 +144,6 @@ export default class Model {
 
     }
 
-    add_color_mapping(leaf_name, color){
-        this.settings.color_mapping[leaf_name] = color
-    }
-
-    get_color_mapping(leaf_name){
-        if (leaf_name in this.settings.color_mapping){
-            return this.settings.color_mapping[leaf_name]
-        }
-        return null
-
-    }
 
     get_name(){
         return this.settings.name
@@ -242,7 +233,7 @@ export default class Model {
         //has_branch_lenght
         if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
         else {
-            this.settings.labels.add('Length')
+            this.settings.labels_node.add('Length')
             this.settings.colorlabels.add('Length')
             this.settings.style.color_extent_max['Length'] = 0;
             this.settings.style.color_extent_min['Length'] = 1000000000;
@@ -280,7 +271,7 @@ export default class Model {
 
             if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
                 n.extended_informations['Data'] = n.name;
-                this.settings.labels.add('Data')
+                this.settings.labels_node.add('Data')
 
                 if (!isNaN(n.name)){
 
@@ -305,7 +296,7 @@ export default class Model {
 
                 Object.entries(n.data_nhx).forEach(([key, value]) => {
 
-                    this.settings.labels.add(key)
+                    this.settings.labels_node.add(key)
 
                     switch(key){
                         case 'Ev':
@@ -735,6 +726,54 @@ export default class Model {
         this.traverse(this.data, function(n,c){n.leaves = this.get_leaves(n)}, this.set_parent)
 
 
+    }
+
+    add_meta_leaves(meta){
+
+        var leaves = this.get_leaves(this.data)
+
+        Object.entries(meta[Object.keys(meta)[0]]).forEach(item => {
+            if (item[0] != 'id'){
+                this.settings.labels_leaf.add(item[0])
+            }
+        })
+
+
+        leaves.forEach(d => {
+            if (d.name in meta){
+
+                Object.entries(meta[d.name]).forEach(item => {
+                    if (item[0] != 'id'){
+                        d.extended_informations[item[0]]= item[1]
+                    }
+                })
+
+            }
+
+        })
+
+
+    }
+
+    add_meta_nodes(meta){
+
+        Object.entries(meta[Object.keys(meta)[0]]).forEach(item => {
+            if (item[0] != 'id'){
+                this.settings.labels_node.add(item[0])
+            }
+        })
+
+        this.traverse(this.data, function(n,c){
+            if (n.extended_informations['Data'] in meta){
+
+                Object.entries(meta[n.extended_informations['Data']]).forEach(item => {
+                    if (item[0] != 'id'){
+                        n.extended_informations[item[0]]= item[1]
+                    }
+                })
+
+            }
+        })
     }
 
 };

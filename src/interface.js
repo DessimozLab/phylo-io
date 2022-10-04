@@ -1269,6 +1269,9 @@ export default class Interface {
         this.menu_search_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Search")
         this.menu_search_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
+        this.menu_metadata_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Additional Information")
+        this.menu_metadata_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+
         this.menu_coloring_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Coloring")
         this.menu_coloring_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
@@ -1503,63 +1506,71 @@ export default class Interface {
         // ADD TOGGLE MULTIPLE SEARCH
         this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
+        // ADDITIONAL DATA
 
-        // COLORING
-
-        // TMP todo redo
-
-
-        /*
-
-        var meta_file = this.menu_coloring_p.append('div')
+        var meta_div = this.menu_metadata_p.append('div')
             .style('display','block')
-            .style('margin','8px')
+            //.style('margin','8px')
 
-        meta_file.append('p').text("Color Scheme");
 
-        meta_file.append('input')
-                .attr('id','fileinputcolor' + this.container_object.uid )
-                .attr('type','file')
-                .attr('name','myfile')
-            .on('change', d => {
+        meta_div.append('p').text("Mapping file").style('font-weight','bold')
 
-                var reader = new FileReader();
-                var that = this
 
-                var file = document.getElementById('fileinputcolor' + this.container_object.uid).files[0];
+        meta_div.append('input')
+            .attr('id','filemeta' + this.container_object.uid )
+            .attr('type','file')
+            .style('margin-bottom','16px')
 
-                reader.addEventListener("load", parseFile, false);
+
+        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_leaf,"Apply on leaves",   this.viewer.toggle_use_meta_for_leaf.bind(this.viewer) )
+        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_node,"Apply on nodes",   this.viewer.toggle_use_meta_for_node.bind(this.viewer))
+
+
+        this.meta_div = this.menu_metadata_p.append('div')
+            .style('display', 'flex')
+            .style('margin-top', '0px')
+
+
+        this.button_meta = this.meta_div.append('button')
+            .attr('id','button_add_meta' + this.container_object.uid )
+            .on("click", (e) => {
+
+                var file = document.getElementById('filemeta' + this.container_object.uid).files[0];
+
                 if (file) {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', (event) => {
+
+                        var meta = []
+
+                        d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+
+                        if (this.viewer.model.settings.use_meta_for_leaf){
+                            this.viewer.model.add_meta_leaves(meta)
+                        }
+
+                        if (this.viewer.model.settings.use_meta_for_node){
+                            this.viewer.model.add_meta_nodes(meta)
+                        }
+
+                        this.viewer.interface = new Interface(this.viewer, this.viewer.container_object)
+
+                    });
                     reader.readAsText(file);
 
                 }
 
-                this.viewer.render(this.viewer.hierarchy)
 
 
-
-
-
-                function parseFile(){
-                   d3.tsvParse(reader.result, (d) => {
-
-                        if (d['color']){
-                            that.viewer.model.add_color_mapping(d['id'],d['color'])
-                        }
-
-                    });
-
-                   console.log(that.viewer.model.settings.color_mapping)
-
-
-                }
             })
-                .style('float','right')
+            .attr('class', ' square_button')
+            .style('border-radius', '2px')
+            .style('flex-grow', '1')
+            .style('background-color', '#CCC')
+            .text('Use this file')
 
 
-
-
-         */
+        // COLORING
 
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
@@ -1755,7 +1766,7 @@ export default class Interface {
             .attr('fill', '#69a3b2');
 
 
-        var l = Array.from(this.viewer.model.settings.labels)
+        var l = Array.from(this.viewer.model.settings.labels_node)
 
         var options = ["None"]
         options = options.concat(l)
@@ -1836,7 +1847,7 @@ export default class Interface {
             .style('flex-grow', '1')
             .append('i')
             .style('color', '#888')
-            .style('font-size', '15px')
+            .style('font-size', '12px')
             .attr('class', ' fas fa-minus ')
 
         buttons.append('button')
@@ -1849,7 +1860,7 @@ export default class Interface {
             .style('flex-grow', '1')
             .append('i')
             .style('color', '#888')
-            .style('font-size', '12px')
+            .style('font-size', '8px')
             .attr('class', ' fas fa-minus ')
 
         buttons.append('button')
@@ -1862,7 +1873,7 @@ export default class Interface {
             .style('flex-grow', '1')
             .append('i')
             .style('color', '#888')
-            .style('font-size', '12px')
+            .style('font-size', '8px')
             .attr('class', ' fas fa-plus ')
 
         buttons.append('button')
@@ -1875,7 +1886,7 @@ export default class Interface {
             .style('flex-grow', '1')
             .append('i')
             .style('color', '#888')
-            .style('font-size', '15px')
+            .style('font-size', '12px')
             .attr('class', ' fas fa-plus ')
 
         return buttons
@@ -1883,6 +1894,8 @@ export default class Interface {
 
 
     }
+
+
 
     add_slider_UI(parent, label, min, max, current, step, id, f){
 

@@ -1510,6 +1510,15 @@ export default class Viewer {
         this.model.settings.multiple_search = !this.model.settings.multiple_search
     }
 
+    toggle_use_meta_for_leaf(){
+        this.model.settings.use_meta_for_leaf = !this.model.settings.use_meta_for_leaf
+    }
+
+    toggle_use_meta_for_node(){
+        this.model.settings.use_meta_for_node = !this.model.settings.use_meta_for_node
+    }
+
+
     // stack
 
     toggle_show_stack_number(){
@@ -1945,12 +1954,6 @@ export default class Viewer {
                 //return d.children || d._children ? 900 : 400
             })
             .attr('fill', (d) => {
-                if (!d.children && !d._children){
-                    var colcol = this.model.get_color_mapping(d.data.name)
-                    if (colcol){
-                        return colcol}
-                }
-
                 return "#212529";
             })
             .attr("y", (d) => {
@@ -2072,11 +2075,6 @@ export default class Viewer {
             })
             .attr("y", 0)
             .attr('fill', (d) => {
-                if (!d.children && !d._children){
-                    var colcol = this.model.get_color_mapping(d.data.name)
-                    if (colcol){
-                        return colcol}
-                }
                 let c =  d.data.search_node ? "#FF0000"  : "#212529";
                 return c
             })
