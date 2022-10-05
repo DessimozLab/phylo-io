@@ -64,7 +64,8 @@ export default class Viewer {
         this.width = parseFloat(window.getComputedStyle(this.container).width)  -  this.settings.style.margin.left - 2*this.settings.style.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - 2*this.settings.style.margin.top - this.settings.style.margin.bottom;
 
-        this.colorScale;
+        this.colorScale = {'leaf' : null, 'node':null}
+        this.intercolor = {'leaf' : null, 'node': null}
         this.set_color_scale()
 
         // ZOOM
@@ -98,6 +99,7 @@ export default class Viewer {
 
         // MISC.
         this.settings.stack.colorMap = this.compute_color_map_stack()
+
 
 
     }
@@ -714,16 +716,16 @@ export default class Viewer {
 
         if (edge.data.search_path){ return '#FF0000'}
 
-        else if (this.model.settings.style.color_accessor !== null){
+        else if (this.model.settings.style.color_accessor['node'] !== null){
 
-            var v = edge.data.extended_informations[this.model.settings.style.color_accessor];
+            var v = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
             if (typeof v == "undefined" ) {return "#555"}
-            else {return this.colorScale(v)}
+            else {return this.colorScale['node'](v)}
 
         }
 
         else if (edge.data.elementS) {
-            return this.colorScale(edge.data.elementS)
+            return this.colorScale['node'](edge.data.elementS)
         }
 
         else {
@@ -732,64 +734,75 @@ export default class Viewer {
 
     }
 
-    set_color_scale(){
+    set_color_scale(type){
+
+        var type = (typeof type !== 'undefined') ? type : 'node';
 
         var colorScaleDomain = false;
         var colorScaleRange;
-        this.intercolor;
         var number;
 
         if (typeof this.model != "undefined" && this.model) {
 
-            number = this.model.settings.style.number_domain
+
+            number = this.model.settings.style.number_domain[type]
 
 
-            if (this.model.settings.style.color_accessor != null ) {
 
-                var ms = this.model.settings.style
-                var ca = ms.color_accessor;
-                if (ms.color_extent_max[ca] == ms.color_extent_min[ca]){
-                    this.intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_max[ca]-1)
+            if (this.model.settings.style.color_accessor[type] != null ) {
+
+                var ms = this.model.settings.style;
+
+                var ca = ms.color_accessor[type];
+
+
+
+                if (ms.color_extent_max[type][ca] == ms.color_extent_min[type][ca]){
+                    this.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_max[type][ca]-1)
                 }else{
-                    this.intercolor = d3.interpolate( ms.color_extent_max[ca], ms.color_extent_min[ca])
+                    this.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_min[type][ca])
                 }
 
-                colorScaleRange = this.model.settings.style.color_domain;
+
+                colorScaleRange = this.model.settings.style.color_domain[type];
 
             }
 
             else {
-                this.intercolor = d3.interpolate(1,0)
-                colorScaleRange = this.model.settings.style.color_domain;
+                this.intercolor[type] = d3.interpolate(1,0)
+                colorScaleRange = this.model.settings.style.color_domain[type];
             }
+
 
 
         }
         else {
+
             number = '5';
             colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
-            this.intercolor = d3.interpolate(1, 0);
+            this.intercolor[type] = d3.interpolate(1, 0);
         }
-
 
 
         switch (number) {
             case '2':
-                colorScaleDomain = [this.intercolor(0), this.intercolor(1)]
+                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](1)]
                 break;
             case '3':
-                colorScaleDomain = [this.intercolor(0), this.intercolor(0.5) ,  this.intercolor(1)]
+                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.5) ,  this.intercolor[type](1)]
                 break;
             case '4':
-                colorScaleDomain = [this.intercolor(0), this.intercolor(0.33), this.intercolor(0.66) ,  this.intercolor(1)]
+                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.33), this.intercolor[type](0.66) ,  this.intercolor[type](1)]
                 break;
             case '5':
-                colorScaleDomain = [this.intercolor(0), this.intercolor(0.25) ,this.intercolor(0.5) ,this.intercolor(0.75) ,  this.intercolor(1)]
+                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.25) ,this.intercolor[type](0.5) ,this.intercolor[type](0.75) ,  this.intercolor[type](1)]
 
         }
 
 
-        this.colorScale = d3.scaleLinear()
+
+
+        this.colorScale[type] = d3.scaleLinear()
             .domain(colorScaleDomain)
             .range(colorScaleRange);
 
@@ -2075,6 +2088,28 @@ export default class Viewer {
             })
             .attr("y", 0)
             .attr('fill', (d) => {
+
+                if (!(d.children || d._children)){
+
+
+
+                    if (this.model.settings.style.color_accessor['leaf'] !== null){
+
+
+
+                        var v = d.data.extended_informations[this.model.settings.style.color_accessor['leaf']];
+
+
+
+                        if (typeof v !== "undefined" ) {
+                            return this.colorScale['leaf'](v)
+                        }
+
+
+                    }
+
+                }
+
                 let c =  d.data.search_node ? "#FF0000"  : "#212529";
                 return c
             })

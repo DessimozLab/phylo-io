@@ -102,8 +102,8 @@ export default class Interface {
         this.add_undo()
 
         // COLOR LEGEND
-        if (phylo.settings.compareMode || this.viewer.model.settings.style.color_accessor !== null){
-            this.add_color_legend()
+        if (phylo.settings.compareMode || this.viewer.model.settings.style.color_accessor['node'] !== null){
+            this.add_color_legend('node')
         }
 
         // Add Stack
@@ -745,7 +745,10 @@ export default class Interface {
 
 
     //TOPOLOGY COLORING
-    add_color_legend(){
+    add_color_legend(type){
+
+
+        var type = (typeof type !== 'undefined') ? type : 'node';
 
         let top_padding = 16;
         let left_padding = 16;
@@ -754,10 +757,6 @@ export default class Interface {
         let gutter = 8;
         let rect_height = height/100;
 
-        let x = d3.scaleLinear()
-            .domain([-1, this.viewer.colorScale.range().length - 1])
-            .rangeRound([this.viewer.height/2-height, this.viewer.height/2]);
-
         let gg = this.viewer.svg_d3.node().append('g')
             .attr("class", 'colorlegend')
 
@@ -765,20 +764,17 @@ export default class Interface {
         var values = []
 
         for (let i = 0; i < 100; i++) {
-            let n = this.viewer.intercolor((i/100).toFixed(2));
-            values.push(this.viewer.colorScale(n));
+            let n = this.viewer.intercolor[type]((i/100).toFixed(2));
+            values.push(this.viewer.colorScale[type](n));
         }
 
             gg.selectAll("rect")
-            //.data(this.viewer.colorScale.range())
             .data(values)
             .join("rect")
             .attr("x", left_padding)
-            //.attr("y", (d, i) => x(i - 1)-((2*width-rect_height)*i))
             .attr("y", (d, i) => (this.viewer.height/2-height) + i)
             .attr("width", width)
-            //.attr("height",(d, i) => x(i) - x(i - 1))
-            .attr("height", rect_height)
+                .attr("height", rect_height)
             .attr("fill", d => d);
 
         gg.append("text")
@@ -790,8 +786,8 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
-                if (ms.color_accessor){
-                    var n = ms.color_extent_max[ms.color_accessor];
+                if (ms.color_accessor[type]){
+                    var n = ms.color_extent_max[type][ms.color_accessor[type]];
                     return Number.isInteger(n) ? n : parseFloat(n).toFixed(3);
 
                 }
@@ -807,14 +803,14 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
-                if (ms.color_accessor){
+                if (ms.color_accessor[type]){
 
                     var n;
 
-                    if (ms.color_extent_max[ms.color_accessor] == ms.color_extent_min[ms.color_accessor]){
-                        n = ms.color_extent_min[ms.color_accessor]-1;
+                    if (ms.color_extent_max[type][ms.color_accessor[type]] == ms.color_extent_min[type][ms.color_accessor[type]]){
+                        n = ms.color_extent_min[type][ms.color_accessor[type]]-1;
                     }else{
-                        n = ms.color_extent_min[ms.color_accessor];
+                        n = ms.color_extent_min[type][ms.color_accessor[type]];
                     }
 
 
@@ -835,7 +831,7 @@ export default class Interface {
             .attr("dy", ".2em")
             .text(() => {
                 var ms = this.viewer.model.settings.style;
-                return ms.color_accessor ? ms.color_accessor : "Topology"
+                return ms.color_accessor[type] ? ms.color_accessor[type] : "Topology"
 
 
             })
@@ -1571,14 +1567,86 @@ export default class Interface {
 
 
         // COLORING
+        var that = this;
+
+
+        var color_leaves_div = this.menu_coloring_p.append('div')
+            .style('display','block')
+
+        color_leaves_div.append('p').text("Leaves").style('font-weight','bold')
+
+        color_leaves_div.append('label').text("Data");
+
+        var selectcoloring_leaf = color_leaves_div.append('select')
+            .attr('id','selectcoloring_leaf' + this.container_object.uid )
+            .attr('class','select')
+            .style('float','right')
+            .on('change', function(){
+
+                that.viewer.model.settings.style.color_accessor['leaf'] =  this.value === 'Name' ? null : this.value;
+                that.viewer.set_color_scale('leaf');
+                that.viewer.render(that.viewer.hierarchy)
+
+                that.remove_color_legend()
+                if(that.viewer.model.settings.style.color_accessor['leaf']){
+                    that.add_color_legend('leaf')
+                }
+
+
+            })
+
+        var color_label_leaf = Array.from(this.viewer.model.settings.colorlabels['leaf'])
+
+
+
+
+        var options = ["Name"]
+        options = options.concat(color_label_leaf)
+
+        selectcoloring_leaf.selectAll('option').data(options).enter().append('option').attr('value', function (d) {
+            return d; }).text(function (d) { return d; });
+
+        var domain_leaf = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','12px')
+
+        domain_leaf.append('label').text("# domain");
+
+        domain_leaf.append('input')
+            .attr('id','inputcoloring_leaf' + this.container_object.uid )
+            .attr('type','number')
+            .attr('name','quantity')
+            .attr('min','2')
+            .attr('value', this.viewer.model.settings.style.number_domain['leaf'])
+            .attr('max','5')
+            .style('float','right')
+            .on('change', (d) => {
+                this.viewer.model.settings.style.number_domain['leaf'] =  document.getElementById('inputcoloring_leaf' + this.container_object.uid ).value;
+                this.create_color_picker('leaf')
+                this.viewer.set_color_scale();
+                this.viewer.render(this.viewer.hierarchy)
+
+
+            })
+
+
+        this.color_leaf = this.menu_coloring_p.append('div')
+            .style('display','block')
+            .style('margin','8px')
+
+        this.color_leaf.append('label').text("Color");
+
+        this.colorspan_leaf = this.color_leaf.append("span").attr('id','leaf_colorspan_' + this.container_object.uid );
+
+        this.create_color_picker('leaf')
 
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
             .style('margin','8px')
 
-        drop.append('label').text("Data");
+        drop.append('p').text("Nodes").style('font-weight','bold')
 
-        var that = this;
+        drop.append('label').text("Data");
 
         var selectcoloring = drop.append('select')
             .attr('id','selectcoloring' + this.container_object.uid )
@@ -1586,18 +1654,18 @@ export default class Interface {
             .style('float','right')
             .on('change', function(){
 
-                that.viewer.model.settings.style.color_accessor =  this.value === 'Topology' ? null : this.value;
-                that.viewer.set_color_scale();
+                that.viewer.model.settings.style.color_accessor['node'] =  this.value === 'Topology' ? null : this.value;
+                that.viewer.set_color_scale('node');
                 that.viewer.render(that.viewer.hierarchy)
 
                 that.remove_color_legend()
-                if(that.viewer.model.settings.style.color_accessor){
-                    that.add_color_legend()
+                if(that.viewer.model.settings.style.color_accessor['node']){
+                    that.add_color_legend('node')
                 }
 
         })
 
-        var color_label = Array.from(this.viewer.model.settings.colorlabels)
+        var color_label = Array.from(this.viewer.model.settings.colorlabels['node'])
 
         var options = ["Topology"]
         options = options.concat(color_label)
@@ -1615,17 +1683,17 @@ export default class Interface {
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','2')
-                .attr('value', this.viewer.model.settings.style.number_domain)
+                .attr('value', this.viewer.model.settings.style.number_domain['node'])
                 .attr('max','5')
                 .style('float','right')
                 .on('change', (d) => {
-                    this.viewer.model.settings.style.number_domain =  document.getElementById('inputcoloring' + this.container_object.uid ).value;
-                    this.create_color_picker()
+                    this.viewer.model.settings.style.number_domain['node'] =  document.getElementById('inputcoloring' + this.container_object.uid ).value;
+                    this.create_color_picker('node')
                     this.viewer.set_color_scale();
                     this.viewer.render(this.viewer.hierarchy)
 
                     this.remove_color_legend()
-                    this.add_color_legend()
+                    this.add_color_legend('node')
 
                 })
 
@@ -1636,19 +1704,21 @@ export default class Interface {
 
         this.color.append('label').text("Color");
 
-        this.colorspan = this.color.append("span");
+        this.colorspan = this.color.append("span").attr('id','node_colorspan_' + this.container_object.uid );;
 
-        this.create_color_picker()
+        this.create_color_picker('node')
 
         }
 
-    create_color_picker(){
+    create_color_picker(type){
+
+        var colspan = d3.select("#" + type + '_colorspan_' + this.container_object.uid)
+
+        colspan.html("")
 
 
-        this.colorspan.html("")
-
-        var number = this.viewer.model.settings.style.number_domain;
-        var default_color = this.viewer.model.settings.style.color_domain_default;
+        var number = this.viewer.model.settings.style.number_domain[type];
+        var default_color = this.viewer.model.settings.style.color_domain_default[type];
         var w = Math.round(135/number);
         var color = []
 
@@ -1670,16 +1740,19 @@ export default class Interface {
 
 
          for (let i = 0; i < number; i++) {
-             var idd = 'color_picker_' + this.viewer.container_object.uid + '_' + i;
-             this.colorspan.append("span").style('display',' inline-block').style('float','right')
-                 .html("  <input class='colpicker' type=\"color\"  id=\""+idd+"\"  style='width:" + w +"px;'name=\"favcolor\" value=\"" + color[i] + "\">")
+             var idd = type + '_color_picker_' + this.viewer.container_object.uid + '_' + i;
+             colspan.append("span").style('display',' inline-block').style('float','right')
+                 .html("<input class='colpicker_" + type + "' type=\"color\"  id=\""+idd+"\"  style='width:" + w +"px;'name=\"favcolor\" value=\"" + color[i] + "\">")
 
              d3.select("#" + idd).on('change', () => {
-                this.update_color_pickers()
-                 this.viewer.set_color_scale();
+
+
+                 this.update_color_pickers(type)
+
+                 this.viewer.set_color_scale(type);
                  this.viewer.render(this.viewer.hierarchy)
                  this.remove_color_legend()
-                 this.add_color_legend()
+                 this.add_color_legend(type)
              })
 
          }
@@ -1687,18 +1760,24 @@ export default class Interface {
 
 
 
-         this.viewer.model.settings.style.color_domain = color;
+         this.viewer.model.settings.style.color_domain[type] = color;
 
     }
 
-    update_color_pickers(){
+    update_color_pickers(type){
+
+        var colspan = d3.select("#" + type + '_colorspan_' + this.container_object.uid)
+
 
         var new_col = []
-        this.colorspan.selectAll(".colpicker").each(function(d){
+        colspan.selectAll(".colpicker_" + type).each(function(d){
             new_col.push(this.value)
         })
 
-        this.viewer.model.settings.style.color_domain = new_col
+        this.viewer.model.settings.style.color_domain[type] = new_col
+
+
+
     }
 
     add_swicth_UI(parent, checked, label, f){
@@ -1766,7 +1845,7 @@ export default class Interface {
             .attr('fill', '#69a3b2');
 
 
-        var l = Array.from(this.viewer.model.settings.labels_node)
+        var l = Array.from(this.viewer.model.settings.labels['node'])
 
         var options = ["None"]
         options = options.concat(l)
