@@ -743,7 +743,6 @@ export default class Interface {
         return (this.viewer.scale_branch_length.invert(this.scale_pixel_length)/zoom_scale).toFixed(4);
     }
 
-
     //TOPOLOGY COLORING
     add_color_legend(type){
 
@@ -1574,12 +1573,9 @@ export default class Interface {
 
         this.menu_coloring_p.append('p').text("Leaves").style('font-weight','bold')
 
-
         var color_leaves_div = this.menu_coloring_p.append('div')
             .style('display','block')
             .style('margin-left','8px')
-
-
 
         var options = Array.from(this.viewer.model.settings.colorlabels['leaf'])
 
@@ -1601,8 +1597,14 @@ export default class Interface {
 
 
 
-            selectcoloring_leaf.selectAll('option').data(options).enter().append('option').attr('value', function (d) {
-                return d; }).text(function (d) { return d; });
+            selectcoloring_leaf.selectAll('option').data(options).enter()
+                .append('option')
+                .attr('value', function (d) {
+                    return d; })
+                .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['leaf'] })
+                .text(function (d) { return d; });
+
+
 
 
             this.color_leaf_div = this.menu_coloring_p.append('div')
@@ -1635,7 +1637,9 @@ export default class Interface {
         var options = Array.from(this.viewer.model.settings.colorlabels['node'])
         options.push("None")
 
-        selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+        selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; })
+            .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['node'] })
+            .text(function (d) { return d; });
 
 
         this.color_node_div = this.menu_coloring_p.append('div')
@@ -1644,8 +1648,6 @@ export default class Interface {
 
 
         }
-
-
 
     on_change_coloring_scheme(type, val){
 
@@ -1664,7 +1666,6 @@ export default class Interface {
         this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
 
     }
-
 
     create_color_scheme_picker(type){
 
@@ -1998,8 +1999,6 @@ export default class Interface {
 
 
     }
-
-
 
     add_slider_UI(parent, label, min, max, current, step, id, f){
 
