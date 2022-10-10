@@ -716,16 +716,18 @@ export default class Viewer {
 
         if (edge.data.search_path){ return '#FF0000'}
 
+        else if (this.model.settings.style.color_accessor['node'] == "Topology" && edge.data.elementS) {
+
+            console.log(this.colorScale['node'](edge.data.elementS))
+            return this.colorScale['node'](edge.data.elementS)
+        }
+
         else if (this.model.settings.style.color_accessor['node'] !== null){
 
             var v = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
             if (typeof v == "undefined" ) {return "#555"}
             else {return this.colorScale['node'](v)}
 
-        }
-
-        else if (edge.data.elementS) {
-            return this.colorScale['node'](edge.data.elementS)
         }
 
         else {
@@ -742,7 +744,20 @@ export default class Viewer {
         var colorScaleRange;
         var number;
 
+
         if (typeof this.model != "undefined" && this.model) {
+
+
+            // If categorical do special
+            var acc = this.model.settings.style.color_accessor[type]
+            var type_acc = this.model.settings.extended_data_type[acc]
+
+            if (type_acc == 'cat'){
+                var dom = this.model.settings.domain_extended_data[acc]
+                this.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
+                return
+            }
+
 
 
             number = this.model.settings.style.number_domain[type]
@@ -798,8 +813,6 @@ export default class Viewer {
                 colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.25) ,this.intercolor[type](0.5) ,this.intercolor[type](0.75) ,  this.intercolor[type](1)]
 
         }
-
-
 
 
         this.colorScale[type] = d3.scaleLinear()
@@ -2091,17 +2104,12 @@ export default class Viewer {
 
                 if (!(d.children || d._children)){
 
-
-
                     if (this.model.settings.style.color_accessor['leaf'] !== null){
-
-
 
                         var v = d.data.extended_informations[this.model.settings.style.color_accessor['leaf']];
 
-
-
                         if (typeof v !== "undefined" ) {
+
                             return this.colorScale['leaf'](v)
                         }
 

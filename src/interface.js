@@ -103,7 +103,7 @@ export default class Interface {
 
         // COLOR LEGEND
         if (phylo.settings.compareMode || this.viewer.model.settings.style.color_accessor['node'] !== null){
-            this.add_color_legend('node')
+            //this.add_color_legend('node')
         }
 
         // Add Stack
@@ -1269,7 +1269,9 @@ export default class Interface {
         this.menu_metadata_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.menu_coloring_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Coloring")
-        this.menu_coloring_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        this.menu_coloring_panel =  this.menu_settings.append('div').attr('class', 'panel')
+
+        this.menu_coloring_p = this.menu_coloring_panel.append("div").style("padding", "14px")
 
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
         this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Bar Graph")
@@ -1518,8 +1520,8 @@ export default class Interface {
             .style('margin-bottom','16px')
 
 
-        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_leaf,"Apply on leaves",   this.viewer.toggle_use_meta_for_leaf.bind(this.viewer) )
-        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_node,"Apply on nodes",   this.viewer.toggle_use_meta_for_node.bind(this.viewer))
+        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_leaf,"Apply to leaves",   this.viewer.toggle_use_meta_for_leaf.bind(this.viewer) )
+        this.add_swicth_UI(this.menu_metadata_p, this.viewer.model.settings.use_meta_for_node,"Apply to nodes",   this.viewer.toggle_use_meta_for_node.bind(this.viewer))
 
 
         this.meta_div = this.menu_metadata_p.append('div')
@@ -1570,81 +1572,53 @@ export default class Interface {
         var that = this;
 
 
+        this.menu_coloring_p.append('p').text("Leaves").style('font-weight','bold')
+
+
         var color_leaves_div = this.menu_coloring_p.append('div')
             .style('display','block')
-
-        color_leaves_div.append('p').text("Leaves").style('font-weight','bold')
-
-        color_leaves_div.append('label').text("Data");
-
-        var selectcoloring_leaf = color_leaves_div.append('select')
-            .attr('id','selectcoloring_leaf' + this.container_object.uid )
-            .attr('class','select')
-            .style('float','right')
-            .on('change', function(){
-
-                that.viewer.model.settings.style.color_accessor['leaf'] =  this.value === 'Name' ? null : this.value;
-                that.viewer.set_color_scale('leaf');
-                that.viewer.render(that.viewer.hierarchy)
-
-                that.remove_color_legend()
-                if(that.viewer.model.settings.style.color_accessor['leaf']){
-                    that.add_color_legend('leaf')
-                }
-
-
-            })
-
-        var color_label_leaf = Array.from(this.viewer.model.settings.colorlabels['leaf'])
+            .style('margin-left','8px')
 
 
 
+        var options = Array.from(this.viewer.model.settings.colorlabels['leaf'])
 
-        var options = ["Name"]
-        options = options.concat(color_label_leaf)
+        if (options.length > 0){
 
-        selectcoloring_leaf.selectAll('option').data(options).enter().append('option').attr('value', function (d) {
-            return d; }).text(function (d) { return d; });
+            options.unshift('None')
 
-        var domain_leaf = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin','12px')
+            color_leaves_div.append('label').text("Data")
 
-        domain_leaf.append('label').text("# domain");
+            var selectcoloring_leaf = color_leaves_div.append('select')
+                .attr('id','selectcoloring_leaf' + this.container_object.uid )
+                .attr('class','select')
+                .style('float','right')
+                .on('change', function(){
 
-        domain_leaf.append('input')
-            .attr('id','inputcoloring_leaf' + this.container_object.uid )
-            .attr('type','number')
-            .attr('name','quantity')
-            .attr('min','2')
-            .attr('value', this.viewer.model.settings.style.number_domain['leaf'])
-            .attr('max','5')
-            .style('float','right')
-            .on('change', (d) => {
-                this.viewer.model.settings.style.number_domain['leaf'] =  document.getElementById('inputcoloring_leaf' + this.container_object.uid ).value;
-                this.create_color_picker('leaf')
-                this.viewer.set_color_scale();
-                this.viewer.render(this.viewer.hierarchy)
+                    that.on_change_coloring_scheme('leaf', this.value)
+
+                })
 
 
-            })
+
+            selectcoloring_leaf.selectAll('option').data(options).enter().append('option').attr('value', function (d) {
+                return d; }).text(function (d) { return d; });
 
 
-        this.color_leaf = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin','8px')
+            this.color_leaf_div = this.menu_coloring_p.append('div')
 
-        this.color_leaf.append('label').text("Color");
+        }
+        else {
+            color_leaves_div.append('label').text("No Data available");
+        }
 
-        this.colorspan_leaf = this.color_leaf.append("span").attr('id','leaf_colorspan_' + this.container_object.uid );
 
-        this.create_color_picker('leaf')
+        this.menu_coloring_p.append('p').text("Nodes").style('font-weight','bold').style('margin-top','8px')
 
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
-            .style('margin','8px')
+            .style('margin-left','8px')
 
-        drop.append('p').text("Nodes").style('font-weight','bold')
 
         drop.append('label').text("Data");
 
@@ -1654,61 +1628,112 @@ export default class Interface {
             .style('float','right')
             .on('change', function(){
 
-                that.viewer.model.settings.style.color_accessor['node'] =  this.value === 'Topology' ? null : this.value;
-                that.viewer.set_color_scale('node');
-                that.viewer.render(that.viewer.hierarchy)
-
-                that.remove_color_legend()
-                if(that.viewer.model.settings.style.color_accessor['node']){
-                    that.add_color_legend('node')
-                }
+                that.on_change_coloring_scheme('node', this.value)
 
         })
 
-        var color_label = Array.from(this.viewer.model.settings.colorlabels['node'])
-
-        var options = ["Topology"]
-        options = options.concat(color_label)
+        var options = Array.from(this.viewer.model.settings.colorlabels['node'])
+        options.push("None")
 
         selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
 
-        var domain = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin','12px')
 
-        domain.append('label').text("# domain");
+        this.color_node_div = this.menu_coloring_p.append('div')
 
-        domain.append('input')
-                .attr('id','inputcoloring' + this.container_object.uid )
+        this.create_color_scheme_picker('node')
+
+
+        }
+
+
+
+    on_change_coloring_scheme(type, val){
+
+        this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
+
+        this.create_color_scheme_picker(type)
+
+        this.viewer.set_color_scale(type);
+        this.viewer.render(this.viewer.hierarchy)
+
+        this.remove_color_legend()
+        if(this.viewer.model.settings.style.color_accessor[type]) {
+            //that.add_color_legend(type)
+        }
+
+        this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
+
+    }
+
+
+    create_color_scheme_picker(type){
+
+        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var type_acc = this.viewer.model.settings.extended_data_type[acc]
+
+
+        if (type == 'leaf'){
+            var container_ = this.color_leaf_div
+            container_.html('')
+        }
+
+        else if (type == 'node'){
+            var container_ = this.color_node_div
+            container_.html('')
+        }
+
+        if (type_acc == 'num'){
+
+            var domain_leaf = container_.append('div')
+                .style('display','block')
+                .style('margin','12px')
+
+            domain_leaf.append('label').text("# domain");
+
+            domain_leaf.append('input')
+                .attr('id','inputcoloring_' + type + this.container_object.uid )
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','2')
-                .attr('value', this.viewer.model.settings.style.number_domain['node'])
+                .attr('value', this.viewer.model.settings.style.number_domain['leaf'])
                 .attr('max','5')
                 .style('float','right')
                 .on('change', (d) => {
-                    this.viewer.model.settings.style.number_domain['node'] =  document.getElementById('inputcoloring' + this.container_object.uid ).value;
-                    this.create_color_picker('node')
+                    this.viewer.model.settings.style.number_domain[type] =  document.getElementById('inputcoloring_' + type + this.container_object.uid ).value;
+                    this.create_color_picker(type)
                     this.viewer.set_color_scale();
                     this.viewer.render(this.viewer.hierarchy)
 
-                    this.remove_color_legend()
-                    this.add_color_legend('node')
 
                 })
 
 
-        this.color = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin','8px')
+            var colcol = container_.append('div')
+                .style('display','block')
+                .style('margin','8px')
 
-        this.color.append('label').text("Color");
+            colcol.append('label').text("Color");
 
-        this.colorspan = this.color.append("span").attr('id','node_colorspan_' + this.container_object.uid );;
+            colcol.append("span").attr('id',type + '_colorspan_' + this.container_object.uid );
 
-        this.create_color_picker('node')
+            this.create_color_picker(type)
 
         }
+
+        else if (type_acc == 'cat'){
+            container_.append('label').text("Categorical");
+            this.viewer.set_color_scale();
+            this.viewer.render(this.viewer.hierarchy)
+        }
+
+        else{
+            container_.append('label').text("");
+        }
+
+
+
+
+}
 
     create_color_picker(type){
 
@@ -1751,8 +1776,8 @@ export default class Interface {
 
                  this.viewer.set_color_scale(type);
                  this.viewer.render(this.viewer.hierarchy)
-                 this.remove_color_legend()
-                 this.add_color_legend(type)
+                 //this.remove_color_legend()
+                 //this.add_color_legend(type)
              })
 
          }

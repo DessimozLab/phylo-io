@@ -11,8 +11,10 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'domain_extended_data' : {},
+            'extended_data_type' : {'Topology': 'num'},
             'labels' : {'leaf' : new Set(), 'node':new Set()},
-            'colorlabels' :{'leaf' : new Set(), 'node':new Set()},
+            'colorlabels' :{'leaf' : new Set(), 'node':new Set(["Topology"])},
             'display_leaves' : true,
             'mirror': false,
             'name': null,
@@ -36,12 +38,12 @@ export default class Model {
             'has_histogram_data' : false,
             'style': {
                 'font_size_internal' : 14,
-                'color_accessor' : {'leaf' : null, 'node':null},
+                'color_accessor' : {'leaf' : null, 'node': "Topology"},
                 'color_extent_min': {'leaf' : {}, 'node': {}},
                 'color_extent_max':{'leaf' : {}, 'node': {}},
                 'number_domain':{'leaf' : '5', 'node': '5'},
                 'color_domain':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
-                'color_domain_default':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#00FFFF'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
+                'color_domain_default':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
         },
             'tree': {
                 'node_vertical_size' : 30,
@@ -234,10 +236,11 @@ export default class Model {
         else {
             this.settings.labels['node'].add('Length')
             this.settings.colorlabels['node'].add('Length')
+            this.settings.extended_data_type['Length'] = 'num'
+
             this.settings.style.color_extent_max['node']['Length'] = 0;
             this.settings.style.color_extent_min['node']['Length'] = 1000000000;
         }
-
 
 
         // if branch size is not used put 1
@@ -271,6 +274,7 @@ export default class Model {
             if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
                 n.extended_informations['Data'] = n.name;
                 this.settings.labels['node'].add('Data')
+                this.settings.extended_data_type['Length'] = 'num'
 
                 if (!isNaN(n.name)){
 
@@ -289,6 +293,8 @@ export default class Model {
                     }
 
                 }
+
+                else {this.settings.extended_data_type['Length'] = 'cat'}
             }
 
             if(n.data_nhx && Object.keys(n.data_nhx).length > 0){
@@ -305,22 +311,26 @@ export default class Model {
                             }
                             n.extended_informations.events = value
                             n.extended_informations[key] = value
+                            this.settings.extended_data_type['Ev'] = 'cat'
                             break;
 
                         case 'D':
                             if (value == 'Y') {
                                 n.duplication = true
                                 this.settings.has_duplications = true;
+
                             }
-                            else if (value == 'Y'){
+                            else if (value == 'N'){
                                 n.duplication = false
                                 this.settings.has_duplications = true;
                             }
                             n.extended_informations.events = value
                             n.extended_informations[key] = value
+                            this.settings.extended_data_type['D'] = 'cat'
                             break;
                         default:
                             n.extended_informations[key] = value
+                            this.settings.extended_data_type[key] = 'cat'
                             break;
                     }
                 });
@@ -729,19 +739,58 @@ export default class Model {
 
     add_meta_leaves(meta){
 
-        var leaves = this.get_leaves(this.data)
+        // Verify if data is categorical or numerical
+
+        var key_to_verify = []
 
         Object.entries(meta[Object.keys(meta)[0]]).forEach(item => {
-            if (item[0] != 'id'){
-                this.settings.labels['leaf'].add(item[0])
-                this.settings.colorlabels['leaf'].add(item[0])
-                this.settings.style.color_extent_max['leaf'][item[0]] = 0
-                this.settings.style.color_extent_min['leaf'][item[0]] = 100000
+            if (item[0] != 'id' || item[0] != 'Length' ) {
+                this.settings.extended_data_type[item[0]] = 'num'
+                key_to_verify.push(item[0])
             }
         })
 
 
-        leaves.forEach(d => {
+        Object.entries(meta).forEach(item => {
+
+
+            var to_remove = []
+
+
+            key_to_verify.forEach(tag => {
+                if (isNaN(item[1][tag])) {
+                    this.settings.extended_data_type[tag] = 'cat'
+                    this.settings.domain_extended_data[tag] = []
+                    to_remove.push(tag)
+                }
+            });
+
+            key_to_verify = key_to_verify.filter(item => !to_remove.includes(item))
+
+        })
+
+
+        var leaves = this.get_leaves(this.data)
+
+
+        Object.entries(meta[Object.keys(meta)[0]]).forEach(item => {
+
+            if (item[0] != 'id'){
+                this.settings.labels['leaf'].add(item[0])
+                this.settings.colorlabels['leaf'].add(item[0])
+
+                if (this.settings.extended_data_type[item[0]] == 'num'){
+                    this.settings.style.color_extent_max['leaf'][item[0]] = 0
+                    this.settings.style.color_extent_min['leaf'][item[0]] = 100000
+                }
+
+
+            }
+
+        })
+
+
+        leaves.forEach(d => { // todo add tag for num or cat
             if (d.name in meta){
 
                 Object.entries(meta[d.name]).forEach(item => {
@@ -749,13 +798,22 @@ export default class Model {
 
                         d.extended_informations[item[0]]= item[1]
 
-                        if (this.settings.style.color_extent_max['leaf'][item[0]] < item[1]){
-                            this.settings.style.color_extent_max['leaf'][item[0]] = item[1]
+                        if (this.settings.extended_data_type[item[0]] == 'num') {
+
+                            if (this.settings.style.color_extent_max['leaf'][item[0]] < item[1]) {
+                                this.settings.style.color_extent_max['leaf'][item[0]] = item[1]
+                            }
+
+                            if (this.settings.style.color_extent_min['leaf'][item[0]] > item[1]) {
+                                this.settings.style.color_extent_min['leaf'][item[0]] = item[1]
+                            }
+
                         }
 
-                        if (this.settings.style.color_extent_min['leaf'][item[0]] > item[1]){
-                            this.settings.style.color_extent_min['leaf'][item[0]] = item[1]
+                        if (this.settings.extended_data_type[item[0]] == 'cat'){
+                            this.settings.domain_extended_data[item[0]].push(item[1])
                         }
+
                     }
 
                 })
