@@ -718,7 +718,7 @@ export default class Viewer {
 
         else if (this.model.settings.style.color_accessor['node'] == "Topology" && edge.data.elementS) {
 
-            console.log(this.colorScale['node'](edge.data.elementS))
+
             return this.colorScale['node'](edge.data.elementS)
         }
 
@@ -752,7 +752,9 @@ export default class Viewer {
             var acc = this.model.settings.style.color_accessor[type]
             var type_acc = this.model.settings.extended_data_type[acc]
 
+
             if (type_acc == 'cat'){
+
                 var dom = this.model.settings.domain_extended_data[acc]
                 this.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
                 return

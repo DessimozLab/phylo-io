@@ -41,7 +41,7 @@ export default class Model {
                 'color_accessor' : {'leaf' : null, 'node': "Topology"},
                 'color_extent_min': {'leaf' : {}, 'node': {}},
                 'color_extent_max':{'leaf' : {}, 'node': {}},
-                'number_domain':{'leaf' : '5', 'node': '5'},
+                'number_domain':{'leaf' : '3', 'node': '5'},
                 'color_domain':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
                 'color_domain_default':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
         },
@@ -73,13 +73,22 @@ export default class Model {
 
             for(var key in settings) {
 
-                if (key == 'labels_array'){ // TODO
+                if (key == 'labels_array_leaf'){
                     var value = settings[key];
-                    this.settings['labels'] = new Set(value);
+                    this.settings['labels']['leaf'] = new Set(value);
                 }
-                if (key == 'colorlabels_array'){  // TODO
+                if (key == 'labels_array_node'){
                     var value = settings[key];
-                    this.settings['colorlabels'] = new Set(value);
+                    this.settings['labels']['node'] = new Set(value);
+                }
+                if (key == 'colorlabels_array_leaf'){
+                    var value = settings[key];
+                    this.settings['colorlabels']['leaf'] = new Set(value);
+                }
+
+                if (key == 'colorlabels_array_node'){
+                    var value = settings[key];
+                    this.settings['colorlabels']['node'] = new Set(value);
                 }
 
                 else{

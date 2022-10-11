@@ -39,7 +39,8 @@ export default class Interface {
         this.container_d3.selectAll(".corner_placeholder").remove()
         this.container_d3.selectAll(".modal_data").remove()
         this.remove_scale()
-        this.remove_color_legend()
+        this.remove_color_legend('node')
+        this.remove_color_legend('leaf')
         this.container_d3.selectAll(".menu_settings").remove()
         this.container_d3.selectAll(".empty_message").remove()
         this.container_d3.select('#histogram-legend').remove();
@@ -102,8 +103,12 @@ export default class Interface {
         this.add_undo()
 
         // COLOR LEGEND
-        if (phylo.settings.compareMode || this.viewer.model.settings.style.color_accessor['node'] !== null){
-            //this.add_color_legend('node')
+        if (phylo.settings.compareMode || (this.viewer.model.settings.style.color_accessor['node'] !== null && this.viewer.model.settings.style.color_accessor['node'] !== 'Topology'  )){
+            this.add_color_legend('node')
+        }
+
+        if (this.viewer.model.settings.style.color_accessor['leaf'] !== null){
+            this.add_color_legend('leaf')
         }
 
         // Add Stack
@@ -743,8 +748,12 @@ export default class Interface {
         return (this.viewer.scale_branch_length.invert(this.scale_pixel_length)/zoom_scale).toFixed(4);
     }
 
-    //TOPOLOGY COLORING
+    //COLORING
     add_color_legend(type){
+
+        this.container_d3.select(".colorlegend_" + type).remove()
+
+        if (this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]] == 'cat' ){return}
 
 
         var type = (typeof type !== 'undefined') ? type : 'node';
@@ -756,8 +765,10 @@ export default class Interface {
         let gutter = 8;
         let rect_height = height/100;
 
+        var offset = type == 'node' ? (this.viewer.height/2) + 30 : this.viewer.height/2-height - 10
+
         let gg = this.viewer.svg_d3.node().append('g')
-            .attr("class", 'colorlegend')
+            .attr("class", 'colorlegend_' + type)
 
 
         var values = []
@@ -771,14 +782,14 @@ export default class Interface {
             .data(values)
             .join("rect")
             .attr("x", left_padding)
-            .attr("y", (d, i) => (this.viewer.height/2-height) + i)
+            .attr("y", (d, i) => offset + i)
             .attr("width", width)
                 .attr("height", rect_height)
             .attr("fill", d => d);
 
         gg.append("text")
             .attr("x", left_padding + width + gutter )
-            .attr("y", this.viewer.height/2-height + 10)
+            .attr("y", offset - 6 )
             .attr("fill", "#555")
             .attr('text-anchor', 'start')
             .attr("dy", ".2em")
@@ -795,7 +806,7 @@ export default class Interface {
 
         gg.append("text")
             .attr("x", left_padding + width + gutter )
-            .attr("y", this.viewer.height/2 - 6 )
+            .attr("y", offset + height + 10 )
             .attr("fill", "#555")
             .attr('text-anchor', 'start')
             .attr("dy", ".2em")
@@ -821,7 +832,7 @@ export default class Interface {
 
 
         var xx =  gutter
-        var yy = this.viewer.height/2 - height/2
+        var yy =  offset + height/2
 
         gg.append("text")
             .attr("fill", "#555")
@@ -836,7 +847,7 @@ export default class Interface {
             })
 
     }
-    remove_color_legend(){this.container_d3.select(".colorlegend").remove()}
+    remove_color_legend(type){this.container_d3.select(".colorlegend_" + type).remove()}
 
     // SEARCH
 
@@ -1611,7 +1622,9 @@ export default class Interface {
 
         }
         else {
-            color_leaves_div.append('label').text("No Data available");
+            color_leaves_div.style('float','right').append('label').text("No Data available");
+            this.menu_coloring_p.append('br')
+
         }
 
 
@@ -1658,9 +1671,9 @@ export default class Interface {
         this.viewer.set_color_scale(type);
         this.viewer.render(this.viewer.hierarchy)
 
-        this.remove_color_legend()
+        this.remove_color_legend(type)
         if(this.viewer.model.settings.style.color_accessor[type]) {
-            //that.add_color_legend(type)
+            this.add_color_legend(type)
         }
 
         this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
@@ -1696,13 +1709,13 @@ export default class Interface {
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','2')
-                .attr('value', this.viewer.model.settings.style.number_domain['leaf'])
+                .attr('value', this.viewer.model.settings.style.number_domain[type])
                 .attr('max','5')
                 .style('float','right')
                 .on('change', (d) => {
                     this.viewer.model.settings.style.number_domain[type] =  document.getElementById('inputcoloring_' + type + this.container_object.uid ).value;
                     this.create_color_picker(type)
-                    this.viewer.set_color_scale();
+                    this.viewer.set_color_scale(type);
                     this.viewer.render(this.viewer.hierarchy)
 
 
@@ -1722,8 +1735,9 @@ export default class Interface {
         }
 
         else if (type_acc == 'cat'){
-            container_.append('label').text("Categorical");
-            this.viewer.set_color_scale();
+            container_.append('label').text("Default color scheme").style('float', 'right');
+            container_.append('br')
+            this.viewer.set_color_scale(type);
             this.viewer.render(this.viewer.hierarchy)
         }
 
@@ -1777,8 +1791,8 @@ export default class Interface {
 
                  this.viewer.set_color_scale(type);
                  this.viewer.render(this.viewer.hierarchy)
-                 //this.remove_color_legend()
-                 //this.add_color_legend(type)
+                 this.remove_color_legend(type)
+                 this.add_color_legend(type)
              })
 
          }
