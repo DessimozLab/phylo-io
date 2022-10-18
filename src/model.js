@@ -39,8 +39,8 @@ export default class Model {
             'style': {
                 'font_size_internal' : 14,
                 'color_accessor' : {'leaf' : null, 'node': "Topology"},
-                'color_extent_min': {'leaf' : {}, 'node': {}},
-                'color_extent_max':{'leaf' : {}, 'node': {}},
+                'color_extent_min': {'leaf' : {}, 'node': {"Topology":0}},
+                'color_extent_max':{'leaf' : {}, 'node': {"Topology":1}},
                 'number_domain':{'leaf' : '3', 'node': '5'},
                 'color_domain':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
                 'color_domain_default':{'leaf' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'node': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},

@@ -105,7 +105,7 @@
             <li>
                 <a href="#" id="menu_compare_mode" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Switch between single & compare mode">
                     <i class="bi-layout-split" style="font-size: 24px;color: white  "></i>
-                    <p style="font-size: xx-small; color: white; margin-bottom:0px" >Compare mode</p>
+                    <p style="font-size: xx-small; color: white; line-height: normal;margin-bottom:0px" >Compare mode</p>
                 </a>
             </li>
             <li id="li_distance">
@@ -872,6 +872,7 @@
                     var message = ' <strong>OUPS!</strong>  It seems the data is corrupted or obselete.'
 
                     create_alert('error_remote_data', message)
+                    console.log(error)
 
 
                     csp[i].current_model = 0
@@ -902,11 +903,11 @@
 
 
         if (phylo.settings.sync_zoom){
-            document.getElementById('menu_lock').innerHTML = '<i class="bi-lock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small; color: white; margin-bottom:0px" >Unlock Zoom</p>'
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-lock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small; color: white;line-height: normal; margin-bottom:0px" >Unlock Zoom</p>'
         }
 
         else {
-            document.getElementById('menu_lock').innerHTML = '<i class="bi-unlock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small; color: white; margin-bottom:0px" >Lock Zoom</p>'
+            document.getElementById('menu_lock').innerHTML = '<i class="bi-unlock" style="font-size: 24px;color: white  "></i><p style="font-size: xx-small;line-height: normal; color: white; margin-bottom:0px" >Lock Zoom</p>'
         }
 
 

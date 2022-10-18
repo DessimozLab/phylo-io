@@ -109,6 +109,7 @@ export default class Interface {
         }
 
         if (this.viewer.model.settings.style.color_accessor['leaf'] !== null){
+            this.viewer.set_color_scale('leaf')
             this.add_color_legend('leaf')
         }
 
@@ -144,7 +145,7 @@ export default class Interface {
             .style("flex-direction",'column')
             .style("align-items",'end')
 
-        this.tr_buttons = div.append("div").attr("class","tr-button")
+        this.tr_buttons = div.append("div").attr("class","tr-button").style("display",'flex')
 
         this.tr_menus = div.append("div").attr("class","tr-menus")
 
@@ -1029,8 +1030,9 @@ export default class Interface {
 
         // add input
         this.search_input =  this.tr_buttons.append('input')
-            .attr('class', ' square_button search_input')
+            .attr('class', '  search_input')
             .style('display', 'none')
+            .style('height', '56px')
             .attr('id', "searchinp" + this.viewer.uid )
 
         var input_el = document.getElementById("searchinp" + this.viewer.uid );
