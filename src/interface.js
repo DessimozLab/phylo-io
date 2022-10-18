@@ -2706,7 +2706,7 @@ export default class Interface {
             .style('margin-bottom', '4px')
 
 
-        buttons.append('button')
+        var butty_putty1 = buttons.append('button')
             .attr('class', ' square_button')
             .style('border-radius', '0px')
             .style('padding', '2px')
@@ -2714,12 +2714,20 @@ export default class Interface {
             .on("click", (e) =>  f.call(this.container_object,-0.50, aux  ) )
             .style('margin', '2px')
             .style('flex-grow', '1')
-            .append('i')
+
+
+        butty_putty1.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
             .attr('class', ' fas fa-minus ')
 
-        buttons.append('button')
+        butty_putty1.append('p')
+            .text('-50%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+        var butty_putty2 = buttons.append('button')
             .attr('class', ' square_button')
             .style('border-radius', '0px')
             .style('padding', '2px')
@@ -2727,12 +2735,21 @@ export default class Interface {
             .on("click", (e) =>  f.call(this.container_object,-0.20, aux  ) )
             .style('margin', '2px')
             .style('flex-grow', '1')
-            .append('i')
+
+
+        butty_putty2.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
             .attr('class', ' fas fa-minus ')
 
-        buttons.append('button')
+        butty_putty2.append('p')
+            .text('-20%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+
+        var butty_putty3 = buttons.append('button')
             .attr('class', ' square_button')
             .style('border-radius', '0px')
             .style('padding', '2px')
@@ -2740,12 +2757,23 @@ export default class Interface {
             .on("click", (e) =>  f.call(this.container_object,0.20, aux  ) )
             .style('margin', '2px')
             .style('flex-grow', '1')
-            .append('i')
+
+
+
+        butty_putty3.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
             .attr('class', ' fas fa-plus ')
 
-        buttons.append('button')
+        butty_putty3.append('p')
+            .text('+20%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+
+
+        var butty_putty4 = buttons.append('button')
             .attr('class', ' square_button')
             .style('border-radius', '0px')
             .style('padding', '2px')
@@ -2753,10 +2781,19 @@ export default class Interface {
             .on("click", (e) =>  f.call(this.container_object,0.50, aux  ) )
             .style('margin', '2px')
             .style('flex-grow', '1')
-            .append('i')
+
+
+
+        butty_putty4.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
             .attr('class', ' fas fa-plus ')
+
+        butty_putty4.append('p')
+            .text('+50%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
 
         return buttons
 
