@@ -244,38 +244,20 @@ export default class Interface {
     }
 
     // DATA ICON
-    add_data_icon(){
 
-        this.container_d3.select("#exampleModal" + this.container_object.uid).remove()
-
-        var b = this.top_left.append('button')
-            .attr('class', '  dashed_button')
-            .attr('id', 'buttonmodal_' + this.container_object.div_id )
-            .attr('data-bs-toggle', 'modal')
-            .attr('data-bs-target', '#exampleModal' + this.container_object.uid)
-            .attr('data-bs-placement', 'right')
-            .attr('title', 'Add a new tree')
-            .append("div")
-            .attr("class","label")
-
-            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add tree")
-
-
-        let mod_html = `
-<div class="modal" id="exampleModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-
-            <div class="modal-body">
-
-
-                <div class="container-fluid">
-
-
-                    <h4><b>Step 1:</b> Add data from text or file</h4>
-                    <br>
-
-                    <div class="row" style=" margin-left: 24px">
+    get_modal_adder_corpus(){
+        return `
+        
+         <div class="container-fluid">
+                                
+                <div class="card">
+                
+                  <div class="card-body">
+                  
+                  <h5> <b>Step 1: Add data from text or file</b> </h5>
+                  
+                  
+                  <div class="row" style=" margin-left: 24px">
                         <div class="col" >
                             <textarea class="form-control" placeholder="Paste or type your tree here" id="exampleFormControlTextarea1s" rows="3"></textarea>
 
@@ -293,23 +275,27 @@ export default class Interface {
                         </div>
                     </div>
 
-                    <div class="row" style="margin-left: 24px">
+                   <div class="row" style="margin-left: 24px">
                         <div class="col" >
                             <h6 class="card-subtitle mb-2 text-muted" style="margin-top: 6px"><small>Example: <a href="#" class="t1">tree #1</a>, <a href="#" class="t2">tree #2</a>, <a href="#" class="tbig">big tree</a>, <a href="#" class="nhx_ex">Extended Newick</a>.</small></h6>
                         </div>
                     </div>
+                        
+                </div>
 
-                    <br>
-
-
-
-
-                    <br>
-                    <h4><b>Step 2:</b> Choose data format to add the tree</h4>
-
-
-
-                    <div class="text-center">
+         
+                </div>
+                
+                 <br>
+                 
+                 <div class="card">
+                
+                  <div class="card-body">
+                  
+                  <h5> <b>Step 2: Choose tree data format </b> </h5>
+                  
+                  
+                  <div class="text-center">
 
                         <select class="custom-select" id="add_tree_str_select" style="margin-left: 24px;">
                             <option selected value="newick">Newick</option>
@@ -320,39 +306,125 @@ export default class Interface {
                     </div>
 
 
-
+                    
                 </div>
+
+         
+                </div>
+                
                 <br>
+                
+                <div class="card">
+                
+                  <div class="card-body">
+                  
+                  <h5> <b>(Optionnal) Step 3 : Add a mapping file </b> </h5>
+                  
+                  <br>
+                  
+                  STEP3__
+                  
+       
+                </div>
 
-
-
-            </div>
-
-            <div class="modal-footer">
-                <p class="me-auto"><strong>Compatible format:</strong> Newick, Extended Newick.</p>
-                <button type="button"  class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="modal_add_tree_final_button" class="btn btn-sm btn-success" >Add tree</button>
-            </div>
-
+         
+                </div>
+                
+                <br>
+                 
+                 <div style="margin: auto; width: fit-content;">
+                
+                
+                 <button type="button"  class="btn  btn-danger" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" id="modal_add_tree_final_button" class="btn  btn-success"  data-bs-dismiss="modal" >Upload tree</button>
+                
+                  </div>
+                
         </div>
-    </div>
-</div>
-`
+                
+                
+        `
+    }
+
+
+    add_data_icon(){
+
+        this.container_d3.select("#exampleModal" + this.container_object.uid).remove()
+
+        var b = this.top_left.append('button')
+            .attr('class', '  dashed_button')
+            .attr('id', 'buttonmodal_' + this.container_object.div_id )
+            .attr('data-bs-toggle', 'modal')
+            .attr('data-bs-target', '#exampleModal' + this.container_object.uid)
+            .attr('data-bs-placement', 'right')
+            .attr('title', 'Add a new tree')
+            .append("div")
+            .attr("class","label")
+
+            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add tree")
+
+        let mod_html = this.get_modal_template()
+
+        mod_html = mod_html.replace('TEMPLATE_CORPUS', this.get_modal_adder_corpus())
+        mod_html = mod_html.replace('TITLE_', 'Upload your tree')
+        mod_html = mod_html.replace('SUB_TITLE_', '')
+        mod_html = mod_html.replace('STEP3__', this.get_modal_meta_corpus())
+
+
 
         mod_html = mod_html.replace('exampleFormControlTextarea1s', 'exampleFormControlTextarea1s' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
         mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_str_select', 'add_tree_str_select' + this.container_object.uid)
         mod_html = mod_html.replace('modal_add_tree_final_button', 'modal_add_tree_final_button' + this.container_object.uid)
+        mod_html = mod_html.replace('upload_mapping_close', 'upload_mapping_close' + this.container_object.uid)
+        mod_html = mod_html.replace('upload_mapping_validation', 'upload_mapping_validation' + this.container_object.uid)
 
-        let content = document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
+        // META CORPUS
+
+        mod_html = mod_html.replaceAll('add_meta_file_input', 'tree_adder_modal_add_mapping_file_input' + this.container_object.uid)
+        mod_html = mod_html.replace('mod_meta_card2', 'tree_adder_mod_meta_card2_' + this.container_object.uid)
+        mod_html = mod_html.replace('mod_meta_card3', 'tree_adder_mod_meta_card3_' + this.container_object.uid)
+        mod_html = mod_html.replace('mod_meta_card2_radio', 'tree_adder_mod_meta_card2_radio' + this.container_object.uid)
+
+        mod_html = mod_html.replace('flexCheckChecked', 'tree_adder_flexCheckChecked' + this.container_object.uid)
+        mod_html = mod_html.replace('flexCheckDefault', 'tree_adder_flexCheckDefault' + this.container_object.uid)
+
+        mod_html = mod_html.replace('mapping_check_nodes', 'tree_adder_mapping_check_nodes' + this.container_object.uid)
+        mod_html = mod_html.replace('mapping_check_leaf', 'tree_adder_mapping_check_leaf' + this.container_object.uid)
+
+        //
+
+
+
+
+        document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
         var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
 
-        const add_tree_helpers = function(container_object, str, format){
+        const add_tree_helpers = function(container_object, str, format, mapping){
+
+            var mapping = (typeof mapping == 'undefined') ? false : mapping;
 
             container_object.add_tree(str, {'data_type':format})
             container_object.current_model =  container_object.models.length-1
+
+            if (mapping !== false){
+
+                let moddy = container_object.models[container_object.current_model]
+
+                if (mapping.parameters.use_meta_for_leaf){
+                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers)
+                }
+
+                if (mapping.parameters.use_meta_for_node){
+                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers)
+                }
+
+            }
+
+
+
 
             document.querySelector('#exampleModal'+ container_object.uid).style.display =  'none'
             document.querySelectorAll('.modal-backdrop').forEach(elem => {
@@ -370,11 +442,52 @@ export default class Interface {
         }
 
         const add_data_from_modal =  (format) => {
+
+            // mapping information
+            var mapping_file = document.getElementById('tree_adder_modal_add_mapping_file_input' + that.container_object.uid).files[0];
+
+
             let s = document.getElementById("exampleFormControlTextarea1s" + this.container_object.uid).value
 
             if (s.length > 0){
-                add_tree_helpers(this.container_object, s, format)
-                return
+
+                if (mapping_file) {
+
+                    var parameters = that.get_mapping_parameter_from_UI(true)
+
+                    console.log(parameters)
+                    const reader = new FileReader();
+
+                    reader.addEventListener('load', (event) => {
+
+                        var meta = []
+
+                        if (mapping_file.name.split('.').pop() == 'tsv'){
+                            d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                        }
+                        else{
+                            d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                        }
+
+
+
+                        add_tree_helpers(this.container_object, s, format, {'meta': meta, 'parameters': parameters})
+                        return
+
+
+
+                    });
+                    reader.readAsText(mapping_file);
+
+
+                }
+                else {
+                    add_tree_helpers(this.container_object, s, format)
+                    return}
+
+
+
+
             }
 
             var file = document.getElementById('add_tree_file_input' + this.container_object.uid).files[0];
@@ -383,8 +496,39 @@ export default class Interface {
                 var reader = new FileReader();
                 reader.readAsText(file, "UTF-8");
                 reader.onload =  (evt) => {
-                    add_tree_helpers(this.container_object, evt.target.result, format)
-                    return
+
+                    if (mapping_file) {
+                        var parameters = that.get_mapping_parameter_from_UI(true)
+
+                        console.log(parameters)
+                        const reader = new FileReader();
+
+                        reader.addEventListener('load', (event) => {
+
+                            var meta = []
+
+                            if (file.name.split('.').pop() == 'tsv'){
+                                d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                            }
+                            else{
+                                d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                            }
+
+                            add_tree_helpers(this.container_object, evt.target.result, format, {'meta': meta, 'parameters': parameters})
+                            return
+
+
+
+                        });
+                        reader.readAsText(mapping_file);
+
+
+                    }
+                    else {
+                        add_tree_helpers(this.container_object, evt.target.result, format)
+                        return}
+
+
                 }
                 reader.onerror = function (evt) {
                     console.log("error reading file")
@@ -395,20 +539,18 @@ export default class Interface {
 
         }
 
-
         document.getElementById('modal_add_tree_final_button' + this.container_object.uid).onclick = () => {
+
+
             var e = document.getElementById('add_tree_str_select' + this.container_object.uid);
 
             add_data_from_modal(e.value)
         }
 
-
-
         modmod.getElementsByClassName('t1')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
             document.getElementById('add_tree_str_select' + this.container_object.uid).value = 'newick'
         };
-
 
         modmod.getElementsByClassName('t1')[0].onclick = () => {
             document.getElementById("exampleFormControlTextarea1s"+ this.container_object.uid).value = this.examples.small1
@@ -431,7 +573,167 @@ export default class Interface {
         };
 
 
+        // META DATA UPLOADER
+        document.getElementById('upload_mapping_validation'+ this.container_object.uid).style.display = 'none'
+        document.getElementById('upload_mapping_close'+ this.container_object.uid).style.display = 'none'
 
+
+
+        var x = modmod.getElementsByClassName('card')
+        for (var i = 0; i < x.length; i++) {
+            x[i].style.border = 'none';
+        }
+
+        // Add JS for modal corpus
+        var that = this
+
+        document.getElementById('tree_adder_modal_add_mapping_file_input' + this.container_object.uid).onchange = function() {
+            let input = this.files[0];
+
+            if (input) {
+
+                document.getElementById('tree_adder_mod_meta_card2_' + that.container_object.uid).style.display = 'block'
+                document.getElementById('tree_adder_mod_meta_card3_' + that.container_object.uid).style.display = 'block'
+
+                var reader = new FileReader();
+                var data;
+
+                reader.addEventListener("load", parseFile, false);
+                reader.readAsText(input);
+                function parseFile(){
+
+                    // load data
+                    if (input.name.split('.').pop() == 'tsv'){
+                        data = d3.tsvParse(reader.result, function(d){
+                            return d;
+                        });
+                    }
+                    else{
+
+                        data = d3.csvParse(reader.result, function(d){
+                            return d;
+                        });
+
+                    }
+
+
+                    // Get columns + types
+                    var numerisator = {}
+                    data['columns'].forEach((currentElement) => { if (currentElement != 'id'){  numerisator[currentElement] = 'num'}})
+                    data.forEach((currentElement) => {
+                        for (var key of Object.keys(numerisator)) {
+                            if (isNaN(currentElement[key])){
+                                numerisator[key] = 'cat'
+                            }
+                        }
+                    })
+
+                    // creates radios
+                    var radio_container = document.getElementById( 'tree_adder_mod_meta_card2_radio' + that.container_object.uid)
+                    var get_el = function(){return `
+                        
+                            <div  style = "padding: 12px 24px 0;">  <span><b style = "margin-right: 12px" > Column:  </b> "NAME_"</span>  <br>
+
+                    <div class="form-check " style="margin-left: 24px" >
+                        <input class="form-check-input " name="flexRadioDefault"   type="radio" value="num" id="RADIO_1" ATTR_NUM>
+                            <label class="form-check-label" for="RADIO_1">
+                                Numerical
+                            </label>
+                    </div>
+                    
+                    <div class="form-check " style="margin-left: 24px"  >
+                        <input class="form-check-input"   name="flexRadioDefault" type="radio" value="cat" id="RADIO_2" ATTR_CAT>
+                            <label class="form-check-label" for="RADIO_2">
+                                Categorical
+                            </label>
+                    </div>
+                    
+                    <div class="form-check" style="margin-left: 24px">
+                        <input class="form-check-input"  name="flexRadioDefault" type="radio" value="color" id="RADIO_3">
+                            <label class="form-check-label" for="RADIO_3">
+                                Color
+                            </label>
+                    </div>
+   
+                    
+                   
+                    
+                    
+              
+                    
+                </div>
+                        `}
+
+                    for (var key of Object.keys(numerisator)){
+
+                        var rad = get_el()
+
+
+                        rad = rad.replace('NAME_', key)
+                        rad = rad.replaceAll('flexRadioDefault', 'tree_adder_flexRadioDefault_' + key +  that.container_object.uid )
+                        rad = rad.replace('RADIO_1',  that.container_object.uid + 'mapping_header_radiotree_adder_1' +  '__' + key )
+                        rad = rad.replace('RADIO_2',  that.container_object.uid + 'mapping_header_radiotree_adder_2'  + '__' + key )
+                        rad = rad.replace('RADIO_3',  that.container_object.uid + 'mapping_header_radiotree_adder_3'  + '__' + key )
+
+
+
+                        if (numerisator[key] == 'num'){
+                            rad = rad.replace('ATTR_NUM', 'checked')
+                            rad = rad.replace('ATTR_CAT', '')
+                        }
+                        else{
+                            rad = rad.replace('ATTR_NUM', 'disabled')
+                            rad = rad.replace('ATTR_CAT', 'checked')
+                        }
+
+
+
+                        radio_container.insertAdjacentHTML('beforeend',rad)
+
+                    }
+                    radio_container.insertAdjacentHTML('beforeend','<br>')
+
+                }
+
+            }
+
+        };
+
+
+
+    }
+
+    get_modal_template(){
+        return  `
+            <div class="modal" id="exampleModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                    
+                    <div class="modal-header" style="height: 128px;border:none !important">
+                    <h3 class="modal-title" id="exampleModalLabel" style="margin: auto; text-align: center">
+                    <b>TITLE_</b> <br>
+                    
+                    <small style="color:grey">
+                    SUB_TITLE_
+            </small>
+                    </h3>
+                    
+                  </div>
+            
+                        <div class="modal-body" style="background-color: #f8f9fa; padding: 24px 48px;">
+            
+            
+                            TEMPLATE_CORPUS
+                          
+                            </div>
+                            
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+`
     }
 
     // TOGGLE
@@ -1187,7 +1489,7 @@ export default class Interface {
                 
                 <div style="margin: auto; width: fit-content;">
                 
-                  <button type="button"  class="btn  btn-danger" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button"  id="upload_mapping_close"  class="btn  btn-danger" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" id="upload_mapping_validation" class="btn  btn-success"  data-bs-dismiss="modal" disabled >Upload mapping file</button>
 </div>
                 
@@ -1200,43 +1502,13 @@ export default class Interface {
 
     add_meta(){
 
+        let mod_html = this.get_modal_template()
 
-        let mod_html = `
-<div class="modal" id="exampleModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-        
-        <div class="modal-header" style="height: 128px;border:none !important">
-        <h3 class="modal-title" id="exampleModalLabel" style="margin: auto; text-align: center">
-        <b>Upload your own mapping file</b> <br>
-        
-        <small style="color:grey">
-        to add additional information to leaves and nodes
-</small>
-        </h3>
-        
-        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-      </div>
-
-            <div class="modal-body" style="background-color: #f8f9fa; padding: 24px 48px;">
-
-
-                TEMPLATE_CORPUS
-              
-                </div>
-                
-                
-            </div>
-
-
-        
-
-        </div>
-    </div>
-</div>
-`
 
         mod_html = mod_html.replace('TEMPLATE_CORPUS', this.get_modal_meta_corpus())
+        mod_html = mod_html.replace('TITLE_', 'Upload your own mapping file')
+        mod_html = mod_html.replace('SUB_TITLE_', 'to add additional information to leaves and nodes')
+
         mod_html = mod_html.replace('exampleModal', 'modal_meta_' + this.container_object.uid)
         mod_html = mod_html.replaceAll('add_meta_file_input', 'modal_add_mapping_file_input' + this.container_object.uid)
 
@@ -1255,6 +1527,7 @@ export default class Interface {
 
         // Add JS for modal corpus
         var that = this
+
         document.getElementById('modal_add_mapping_file_input' + this.container_object.uid).onchange = function() {
             let input = this.files[0];
 
@@ -1447,11 +1720,20 @@ export default class Interface {
 
     }
 
-    get_mapping_parameter_from_UI(){
+    get_mapping_parameter_from_UI(modal){
+
+        var modal = (typeof modal == 'undefined') ? false : modal;
 
         var p = {'headers':  {}}
 
-        var prefix = this.container_object.uid + 'mapping_header_radio'
+        if (modal){
+            var prefix = this.container_object.uid + 'mapping_header_radiotree_adder_'
+        }
+        else{
+            var prefix = this.container_object.uid + 'mapping_header_radio'
+        }
+
+
         var checkies = document.querySelectorAll(`[id^="${prefix}"]`);
 
 
@@ -1468,8 +1750,18 @@ export default class Interface {
 
         });
 
-        p['use_meta_for_node'] = document.getElementById( 'mapping_check_nodes' + this.container_object.uid).checked
-        p['use_meta_for_leaf'] = document.getElementById( 'mapping_check_leaf' + this.container_object.uid).checked
+        if (modal){
+            p['use_meta_for_node'] = document.getElementById( 'tree_adder_mapping_check_nodes' + this.container_object.uid).checked
+            p['use_meta_for_leaf'] = document.getElementById( 'tree_adder_mapping_check_leaf' + this.container_object.uid).checked
+        }
+        else{
+            p['use_meta_for_node'] = document.getElementById( 'mapping_check_nodes' + this.container_object.uid).checked
+            p['use_meta_for_leaf'] = document.getElementById( 'mapping_check_leaf' + this.container_object.uid).checked
+        }
+
+
+
+
 
         return p
     }
