@@ -19,7 +19,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './style.css';
 import './interface.css';
 import './progress-wizard.min.css';
-import './fontawesome/css/all.css'
+import './fontawesome-free-6.2.0-web/css/all.css'
 
 
 import API from './api.js'

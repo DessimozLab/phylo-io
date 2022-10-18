@@ -99,6 +99,7 @@ export default class Interface {
         // TOP RIGHT
         this.add_search()
         this.add_export()
+        this.add_meta()
         this.add_settings()
         this.add_undo()
 
@@ -247,9 +248,8 @@ export default class Interface {
         this.container_d3.select("#exampleModal" + this.container_object.uid).remove()
 
         var b = this.top_left.append('button')
-            .attr('class', ' square_button dashed_button')
+            .attr('class', '  dashed_button')
             .attr('id', 'buttonmodal_' + this.container_object.div_id )
-            .style('margin', '2px')
             .attr('data-bs-toggle', 'modal')
             .attr('data-bs-target', '#exampleModal' + this.container_object.uid)
             .attr('data-bs-placement', 'right')
@@ -440,24 +440,38 @@ export default class Interface {
             .style('margin', '2px')
 
 
-        sub_div.append('button')
+        var butty_putty = sub_div.append('button')
             .on('click', d => {return this.container_object.shift_model(-1)})
             .attr('class', ' square_button')
             .attr('id', 'buttontoggleleft_' + this.container_object.div_id )
             .attr('data-bs-placement', 'bottom')
             .attr('title', 'Load previous tree')
-            .append("div")
+
+
+        butty_putty.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-chevron-left ')
 
+        butty_putty.append('p')
+            .text('Previous')
+            .style('font-size', 'xx-small')
+
         this.tooltip_shiftleft = new bootstrap.Tooltip(document.getElementById('buttontoggleleft_' + this.container_object.div_id))
 
 
 
-        var sd = sub_div.append('div')
+        var stoggle = sub_div.append('div')
             .attr('class', ' square_button screen_toggle')
+            .style('min-width', '92px')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+
+
+        var sd = stoggle.append('div')
+
+
 
 
         sd.append("div")
@@ -509,17 +523,23 @@ export default class Interface {
             .attr('class', ' fas fa-trash ')
 
 
-        sub_div.append('button')
+        var butty_putty = sub_div.append('button')
             .attr('class', ' square_button')
             .on('click', d => { return this.container_object.shift_model(1)})
             .attr('id', 'buttonshiftright_' + this.container_object.div_id )
             .attr('data-bs-placement', 'bottom')
             .attr('title', 'Load next tree')
-            .append("div")
+
+
+        butty_putty.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-chevron-right ')
+
+        butty_putty.append('p')
+            .text('Next')
+            .style('font-size', 'xx-small')
 
         this.tooltip_shiftright = new bootstrap.Tooltip(document.getElementById('buttonshiftright_' + this.container_object.div_id))
 
@@ -583,7 +603,7 @@ export default class Interface {
 
     add_rescale_zoom(){
 
-        this.bottom_right.append('button')
+        var butty_putty =   this.bottom_right.append('button')
             .on('click', d => {
 
                 this.viewer.force_zoom_rescaling = true;
@@ -595,12 +615,19 @@ export default class Interface {
             .attr('data-bs-placement', 'left')
             .attr('title', 'Optimise text size')
             .style('margin', '2px')
-            .style('width', '32px')
-            .append("div")
-            .attr("class", "label")
+
+
+        butty_putty.append("div")
+            .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-text-height ')
+
+        butty_putty.append('p')
+            .text('Optimise text')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+
 
         this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('buttonscaleviewer_' + this.container_object.div_id))
 
@@ -608,7 +635,7 @@ export default class Interface {
 
     add_fit_height() {
 
-        this.bottom_right.append('button')
+        var butty_putty = this.bottom_right.append('button')
             .on('click', d => {
                 this.viewer.fit_to_viewer_height()
             })
@@ -617,12 +644,18 @@ export default class Interface {
             .attr('data-bs-placement', 'left')
             .attr('title', 'Optimise view (possible collapse/expand)')
             .style('margin', '2px')
-            .style('width', '32px')
-            .append("div")
-            .attr("class", "label")
+
+
+        butty_putty.append("div")
+            .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-compress ')
+
+        butty_putty.append('p')
+            .text('Optimise view')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
 
         this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('buttonfitviewer_' + this.container_object.div_id))
 
@@ -630,7 +663,7 @@ export default class Interface {
 
     add_maximise() {
 
-        this.bottom_right.append('button')
+        var butty_putty=  this.bottom_right.append('button')
             .on('click', d => {
                 this.viewer.maximise_zoom()
             })
@@ -639,12 +672,17 @@ export default class Interface {
             .attr('data-bs-placement', 'left')
             .attr('title', 'Fit tree into viewer (no collapse/expand)')
             .style('margin', '2px')
-            .style('width', '32px')
-            .append("div")
-            .attr("class", "label")
+
+
+        butty_putty.append("div")
+            .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-expand ')
+
+        butty_putty.append('p')
+            .text('Fit screen')
+            .style('font-size', 'xx-small')
 
         this.tooltip_fitviewer = new bootstrap.Tooltip(document.getElementById('button_maximise_zoom_' + this.container_object.div_id))
 
@@ -672,34 +710,49 @@ export default class Interface {
     // ZOOM
     add_zoom(){
 
-        this.bottom_right.append('button')
+        var butty_putty =this.bottom_right.append('button')
             .on('click', d => {return this.viewer.zoom_in()})
             .attr('class', ' square_button')
             .attr('id', 'buttonzoomplus_' + this.container_object.div_id )
             .attr('data-bs-placement', 'left')
             .attr('title', 'Zoom in')
             .style('margin', '2px')
-            .append("div")
+
+
+
+
+        butty_putty.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search-plus ')
 
+        butty_putty.append('p')
+            .text('Zoom in')
+            .style('font-size', 'xx-small')
+
         this.tooltip_zoomplus = new bootstrap.Tooltip(document.getElementById('buttonzoomplus_' + this.container_object.div_id))
 
 
-        this.bottom_right.append('button')
+        var butty_putty =  this.bottom_right.append('button')
             .on('click', d => {return this.viewer.zoom_out()})
             .attr('class', ' square_button')
             .style('margin', '2px')
             .attr('id', 'buttonzoomminus_' + this.container_object.div_id )
             .attr('data-bs-placement', 'left')
             .attr('title', 'Zoom out')
-            .append("div")
+
+
+
+        butty_putty.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search-minus ')
+
+        butty_putty.append('p')
+            .text('Zoom out')
+            .style('font-size', 'xx-small')
 
         this.tooltip_zoomminus = new bootstrap.Tooltip(document.getElementById('buttonzoomminus_' + this.container_object.div_id))
 
@@ -753,7 +806,9 @@ export default class Interface {
 
         this.container_d3.select(".colorlegend_" + type).remove()
 
-        if (this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]] == 'cat' ){return}
+        var tt =this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]]
+
+        if ( tt === 'cat' || tt === 'color'){return}
 
 
         var type = (typeof type !== 'undefined') ? type : 'node';
@@ -981,7 +1036,7 @@ export default class Interface {
         var input_el = document.getElementById("searchinp" + this.viewer.uid );
 
         // add search button
-        this.tr_buttons.append('button')
+        var search_but = this.tr_buttons.append('button')
             .attr('id', 'search_button_id' + this.viewer.uid)
             .attr('class', ' square_button search_button')
             .attr('id', 'buttonsearch_' + this.container_object.div_id )
@@ -1011,11 +1066,17 @@ export default class Interface {
                     document.getElementById('searchinp' + this.viewer.uid + 'autocomplete-list').remove();
                 }
             })
-            .append("div")
+
+
+        search_but.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-search ')
+
+        search_but.append('p')
+            .text('Search')
+            .style('font-size', 'xx-small')
 
         this.tooltip_search = new bootstrap.Tooltip(document.getElementById('buttonsearch_' + this.container_object.div_id))
 
@@ -1054,6 +1115,363 @@ export default class Interface {
 
     }
 
+    // META
+    get_modal_meta_corpus(){
+        return `
+
+        <div class="container-fluid">
+                                
+                <div class="card">
+                
+                  <div class="card-body">
+                  
+                  <h5> <b>Step 1: Select your mapping file</b> </h5>
+                  
+
+                 <div class="input-group mb-3" style="padding: 24px 24px 0;">
+                                <input class="form-control" type="file" id="add_meta_file_input" > 
+                           </div>
+                           
+                            <p style="padding: 0 24px;"><small>
+                            <b>Accepted format:</b> '.csv' or '.tsv' and must contain column names at first row. 
+                            The mapping is done using the column named 'id' to identify leaves and nodes.
+</small></p>
+
+                        </div>
+                        
+                </div>
+
+                <br>
+                
+                <div class="card" id="mod_meta_card2" style="display: none">
+                
+                  <div class="card-body" id="mod_meta_card2_radio" >
+                  
+                  <h5> <b>Step 2: Configure data mapping types</b> </h5>
+                  
+                  
+                         
+                       </div>
+                        
+                </div>
+                
+                <br>
+                
+                <div class="card" id="mod_meta_card3" style="display: none">
+                
+                  <div class="card-body">
+                  
+                  <h5> <b>Step 3: Choose a target for additional data</b> </h5>
+                  
+                                       <div class="form-check" style="padding: 12px 48px 0;">
+                  <input class="form-check-input" type="checkbox" value="" id="mapping_check_leaf" checked>
+                  <label class="form-check-label" for="flexCheckDefault">
+                    Apply to leaves
+                  </label>
+                </div>
+                <div class="form-check" style="padding: 12px 48px 0;">
+                  <input class="form-check-input" type="checkbox" value="" id="mapping_check_nodes">
+                  <label class="form-check-label" for="flexCheckChecked">
+                    Apply to Nodes
+                  </label>
+                </div>
+                 
+
+                        </div>
+                        
+                </div>
+                
+                <br>
+                
+                <div style="margin: auto; width: fit-content;">
+                
+                  <button type="button"  class="btn  btn-danger" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" id="upload_mapping_validation" class="btn  btn-success"  data-bs-dismiss="modal" disabled >Upload mapping file</button>
+</div>
+                
+                 
+              
+               </div>
+  
+        `
+    }
+
+    add_meta(){
+
+
+        let mod_html = `
+<div class="modal" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        
+        <div class="modal-header" style="height: 128px;border:none !important">
+        <h3 class="modal-title" id="exampleModalLabel" style="margin: auto; text-align: center">
+        <b>Upload your own mapping file</b> <br>
+        
+        <small style="color:grey">
+        to add additional information to leaves and nodes
+</small>
+        </h3>
+        
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+
+            <div class="modal-body" style="background-color: #f8f9fa; padding: 24px 48px;">
+
+
+                TEMPLATE_CORPUS
+              
+                </div>
+                
+                
+            </div>
+
+
+        
+
+        </div>
+    </div>
+</div>
+`
+
+        mod_html = mod_html.replace('TEMPLATE_CORPUS', this.get_modal_meta_corpus())
+        mod_html = mod_html.replace('exampleModal', 'modal_meta_' + this.container_object.uid)
+        mod_html = mod_html.replaceAll('add_meta_file_input', 'modal_add_mapping_file_input' + this.container_object.uid)
+
+        mod_html = mod_html.replace('mod_meta_card2', 'mod_meta_card2_' + this.container_object.uid)
+        mod_html = mod_html.replace('mod_meta_card3', 'mod_meta_card3_' + this.container_object.uid)
+        mod_html = mod_html.replace('mod_meta_card2_radio', 'mod_meta_card2_radio' + this.container_object.uid)
+
+        mod_html = mod_html.replace('flexCheckChecked', 'flexCheckChecked' + this.container_object.uid)
+        mod_html = mod_html.replace('flexCheckDefault', 'flexCheckDefault' + this.container_object.uid)
+
+        mod_html = mod_html.replace('upload_mapping_validation', 'upload_mapping_validation' + this.container_object.uid)
+        mod_html = mod_html.replace('mapping_check_nodes', 'mapping_check_nodes' + this.container_object.uid)
+        mod_html = mod_html.replace('mapping_check_leaf', 'mapping_check_leaf' + this.container_object.uid)
+
+        document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
+
+        // Add JS for modal corpus
+        var that = this
+        document.getElementById('modal_add_mapping_file_input' + this.container_object.uid).onchange = function() {
+            let input = this.files[0];
+
+            if (input) {
+
+                document.getElementById('mod_meta_card2_' + that.container_object.uid).style.display = 'block'
+                document.getElementById('mod_meta_card3_' + that.container_object.uid).style.display = 'block'
+                document.getElementById('upload_mapping_validation' + that.container_object.uid).disabled = false;
+
+
+                var reader = new FileReader();
+                var data;
+
+                reader.addEventListener("load", parseFile, false);
+                reader.readAsText(input);
+                function parseFile(){
+
+                    // load data
+                    if (input.name.split('.').pop() == 'tsv'){
+                        data = d3.tsvParse(reader.result, function(d){
+                            return d;
+                        });
+                    }
+                    else{
+
+                        data = d3.csvParse(reader.result, function(d){
+                            return d;
+                        });
+
+                    }
+
+
+                    // Get columns + types
+                    var numerisator = {}
+                    data['columns'].forEach((currentElement) => { if (currentElement != 'id'){  numerisator[currentElement] = 'num'}})
+                    data.forEach((currentElement) => {
+                        for (var key of Object.keys(numerisator)) {
+                            if (isNaN(currentElement[key])){
+                                numerisator[key] = 'cat'
+                            }
+                        }
+                    })
+
+                    // creates radios
+                    var radio_container = document.getElementById( 'mod_meta_card2_radio' + that.container_object.uid)
+                    var get_el = function(){return `
+                        
+                            <div  style = "padding: 12px 24px 0;">  <span><b style = "margin-right: 12px" > Column:  </b> "NAME_"</span>  <br>
+
+                    <div class="form-check " style="margin-left: 24px" >
+                        <input class="form-check-input " name="flexRadioDefault"   type="radio" value="num" id="RADIO_1" ATTR_NUM>
+                            <label class="form-check-label" for="RADIO_1">
+                                Numerical
+                            </label>
+                    </div>
+                    
+                    <div class="form-check " style="margin-left: 24px"  >
+                        <input class="form-check-input"   name="flexRadioDefault" type="radio" value="cat" id="RADIO_2" ATTR_CAT>
+                            <label class="form-check-label" for="RADIO_2">
+                                Categorical
+                            </label>
+                    </div>
+                    
+                    <div class="form-check" style="margin-left: 24px">
+                        <input class="form-check-input"  name="flexRadioDefault" type="radio" value="color" id="RADIO_3">
+                            <label class="form-check-label" for="RADIO_3">
+                                Color
+                            </label>
+                    </div>
+   
+                    
+                   
+                    
+                    
+                    
+                    
+                </div>
+                        `}
+
+                    for (var key of Object.keys(numerisator)){
+
+                        var rad = get_el()
+
+
+                        rad = rad.replace('NAME_', key)
+                        rad = rad.replaceAll('flexRadioDefault', 'flexRadioDefault_' + key +  that.container_object.uid )
+                        rad = rad.replace('RADIO_1',  that.container_object.uid + 'mapping_header_radio1' +  '__' + key )
+                        rad = rad.replace('RADIO_2',  that.container_object.uid + 'mapping_header_radio2'  + '__' + key )
+                        rad = rad.replace('RADIO_3',  that.container_object.uid + 'mapping_header_radio3'  + '__' + key )
+
+
+
+                        if (numerisator[key] == 'num'){
+                            rad = rad.replace('ATTR_NUM', 'checked')
+                            rad = rad.replace('ATTR_CAT', '')
+                        }
+                        else{
+                            rad = rad.replace('ATTR_NUM', 'disabled')
+                            rad = rad.replace('ATTR_CAT', 'checked')
+                        }
+
+
+
+                        radio_container.insertAdjacentHTML('beforeend',rad)
+
+                    }
+                    radio_container.insertAdjacentHTML('beforeend','<br>')
+
+                }
+
+            }
+
+            else {
+                document.getElementById('upload_mapping_validation' + that.container_object.uid).disabled = true;
+            }
+        };
+
+        document.getElementById('upload_mapping_validation' + this.container_object.uid).onclick = function(){
+
+
+            var file = document.getElementById('modal_add_mapping_file_input' + that.container_object.uid).files[0];
+
+            if (file) {
+
+                var parameters = that.get_mapping_parameter_from_UI()
+
+                console.log(parameters)
+                const reader = new FileReader();
+
+                reader.addEventListener('load', (event) => {
+
+                    var meta = []
+
+                    if (file.name.split('.').pop() == 'tsv'){
+                        d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                    }
+                    else{
+                        d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                    }
+
+                    that.viewer.model.settings.use_meta_for_leaf = parameters.use_meta_for_leaf
+                    that.viewer.model.settings.use_meta_for_node = parameters.use_meta_for_node
+
+
+
+                    if (that.viewer.model.settings.use_meta_for_leaf){
+                        that.viewer.model.add_meta_leaves(meta, parameters.headers)
+                    }
+
+                    if (that.viewer.model.settings.use_meta_for_node){
+                        that.viewer.model.add_meta_nodes(meta, parameters.headers)
+                    }
+
+
+
+                    that.viewer.interface = new Interface(that.viewer, that.viewer.container_object)
+
+                });
+                reader.readAsText(file);
+
+            }
+
+
+
+
+        }
+
+
+        // add the button
+        var ex_b = this.tr_buttons.append('button')
+            .attr('id', 'button_meta' + this.container_object.uid)
+            .attr('data-bs-placement', 'bottom')
+            .attr('title', 'Add additional informations to the tree')
+            .attr('data-bs-toggle', 'modal')
+            .attr('data-bs-target', '#modal_meta_' + this.container_object.uid )
+
+        var divybuty = ex_b.attr('class', ' square_button')
+            .style('margin', '2px')
+
+        divybuty.append("div")
+            .attr("class","label")
+            .append('i')
+            .style('color', '#888')
+            .attr('class', 'fas fa-file-lines')
+
+        divybuty.append('p')
+            .text('Mapping')
+            .style('font-size', 'xx-small')
+
+
+    }
+
+    get_mapping_parameter_from_UI(){
+
+        var p = {'headers':  {}}
+
+        var prefix = this.container_object.uid + 'mapping_header_radio'
+        var checkies = document.querySelectorAll(`[id^="${prefix}"]`);
+
+
+        checkies.forEach(element => {
+
+            if (element.checked) {
+                var column_type = element.value
+                var column_name = element.id.split('__').pop()
+
+
+                p['headers'][column_name] = column_type
+            }
+
+
+        });
+
+        p['use_meta_for_node'] = document.getElementById( 'mapping_check_nodes' + this.container_object.uid).checked
+        p['use_meta_for_leaf'] = document.getElementById( 'mapping_check_leaf' + this.container_object.uid).checked
+
+        return p
+    }
+
     // EXPORT
     add_export() {
 
@@ -1063,7 +1481,7 @@ export default class Interface {
             .attr('data-bs-placement', 'bottom')
             .attr('title', 'Export this tree as graphic or text file')
 
-            ex_b.attr('class', ' square_button')
+            var divybuty = ex_b.attr('class', ' square_button')
             .style('margin', '2px')
             .on("click", d => {
                 if (this.menu_export.style('display') === 'none'){
@@ -1075,11 +1493,19 @@ export default class Interface {
                 ex_b.style('background-color', 'rgba(239, 239, 239, 0.95)');
                 return this.menu_export.style("display", 'none')
             })
-            .append("div")
-            .attr("class", "label")
+
+
+
+
+        divybuty.append("div")
+            .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-download ')
+
+        divybuty.append('p')
+            .text('Download')
+            .style('font-size', 'xx-small')
 
 
         this.tooltip_export = new bootstrap.Tooltip(document.getElementById('button_export' + this.container_object.uid))
@@ -1173,7 +1599,7 @@ export default class Interface {
 
     // UNDO
     add_undo(){
-        this.tr_buttons.append('button')
+        var divybuty = this.tr_buttons.append('button')
             .attr('class', ' square_button')
             .attr('id', 'buttonundo_' + this.container_object.div_id )
             .attr('data-bs-placement', 'bottom')
@@ -1193,11 +1619,20 @@ export default class Interface {
                 }
                 phylo.undoing = false
             })
-            .append("div")
+
+
+
+
+
+        divybuty.append("div")
             .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-undo ')
+
+        divybuty.append('p')
+            .text('Undo')
+            .style('font-size', 'xx-small')
 
         this.tooltip_undo = new bootstrap.Tooltip(document.getElementById('buttonundo_' + this.container_object.div_id))
 
@@ -1251,11 +1686,18 @@ export default class Interface {
                 set_b.style('background-color', 'rgba(239, 239, 239, 0.95)');
                 return this.menu_settings.style("display", 'none')
             })
-            .append("div")
-            .attr("class", "label")
+
+        set_b.append("div")
+            .attr("class","label")
             .append('i')
             .style('color', '#888')
             .attr('class', ' fas fa-sliders-h ')
+
+        set_b.append('p')
+            .text('Settings')
+            .style('font-size', 'xx-small')
+
+
 
         this.tooltip_settings = new bootstrap.Tooltip(document.getElementById('button_settings' + this.container_object.uid))
 
@@ -1275,8 +1717,8 @@ export default class Interface {
         this.menu_search_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Search")
         this.menu_search_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
-        this.menu_metadata_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Additional Information")
-        this.menu_metadata_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        //this.menu_metadata_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Additional Information")
+        //this.menu_metadata_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.menu_coloring_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Coloring")
         this.menu_coloring_panel =  this.menu_settings.append('div').attr('class', 'panel')
@@ -1514,8 +1956,9 @@ export default class Interface {
         // ADD TOGGLE MULTIPLE SEARCH
         this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
-        // ADDITIONAL DATA
 
+        /*
+        // ADDITIONAL DATA
         var meta_div = this.menu_metadata_p.append('div')
             .style('display','block')
             //.style('margin','8px')
@@ -1576,6 +2019,9 @@ export default class Interface {
             .style('flex-grow', '1')
             .style('background-color', '#CCC')
             .text('Use this file')
+
+
+         */
 
 
         // COLORING
@@ -1666,6 +2112,8 @@ export default class Interface {
 
         this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
 
+        console.log()
+
         this.create_color_scheme_picker(type)
 
         this.viewer.set_color_scale(type);
@@ -1734,7 +2182,15 @@ export default class Interface {
 
         }
 
-        else if (type_acc == 'cat'){
+
+        else if (type_acc == 'color' ){
+            container_.append('label').text("Use color loaded").style('float', 'right');
+            container_.append('br')
+            this.viewer.set_color_scale(type);
+            this.viewer.render(this.viewer.hierarchy)
+        }
+
+        else if (type_acc == 'cat' || typeof type_acc == 'undefined'){
             container_.append('label').text("Default color scheme").style('float', 'right');
             container_.append('br')
             this.viewer.set_color_scale(type);

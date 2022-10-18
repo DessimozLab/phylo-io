@@ -716,10 +716,18 @@ export default class Viewer {
 
         if (edge.data.search_path){ return '#FF0000'}
 
-        else if (this.model.settings.style.color_accessor['node'] == "Topology" && edge.data.elementS) {
-
+        else if (this.model.settings.style.color_accessor['node'] === "Topology" && edge.data.elementS) {
 
             return this.colorScale['node'](edge.data.elementS)
+        }
+
+        else if (this.model.settings.style.color_accessor['node'] === 'color'){
+
+            var h = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
+            if (typeof h == "undefined" ) {return "#555"}
+            else {return h}
+
+
         }
 
         else if (this.model.settings.style.color_accessor['node'] !== null){
@@ -760,19 +768,23 @@ export default class Viewer {
                 return
             }
 
+            else if (type_acc == 'color'){
+
+                this.colorScale[type] = null
+                return
+            }
+
 
 
             number = this.model.settings.style.number_domain[type]
 
 
 
-            if (this.model.settings.style.color_accessor[type] != null ) {
+            if (this.model.settings.style.color_accessor[type] != null && this.model.settings.style.color_accessor[type] != 'Topology' ) {
 
                 var ms = this.model.settings.style;
 
                 var ca = ms.color_accessor[type];
-
-
 
                 if (ms.color_extent_max[type][ca] == ms.color_extent_min[type][ca]){
                     this.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_max[type][ca]-1)
@@ -2106,9 +2118,26 @@ export default class Viewer {
 
                 if (!(d.children || d._children)){
 
-                    if (this.model.settings.style.color_accessor['leaf'] !== null){
 
-                        var v = d.data.extended_informations[this.model.settings.style.color_accessor['leaf']];
+                    var acc = this.model.settings.style.color_accessor['leaf']
+                    var type_acc = this.model.settings.extended_data_type[acc]
+
+
+
+                    if (type_acc === 'color'){
+
+                        var g = d.data.extended_informations[acc];
+
+                        if (typeof g !== "undefined" ) {
+                            return g
+                        }
+
+
+                    }
+
+                    else if (acc !== null){
+
+                        var v = d.data.extended_informations[acc];
 
                         if (typeof v !== "undefined" ) {
 
