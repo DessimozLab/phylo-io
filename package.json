@@ -17,6 +17,7 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
+    "@agtabesh/lsh": "github:agtabesh/lsh",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
@@ -27,6 +28,8 @@
     "bootstrap": "5.1.2",
     "d3": "6.6.0",
     "d3-v6-tip": "^1.0.9",
-    "file-saver": "^2.0.5"
+    "file-saver": "^2.0.5",
+    "minhash": "github:prameshbhattarai/minhash",
+    "minhashjs": "file:/Users/clementtrain/work/minhashJS/minhashjs/minhashjs-1.0.0.tgz"
   }
 }

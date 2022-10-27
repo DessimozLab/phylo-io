@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { Minhash }  from 'minhash'
 
 var uid_model = 0
 var uid_untitle_counter = 0
@@ -123,7 +124,7 @@ export default class Model {
 
         this.data.root = true;
         this.rooted = this.data.children.length !== 3
-        this.big_tree = (this.leaves.length > 1000)
+        this.big_tree = (this.leaves.length > 500)
 
         this.hierarchy_mockup = this.build_hierarchy_mockup()
         this.table = build_table(this.hierarchy_mockup)
@@ -670,22 +671,41 @@ export default class Model {
      - Root has leaves: A, B, C and D (terminal leaves)
      - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
      */
-    createDeepLeafList() {
+    createDeepLeafList(filter) {
+
+        function is_leaf(str) {
+            return !str.includes("||");
+        }
 
          var build_deepLeafList = function(child, node){
 
+             if ( child.hasOwnProperty('children') ){
+                 child.deepLeafList.push(child.deepLeafList.filter(is_leaf).sort().join('||'));
+             }
 
              node.deepLeafList = node.deepLeafList.concat(child.deepLeafList)
-
         }
 
         var build_deepLeafLeaves = function(node,children){
 
              if (!(node.hasOwnProperty('children') )){
-                 node.deepLeafList = [node.name]
+
+                 if (typeof filter != 'undefined') {
+                     if (filter.includes(node.name)){
+                         node.deepLeafList = [node.name]
+                     }
+                     else{
+                         node.deepLeafList = []
+                     }
+
+                 }
+                 else{
+                     node.deepLeafList = [node.name]
+                 }
+
              }
              else {
-                 node.deepLeafList = [] //node.name
+                 node.deepLeafList = []
              }
 
 
@@ -693,6 +713,17 @@ export default class Model {
 
         this.traverse(this.data, build_deepLeafLeaves, build_deepLeafList)
 
+    }
+
+    createMinHash(){
+
+        var assign_hash = function(node,children){
+
+            node.min_hash = new Minhash();
+            node.deepLeafList.map(function(w) { node.min_hash.update(w) });
+        }
+
+        this.traverse(this.data, assign_hash, null)
     }
 
     reverse_order(parent,child) {

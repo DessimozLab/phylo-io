@@ -1,3 +1,4 @@
+import {LshIndex, Minhash} from 'minhash'
 
 function compute_visible_topology_similarity(api, recompute=true){
 
@@ -28,20 +29,118 @@ function compute_visible_topology_similarity(api, recompute=true){
 function compute_similarity_container_pair(co1,co2){
 
 
+    console.time("similarity");
     let t1 = co1.viewer.model
     let t2 = co2.viewer.model
 
+    // X = Intersection of T1 & T2 leaves.
+    if (t1.leaves.length <= 0){
+        t1.leaves = t1.get_leaves(t1.data)
+    }
+    if (t2.leaves.length <= 0){
+        t2.leaves = t2.get_leaves(t2.data)
+    }
+    var common_leaves = t1.leaves.map(leaf => leaf.name).filter(value => t2.leaves.map(leaf => leaf.name).includes(value));
+    console.log("Intersection");
+    console.timeLog("similarity");
 
-    assign_correspondingLeaf(t1,t2)
+    // DeepLeaf with filter(X = True)
+    t1.createDeepLeafList(common_leaves)
+    t2.createDeepLeafList(common_leaves)
+    console.log(t1.data.deepLeafList)
+    console.log(t2.data.deepLeafList)
+    console.log("DeepLeaf");
+    console.timeLog("similarity");
 
-    t1.createDeepLeafList()
-    t2.createDeepLeafList()
+    // MinHash
+    t1.createMinHash()
+    t2.createMinHash()
+    console.log("MinHash");
+    console.timeLog("similarity");
 
-    getVisibleBCNs(t1, t2)
+    // For all T1 & T2 Nodes compute the BCN with MinHash
+    var nodes_t1 = []
+    var nodes_t2 = []
 
-    // mark pair as processed
+    var index = new LshIndex();
+
+    t1.traverse(t1.data, function(h,children){nodes_t1.push(h);index.insert( 't1_' + h.deepLeafList, h.min_hash);}, null)
+    t2.traverse(t2.data, function(z,children){nodes_t2.push(z);index.insert('t2_' + z.deepLeafList, z.min_hash);}, null)
+
+
+        nodes_t1.forEach((node) => {
+
+
+            function is_leaf(str) {
+                return !str.includes("||");
+            }
+
+            var l = node.deepLeafList.filter(is_leaf)
+
+
+
+            var matches = index.query(node.min_hash).filter((d) => {return d.startsWith('t2_')})
+
+            if (matches.length > 0){
+                var r =   matches[0].replace('t2_', '').split(',').filter(is_leaf)
+
+
+                console.log(node.deepLeafList, matches[0] )
+
+                var inter = l.filter(value => r.includes(value)).length;
+                var union = l.concat(r).length;
+
+                node.elementS = inter/union
+
+            }
+
+
+
+
+        })
+
+        nodes_t2.forEach((node) => {
+
+
+            function is_leaf(str) {
+                return !str.includes("||");
+            }
+
+            var matches = index.query(node.min_hash).filter((d) => {return d.startsWith('t1_')})
+
+            if (matches.length > 0){
+                var r =   matches[0].replace('t1_', '').split(',').filter(is_leaf)
+
+
+                var l = node.deepLeafList.filter(is_leaf)
+
+
+                console.log(node.deepLeafList, matches[0] )
+
+                var inter = l.filter(value => r.includes(value)).length;
+                var union = l.concat(r).length;
+
+                node.elementS = inter/union
+
+
+            }
+
+
+        })
+
+
+    console.log("BCN");
+    console.timeLog("similarity");
+
+    // Clean non essential datume
+
+    console.timeEnd("similarity");
+
+    // Register processed pair
     t1.similarity.push(t2.uid)
     t2.similarity.push(t1.uid)
+
+
 
 }
 
