@@ -318,7 +318,7 @@ export default class Interface {
                 
                   <div class="card-body">
                   
-                  <h5> <b>(Optionnal) Step 3 : Add a mapping file </b> </h5>
+                  <h5> <b>(Optional) Step 3 : Add a mapping file </b> </h5>
                   
                   <br>
                   

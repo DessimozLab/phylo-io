@@ -493,6 +493,15 @@ export default class Model {
             child = parent
             parent = parent.parent
 
+            parent.branch_length_before_reverse = parent.branch_length
+            if (child.branch_length_before_reverse){
+                parent.branch_length = child.branch_length_before_reverse
+            }
+            else{
+                parent.branch_length = child.branch_length
+            }
+
+
         }
         stack.push([parent,child])
         for (var e in stack){
@@ -504,25 +513,43 @@ export default class Model {
         }
 
         // Remove old root
-        var r = parent
-        var p = parent.parent
-        const ce = parent.parent.children.indexOf(r);
-        if (ce > -1) {
-            parent.parent.children.splice(ce, 1);
+
+        var old_root = parent
+        var leading_branch = parent.parent
+
+
+
+        if (old_root.children.length == 1){
+
+            const ce = leading_branch.children.indexOf(old_root);
+            if (ce > -1) {
+                leading_branch.children.splice(ce, 1);
+            }
+
+            var i = 0,len = old_root.children.length;
+            while (i < len) {
+                let c = old_root.children[i]
+                c.parent = leading_branch
+                leading_branch.children.push(c)
+                i++
+            }
+
+            old_root = null
+
+
+
+        }
+
+        // For multifurcation we need to keep the root
+        else {
+            old_root.root = false
+            old_root.branch_length = leading_branch.branch_length
         }
 
 
-        var i = 0,len = parent.children.length;
-        while (i < len) {
-            let c = parent.children[i]
-            c.parent = p
-            p.children.push(c)
-            i++
-        }
 
 
 
-        r = null
 
 
         // configure new root
