@@ -1,4 +1,7 @@
-import {LshIndex, Minhash} from 'minhash'
+
+import {MinHash, MinHashLSHForest}  from 'minhashjs'
+
+
 
 function compute_visible_topology_similarity(api, recompute=true){
 
@@ -62,14 +65,17 @@ function compute_similarity_container_pair(co1,co2){
     var nodes_t1 = []
     var nodes_t2 = []
 
-    var index = new LshIndex();
+    var forest1 = new MinHashLSHForest.MinHashLSHForest()
+    var forest2 = new MinHashLSHForest.MinHashLSHForest()
 
-    t1.traverse(t1.data, function(h,children){nodes_t1.push(h);index.insert( 't1_' + h.deepLeafList, h.min_hash);}, null)
-    t2.traverse(t2.data, function(z,children){nodes_t2.push(z);index.insert('t2_' + z.deepLeafList, z.min_hash);}, null)
+    var cpt =0
+    t1.traverse(t1.data, function(h,children){nodes_t1.push(h);forest1.add(cpt + '__'+ h.deepLeafList, h.min_hash);cpt++}, null)
+    t2.traverse(t2.data, function(z,children){nodes_t2.push(z);forest2.add(cpt + '__'+ z.deepLeafList, z.min_hash);cpt++}, null)
 
+    forest1.index()
+    forest2.index()
 
         nodes_t1.forEach((node) => {
-
 
             function is_leaf(str) {
                 return !str.includes("||");
@@ -77,23 +83,32 @@ function compute_similarity_container_pair(co1,co2){
 
             var l = node.deepLeafList.filter(is_leaf)
 
+            var matches = forest2.query(node.min_hash,10)
+
+            var max_jacc = 0
+
+            var l = new Set(node.deepLeafList.filter(is_leaf))
+
+            matches.forEach(e => {
+                var r =   new Set(e.split('__')[1].split(',').filter(is_leaf))
+
+                var inter = Array.from(r).filter(x => l.has(x)).length
+                var union = [...new Set([...l, ...r])].length;
 
 
-            var matches = index.query(node.min_hash).filter((d) => {return d.startsWith('t2_')})
-
-            if (matches.length > 0){
-                var r =   matches[0].replace('t2_', '').split(',').filter(is_leaf)
+                var jj = inter/union
 
 
-                console.log(node.deepLeafList, matches[0] )
+                if (jj > max_jacc){
+                    max_jacc = jj
+                }
 
-                var inter = l.filter(value => r.includes(value)).length;
-                var union = l.concat(r).length;
 
-                node.elementS = inter/union
+            })
 
+            if (max_jacc > 0) {
+                node.elementS = max_jacc
             }
-
 
 
 
@@ -106,23 +121,31 @@ function compute_similarity_container_pair(co1,co2){
                 return !str.includes("||");
             }
 
-            var matches = index.query(node.min_hash).filter((d) => {return d.startsWith('t1_')})
+            var matches = forest1.query(node.min_hash)
 
-            if (matches.length > 0){
-                var r =   matches[0].replace('t1_', '').split(',').filter(is_leaf)
+            var max_jacc = 0
 
+            var l = new Set(node.deepLeafList.filter(is_leaf))
 
-                var l = node.deepLeafList.filter(is_leaf)
+            matches.forEach(e => {
+                var r =   new Set(e.split('__')[1].split(',').filter(is_leaf))
 
-
-                console.log(node.deepLeafList, matches[0] )
-
-                var inter = l.filter(value => r.includes(value)).length;
-                var union = l.concat(r).length;
-
-                node.elementS = inter/union
+                var inter = Array.from(r).filter(x => l.has(x)).length
+                var union = [...new Set([...l, ...r])].length;
 
 
+                var jj = inter/union
+
+
+                if (jj > max_jacc){
+                    max_jacc = jj
+                }
+
+
+            })
+
+            if (max_jacc > 0) {
+                node.elementS = max_jacc
             }
 
 
@@ -130,6 +153,7 @@ function compute_similarity_container_pair(co1,co2){
 
 
     console.log("BCN");
+
     console.timeLog("similarity");
 
     // Clean non essential datume

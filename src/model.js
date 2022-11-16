@@ -1,5 +1,6 @@
 import * as d3 from "d3";
-import { Minhash }  from 'minhash'
+import {MinHash, MinHashLSHForest}  from 'minhashjs'
+
 
 var uid_model = 0
 var uid_untitle_counter = 0
@@ -719,7 +720,7 @@ export default class Model {
 
         var assign_hash = function(node,children){
 
-            node.min_hash = new Minhash();
+            node.min_hash = new MinHash.MinHash()
             node.deepLeafList.map(function(w) { node.min_hash.update(w) });
         }
 
@@ -735,8 +736,6 @@ export default class Model {
         if (b > -1) {
             parent.children.splice(b, 1);
         }
-
-
 
     }
 
