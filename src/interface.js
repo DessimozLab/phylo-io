@@ -413,11 +413,14 @@ export default class Interface {
 
                 let moddy = container_object.models[container_object.current_model]
 
-                if (mapping.parameters.use_meta_for_leaf){
+                moddy.settings.use_meta_for_leaf = mapping.parameters.use_meta_for_leaf
+                moddy.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
+
+                if (moddy.settings.use_meta_for_leaf){
                     moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers)
                 }
 
-                if (mapping.parameters.use_meta_for_node){
+                if (moddy.settings.use_meta_for_node){
                     moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers)
                 }
 
@@ -500,14 +503,14 @@ export default class Interface {
                     if (mapping_file) {
                         var parameters = that.get_mapping_parameter_from_UI(true)
 
-                        console.log(parameters)
                         const reader = new FileReader();
 
                         reader.addEventListener('load', (event) => {
 
                             var meta = []
 
-                            if (file.name.split('.').pop() == 'tsv'){
+
+                            if (mapping_file.name.split('.').pop() == 'tsv'){
                                 d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
                             }
                             else{
