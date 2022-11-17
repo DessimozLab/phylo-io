@@ -240,8 +240,13 @@ export default class Model {
         var p;
 
         //has_branch_lenght
-        if (typeof json.children[0].branch_length === 'undefined') {this.settings.has_branch_lenght = false}
-        else {
+        this.settings.has_branch_lenght = false;
+
+        json.children.forEach((child) => {
+            if (typeof child.branch_length != 'undefined') { this.settings.has_branch_lenght = true; }
+        })
+
+        if (this.settings.has_branch_lenght) {
             this.settings.labels['node'].add('Length')
             this.settings.colorlabels['node'].add('Length')
             this.settings.extended_data_type['Length'] = 'num'
@@ -256,6 +261,10 @@ export default class Model {
             p = this.traverse(json, function(n,c){n.branch_length=1})
             p.branch_length = 0 // root
         }
+        else{ // sanity check
+            p = this.traverse(json, function(n,c){if (typeof n.branch_length == 'undefined') {n.branch_length=1} })
+            if (typeof p.branch_length == 'undefined') {p.branch_length=1}
+        }
 
         // set parent attribute
         p = this.traverse(json, null , this.set_parent)
@@ -266,7 +275,6 @@ export default class Model {
         this.traverse(p, function(n,c){
 
             n.extended_informations = {}
-
 
             if(n.branch_length){
                 n.extended_informations['Length'] = n.branch_length;
