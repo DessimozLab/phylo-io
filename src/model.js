@@ -487,13 +487,21 @@ export default class Model {
 
         // ajust distance now that distance target/source is splitted in two
         var old_distance = child.branch_length
-        parent.branch_length = old_distance/2
-        child.branch_length = old_distance /2
+
+        child.branch_length = old_distance/2
+        child.extended_informations['Length'] = old_distance/2
+
+        parent.branch_length_before_reverse = parent.branch_length
+        parent.branch_length = old_distance /2
+        parent.extended_informations['Length'] = old_distance/2
+
+
 
         // While we are at the old root reverse child/parent order
         var parent = parent
         var child = root
         var stack = []
+
         while (parent.root != true) {
 
             stack.push([parent,child])
@@ -501,12 +509,15 @@ export default class Model {
             child = parent
             parent = parent.parent
 
+
             parent.branch_length_before_reverse = parent.branch_length
             if (child.branch_length_before_reverse){
                 parent.branch_length = child.branch_length_before_reverse
+                parent.extended_informations['Length'] = child.branch_length_before_reverse
             }
             else{
                 parent.branch_length = child.branch_length
+                parent.extended_informations['Length'] = child.branch_length
             }
 
 
@@ -552,12 +563,8 @@ export default class Model {
         else {
             old_root.root = false
             old_root.branch_length = leading_branch.branch_length
+            parent.extended_informations['Length'] = leading_branch.branch_length
         }
-
-
-
-
-
 
 
         // configure new root
