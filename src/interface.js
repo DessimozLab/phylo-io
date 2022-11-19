@@ -14,6 +14,7 @@ export default class Interface {
         this.container_object = c
         this.viewer = v
         this.container_d3 = v.container_d3
+        this.api = this.container_object.api
 
         //MISC
         this.dismiss_blur = false
@@ -89,7 +90,7 @@ export default class Interface {
         this.add_zoom()
 
         // TOP LEFT
-        if (!phylo.settings.phylostratigraphy) {
+        if (!this.api.settings.phylostratigraphy) {
             if (this.container_object.models.length > 0) {
                 this.add_toggle()
             }
@@ -104,7 +105,7 @@ export default class Interface {
         this.add_undo()
 
         // COLOR LEGEND
-        if (phylo.settings.compareMode || (this.viewer.model.settings.style.color_accessor['node'] !== null && this.viewer.model.settings.style.color_accessor['node'] !== 'Topology'  )){
+        if (this.api.settings.compareMode || (this.viewer.model.settings.style.color_accessor['node'] !== null && this.viewer.model.settings.style.color_accessor['node'] !== 'Topology'  )){
             this.add_color_legend('node')
         }
 
@@ -164,7 +165,7 @@ export default class Interface {
         var left_margin = 25;
         var top_margin = 50;
 
-        if (phylo.settings.phylostratigraphy){
+        if (this.api.settings.phylostratigraphy){
             top_margin = 25;
         }
 
@@ -439,8 +440,8 @@ export default class Interface {
             //container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
 
-            if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){
-                phylo.compute_distance()
+            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.compute_distance()
             }
         }
 
@@ -1903,7 +1904,7 @@ export default class Interface {
             .attr('title',  d=> { return  this.container_object.history_actions.length > 0 ? 'Undo ' + this.container_object.get_last_action().name :  'Nothing to undo' })
             .style('margin', '2px')
             .on("click", d => {
-                phylo.undoing = true
+                this.api.undoing = true
                 var cta = this.container_object.pop_last_action();
                 if (cta) {
                     cta.fonct.apply(cta.fonction_obj, cta.argu);
@@ -1914,7 +1915,7 @@ export default class Interface {
                     }
 
                 }
-                phylo.undoing = false
+                this.api.undoing = false
             })
 
 
@@ -2214,7 +2215,7 @@ export default class Interface {
             }
 
 
-        if (phylo.settings.compareMode) {
+        if (this.api.settings.compareMode) {
             // equalize tree
             this.menu_general_p.append("p").text('Equalize trees')
                 .style('margin-bottom', '0px')
@@ -2993,7 +2994,7 @@ export default class Interface {
                 this.container_object.add_tree(this.examples["small1"])
 
 
-                phylo.start()
+                this.api.start()
             });
 
         document.querySelector('#ex2'+ this.container_object.uid).addEventListener('click', event => {
@@ -3003,7 +3004,7 @@ export default class Interface {
             this.container_object.add_tree(this.examples["unrooted2"])
             this.container_object.add_tree(this.examples["small2"])
             this.container_object.add_tree(this.examples["stack"],{'data_type': 'json', 'use_branch_lenght': false, 'show_histogram':true, 'collapse_level': 2})
-            phylo.start()
+            this.api.start()
         });
 
     }
