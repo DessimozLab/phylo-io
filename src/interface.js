@@ -436,7 +436,7 @@ export default class Interface {
             container_object.viewer.set_data(container_object.models[container_object.current_model]);
             container_object.compute_topology_and_render_bounded_viewer()
             container_object.viewer.render(container_object.viewer.hierarchy);
-            container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
+            //container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
 
             if (phylo.settings.compute_distance && phylo.bound_container.includes(this)){

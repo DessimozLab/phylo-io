@@ -77,7 +77,7 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
             for (const [uid, container] of cs) {
                 container.viewer.render(container.viewer.hierarchy);
-                container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level)
+                //container.viewer.update_collapse_level(container.models[container.current_model].settings.collapse_level, false)
             }
 
             if (this.settings.compute_distance){

@@ -106,17 +106,19 @@ export default class Container {
         this.viewer.set_data(this.models[this.current_model]);
 
         if (rendering){
-            this.viewer.render(this.viewer.hierarchy);
-            this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
 
             var z = this.models[this.current_model].zoom
+
 
             if (z) {
                 this.viewer.set_zoom(z.k, z.x, z.y)
             }
-            else{
-                //console.log(z)
-            }
+
+            this.viewer.render(this.viewer.hierarchy);
+            //this.viewer.update_collapse_level(this.models[this.current_model].settings.collapse_level)
+
+
+
         }
 
         //this.viewer.zoom_by(0.4) #STACK
@@ -145,11 +147,11 @@ export default class Container {
             this.current_model += offset;
             var m = this.models[this.current_model]
 
+
+
             this.viewer.set_data(m)
 
             this.compute_topology_and_render_bounded_viewer()
-
-            this.viewer.render(this.viewer.hierarchy)
 
             // apply if any stored zoom information
             var z = m.zoom
@@ -157,6 +159,8 @@ export default class Container {
                 this.viewer.set_zoom(z.k, z.x, z.y)
 
             }
+
+            this.viewer.render(this.viewer.hierarchy)
 
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
                 this.api.compute_distance()

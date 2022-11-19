@@ -1263,8 +1263,6 @@ export default class Viewer {
 
     set_zoom(k,x,y) {
 
-        var x = this.model.settings.mirror ? this.width - x: x
-
         d3.select('#svg' + this.uid )
             .call(this.zoom.transform, d3.zoomIdentity.translate(x,y).scale(k) );
     }
@@ -1486,21 +1484,8 @@ export default class Viewer {
         this.build_d3_data()
         this.render(this.hierarchy)
 
-        if (this.model.settings.mirror){
-            var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
-            this.set_zoom(zoom.k,zoom.x,zoom.y)
-        }
-        else{
-            var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
-            this.set_zoom(zoom.k,this.width- zoom.x,zoom.y)
-        }
-
-
-
-
-
-
-
+        var zoom = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node())
+            this.set_zoom(zoom.k,this.width-zoom.x,zoom.y)
 
 
     }
