@@ -1316,7 +1316,14 @@ export default class Viewer {
         var th = (Math.abs(r.min_x)+Math.abs(r.max_x))
         var h_scale = vh/th // ratio
 
-        var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
+
+
+        if (this.model.settings.mirror){
+            var x_tr = this.width - this.hierarchy.x +  this.settings.style.translate_top_fit
+        }
+        else{
+            var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
+        }
 
         var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
         var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
@@ -1372,8 +1379,13 @@ export default class Viewer {
         var h_scale = vh/th
 
 
+        if (this.model.settings.mirror){
+            var x_tr = this.width - this.hierarchy.x +  this.settings.style.translate_top_fit
+        }
+        else{
+            var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
+        }
 
-        var x_tr = - this.hierarchy.x +  this.settings.style.translate_top_fit
         var off_rooting = (Math.abs(r.min_x)-Math.abs(r.max_x))/2
         var y_tr =  -this.hierarchy.y + this.height/2 + off_rooting*h_scale
         //var y_tr =  (this.height/2) - this.hierarchy.y - (r.min_x + (r.max_x - r.min_x)/2)/2
