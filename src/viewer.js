@@ -693,10 +693,30 @@ export default class Viewer {
 
         var linkUpdate = linkEnter.merge(link);
 
+
+        var compared_model = false
+        if (this.container_object.api.settings.compareMode && this.container_object.api.bound_container.includes(this.container_object)){
+
+            var con1 = this.container_object.api.bound_container[0]
+            var con2 =  this.container_object.api.bound_container[1]
+
+            var other_container = con1 == this.container_object ? con2 : con1
+
+            if (other_container.models.length > 0 && other_container.viewer.model && this.model.settings.similarity.includes(other_container.viewer.model.uid) ){
+
+                compared_model = other_container.viewer.model.uid
+            }
+
+        }
+
+        console.log(this.container_object.div_id, compared_model)
+
+
+
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
-            .style('stroke', (d) => {return this.color_edge(d);})
+            .style('stroke', (d) => {return this.color_edge(d, compared_model);})
             .style('stroke-width',  real_edges_width + 'px'  )
             .attr('d', d => this.square_edges(d, d.parent))
 
@@ -712,13 +732,13 @@ export default class Viewer {
 
     }
 
-    color_edge(edge){
+    color_edge(edge, compared_model){
 
         if (edge.data.search_path){ return '#FF0000'}
 
-        else if (this.model.settings.style.color_accessor['node'] === "Topology" && edge.data.elementS) {
+        else if (this.model.settings.style.color_accessor['node'] === "Topology" && compared_model !== false && edge.data.elementS[compared_model]  ) {
 
-            return this.colorScale['node'](edge.data.elementS)
+            return this.colorScale['node'](edge.data.elementS[compared_model])
         }
 
         else if (this.model.settings.style.color_accessor['node'] === 'color'){

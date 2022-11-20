@@ -3,7 +3,6 @@ import Model from './model.js'
 import Interface from "./interface";
 import * as bootstrap from "bootstrap";
 import * as d3 from "d3";
-const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table, save_file_as } = require('./utils.js')
 var parser = require("biojs-io-newick");
 
@@ -26,6 +25,15 @@ export default class Container {
         this.viewer = new Viewer(this); // attach Viewer()
         this.history_actions = [] //  for Undo feature
         this.api = api
+
+    }
+
+    replace_model(old_model,new_model){
+        var index = this.models.indexOf(old_model);
+
+        if (~index) {
+            this.models[index] = new_model;
+        }
 
     }
 
@@ -147,7 +155,9 @@ export default class Container {
 
             this.viewer.set_data(m)
 
-            this.compute_topology_and_render_bounded_viewer()
+
+            this.api.stop_worker()
+            this.compute_topology_and_render_bounded_viewer(false)
 
             this.viewer.render(this.viewer.hierarchy)
 
@@ -203,7 +213,8 @@ export default class Container {
             m.swap_subtrees(data)
             this.viewer.apply_swap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
-            this.compute_topology_and_render_bounded_viewer()
+            //this.api.stop_worker()
+            //this.compute_topology_and_render_bounded_viewer(false)
             this.viewer.render(node)
 
 
@@ -212,7 +223,8 @@ export default class Container {
             m.unswap_subtrees(data)
             this.viewer.apply_unswap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
-            this.compute_topology_and_render_bounded_viewer()
+            //this.api.stop_worker()
+            //this.compute_topology_and_render_bounded_viewer(false)
             this.viewer.render(node)
 
 
@@ -226,6 +238,7 @@ export default class Container {
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
 
+            this.api.stop_worker()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
                 this.api.compute_distance()
@@ -239,6 +252,7 @@ export default class Container {
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
+            this.api.stop_worker()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
                 this.api.compute_distance()
@@ -250,6 +264,7 @@ export default class Container {
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
+            this.api.stop_worker()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
                 this.api.compute_distance()
@@ -490,7 +505,7 @@ export default class Container {
 
 
             if ( con1.models.length > 0 && con2.models.length > 0){
-                compute_visible_topology_similarity(this.api, recompute)
+                this.api.compute_visible_topology_similarity( recompute)
 
 
             var ccc = (con1 == this) ? con2 : con1
@@ -512,7 +527,7 @@ export default class Container {
                 var ccc = (con1 == this) ? con2 : con1
                 var model = ccc.viewer.model
 
-                var bcnode = model.data.children[0].elementBCN
+                var bcnode = model.data.children[0].elementBCN[this.viewer.model.uid]
                 if(bcnode && bcnode.parent){
                     this.trigger_("reroot", bcnode)
                 }

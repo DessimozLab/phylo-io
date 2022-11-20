@@ -13,6 +13,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'uid': null,
             'domain_extended_data' : {},
             'extended_data_type' : {'Topology': 'num'},
             'labels' : {'leaf' : new Set(), 'node':new Set()},
@@ -38,6 +39,7 @@ export default class Model {
             'use_meta_for_leaf' : true,
             'use_meta_for_node' : false,
             'has_histogram_data' : false,
+            'similarity': [],
             'style': {
                 'font_size_internal' : 14,
                 'color_accessor' : {'leaf' : null, 'node': "Topology"},
@@ -69,7 +71,6 @@ export default class Model {
 
             },
         }
-
 
         if (settings) {
 
@@ -105,17 +106,20 @@ export default class Model {
 
         this.settings.name = this.settings.name ? this.settings.name : "Untitled " + uid_untitle_counter++
 
-        this.uid = uid_model++;
+        this.uid = null
         this.input_data = data;
         this.leaves = []
-        this.similarity = []; // list of models id already process for topology BCN
 
 
 
         if (from_raw_data){
-        this.data = this.factory(this.parse());
+            this.uid = uid_model++;
+            this.settings.uid = this.uid;
+            this.data = this.factory(this.parse());
         }
         else{
+            this.uid = settings.uid;
+            this.settings.uid = this.uid;
             this.data = data
             data.leaves = this.get_leaves(data)
             this.traverse(data, function(n,c){
@@ -268,6 +272,8 @@ export default class Model {
         this.traverse(p, function(n,c){
 
             n.extended_informations = {}
+            n.elementS = {}
+            n.elementBCN = {}
 
 
             if(n.branch_length){
@@ -725,6 +731,17 @@ export default class Model {
         }
 
         this.traverse(this.data, assign_hash, null)
+    }
+
+    removeMinHash(){
+
+        var remove_hash = function(node,children){
+
+            node.min_hash = null
+        }
+
+        this.traverse(this.data, remove_hash, null)
+
     }
 
     reverse_order(parent,child) {
