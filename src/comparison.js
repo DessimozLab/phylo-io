@@ -1,8 +1,6 @@
 
 import {MinHash, MinHashLSHForest}  from 'minhashjs'
 
-
-
 function compute_visible_topology_similarity(api, recompute=true){
 
     // If no container selected for comparison, takes first two
@@ -50,8 +48,6 @@ function compute_similarity_container_pair(co1,co2){
     // DeepLeaf with filter(X = True)
     t1.createDeepLeafList(common_leaves)
     t2.createDeepLeafList(common_leaves)
-    console.log(t1.data.deepLeafList)
-    console.log(t2.data.deepLeafList)
     console.log("DeepLeaf");
     console.timeLog("similarity");
 
@@ -69,88 +65,14 @@ function compute_similarity_container_pair(co1,co2){
     var forest2 = new MinHashLSHForest.MinHashLSHForest()
 
     var cpt =0
-    t1.traverse(t1.data, function(h,children){nodes_t1.push(h);forest1.add(cpt + '__'+ h.deepLeafList, h.min_hash);cpt++}, null)
-    t2.traverse(t2.data, function(z,children){nodes_t2.push(z);forest2.add(cpt + '__'+ z.deepLeafList, z.min_hash);cpt++}, null)
+    t1.traverse(t1.data, function(h,children){nodes_t1.push(h);forest1.add(h, h.min_hash);cpt++}, null)
+    t2.traverse(t2.data, function(z,children){nodes_t2.push(z);forest2.add(z, z.min_hash);cpt++}, null)
 
     forest1.index()
     forest2.index()
 
-        nodes_t1.forEach((node) => {
-
-            function is_leaf(str) {
-                return !str.includes("||");
-            }
-
-            var l = node.deepLeafList.filter(is_leaf)
-
-            var matches = forest2.query(node.min_hash,10)
-
-            var max_jacc = 0
-
-            var l = new Set(node.deepLeafList.filter(is_leaf))
-
-            matches.forEach(e => {
-                var r =   new Set(e.split('__')[1].split(',').filter(is_leaf))
-
-                var inter = Array.from(r).filter(x => l.has(x)).length
-                var union = [...new Set([...l, ...r])].length;
-
-
-                var jj = inter/union
-
-
-                if (jj > max_jacc){
-                    max_jacc = jj
-                }
-
-
-            })
-
-            if (max_jacc > 0) {
-                node.elementS = max_jacc
-            }
-
-
-
-        })
-
-        nodes_t2.forEach((node) => {
-
-
-            function is_leaf(str) {
-                return !str.includes("||");
-            }
-
-            var matches = forest1.query(node.min_hash)
-
-            var max_jacc = 0
-
-            var l = new Set(node.deepLeafList.filter(is_leaf))
-
-            matches.forEach(e => {
-                var r =   new Set(e.split('__')[1].split(',').filter(is_leaf))
-
-                var inter = Array.from(r).filter(x => l.has(x)).length
-                var union = [...new Set([...l, ...r])].length;
-
-
-                var jj = inter/union
-
-
-                if (jj > max_jacc){
-                    max_jacc = jj
-                }
-
-
-            })
-
-            if (max_jacc > 0) {
-                node.elementS = max_jacc
-            }
-
-
-        })
-
+    find_BCN(nodes_t1, forest2)
+    find_BCN(nodes_t2, forest1)
 
     console.log("BCN");
 
@@ -164,8 +86,48 @@ function compute_similarity_container_pair(co1,co2){
     t1.similarity.push(t2.uid)
     t2.similarity.push(t1.uid)
 
+}
+
+function find_BCN(nodes_list, target_forest){
+    nodes_list.forEach((node) => {
+
+        function is_leaf(str) {
+            return !str.includes("||");
+        }
+
+        var matches = target_forest.query(node.min_hash,10)
+
+        var l = new Set(node.deepLeafList.filter(is_leaf))
+
+        var max_jacc = 0
+        var BCN = null
+
+        matches.forEach(e => {
+            var r =   new Set(e.deepLeafList.filter(is_leaf))
+
+            var inter = Array.from(r).filter(x => l.has(x)).length
+            var union = [...new Set([...l, ...r])].length;
 
 
+            var jj = inter/union
+
+
+            if (jj > max_jacc){
+                max_jacc = jj
+                BCN = e
+            }
+
+
+        })
+
+        if (max_jacc > 0) {
+            node.elementS = max_jacc
+            node.elementBCN = BCN
+        }
+
+
+
+    })
 }
 
 function assign_correspondingLeaf(t1,t2){
@@ -212,7 +174,6 @@ function getVisibleBCNs(tree1, tree2, recalculate) {
     getAllBCNs(tree1.data, tree2);
     getAllBCNs(tree2.data, tree1);
 }
-
 
 /**
  * Description:
@@ -336,8 +297,6 @@ function getElementS(v, n) {
 function getChildren(d) {
     return d._children ? d._children : (d.children ? d.children : []);
 }
-
-
 
 
 export { compute_visible_topology_similarity, compute_similarity_container_pair, BCN  };

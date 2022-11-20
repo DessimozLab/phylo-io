@@ -38,6 +38,6 @@
     "d3": "6.6.0",
     "d3-v6-tip": "^1.0.9",
     "file-saver": "^2.0.5",
-    "minhashjs": "file:../../minhashJS/minhashjs/minhashjs-1.0.0.tgz"
+    "minhashjs": "minhashjs"
   }
 }

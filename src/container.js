@@ -3,7 +3,7 @@ import Model from './model.js'
 import Interface from "./interface";
 import * as bootstrap from "bootstrap";
 import * as d3 from "d3";
-const { compute_visible_topology_similarity, BCN } = require('./comparison.js')
+const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table, save_file_as } = require('./utils.js')
 var parser = require("biojs-io-newick");
 
