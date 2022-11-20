@@ -687,7 +687,11 @@ export default class Model {
          var build_deepLeafList = function(child, node){
 
              if ( child.hasOwnProperty('children') ){
-                 child.deepLeafList.push(child.deepLeafList.filter(is_leaf).sort().join('||'));
+                 var dp = child.deepLeafList.filter(is_leaf).sort()
+                 if (!dp.every((e) => e === '')){
+                     child.deepLeafList.push(dp.join('||'));
+                 }
+
              }
 
              node.deepLeafList = node.deepLeafList.concat(child.deepLeafList)

@@ -91,32 +91,46 @@ function find_BCN(nodes_list, target_forest, target_uid){
         var matches = target_forest.query(node.min_hash,10)
 
         var l = new Set(node.deepLeafList.filter(is_leaf))
+        if (l.size > 0){
 
-        var max_jacc = 0
-        var BCN = null
+            var max_jacc = 0
+            var BCN = null
 
-        matches.forEach(e => {
-            var r =   new Set(e.deepLeafList.filter(is_leaf))
+            matches.forEach(e => {
+                var r =   new Set(e.deepLeafList.filter(is_leaf))
 
-            var inter = Array.from(r).filter(x => l.has(x)).length
-            var union = [...new Set([...l, ...r])].length;
-
-
-            var jj = inter/union
+                if (r.size > 0){
 
 
-            if (jj > max_jacc){
-                max_jacc = jj
-                BCN = e
+                    var inter = Array.from(r).filter(x => l.has(x)).length
+                    var union = [...new Set([...l, ...r])].length;
+
+                    var jj = inter/union
+
+
+
+                    if (jj > max_jacc){
+                        console.log(jj ,inter,union,r ,l)
+                        max_jacc = jj
+                        BCN = e
+                    }
+
+                }
+
+
+
+
+
+            })
+
+            if (max_jacc > 0) {
+                node.elementS[target_uid] = max_jacc
+                node.elementBCN[target_uid] = BCN
             }
 
 
-        })
-
-        if (max_jacc > 0) {
-            node.elementS[target_uid] = max_jacc
-            node.elementBCN[target_uid] = BCN
         }
+
 
 
 
