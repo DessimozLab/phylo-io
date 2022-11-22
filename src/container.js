@@ -25,6 +25,7 @@ export default class Container {
         this.viewer = new Viewer(this); // attach Viewer()
         this.history_actions = [] //  for Undo feature
         this.api = api
+        this.message_loader = null
 
     }
 

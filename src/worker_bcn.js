@@ -77,6 +77,9 @@ function compute_similarity_container_pair(t1,t2){
     t1.settings.similarity.push(t2.uid)
     t2.settings.similarity.push(t1.uid)
 
+    t1.data = t1.remove_circularity()
+    t2.data = t2.remove_circularity()
+
     return [t1,t2]
 
 }
@@ -110,7 +113,6 @@ function find_BCN(nodes_list, target_forest, target_uid){
 
 
                     if (jj > max_jacc){
-                        console.log(jj ,inter,union,r ,l)
                         max_jacc = jj
                         BCN = e
                     }

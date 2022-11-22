@@ -77,6 +77,10 @@ export default class Interface {
         if (this.viewer.model.settings.use_branch_lenght) {
             this.scale_text = this.add_scale()
         }
+        this.loader = this.bottom_left.append('text').style('color', 'red').style('font-size', 'small')
+        if (this.container_object.message_loader){
+            this.update_loader_message()
+        }
         //this.add_root_badge()
 
         // BOTTOM RIGHT
@@ -151,6 +155,11 @@ export default class Interface {
 
         return div
     }
+
+    update_loader_message(){
+        this.loader.text(this.container_object.message_loader)
+    }
+
 
     add_histogram_legend() {
 

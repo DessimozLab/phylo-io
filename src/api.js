@@ -119,6 +119,7 @@ export default class API { // todo: phylo is used ase reference from .html not g
             worker_comp.onmessage = function(e) {
 
                 var new_model1 = new Model(e.data[0].data, e.data[0].settings, false)
+                new_model1.add_circularity_back()
                 con1.replace_model(con1.viewer.model,new_model1)
                 con1.viewer.model = new_model1
 
@@ -127,20 +128,34 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
 
                 var new_model2 = new Model(e.data[1].data, e.data[1].settings, false)
+                new_model2.add_circularity_back()
                 con2.replace_model(con2.viewer.model,new_model2)
                 con2.viewer.model = new_model2
                 con2.viewer.set_data(con2.viewer.model)
                 con2.viewer.render(con2.viewer.hierarchy);
 
-                // Register processed pair
 
+                con1.message_loader = null
+                con1.viewer.interface.update_loader_message()
 
-
+                con2.message_loader = null
+                con2.viewer.interface.update_loader_message()
             }
 
             var datum = {'tree1':con1.viewer.model, 'tree2':con2.viewer.model}
 
             this.set_worker(worker_comp)
+
+            var time = parseInt((con1.viewer.model.leaves.length*2 + con2.viewer.model.leaves.length*2) / (40000/150))
+
+            var msg =  `Computing similarity... (~  ${time} seconds)`
+
+            con1.message_loader = msg
+            con1.viewer.interface.update_loader_message()
+
+            con2.message_loader = msg
+            con2.viewer.interface.update_loader_message()
+
             worker_comp.postMessage(datum);
         }
 
@@ -152,6 +167,9 @@ export default class API { // todo: phylo is used ase reference from .html not g
     }
     stop_worker(){
         try {
+            for (const [uid, container] of this.containers) {
+                container.message_loader = null
+            }
             this.worker.terminate();
         } catch (error) {
         }

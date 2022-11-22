@@ -128,6 +128,8 @@ export default class Model {
         }
 
         this.data.root = true;
+        this.data.elementS = {}
+        this.data.elementBCN = {}
         this.rooted = this.data.children.length !== 3
         this.big_tree = (this.leaves.length > 500)
 
