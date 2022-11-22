@@ -77,8 +77,8 @@ function compute_similarity_container_pair(t1,t2){
     t1.settings.similarity.push(t2.uid)
     t2.settings.similarity.push(t1.uid)
 
-    t1.data = t1.remove_circularity()
-    t2.data = t2.remove_circularity()
+    t1.data = t1.remove_circularity_only_parent_and_leaves()
+    t2.data = t2.remove_circularity_only_parent_and_leaves()
 
     return [t1,t2]
 
@@ -127,6 +127,9 @@ function find_BCN(nodes_list, target_forest, target_uid){
 
             if (max_jacc > 0) {
                 node.elementS[target_uid] = max_jacc
+                if (!node.elementBCN){
+                    node.elementBCN = {}
+                }
                 node.elementBCN[target_uid] = BCN
             }
 

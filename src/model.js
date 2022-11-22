@@ -789,6 +789,18 @@ export default class Model {
         return data
     }
 
+    remove_circularity_only_parent_and_leaves(){ // safe my model
+        var data = Object.assign({}, this.data);
+
+        this.traverse(data, function(n,c){
+            n.parent=null;
+            n.leaves=null;
+        })
+
+        return data
+    }
+
+
     add_circularity_back(){
 
         this.data.leaves = this.get_leaves(this.data)
