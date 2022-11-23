@@ -788,7 +788,7 @@
     //window.addEventListener('resize', refresh);
 
 
-    JSON.parse(phylo.get_json_pickle())
+    //JSON.parse(phylo.get_json_pickle())
 
     function dragElement(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -842,6 +842,7 @@
 
         start_phylo(phylo.settings.compareMode)
 
+        phylo.set_color_scales(json.color_scales)
 
         let cs = Object.values(json.containers)
         let csp = Object.values(phylo.containers)

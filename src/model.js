@@ -787,12 +787,13 @@ export default class Model {
 
     }
 
-    add_meta_leaves(meta, headers){
+    add_meta_leaves(meta, headers, api){
 
         // headers: column_name -> type
 
         Object.keys(headers).forEach(item => {
             if (item != 'id' || item != 'Length' ) {
+
                 this.settings.extended_data_type[item] = headers[item]
                 this.settings.domain_extended_data[item] = []
                 this.settings.labels['leaf'].add(item)
@@ -827,6 +828,10 @@ export default class Model {
                         }
 
                         if (this.settings.extended_data_type[item[0]] == 'cat'){
+
+                            var cs = api.get_color_scale(item[0])
+                            cs.add_value_to_map(item[1])
+
                             this.settings.domain_extended_data[item[0]].push(item[1])
                         }
 
@@ -839,10 +844,23 @@ export default class Model {
         })
 
 
+        Object.keys(headers).forEach(item => {
+            if (item != 'id' || item != 'Length' ) {
+
+
+                if (headers[item] == 'cat'){
+                    api.get_color_scale(item).update()
+
+                }
+            }
+
+        })
+
+
 
     }
 
-    add_meta_nodes(meta, headers){
+    add_meta_nodes(meta, headers, api){
 
 
         Object.keys(headers).forEach(item => {
@@ -868,10 +886,30 @@ export default class Model {
                 Object.entries(meta[n.extended_informations['Data']]).forEach(item => {
                     if (item[0] != 'id'){
                         n.extended_informations[item[0]]= item[1]
+
+                        if (this.settings.extended_data_type[item[0]] == 'cat'){
+
+                            var cs = api.get_color_scale(item[0])
+                            cs.add_value_to_map(item[1])
+
+                        }
                     }
                 })
 
             }
+        })
+
+        Object.keys(headers).forEach(item => {
+
+            if (item != 'id' || item != 'Length' ) {
+
+
+                if (headers[item] == 'cat'){
+                    api.get_color_scale(item).update()
+
+                }
+            }
+
         })
     }
 

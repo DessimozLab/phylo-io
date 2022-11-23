@@ -418,11 +418,11 @@ export default class Interface {
                 moddy.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
 
                 if (moddy.settings.use_meta_for_leaf){
-                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers)
+                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api)
                 }
 
                 if (moddy.settings.use_meta_for_node){
-                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers)
+                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api)
                 }
 
             }
@@ -1678,11 +1678,11 @@ export default class Interface {
 
 
                     if (that.viewer.model.settings.use_meta_for_leaf){
-                        that.viewer.model.add_meta_leaves(meta, parameters.headers)
+                        that.viewer.model.add_meta_leaves(meta, parameters.headers, that.container_object.api)
                     }
 
                     if (that.viewer.model.settings.use_meta_for_node){
-                        that.viewer.model.add_meta_nodes(meta, parameters.headers)
+                        that.viewer.model.add_meta_nodes(meta, parameters.headers, that.container_object.api)
                     }
 
 

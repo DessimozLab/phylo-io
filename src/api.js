@@ -1,11 +1,12 @@
 import Container from './container.js'
+import Color_mapper from './color_mapper'
 const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table, reroot_hierarchy, screen_shot } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
 import FileSaver from 'file-saver' ;
 
 // Main class of phylo.io
-export default class API { // todo: phylo is used ase reference from .html not goood
+export default class API {
 
     constructor() {
 
@@ -47,6 +48,33 @@ export default class API { // todo: phylo is used ase reference from .html not g
         };
         this.settings = {...this.settings, ...default_settings};
         this.undoing = false // specify is we are undoing an action to prevent infinite looping
+
+        this.color_scales = {}
+    }
+
+    get_color_scale(name) {
+        if (name in this.color_scales) {
+            return this.color_scales[name]
+        } else {
+            this.color_scales[name] = new Color_mapper()
+            return this.color_scales[name]
+        }
+    }
+
+    set_color_scales(color_scales){
+
+
+        for (const [key, value] of Object.entries(color_scales)) {
+
+            var newcs = this.get_color_scale(key)
+            newcs.cpt = value.cpt
+            newcs.scale = value.scale
+            newcs.domain_mapping = value.domain_mapping
+            newcs.update()
+
+            this.color_scales[key] =  newcs
+        }
+
     }
 
     // create and return a new container and add it the dict using its div id
@@ -93,7 +121,8 @@ export default class API { // todo: phylo is used ase reference from .html not g
 
         var pickle = {
             "containers" : [],
-            'settings' : this.settings
+            'settings' : this.settings,
+            'color_scales': this.color_scales
         }
 
         let cs = Object.values(this.containers)

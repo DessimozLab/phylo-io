@@ -763,8 +763,12 @@ export default class Viewer {
 
             if (type_acc == 'cat'){
 
-                var dom = this.model.settings.domain_extended_data[acc]
-                this.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
+                this.colorScale[type] = this.container_object.api.get_color_scale(acc)
+
+
+
+                //var dom = this.model.settings.domain_extended_data[acc]
+                //this.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
                 return
             }
 
@@ -2138,7 +2142,18 @@ export default class Viewer {
 
                         if (typeof v !== "undefined" ) {
 
-                            return this.colorScale['leaf'](v)
+                            if (type_acc == 'cat'){
+
+                                var cs = this.container_object.api.get_color_scale(acc)
+                                return cs.get_color(v)
+
+                            }
+
+                            else{
+                                return this.colorScale['leaf'](v)
+                            }
+
+
                         }
 
 
