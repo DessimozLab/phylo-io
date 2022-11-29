@@ -1,9 +1,9 @@
 import Container from './container.js'
 import Color_mapper from './color_mapper'
-const { compute_visible_topology_similarity } = require('./comparison.js')
 const { build_table, reroot_hierarchy, screen_shot } = require('./utils.js')
 import keyboardManager from './keyboardManager.js'
 import FileSaver from 'file-saver' ;
+import Model from "./model";
 
 // Main class of phylo.io
 export default class API {
@@ -24,6 +24,7 @@ export default class API {
     }
 
     set_default_parameters(){
+        this.worker = false
         this.containers = {}; // {container id -> Container() }
         this.bound_container = [] // pair of container used for distance computation
         this.session_token = null // unique session token for cloud saving
@@ -101,7 +102,8 @@ export default class API {
 
         if (this.settings.compareMode && con1.models.length > 0 && con2.models.length > 0 ){
 
-            compute_visible_topology_similarity(this, recompute)
+            this.stop_worker()
+            this.compute_visible_topology_similarity(recompute)
 
             for (const [uid, container] of cs) {
                 container.viewer.render(container.viewer.hierarchy);
@@ -116,6 +118,94 @@ export default class API {
 
         new keyboardManager(this);
     }
+
+    compute_visible_topology_similarity(recompute=true){
+
+        // If no container selected for comparison, takes first two
+        if (this.bound_container.length < 2){
+
+            let cs = Object.values(this.containers)
+
+            this.bound_container = []
+            this.bound_container.push(cs[0])
+            this.bound_container.push(cs[1])
+        }
+
+        var con1 = this.bound_container[0]
+        var con2 =  this.bound_container[1]
+
+        // check if already computed
+        var todo1 = !(con2.viewer.model.settings.similarity.includes(con1.viewer.model.uid))
+        var todo2 = !(con1.viewer.model.settings.similarity.includes(con2.viewer.model.uid))
+
+
+        if (recompute || todo1 || todo2  ){
+
+            var worker_comp = new Worker(new URL("./worker_bcn.js", import.meta.url));
+
+
+            worker_comp.onmessage = function(e) {
+
+                var new_model1 = new Model(e.data[0].data, e.data[0].settings, false)
+                new_model1.add_circularity_back()
+                con1.replace_model(con1.viewer.model,new_model1)
+                con1.viewer.model = new_model1
+
+                con1.viewer.set_data(con1.viewer.model)
+                con1.viewer.render(con1.viewer.hierarchy);
+
+
+                var new_model2 = new Model(e.data[1].data, e.data[1].settings, false)
+                new_model2.add_circularity_back()
+                con2.replace_model(con2.viewer.model,new_model2)
+                con2.viewer.model = new_model2
+                con2.viewer.set_data(con2.viewer.model)
+                con2.viewer.render(con2.viewer.hierarchy);
+
+
+                con1.message_loader = null
+                con1.viewer.interface.update_loader_message()
+
+                con2.message_loader = null
+                con2.viewer.interface.update_loader_message()
+            }
+
+            var datum = {'tree1':con1.viewer.model, 'tree2':con2.viewer.model}
+
+            this.set_worker(worker_comp)
+
+            var time = parseInt((con1.viewer.model.leaves.length*2 + con2.viewer.model.leaves.length*2) / (40000/150))
+
+            var msg =  `Computing similarity... (~  ${time} seconds)`
+
+            con1.message_loader = msg
+            con1.viewer.interface.update_loader_message()
+
+            con2.message_loader = msg
+            con2.viewer.interface.update_loader_message()
+
+            worker_comp.postMessage(datum);
+        }
+
+
+    }
+
+    set_worker(worker){
+        this.worker = worker
+    }
+    stop_worker(){
+        try {
+            for (const [uid, container] of this.containers) {
+                container.message_loader = null
+            }
+            this.worker.terminate();
+        } catch (error) {
+        }
+
+
+    }
+
+
 
     get_json_pickle(){
 

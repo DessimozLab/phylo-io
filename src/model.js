@@ -1,4 +1,6 @@
 import * as d3 from "d3";
+import {MinHash, MinHashLSHForest}  from 'minhashjs'
+
 
 var uid_model = 0
 var uid_untitle_counter = 0
@@ -11,6 +13,7 @@ export default class Model {
 
         this.zoom;
         this.settings = {
+            'uid': null,
             'domain_extended_data' : {},
             'extended_data_type' : {'Topology': 'num'},
             'labels' : {'leaf' : new Set(), 'node':new Set()},
@@ -36,6 +39,7 @@ export default class Model {
             'use_meta_for_leaf' : true,
             'use_meta_for_node' : false,
             'has_histogram_data' : false,
+            'similarity': [],
             'style': {
                 'font_size_internal' : 14,
                 'color_accessor' : {'leaf' : null, 'node': "Topology"},
@@ -67,7 +71,6 @@ export default class Model {
 
             },
         }
-
 
         if (settings) {
 
@@ -103,17 +106,20 @@ export default class Model {
 
         this.settings.name = this.settings.name ? this.settings.name : "Untitled " + uid_untitle_counter++
 
-        this.uid = uid_model++;
+        this.uid = null
         this.input_data = data;
         this.leaves = []
-        this.similarity = []; // list of models id already process for topology BCN
 
 
 
         if (from_raw_data){
-        this.data = this.factory(this.parse());
+            this.uid = uid_model++;
+            this.settings.uid = this.uid;
+            this.data = this.factory(this.parse());
         }
         else{
+            this.uid = settings.uid;
+            this.settings.uid = this.uid;
             this.data = data
             data.leaves = this.get_leaves(data)
             this.traverse(data, function(n,c){
@@ -122,8 +128,10 @@ export default class Model {
         }
 
         this.data.root = true;
+        this.data.elementS = {}
+        this.data.elementBCN = {}
         this.rooted = this.data.children.length !== 3
-        this.big_tree = (this.leaves.length > 1000)
+        this.big_tree = (this.leaves.length > 500)
 
         this.hierarchy_mockup = this.build_hierarchy_mockup()
         this.table = build_table(this.hierarchy_mockup)
@@ -275,6 +283,8 @@ export default class Model {
         this.traverse(p, function(n,c){
 
             n.extended_informations = {}
+            n.elementS = {}
+            n.elementBCN = {}
 
             if(n.branch_length){
                 n.extended_informations['Length'] = n.branch_length;
@@ -712,28 +722,73 @@ export default class Model {
      - Root has leaves: A, B, C and D (terminal leaves)
      - Root has deep leaves: A, B, C, D and CD (terminal leaves + intermediate leaves)
      */
-    createDeepLeafList() {
+    createDeepLeafList(filter) {
+
+        function is_leaf(str) {
+            return !str.includes("||");
+        }
 
          var build_deepLeafList = function(child, node){
 
+             if ( child.hasOwnProperty('children') ){
+                 var dp = child.deepLeafList.filter(is_leaf).sort()
+                 if (!dp.every((e) => e === '')){
+                     child.deepLeafList.push(dp.join('||'));
+                 }
+
+             }
 
              node.deepLeafList = node.deepLeafList.concat(child.deepLeafList)
-
         }
 
         var build_deepLeafLeaves = function(node,children){
 
              if (!(node.hasOwnProperty('children') )){
-                 node.deepLeafList = [node.name]
+
+                 if (typeof filter != 'undefined') {
+                     if (filter.includes(node.name)){
+                         node.deepLeafList = [node.name]
+                     }
+                     else{
+                         node.deepLeafList = []
+                     }
+
+                 }
+                 else{
+                     node.deepLeafList = [node.name]
+                 }
+
              }
              else {
-                 node.deepLeafList = [] //node.name
+                 node.deepLeafList = []
              }
 
 
         }
 
         this.traverse(this.data, build_deepLeafLeaves, build_deepLeafList)
+
+    }
+
+    createMinHash(){
+
+        var assign_hash = function(node,children){
+
+            node.min_hash = new MinHash.MinHash()
+            node.deepLeafList.map(function(w) { node.min_hash.update(w) });
+        }
+
+        this.traverse(this.data, assign_hash, null)
+    }
+
+    removeMinHash(){
+
+        var remove_hash = function(node,children){
+
+            node.min_hash = null
+        }
+
+        this.traverse(this.data, remove_hash, null)
 
     }
 
@@ -746,8 +801,6 @@ export default class Model {
         if (b > -1) {
             parent.children.splice(b, 1);
         }
-
-
 
     }
 
@@ -777,6 +830,18 @@ export default class Model {
 
         return data
     }
+
+    remove_circularity_only_parent_and_leaves(){ // safe my model
+        var data = Object.assign({}, this.data);
+
+        this.traverse(data, function(n,c){
+            n.parent=null;
+            n.leaves=null;
+        })
+
+        return data
+    }
+
 
     add_circularity_back(){
 
