@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "description": "",
   "scripts": {
-    "test": "./node_modules/.bin/mocha test/testSuite.js",
+    "test": "jest --silent=false",
     "build": "webpack"
   },
   "keywords": [],
@@ -14,7 +14,9 @@
     "file-loader": "^6.2.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.35.0",
-    "webpack-cli": "^4.6.0"
+    "webpack-cli": "^4.6.0",
+    "jest": "^27.5.1"
+
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
