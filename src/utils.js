@@ -111,9 +111,19 @@ function build_table(hierarchy){ // build table for RF
 
     }
 
+
+
     if (X[0][0] !== null){
         X[0] = Array(3).fill(null)
-        n_edges -= 1
+
+    }
+
+    n_edges = 0
+    for (const n2Key in X) {
+        if (X[n2Key][0] !== null){
+            n_edges++
+        }
+
     }
 
     return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I}
@@ -602,10 +612,7 @@ function prepare_and_run_distance(m1,m2){
     var hierachy2 = filter_leaves_hierarchy(h2, intersection )
     var table2 = build_table(hierachy2)
 
-
-
     var r = compute_RF_Euc(table1,table2)
-    //console.log(r, table1, table2)
     distance.clade = r.RF
     distance.Cl_good = r.good
     distance.Cl_left = r.L
@@ -617,6 +624,8 @@ function prepare_and_run_distance(m1,m2){
     // build tables
     var X1 = build_table(hierarchy_mockup_rerooted1)
     var X2 = build_table(hierarchy_mockup_rerooted2)
+
+    //console.log(X1, X2)
 
     var r2 = compute_RF_Euc(X1,X2)
     distance.RF = r2.RF

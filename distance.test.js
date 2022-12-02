@@ -239,8 +239,6 @@ for (const family in data) {
 
        });
 
-    /*
-
     test('check RF only (use filtered tree) for Family #' + family, () => {
 
               const  phylo = PhyloIO.init()
@@ -254,21 +252,18 @@ for (const family in data) {
 
            });
 
-    test('check RF for Family #' + family, () => {
+   test('check RF for Family #' + family, () => {
 
-               const  phylo = PhyloIO.init()
+              const  phylo = PhyloIO.init()
 
-               var m1 = phylo._create_model(data[family].L)
-               var m2 = phylo._create_model(data[family].R)
+              var m1 = phylo._create_model(data[family].L)
+              var m2 = phylo._create_model(data[family].R)
 
-               var d = utils.prepare_and_run_distance(m1,m2)
+              var d = utils.prepare_and_run_distance(m1,m2)
 
-               expect(d.RF).toBe(data[family].root_URF);
+              expect(d.RF).toBe(data[family].root_URF);
 
-           });
-
-     */
-
+          });
 
 }
 
