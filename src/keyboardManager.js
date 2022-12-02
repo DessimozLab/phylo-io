@@ -47,7 +47,7 @@ export default class keyboardManager {
 
                 "g": function(){
                     phylo.settings.compute_distance = true;
-                    phylo.compute_distance()}
+                    phylo.send_worker_distance()}
 
             }
 

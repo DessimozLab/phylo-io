@@ -6,8 +6,9 @@ module.exports = {
     output: {
         publicPath: '',
         filename: 'phylo.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist-jest'),
         library: 'PhyloIO',
+        libraryTarget: 'commonjs2'
     },
     resolve: {
         fallback: {

@@ -1,4 +1,5 @@
-import * as fs from 'file-saver';
+const fs = require('file-saver')
+const d3 = require("d3");
 
 function traverse(o,func_pre, func_post) {
 
@@ -39,18 +40,20 @@ function build_table(hierarchy){ // build table for RF
     var n = hierarchy.leaves().length
     var X = Array.from(new Array(n), _ => Array(3).fill(0));
     var S2I = {} //Array(n).fill(0)
-    var I2S = Array(n).fill(0)
+    var I2S = Array(n).fill(null)
     var n_edges = 0
 
-    var nz = []
-    traverse(hierarchy, null, function(node,children){nz.push(node)})
-    nz = nz.entries()
+    var nzl = []
+    traverse(hierarchy, null, function(node,children){nzl.push(node)})
+    nzl.push(hierarchy)
+    var nz = nzl.entries()
 
     var n1 = nz.next()
     var n2 = nz.next()
     var i = 0
 
     while (true) {
+
         var node = n1.value[1]
         var node2 = n2.value[1]
         var p = node.parent
@@ -95,12 +98,17 @@ function build_table(hierarchy){ // build table for RF
         n2 = nz.next()
 
         if (n2.done){
+    /*
             // process seed node, w=0
             ii = node.right_
             X[ii][0] = node.left_
             X[ii][1] = node.right_
             X[ii][2] = node.data.branch_length
             n_edges += 1
+
+            */
+
+
             break
         }
 
@@ -403,4 +411,221 @@ function save_file_as(filename, data) {
     }
 }
 
-export {build_table, reroot_hierarchy, screen_shot, parse_nhx, save_file_as};
+function compute_RF_Euc(X1,X2){
+
+    var n_good  = 0
+    var euclidian = 0
+
+    for (var i = 0; i < X1.table.length; i++) {
+        var s1 = X1.table[i][0]
+        var e1 = X1.table[i][1]
+        var w1 = Math.abs(e1-s1)
+
+        if (w1 > 0){
+
+            var species =  X1.I2S.slice(s1,e1+1)
+            var index = []
+
+            for (const [name, idx] of Object.entries(X2.S2I)) {
+                if (species.includes(name)) {index.push(idx)}
+            }
+
+            if (index.length <= 0) {
+                continue
+            }
+
+            var s2 = Math.min.apply(null,index)
+            var e2 = Math.max.apply(null,index)
+            var w2 = Math.abs(e2-s2)
+
+            if (w1 == w2) {
+
+                if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
+                    n_good += 1
+                    euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
+                }
+                else if (X2.table[s2][0] == s2 && X2.table[s2][1] == e2){
+
+                    n_good += 1
+                    euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[s2][2]) )
+
+                }
+                else{
+                    euclidian += parseFloat(X1.table[i][2])
+                    euclidian += parseFloat(X2.table[e2][2])
+
+                }
+
+            }
+
+            else{
+                euclidian += parseFloat(X1.table[i][2])
+                euclidian += parseFloat(X2.table[e2][2])
+            }
+
+
+
+
+        }
+
+    }
+
+    return {
+        'E':euclidian.toFixed(2),
+        'RF': (X1.n_edges + X2.n_edges -2*n_good),
+        'good':n_good,
+        'L':X1.n_edges,
+        'R':X2.n_edges,
+
+    }
+}
+
+function get_intersection_leaves(h1, h2){
+
+    var leaves1 = h1.leaves().map(x => x.data.name);
+    var leaves2 = h2.leaves().map(x => x.data.name);
+    return Array.from(new Set(leaves1.filter(value => leaves2.includes(value))))
+}
+
+function r_child(parent,child){
+    let index = parent.children.indexOf(child);
+    if (index > -1) {
+        parent.children.splice(index, 1);
+    }
+}
+
+function get_duplicated(array){
+    return array.filter((e, i, a) => a.indexOf(e) !== i)
+}
+
+function remove_from_array(array, to_remove){
+
+    return array.filter(element => !to_remove.includes(element));
+
+}
+
+function remove_duplicated_and_unnamed_leaves_hierarchy(h){
+
+    var leaf_space = []
+
+    h.eachAfter(d => {
+
+        if (d.parent && !d.children){
+
+            if (d.data.name.length === 0){
+                r_child(d.parent,d)
+                d= null;
+            }
+            else {
+                leaf_space.push(d.data.name)
+            }
+        }
+
+
+    });
+
+    var dup = get_duplicated(leaf_space)
+
+
+    var to_keep = remove_from_array(leaf_space, dup)
+
+    return filter_leaves_hierarchy(h, to_keep)
+}
+
+function filter_leaves_hierarchy(h, leaves_to_keep){
+
+
+    h.eachAfter(d => {
+
+        if (d.children && d.parent){
+
+            if (d.children.length === 0){
+                r_child(d.parent, d)
+                d = null
+            }
+
+            else if (d.children.length === 1){
+                r_child(d.parent, d)
+                d.parent.children.push(d.children[0])
+                d.children[0].parent = d.parent
+                d = null
+
+            }
+        }
+
+        else if (d.parent){
+
+            if (!leaves_to_keep.includes(d.data.name)){
+                r_child(d.parent,d)
+                d= null;
+            }
+        }
+
+
+    });
+
+    if (Array.from(new Set(h.leaves().map(x => x.data.name))).length == leaves_to_keep.length){
+        return h
+    }
+
+    return false
+}
+
+function prepare_and_run_distance(m1,m2){
+
+    var distance = {
+        'no_distance_message': true,
+        'clade': false,
+        'Cl_good': false,
+        'Cl_left': false,
+        'Cl_right': false,
+        'RF': false,
+        'RF_good': false,
+        'RF_left': false,
+        'RF_right': false,
+        'Euc': false
+    }
+
+    // CHECK INTERSECTING LEAVES
+    var h1_raw = d3.hierarchy(m1.data, d => d.children );
+    var h2_raw = d3.hierarchy(m2.data, d => d.children );
+
+    var h1 = remove_duplicated_and_unnamed_leaves_hierarchy(h1_raw)
+    var h2 = remove_duplicated_and_unnamed_leaves_hierarchy(h2_raw)
+
+    var intersection = get_intersection_leaves(h1,h2)
+
+    // FILTER TREE TO KEEP ONLY INTERSECTING LEAVES
+
+    var hierachy1 = filter_leaves_hierarchy(h1, intersection )
+    var table1 = build_table(hierachy1)
+
+    var hierachy2 = filter_leaves_hierarchy(h2, intersection )
+    var table2 = build_table(hierachy2)
+
+    var r = compute_RF_Euc(table1,table2)
+    distance.clade = r.RF
+    distance.Cl_good = r.good
+    distance.Cl_left = r.L
+    distance.Cl_right = r.R
+
+    var hierarchy_mockup_rerooted1 = reroot_hierarchy(hierachy1, intersection[0])
+    var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
+
+    // build tables
+    var X1 = build_table(hierarchy_mockup_rerooted1)
+    var X2 = build_table(hierarchy_mockup_rerooted2)
+
+    var r2 = compute_RF_Euc(X1,X2)
+    distance.RF = r2.RF
+    distance.RF_good = r2.good
+    distance.RF_left = r2.L
+    distance.RF_right = r2.R
+    distance.Euc = r2.E
+
+    return  distance
+}
+
+module.exports =  {prepare_and_run_distance, build_table, reroot_hierarchy, screen_shot, parse_nhx, save_file_as, compute_RF_Euc, get_intersection_leaves, filter_leaves_hierarchy, remove_duplicated_and_unnamed_leaves_hierarchy};
+
+

@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {MinHash, MinHashLSHForest}  from 'minhashjs'
+import {MinHash}  from 'minhashjs'
 
 
 var uid_model = 0
@@ -132,9 +132,6 @@ export default class Model {
         this.data.elementBCN = {}
         this.rooted = this.data.children.length !== 3
         this.big_tree = (this.leaves.length > 500)
-
-        this.hierarchy_mockup = this.build_hierarchy_mockup()
-        this.table = build_table(this.hierarchy_mockup)
 
         // check that histogram data is present and compute
         if(this.settings.show_histogram && this.data.evolutionaryEvents) {
