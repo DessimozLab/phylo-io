@@ -28,13 +28,16 @@ for (const family in data) {
         // CREATE MODEL & HIERARCHY
         var m1 = phylo._create_model(data[family].L)
         var m2 = phylo._create_model(data[family].R)
-        var h1 = d3.hierarchy(m1.data, d => d.children );
-        var h2 = d3.hierarchy(m2.data, d => d.children );
+        var h1_raw = d3.hierarchy(m1.data, d => d.children );
+        var h2_raw = d3.hierarchy(m2.data, d => d.children );
 
         var m1_F = phylo._create_model(data[family].L_filter)
         var m2_F = phylo._create_model(data[family].R_filter)
         var h1_f = d3.hierarchy(m1_F.data, d => d.children );
         var h2_f = d3.hierarchy(m2_F.data, d => d.children );
+
+        var h1 = utils.remove_duplicated_and_unnamed_leaves_hierarchy(h1_raw)
+        var h2 = utils.remove_duplicated_and_unnamed_leaves_hierarchy(h2_raw)
 
         // CHECK INTERSECTING LEAVES
         var intersection = utils.get_intersection_leaves(h1,h2)
@@ -191,6 +194,21 @@ for (const family in data) {
        }
 
 
+        // CHECK ALL TABLE NO NULL
+        for (let i = 1; i < ln.length; i++) {
+
+            var tt = t.table[i]
+
+            for (const i in tt) {
+                expect(tt[i]).not.toBeNull()
+            }
+
+        }
+
+
+
+
+
 
 
     })
@@ -208,45 +226,48 @@ for (const family in data) {
 
     });
 
-    test('check RF only (use filtered tree) for Family #' + family, () => {
-
-       const  phylo = PhyloIO.init()
-
-       var m1 = phylo._create_model(data[family].L_filter)
-       var m2 = phylo._create_model(data[family].R_filter)
-
-       var d = utils.prepare_and_run_distance(m1,m2)
-
-       expect(d.RF).toBe(data[family].root_URF);
-
-    });
-
     test('check Clade for Family #' + family, () => {
 
-      const  phylo = PhyloIO.init()
+           const  phylo = PhyloIO.init()
 
-      var m1 = phylo._create_model(data[family].L)
-      var m2 = phylo._create_model(data[family].R)
+           var m1 = phylo._create_model(data[family].L)
+           var m2 = phylo._create_model(data[family].R)
 
-      var d = utils.prepare_and_run_distance(m1,m2)
+           var d = utils.prepare_and_run_distance(m1,m2)
 
-      expect(d.clade).toBe(data[family].root_clade);
+           expect(d.clade).toBe(data[family].root_clade);
 
-  });
+       });
+
+    /*
+
+    test('check RF only (use filtered tree) for Family #' + family, () => {
+
+              const  phylo = PhyloIO.init()
+
+              var m1 = phylo._create_model(data[family].L_filter)
+              var m2 = phylo._create_model(data[family].R_filter)
+
+              var d = utils.prepare_and_run_distance(m1,m2)
+
+              expect(d.RF).toBe(data[family].root_URF);
+
+           });
 
     test('check RF for Family #' + family, () => {
 
-        const  phylo = PhyloIO.init()
+               const  phylo = PhyloIO.init()
 
-        var m1 = phylo._create_model(data[family].L)
-        var m2 = phylo._create_model(data[family].R)
+               var m1 = phylo._create_model(data[family].L)
+               var m2 = phylo._create_model(data[family].R)
 
-        var d = utils.prepare_and_run_distance(m1,m2)
+               var d = utils.prepare_and_run_distance(m1,m2)
 
-        expect(d.RF).toBe(data[family].root_URF);
+               expect(d.RF).toBe(data[family].root_URF);
 
-    });
+           });
 
+     */
 
 
 }

@@ -38,7 +38,7 @@ function build_table(hierarchy){ // build table for RF
     }, null)
 
     var n = hierarchy.leaves().length
-    var X = Array.from(new Array(n), _ => Array(3).fill(0));
+    var X = Array.from(new Array(n), _ => Array(3).fill(null));
     var S2I = {} //Array(n).fill(0)
     var I2S = Array(n).fill(null)
     var n_edges = 0
@@ -79,7 +79,6 @@ function build_table(hierarchy){ // build table for RF
         if (node.hasOwnProperty('children')) {
 
             if( node2.hasOwnProperty('weight_') && node2.weight_ > 0 ){ii = node.left_} else { ii = node.right_}
-
             X[ii][0] = node.left_
             X[ii][1] = node.right_
             if (node.data.hasOwnProperty('branch_length')){
@@ -98,25 +97,23 @@ function build_table(hierarchy){ // build table for RF
         n2 = nz.next()
 
         if (n2.done){
-    /*
+
+
             // process seed node, w=0
-            ii = node.right_
-            X[ii][0] = node.left_
-            X[ii][1] = node.right_
-            X[ii][2] = node.data.branch_length
+            ii = hierarchy.leaves().length-1
+            X[ii][0] = n1.value[1].left_
+            X[ii][1] = n1.value[1].right_
+            X[ii][2] = n1.value[1].data.branch_length
             n_edges += 1
-
-            */
-
 
             break
         }
 
+    }
 
-
-
-
-
+    if (X[0][0] !== null){
+        X[0] = Array(3).fill(null)
+        n_edges -= 1
     }
 
     return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I}
@@ -440,6 +437,8 @@ function compute_RF_Euc(X1,X2){
 
             if (w1 == w2) {
 
+                //console.log(X2.table, e2)
+
                 if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
                     n_good += 1
                     euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
@@ -603,7 +602,10 @@ function prepare_and_run_distance(m1,m2){
     var hierachy2 = filter_leaves_hierarchy(h2, intersection )
     var table2 = build_table(hierachy2)
 
+
+
     var r = compute_RF_Euc(table1,table2)
+    //console.log(r, table1, table2)
     distance.clade = r.RF
     distance.Cl_good = r.good
     distance.Cl_left = r.L
