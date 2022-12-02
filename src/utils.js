@@ -625,8 +625,6 @@ function prepare_and_run_distance(m1,m2){
     var X1 = build_table(hierarchy_mockup_rerooted1)
     var X2 = build_table(hierarchy_mockup_rerooted2)
 
-    //console.log(X1, X2)
-
     var r2 = compute_RF_Euc(X1,X2)
     distance.RF = r2.RF
     distance.RF_good = r2.good

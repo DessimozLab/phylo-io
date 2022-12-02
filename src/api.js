@@ -284,10 +284,6 @@ export default class API {
 
     send_worker_distance(){
 
-        //////// TODO
-        // api.distance[bound_container0.model][bound_container1.model] = XXX
-        // api.remove_model_from_distance_storage()
-
         if (!this.settings.compareMode){
             return
         }

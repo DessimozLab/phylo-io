@@ -21,7 +21,6 @@ function compute_similarity_container_pair(t1,t2){
     var t2 = new Model(t2.data, t2.settings, false)
 
 
-
     console.time("similarity");
 
     // X = Intersection of T1 & T2 leaves.

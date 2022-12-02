@@ -8,11 +8,6 @@ const d3 = require("d3");
 const PhyloIO = require("./dist-jest/phylo.js").PhyloIO;
 const utils = require('./src/utils.js')
 
-
-/*
-DAY TABLE: Leaf name duplication (empty string count too)
- */
-
 var only_family = false
 
 for (const family in data) {
@@ -252,7 +247,7 @@ for (const family in data) {
 
            });
 
-   test('check RF for Family #' + family, () => {
+    test('check RF for Family #' + family, () => {
 
               const  phylo = PhyloIO.init()
 
@@ -264,6 +259,121 @@ for (const family in data) {
               expect(d.RF).toBe(data[family].root_URF);
 
           });
+
+    test('check consistency RF after few re-rooting for Family #' + family, () =>{
+
+
+        function apply_generation(data, gen, ml, mr){
+
+            if (data['F' +gen.toString() +'L_mutation']){
+                var l = ml.get_node_by_leafset(data['F' +gen.toString() +'L_mutation'])
+                if (l){
+                    ml.reroot(l)
+                }
+            }
+
+            if (data['F' +gen.toString() +'R_mutation']){
+                var l = mr.get_node_by_leafset(data['F' +gen.toString() +'R_mutation'])
+                if (l){
+                    mr.reroot(l)
+                }
+            }
+        }
+
+        const  phylo = PhyloIO.init()
+
+        var mL = phylo._create_model(data[family].L_filter)
+        var mR = phylo._create_model(data[family].R_filter)
+
+        var d = utils.prepare_and_run_distance(mL,mR)
+
+        expect(d.RF).toBe(data[family].root_URF);
+        expect(d.clade).toBe(data[family].root_clade);
+
+
+        for (let gen = 1; gen < 4; gen++) {
+
+            apply_generation(data[family], gen, mL, mR)
+            var d2 = utils.prepare_and_run_distance(mL,mR)
+            expect(d2.RF).toBe(data[family]['F' + gen.toString()+ '_URF']);
+            expect(d.RF).toBe(d2.RF);
+            d = d2
+
+        }
+
+    })
+
+    /*
+
+    test('check Clade after few re-rooting for Family #' + family, () =>{
+
+
+        function apply_generation(data, gen, ml, mr){
+
+            if (data['F' +gen.toString() +'L_mutation']){
+                var l = ml.get_node_by_leafset(data['F' +gen.toString() +'L_mutation'])
+                if (l){
+                    ml.reroot(l)
+                }
+            }
+
+            if (data['F' +gen.toString() +'R_mutation']){
+                var l = mr.get_node_by_leafset(data['F' +gen.toString() +'R_mutation'])
+                if (l){
+                    mr.reroot(l)
+                }
+            }
+        }
+
+        const  phylo = PhyloIO.init()
+
+        var mL = phylo._create_model(data[family].L_filter)
+        var mR = phylo._create_model(data[family].R_filter)
+
+        var d = utils.prepare_and_run_distance(mL,mR)
+
+        expect(d.clade).toBe(data[family].root_clade);
+
+
+        for (let gen = 1; gen < 4; gen++) {
+
+            apply_generation(data[family], gen, mL, mR)
+            var d2 = utils.prepare_and_run_distance(mL,mR)
+            expect(d2.clade).toBe(data[family]['F' + gen.toString()+ '_clade']);
+
+
+        }
+
+    })
+
+    test('check Euc only (use filtered tree) for Family #' + family, () => {
+
+        const  phylo = PhyloIO.init()
+
+        var m1 = phylo._create_model(data[family].L_filter)
+        var m2 = phylo._create_model(data[family].R_filter)
+
+        var d = utils.prepare_and_run_distance(m1,m2)
+
+        expect(d.Euc).toBe(data[family].root_WRF);
+
+    });
+
+    test('check Euc for Family #' + family, () => {
+
+        const  phylo = PhyloIO.init()
+
+        var m1 = phylo._create_model(data[family].L)
+        var m2 = phylo._create_model(data[family].R)
+
+        var d = utils.prepare_and_run_distance(m1,m2)
+
+        expect(d.Euc).toBe(data[family].root_WRF);
+
+    });
+
+     */
+
 
 }
 

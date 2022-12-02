@@ -5,7 +5,7 @@ import {MinHash}  from 'minhashjs'
 var uid_model = 0
 var uid_untitle_counter = 0
 import * as parser from 'biojs-io-newick';
-const { build_table, parse_nhx } = require('./utils.js')
+const { parse_nhx } = require('./utils.js')
 
 export default class Model {
 
@@ -839,7 +839,6 @@ export default class Model {
         return data
     }
 
-
     add_circularity_back(){
 
         this.data.leaves = this.get_leaves(this.data)
@@ -973,6 +972,38 @@ export default class Model {
             }
 
         })
+    }
+
+    get_node_by_leafset(lset){
+
+        function setsAreEqual(a, b) {
+            if (a.size !== b.size) {
+                return false;
+            }
+
+            return Array.from(a).every(element => {
+                return b.has(element);
+            });
+        }
+
+        lset = new Set(lset.map(leaf => leaf.toString()))
+
+        var target = false
+
+
+        var check = function(node,children){
+
+            var nl = new Set(node.leaves.map(leaf => leaf.name.replaceAll("'", '').toString()))
+
+            if ( setsAreEqual(nl,lset)){
+                target = node
+            }
+
+        }
+
+        this.traverse(this.data, check, null)
+
+        return target
     }
 
 };
