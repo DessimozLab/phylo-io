@@ -29,7 +29,7 @@ function traverse(o,func_pre, func_post) {
 
 }
 
-function build_table(hierarchy){ // build table for RF
+function build_table(hierarchy, distance_of_root){
 
     traverse(hierarchy, function(node,children){
         delete node.left_
@@ -126,7 +126,9 @@ function build_table(hierarchy){ // build table for RF
 
     }
 
-    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I}
+    var sum_leaf_length = hierarchy.leaves().reduce((acc, e) => acc + e.data.branch_length, 0);
+
+    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I, 'leaf_dist': sum_leaf_length, 'distance_of_root':distance_of_root}
 
 
 }
@@ -153,11 +155,22 @@ function reroot_hierarchy(hierarchy, leaf_name){
     leaf.children = []
     leaf.root = true
 
+
+    leaf.branch_length_before_reverse = leaf.data.branch_length
+
     var index
     for (index = 0; index < ancestors.length; index++) {
 
         let child = (index === 0) ? leaf : ancestors[index-1]
         let parent = ancestors[index]
+
+        parent.branch_length_before_reverse = parent.data.branch_length
+        if (child.branch_length_before_reverse){
+            parent.data.branch_length = child.branch_length_before_reverse
+        }
+        else{
+            parent.data.branch_length = child.data.branch_length
+        }
 
         reverse_order(child,parent)
     }
@@ -421,7 +434,7 @@ function save_file_as(filename, data) {
 function compute_RF_Euc(X1,X2){
 
     var n_good  = 0
-    var euclidian = 0
+    var euclidian = 0.00
 
     for (var i = 0; i < X1.table.length; i++) {
         var s1 = X1.table[i][0]
@@ -447,7 +460,6 @@ function compute_RF_Euc(X1,X2){
 
             if (w1 == w2) {
 
-                //console.log(X2.table, e2)
 
                 if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
                     n_good += 1
@@ -465,7 +477,10 @@ function compute_RF_Euc(X1,X2){
 
                 }
 
+
+
             }
+
 
             else{
                 euclidian += parseFloat(X1.table[i][2])
@@ -475,12 +490,17 @@ function compute_RF_Euc(X1,X2){
 
 
 
+
+
         }
 
     }
 
+
+    var euc = euclidian + Math.abs(X1.leaf_dist - X2.leaf_dist) + Math.abs(X1.distance_of_root - X2.distance_of_root)
+
     return {
-        'E':euclidian.toFixed(2),
+        'E':euc.toFixed(2),
         'RF': (X1.n_edges + X2.n_edges -2*n_good),
         'good':n_good,
         'L':X1.n_edges,
@@ -607,10 +627,13 @@ function prepare_and_run_distance(m1,m2){
     // FILTER TREE TO KEEP ONLY INTERSECTING LEAVES
 
     var hierachy1 = filter_leaves_hierarchy(h1, intersection )
-    var table1 = build_table(hierachy1)
+    var table1 = build_table(hierachy1,hierachy1.data.branch_length )
 
     var hierachy2 = filter_leaves_hierarchy(h2, intersection )
-    var table2 = build_table(hierachy2)
+    var table2 = build_table(hierachy2, hierachy2.data.branch_length )
+
+    var r1 = JSON.parse(JSON.stringify(hierachy1.data.branch_length));
+    var r2 = JSON.parse(JSON.stringify(hierachy2.data.branch_length));
 
     var r = compute_RF_Euc(table1,table2)
     distance.clade = r.RF
@@ -622,8 +645,10 @@ function prepare_and_run_distance(m1,m2){
     var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
 
     // build tables
-    var X1 = build_table(hierarchy_mockup_rerooted1)
-    var X2 = build_table(hierarchy_mockup_rerooted2)
+    var X1 = build_table(hierarchy_mockup_rerooted1, r1 )
+    var X2 = build_table(hierarchy_mockup_rerooted2,  r2)
+
+
 
     var r2 = compute_RF_Euc(X1,X2)
     distance.RF = r2.RF
