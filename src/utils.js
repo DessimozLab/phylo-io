@@ -191,6 +191,8 @@ function reroot_hierarchy(hierarchy, leaf_name){
         parent.parent =child
     }
 
+    leaf.parent = null
+
     return leaf
 }
 
@@ -644,6 +646,7 @@ function prepare_and_run_distance(m1,m2){
     var hierarchy_mockup_rerooted1 = reroot_hierarchy(hierachy1, intersection[0])
     var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
 
+
     // build tables
     var X1 = build_table(hierarchy_mockup_rerooted1, r1 )
     var X2 = build_table(hierarchy_mockup_rerooted2,  r2)
@@ -655,7 +658,7 @@ function prepare_and_run_distance(m1,m2){
     distance.RF_good = r2.good
     distance.RF_left = r2.L
     distance.RF_right = r2.R
-    distance.Euc = r2.E
+    distance.Euc = null //r2.E
 
     return  distance
 }

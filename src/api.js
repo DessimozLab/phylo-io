@@ -416,6 +416,7 @@ export default class API {
 
         }
 
+        /*
         if (this.distance.Euc !== false) {
 
             divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
@@ -424,6 +425,8 @@ export default class API {
                 "    <span class=\"badge bg-primary rounded-pill\">{}</span>\n".format(this.distance.Euc) +
                 "  </li>"
         }
+
+         */
 
         if (this.settings.no_distance_message != true) {
             divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +

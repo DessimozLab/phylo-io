@@ -300,31 +300,25 @@ for (const family in data) {
 
     })
 
-
-     */
-
-    // EUC
-    test('check Euc only (use filtered tree) for Family #' + family, () => {
-
-        const  phylo = PhyloIO.init()
-
-        var m1 = phylo._create_model(data[family].L_filter)
-        var m2 = phylo._create_model(data[family].R_filter)
-
-        console.log(data[family].L_filter)
-        console.log(data[family].R_filter)
-
-        var d = utils.prepare_and_run_distance(m1,m2)
-
-        var exp_Euc = parseFloat(data[family].root_WRF).toFixed(2)
-
-        expect(d.Euc).toBe(exp_Euc);
-
-
-    });
-
-
     /*
+
+   // EUC
+   test('check Euc only (use filtered tree) for Family #' + family, () => {
+
+       const  phylo = PhyloIO.init()
+
+       var m1 = phylo._create_model(data[family].L_filter)
+       var m2 = phylo._create_model(data[family].R_filter)
+
+       var d = utils.prepare_and_run_distance(m1,m2)
+
+       var exp_Euc = parseFloat(data[family].root_WRF).toFixed(2)
+
+       expect(d.Euc).toBe(exp_Euc);
+
+
+   });
+
 
     test('check Clade after few re-rooting for Family #' + family, () =>{
 
