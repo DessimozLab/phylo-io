@@ -626,6 +626,11 @@ function prepare_and_run_distance(m1,m2){
 
     var intersection = get_intersection_leaves(h1,h2)
 
+    if (intersection.length == 0){
+        distance.no_distance_message = 'No leaves in common to compute distance.'
+        return  distance
+    }
+
     // FILTER TREE TO KEEP ONLY INTERSECTING LEAVES
 
     var hierachy1 = filter_leaves_hierarchy(h1, intersection )
