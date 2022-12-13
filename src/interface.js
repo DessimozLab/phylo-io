@@ -412,6 +412,8 @@ export default class Interface {
 
         var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
 
+        var thaty  = this
+
         const add_tree_helpers = function(container_object, str, format, mapping){
 
             var mapping = (typeof mapping == 'undefined') ? false : mapping;
@@ -437,8 +439,6 @@ export default class Interface {
             }
 
 
-
-
             document.querySelector('#exampleModal'+ container_object.uid).style.display =  'none'
             document.querySelectorAll('.modal-backdrop').forEach(elem => {
                 elem.parentNode.removeChild(elem);
@@ -450,8 +450,8 @@ export default class Interface {
             //container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
 
-            if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-                this.api.send_worker_distance()
+            if (thaty.api.settings.compute_distance && thaty.api.bound_container.includes(thaty)){
+                thaty.api.send_worker_distance()
             }
         }
 
