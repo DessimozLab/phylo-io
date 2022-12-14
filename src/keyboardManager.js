@@ -27,27 +27,31 @@ export default class keyboardManager {
                 // LEFT
                 "r": function(){self_km.left.viewer.fit_to_viewer_height()},
                 "f": function(){self_km.left.viewer.maximise_zoom()},
-                "a": function(){self_km.left.modify_node_size( 'horizontal',-5)},
-                "d": function(){self_km.left.modify_node_size( 'horizontal',5)},
-                "w": function(){self_km.left.modify_node_size( 'vertical',-5)},
-                "s": function(){self_km.left.modify_node_size( 'vertical',5)},
+                "a": function(){self_km.left.modify_node_size_percent(20,  'horizontal')},
+                "d": function(){self_km.left.modify_node_size_percent( 20,'horizontal')},
+                "w": function(){self_km.left.modify_node_size_percent( 20,'vertical')},
+                "s": function(){self_km.left.modify_node_size_percent( 20,'vertical')},
                 "q": function(){self_km.left.shift_model(-1)},
                 "e": function(){self_km.left.shift_model(1)},
 
                 // RIGHT
                 "u": function(){self_km.right.shift_model(-1)},
                 "o": function(){self_km.right.shift_model(1)},
-                "p": function(){self_km.right.viewer.centerNode(self_km.right.viewer.get_random_node())},
-                "j": function(){self_km.right.modify_node_size( 'horizontal',-5)},
-                "l": function(){self_km.right.modify_node_size( 'horizontal',5)},
-                "i": function(){self_km.right.modify_node_size( 'vertical',-5)},
-                "k": function(){self_km.right.modify_node_size( 'vertical',5)},
-                "y": function(){self_km.right.viewer.fit_to_viewer_height()},
+                "j": function(){self_km.right.modify_node_size_percent( 20,'horizontal')},
+                "l": function(){self_km.right.modify_node_size_percent( 20,'horizontal')},
+                "i": function(){self_km.right.modify_node_size_percent( 20,'vertical')},
+                "k": function(){self_km.right.modify_node_size_percent( 20,'vertical')},
+                "z": function(){self_km.right.viewer.fit_to_viewer_height()},
                 "h": function(){self_km.right.viewer.maximise_zoom()},
 
-                "g": function(){
+                "t": function(){
                     phylo.settings.compute_distance = true;
-                    phylo.send_worker_distance()}
+                    phylo.send_worker_distance()},
+
+                "g": function(){
+                    if (phylo.phylo_embedded){document.getElementById("menu_compare_mode").click();}
+                    }
+
 
             }
 
