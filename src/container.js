@@ -161,7 +161,7 @@ export default class Container {
             this.viewer.set_data(m)
 
 
-            this.api.stop_worker()
+            this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(false)
 
             // apply if any stored zoom information
@@ -174,7 +174,7 @@ export default class Container {
             this.viewer.render(this.viewer.hierarchy)
 
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-                this.api.compute_distance()
+                this.api.send_worker_distance()
             }
 
 
@@ -218,8 +218,6 @@ export default class Container {
             m.swap_subtrees(data)
             this.viewer.apply_swap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
-            //this.api.stop_worker()
-            //this.compute_topology_and_render_bounded_viewer(false)
             this.viewer.render(node)
 
 
@@ -228,8 +226,6 @@ export default class Container {
             m.unswap_subtrees(data)
             this.viewer.apply_unswap_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()
-            //this.api.stop_worker()
-            //this.compute_topology_and_render_bounded_viewer(false)
             this.viewer.render(node)
 
 
@@ -243,10 +239,10 @@ export default class Container {
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
 
-            this.api.stop_worker()
+            this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-                this.api.compute_distance()
+                this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
 
@@ -257,10 +253,10 @@ export default class Container {
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
-            this.api.stop_worker()
+            this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-                this.api.compute_distance()
+                this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -269,10 +265,10 @@ export default class Container {
             this.viewer.set_data(m)
             m.hierarchy_mockup = m.build_hierarchy_mockup()
             m.table = build_table(m.hierarchy_mockup)
-            this.api.stop_worker()
+            this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-                this.api.compute_distance()
+                this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -387,7 +383,7 @@ export default class Container {
         this.viewer.render(this.viewer.hierarchy)
 
         if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
-            this.api.compute_distance()
+            this.api.send_worker_distance()
         }
 
     }

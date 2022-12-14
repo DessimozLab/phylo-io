@@ -1,11 +1,11 @@
 import * as d3 from "d3";
-import {MinHash, MinHashLSHForest}  from 'minhashjs'
+import {MinHash}  from 'minhashjs'
 
 
 var uid_model = 0
 var uid_untitle_counter = 0
 import * as parser from 'biojs-io-newick';
-const { build_table, parse_nhx } = require('./utils.js')
+const { parse_nhx } = require('./utils.js')
 
 export default class Model {
 
@@ -132,9 +132,6 @@ export default class Model {
         this.data.elementBCN = {}
         this.rooted = this.data.children.length !== 3
         this.big_tree = (this.leaves.length > 500)
-
-        this.hierarchy_mockup = this.build_hierarchy_mockup()
-        this.table = build_table(this.hierarchy_mockup)
 
         // check that histogram data is present and compute
         if(this.settings.show_histogram && this.data.evolutionaryEvents) {
@@ -842,7 +839,6 @@ export default class Model {
         return data
     }
 
-
     add_circularity_back(){
 
         this.data.leaves = this.get_leaves(this.data)
@@ -937,7 +933,7 @@ export default class Model {
 
                 if (headers[item] == 'num'){
                     this.settings.style.color_extent_max['node'][item] = 0
-                    this.settings.style.color_extent_min['nodes'][item] = 100000
+                    this.settings.style.color_extent_min['node'][item] = 100000
                 }
             }
 
@@ -958,6 +954,18 @@ export default class Model {
                             cs.add_value_to_map(item[1])
 
                         }
+
+                        else if (this.settings.extended_data_type[item[0]] == 'num') {
+
+                            if (this.settings.style.color_extent_max['node'][item[0]] < item[1]) {
+                                this.settings.style.color_extent_max['node'][item[0]] = item[1]
+                            }
+
+                            if (this.settings.style.color_extent_min['node'][item[0]] > item[1]) {
+                                this.settings.style.color_extent_min['node'][item[0]] = item[1]
+                            }
+
+                        }
                     }
                 })
 
@@ -976,6 +984,38 @@ export default class Model {
             }
 
         })
+    }
+
+    get_node_by_leafset(lset){
+
+        function setsAreEqual(a, b) {
+            if (a.size !== b.size) {
+                return false;
+            }
+
+            return Array.from(a).every(element => {
+                return b.has(element);
+            });
+        }
+
+        lset = new Set(lset.map(leaf => leaf.toString()))
+
+        var target = false
+
+
+        var check = function(node,children){
+
+            var nl = new Set(node.leaves.map(leaf => leaf.name.replaceAll("'", '').toString()))
+
+            if ( setsAreEqual(nl,lset)){
+                target = node
+            }
+
+        }
+
+        this.traverse(this.data, check, null)
+
+        return target
     }
 
 };

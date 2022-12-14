@@ -709,10 +709,6 @@ export default class Viewer {
 
         }
 
-        console.log(this.container_object.div_id, compared_model)
-
-
-
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
@@ -746,7 +742,6 @@ export default class Viewer {
             var h = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
             if (typeof h == "undefined" ) {return "#555"}
             else {return h}
-
 
         }
 
@@ -949,12 +944,11 @@ export default class Viewer {
                 var other_container = this.container_object.api.bound_container[0] === this.container_object ? this.container_object.api.bound_container[1] : this.container_object.api.bound_container[0]
 
                 if (other_container.models.length > 0 && other_container.viewer.model != false){
-                    var t = other_container.viewer.d3.zoomTransform(other_container.viewer.svg.node())
 
-                    var ratio = this.max_length / other_container.viewer.max_length
+                    var m1 = this.get_height_hierarchy().middle*transform.k
+                    var m2 = other_container.viewer.get_height_hierarchy().middle*transform.k
 
-
-                    other_container.viewer.set_zoom(transform.k/ratio,t.x,t.y)
+                    other_container.viewer.set_zoom(transform.k,transform.x,transform.y -m2 + m1 )
 
                 }
                 this.container_object.api.settings.syncing_zoom = false
@@ -1309,6 +1303,7 @@ export default class Viewer {
             'h':max_x - min_x,
             'max_x':max_x ,
             'min_x': min_x,
+            'middle': max_x -(max_x - min_x)/2
         }
 
     }

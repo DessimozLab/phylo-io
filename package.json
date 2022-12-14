@@ -3,8 +3,9 @@
   "version": "2.0.1",
   "description": "",
   "scripts": {
-    "test": "jest --silent=false",
-    "build": "webpack"
+    "test": "npm run-script build-jest; jest --silent=false",
+    "build": "webpack",
+    "build-jest": "webpack -c webpack.config.jest.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
     "css-loader": "^5.2.4",
     "file-loader": "^6.2.0",
     "https-browserify": "^1.0.0",
+    "jest": "^27.5.1",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
     "react-app-rewired": "^2.2.1",
@@ -24,9 +26,7 @@
     "style-loader": "^2.0.0",
     "url": "^0.11.0",
     "webpack": "^5.35.0",
-    "webpack-cli": "^4.6.0",
-    "jest": "^27.5.1"
-
+    "webpack-cli": "^4.6.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",

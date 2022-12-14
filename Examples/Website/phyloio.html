@@ -130,7 +130,7 @@
             </li>
 
             <li>
-                <a href="#" id="menu_keyboard" class="nav-link py-3 border-bottom" title="" id="menu_keyboard" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show keyboard shorcuts">
+                <a href="#" id="menu_keyboard" class="nav-link py-3 border-bottom" title=""  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Show keyboard shorcuts">
                     <i class="bi-keyboard" style="font-size: 24px;color: white  "></i>
                     <p style="font-size: xx-small; color: white; margin-bottom:0px" >Shortcuts</p>
                 </a>
@@ -286,19 +286,26 @@
                 </div>
                 <div class="modal-body">
 
+                    <h5>General actions</h5>
+                    <p><strong>Distance: </strong> Use <kbd>t</kbd> to start phylogenetic distance computation<br>
+                    <p><strong>Viewer Mode: </strong> Use <kbd>g</kbd> to switch between single tree mode or compare mode<br>
+                    <br>
 
                     <h5>Left tree (or single mode)</h5>
                     <p><strong>Tree Height: </strong> Use <kbd>w</kbd> to increase or <kbd>s</kbd> to decrease<br>
                     <p><strong>Tree Width: </strong> Use <kbd>a</kbd> to increase or <kbd>d</kbd> to decrease<br>
                     <p><strong>Tree Selection: </strong> Use <kbd>q</kbd> or <kbd>e</kbd> to change tree<br>
+                    <p><strong>Automatic Collapsing: </strong> Use <kbd>r</kbd> to fit the tree in the viewer by collapsing and zooming in/out. <br>
+                    <p><strong>Automatic Zoom: </strong> Use <kbd>f</kbd> to fit the tree in the viewer by zooming in/out.<br>
 
                     <br>
-
 
                     <h5>Right tree (only in compare mode)</h5>
                     <p><strong>Tree Height: </strong> Use <kbd>i</kbd> to increase or <kbd>k</kbd> to decrease<br>
                     <p><strong>Tree Width: </strong> Use <kbd>j</kbd> to increase or <kbd>l</kbd> to decrease<br>
                     <p><strong>Tree Selection: </strong> Use <kbd>u</kbd> or <kbd>o</kbd> to change tree<br>
+                    <p><strong>Automatic Collapsing: </strong> Use <kbd>z</kbd> to fit the tree in the viewer by collapsing and zooming in/out. <br>
+                    <p><strong>Automatic Zoom: </strong> Use <kbd>h</kbd> to fit the tree in the viewer by zooming in/out.<br>
 
 
                     </div>
@@ -454,7 +461,7 @@
 
     document.getElementById("menu_distance").onclick = function() {
         phylo.settings.compute_distance = true;
-        phylo.compute_distance()
+        phylo.send_worker_distance()
     };
 
     document.getElementById("menu_lock").onclick = function() {
