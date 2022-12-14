@@ -1,7 +1,7 @@
 {
   "name": "phyloio",
-  "version": "2.0.1",
-  "description": "",
+  "version": "2.0.3",
+  "description": "JS library for visualising and comparing phylogenetic trees",
   "scripts": {
     "test": "npm run-script build-jest; jest --silent=false",
     "build": "webpack",

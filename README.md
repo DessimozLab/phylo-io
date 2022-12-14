@@ -4,10 +4,19 @@ A web app and library for visualising and comparing phylogenetic trees.
 ## Demo
 The app can be accessed at [beta.phylo.io](https://beta.phylo.io/).
 
+## Support
+For any bugs, features requests or help for integration please contact us through github. 
+
 ## Quick Start
-**Easy:** import directly the phylo.js from CDN. It contains all phylo.io requires (.js, .css and font/icons)
+**Easy:** Import all the pre generated js files from the dist/ folder. The **font folder** inside is mandatory.
+
 ```html
-<script src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@refactor/dist/phylo.js"></script>
+<script src="path/to/dist/phylo.js"></script>
+
+<!-- Import each other .js files from the dist/ folder. 
+Replace __filename__.js by each real filename -->
+<script src="path/to/dist/__filename__.js"></script>
+
 ```
 
 **Local build:** You can build the package from source using the following command
@@ -15,17 +24,14 @@ The app can be accessed at [beta.phylo.io](https://beta.phylo.io/).
 npm run-script build
 ```
  
-Then, you just to need import the freshly built phylo.js
-```html
-<script src="path/to/dist/phylo.js"></script>
-```
+Then, you just to need import the freshly built phylo.js as shown previously.
+
 **Attention, it will also generate a folder named fonts that needs to be in the same folder as phylo.js**
 
 ## Initialisation
 First, you need to create an instance of PhyloIO:
 ```js
     const  phylo = PhyloIO.init() 
-    // Note that the instance must be called phylo
 ```
 
 Then, you need to instantiate a container (or viewer) inside a div:
@@ -64,7 +70,11 @@ Here are settings you can specify when adding a tree:
 'show_tooltips' : false,
 'subsample_label' : true,
 'display_duplication' : false,
-'align_tip' : false,
+'display_internal_label' : false,
+'display_internal_label_left_top' : false,
+'display_internal_label_left_bottom' : false,
+'align_tip' : false, 
+'display_leaves' : true,
 ```
 
  Finally, you can start phylo.io:
