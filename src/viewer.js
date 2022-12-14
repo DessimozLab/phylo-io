@@ -709,10 +709,6 @@ export default class Viewer {
 
         }
 
-        console.log(this.container_object.div_id, compared_model)
-
-
-
         // Transition back to the parent element position
         linkUpdate.transition()
             .duration(this.settings.duration)
@@ -746,7 +742,6 @@ export default class Viewer {
             var h = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
             if (typeof h == "undefined" ) {return "#555"}
             else {return h}
-
 
         }
 

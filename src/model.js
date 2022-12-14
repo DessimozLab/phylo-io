@@ -933,7 +933,7 @@ export default class Model {
 
                 if (headers[item] == 'num'){
                     this.settings.style.color_extent_max['node'][item] = 0
-                    this.settings.style.color_extent_min['nodes'][item] = 100000
+                    this.settings.style.color_extent_min['node'][item] = 100000
                 }
             }
 
@@ -952,6 +952,18 @@ export default class Model {
 
                             var cs = api.get_color_scale(item[0])
                             cs.add_value_to_map(item[1])
+
+                        }
+
+                        else if (this.settings.extended_data_type[item[0]] == 'num') {
+
+                            if (this.settings.style.color_extent_max['node'][item[0]] < item[1]) {
+                                this.settings.style.color_extent_max['node'][item[0]] = item[1]
+                            }
+
+                            if (this.settings.style.color_extent_min['node'][item[0]] > item[1]) {
+                                this.settings.style.color_extent_min['node'][item[0]] = item[1]
+                            }
 
                         }
                     }
