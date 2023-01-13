@@ -242,6 +242,7 @@ export default class Container {
             this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.delete_modele_distance(m)
                 this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -256,6 +257,7 @@ export default class Container {
             this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.delete_modele_distance(m)
                 this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -268,6 +270,7 @@ export default class Container {
             this.api.stop_all_workers()
             this.compute_topology_and_render_bounded_viewer(true)
             if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+                this.api.delete_modele_distance(m)
                 this.api.send_worker_distance()
             }
             this.viewer.render(this.viewer.hierarchy)
@@ -383,6 +386,7 @@ export default class Container {
         this.viewer.render(this.viewer.hierarchy)
 
         if (this.api.settings.compute_distance && this.api.bound_container.includes(this)){
+            this.api.delete_modele_distance(m)
             this.api.send_worker_distance()
         }
 

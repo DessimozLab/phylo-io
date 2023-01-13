@@ -25,6 +25,7 @@ export default class API {
 
     set_default_parameters(){
         this.workers = {}
+        this.distance_computed= {}
         this.containers = {}; // {container id -> Container() }
         this.bound_container = [] // pair of container used for distance computation
         this.session_token = null // unique session token for cloud saving
@@ -195,6 +196,42 @@ export default class API {
 
     }
 
+    set_distance(m1,m2, distance){
+
+        var tuple_key = [m1.uid, m2.uid].sort().join('---')
+
+        this.distance_computed[tuple_key] = distance
+    }
+
+    get_distance(m1,m2){
+
+        var tuple_key = [m1.uid, m2.uid].sort().join('---')
+
+
+        return this.distance_computed[tuple_key]
+
+    }
+
+    delete_modele_distance(m){
+
+
+        for (var key in this.distance_computed) {
+            if (this.distance_computed.hasOwnProperty(key)) {
+
+                var kd = key.split('---')
+
+                if (kd[0] == m.uid || kd[kd.length -1] == m.uid){
+                    this.distance_computed[key] = undefined
+                }
+
+
+            }
+        }
+
+
+
+    }
+
     set_worker(key, worker){
         this.workers[key] = worker
     }
@@ -288,10 +325,31 @@ export default class API {
             return
         }
 
+        var mod1 = this.bound_container[0].models[this.bound_container[0].current_model]
+        var mod2 = this.bound_container[1].models[this.bound_container[1].current_model]
+
+        var distance = this.get_distance(mod1,mod2)
+
+
+        if (typeof distance !== 'undefined') {
+
+            this.distance = distance
+            this.settings.no_distance_message = distance.no_distance_message
+
+            if (this.phylo_embedded){
+                this.display_distance_window()
+            }
+
+            return
+
+        }
 
         var worker_distance = new Worker(new URL("./worker_distance.js", import.meta.url));
 
         worker_distance.onmessage = (e) => {
+
+
+            this.set_distance(mod1,mod2,e.data)
 
             this.distance = e.data
 
@@ -304,8 +362,6 @@ export default class API {
 
         this.set_worker('distance',worker_distance)
 
-        var mod1 = this.bound_container[0].models[this.bound_container[0].current_model]
-        var mod2 = this.bound_container[1].models[this.bound_container[1].current_model]
 
         worker_distance.postMessage({'mod1':mod1, 'mod2':mod2});
 
