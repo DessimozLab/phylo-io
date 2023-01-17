@@ -126,9 +126,12 @@ function build_table(hierarchy, distance_of_root){
 
     }
 
-    var sum_leaf_length = hierarchy.leaves().reduce((acc, e) => acc + e.data.branch_length, 0);
+    var leaf_to_dist = {}
 
-    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I, 'leaf_dist': sum_leaf_length, 'distance_of_root':distance_of_root}
+    hierarchy.leaves().forEach( e=> { leaf_to_dist[e.data.name] = e.data.branch_length })
+
+
+    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I, 'leaf_dict': leaf_to_dist, 'distance_of_root':distance_of_root}
 
 
 }
@@ -147,7 +150,6 @@ function reverse_order(child,parent){
 function reroot_hierarchy(hierarchy, leaf_name){
 
 
-
     let leaf = hierarchy.leaves().find(element => element.data.name == leaf_name );
 
     //  INVERT PATH TO ROOT
@@ -156,7 +158,22 @@ function reroot_hierarchy(hierarchy, leaf_name){
     leaf.root = true
 
 
-    leaf.branch_length_before_reverse = leaf.data.branch_length
+    //leaf.branch_length_before_reverse = leaf.data.branch_length
+
+/*
+    for (var j = 0; j < leaf.parent.children.length; j++) {
+
+            if (leaf.parent.children[j] != leaf){
+
+                leaf.data.branch_length = leaf.parent.children[j].data.branch_length
+                break
+
+            }
+
+        }
+
+ */
+
 
     var index
     for (index = 0; index < ancestors.length; index++) {
@@ -164,6 +181,8 @@ function reroot_hierarchy(hierarchy, leaf_name){
         let child = (index === 0) ? leaf : ancestors[index-1]
         let parent = ancestors[index]
 
+
+        /*
         parent.branch_length_before_reverse = parent.data.branch_length
         if (child.branch_length_before_reverse){
             parent.data.branch_length = child.branch_length_before_reverse
@@ -171,6 +190,8 @@ function reroot_hierarchy(hierarchy, leaf_name){
         else{
             parent.data.branch_length = child.data.branch_length
         }
+        */
+
 
         reverse_order(child,parent)
     }
@@ -192,6 +213,7 @@ function reroot_hierarchy(hierarchy, leaf_name){
     }
 
     leaf.parent = null
+    leaf.data.branch_length = leaf.children[0].data.branch_length
 
     return leaf
 }
@@ -498,8 +520,13 @@ function compute_RF_Euc(X1,X2){
 
     }
 
+    var leaf_dist = 0
+    for (var key of Object.keys(X1.leaf_dict)) {
 
-    var euc = euclidian + Math.abs(X1.leaf_dist - X2.leaf_dist) + Math.abs(X1.distance_of_root - X2.distance_of_root)
+        leaf_dist += Math.abs(X1.leaf_dict[key] - X2.leaf_dict[key])
+    }
+
+    var euc = euclidian + leaf_dist + Math.abs(X1.distance_of_root - X2.distance_of_root)
 
     return {
         'E':euc.toFixed(2),
@@ -648,6 +675,9 @@ function prepare_and_run_distance(m1,m2){
     distance.Cl_left = r.L
     distance.Cl_right = r.R
 
+    let leaf1_distance = hierachy1.leaves().find(element => element.data.name == intersection[0] ).data.branch_length;
+    let leaf2_distance = hierachy2.leaves().find(element => element.data.name == intersection[0] ).data.branch_length;
+
     var hierarchy_mockup_rerooted1 = reroot_hierarchy(hierachy1, intersection[0])
     var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
 
@@ -657,13 +687,14 @@ function prepare_and_run_distance(m1,m2){
     var X2 = build_table(hierarchy_mockup_rerooted2,  r2)
 
 
+    //console.log(X1,X2)
 
     var r2 = compute_RF_Euc(X1,X2)
     distance.RF = r2.RF
     distance.RF_good = r2.good
     distance.RF_left = r2.L
     distance.RF_right = r2.R
-    distance.Euc = null //r2.E
+    distance.Euc = parseFloat(r2.E) + Math.abs(leaf1_distance-leaf2_distance)
 
     return  distance
 }
