@@ -460,6 +460,8 @@ function compute_RF_Euc(X1,X2){
     var n_good  = 0
     var euclidian = 0.00
 
+    var x2_processed = []
+
     for (var i = 0; i < X1.table.length; i++) {
         var s1 = X1.table[i][0]
         var e1 = X1.table[i][1]
@@ -488,27 +490,25 @@ function compute_RF_Euc(X1,X2){
                 if (X2.table[e2][0] == s2 && X2.table[e2][1] == e2) {
                     n_good += 1
                     euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[e2][2]) )
+                    x2_processed.push(e2)
                 }
                 else if (X2.table[s2][0] == s2 && X2.table[s2][1] == e2){
 
                     n_good += 1
                     euclidian += Math.abs(parseFloat(X1.table[i][2]) - parseFloat(X2.table[s2][2]) )
+                    x2_processed.push(s2)
 
                 }
                 else{
                     euclidian += parseFloat(X1.table[i][2])
-                    euclidian += parseFloat(X2.table[e2][2])
 
                 }
-
-
 
             }
 
 
             else{
                 euclidian += parseFloat(X1.table[i][2])
-                euclidian += parseFloat(X2.table[e2][2])
             }
 
 
@@ -520,13 +520,22 @@ function compute_RF_Euc(X1,X2){
 
     }
 
+
+    for (var k = 1; k < X2.table.length; k++) {
+        if (!x2_processed.includes(k)){
+            euclidian += parseFloat(X2.table[k][2])
+            x2_processed.push(k)
+
+        }
+    }
+
     var leaf_dist = 0
     for (var key of Object.keys(X1.leaf_dict)) {
 
         leaf_dist += Math.abs(X1.leaf_dict[key] - X2.leaf_dict[key])
     }
 
-    var euc = euclidian + leaf_dist + Math.abs(X1.distance_of_root - X2.distance_of_root)
+    var euc = euclidian + leaf_dist
 
     return {
         'E':euc.toFixed(2),
@@ -674,9 +683,8 @@ function prepare_and_run_distance(m1,m2){
     distance.Cl_good = r.good
     distance.Cl_left = r.L
     distance.Cl_right = r.R
+    distance.Euc = r.E
 
-    let leaf1_distance = hierachy1.leaves().find(element => element.data.name == intersection[0] ).data.branch_length;
-    let leaf2_distance = hierachy2.leaves().find(element => element.data.name == intersection[0] ).data.branch_length;
 
     var hierarchy_mockup_rerooted1 = reroot_hierarchy(hierachy1, intersection[0])
     var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
@@ -694,7 +702,7 @@ function prepare_and_run_distance(m1,m2){
     distance.RF_good = r2.good
     distance.RF_left = r2.L
     distance.RF_right = r2.R
-    distance.Euc = parseFloat(r2.E) + Math.abs(leaf1_distance-leaf2_distance)
+    //distance.Euc = parseFloat(r2.E) + Math.abs(leaf1_distance-leaf2_distance)
 
     return  distance
 }

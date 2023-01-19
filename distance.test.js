@@ -3,19 +3,20 @@
  */
 
 
-var data = require('./distance_testing.json');
+var data = require('./distance_testing5.json');
 const d3 = require("d3");
 const PhyloIO = require("./dist-jest/phylo.js").PhyloIO;
 const utils = require('./src/utils.js')
 
 
-var only_family = -1
+var only_family =  -1
 
 for (const family in data) {
 
     if (only_family != -1 && only_family!= family ){
         continue
     }
+
 
     test('check for leaves intersection #' + family, () => {
 
@@ -166,28 +167,54 @@ for (const family in data) {
 
     });
 
-    test('check Day Table for Family #' + family, () => {
+    test('Check Day Table for Family #' + family, () => {
 
        const  phylo = PhyloIO.init()
 
-       var m1 = phylo._create_model(data[family].L_filter)
-       var h1_raw = d3.hierarchy(m1.data, d => d.children );
+        var m1 = phylo._create_model(data[family].L_filter)
+        var h1_raw = d3.hierarchy(m1.data, d => d.children );
 
-       var h1 = utils.remove_duplicated_and_unnamed_leaves_hierarchy(h1_raw)
+        var h1 = utils.remove_duplicated_and_unnamed_leaves_hierarchy(h1_raw)
 
-       var t = utils.build_table(h1)
+        var t = utils.build_table(h1)
 
-       var ln = h1.leaves().map(x => x.data.name)
+        for (let i = 1; i < t.table.length; i++) {
 
-       // CHECK ALL LEAF ARE IN I2S
-       for (const i in ln) {
-           expect(t.I2S.includes(ln[i])).toEqual(true)
-       }
+            var ti = t.table[i]
+            var tui = data[family].L_filter_table.table[i]
 
-       // CHECK ALL S2I VALIDITY
-       for (const i in ln) {
-           expect(parseInt(t.S2I[ln[i]])).toEqual(parseInt(i))
-       }
+            if ( JSON.stringify(ti) !== JSON.stringify(tui) ){
+                console.log( ti,  tui)
+                expect(false).toBeTruthy()
+            }
+        }
+
+        expect(true).toBeTruthy()
+
+    })
+
+     test('Sanity check Day Table for Family #' + family, () => {
+
+        const  phylo = PhyloIO.init()
+
+        var m1 = phylo._create_model(data[family].L_filter)
+        var h1_raw = d3.hierarchy(m1.data, d => d.children );
+
+        var h1 = utils.remove_duplicated_and_unnamed_leaves_hierarchy(h1_raw)
+
+        var t = utils.build_table(h1)
+
+        var ln = h1.leaves().map(x => x.data.name)
+
+        // CHECK ALL LEAF ARE IN I2S
+        for (const i in ln) {
+            expect(t.I2S.includes(ln[i])).toEqual(true)
+        }
+
+        // CHECK ALL S2I VALIDITY
+        for (const i in ln) {
+            expect(parseInt(t.S2I[ln[i]])).toEqual(parseInt(i))
+        }
 
 
         // CHECK ALL TABLE NO NULL
@@ -318,82 +345,6 @@ for (const family in data) {
     });
 
 
-
-    /*
-
-
-
-        /*
-
-
-      test('check Clade after few re-rooting for Family #' + family, () =>{
-
-
-          function apply_generation(data, gen, ml, mr){
-
-              if (data['F' +gen.toString() +'L_mutation']){
-                  var l = ml.get_node_by_leafset(data['F' +gen.toString() +'L_mutation'])
-                  if (l){
-                      ml.reroot(l)
-                  }
-              }
-
-              if (data['F' +gen.toString() +'R_mutation']){
-                  var l = mr.get_node_by_leafset(data['F' +gen.toString() +'R_mutation'])
-                  if (l){
-                      mr.reroot(l)
-                  }
-              }
-          }
-
-          const  phylo = PhyloIO.init()
-
-          var mL = phylo._create_model(data[family].L_filter)
-          var mR = phylo._create_model(data[family].R_filter)
-
-          var d = utils.prepare_and_run_distance(mL,mR)
-
-          expect(d.clade).toBe(data[family].root_clade);
-
-
-          for (let gen = 1; gen < 4; gen++) {
-
-              apply_generation(data[family], gen, mL, mR)
-              var d2 = utils.prepare_and_run_distance(mL,mR)
-              expect(d2.clade).toBe(data[family]['F' + gen.toString()+ '_clade']);
-
-
-          }
-
-      })
-
-      test('check Euc only (use filtered tree) for Family #' + family, () => {
-
-          const  phylo = PhyloIO.init()
-
-          var m1 = phylo._create_model(data[family].L_filter)
-          var m2 = phylo._create_model(data[family].R_filter)
-
-          var d = utils.prepare_and_run_distance(m1,m2)
-
-          expect(d.Euc).toBe(data[family].root_WRF);
-
-      });
-
-      test('check Euc for Family #' + family, () => {
-
-          const  phylo = PhyloIO.init()
-
-          var m1 = phylo._create_model(data[family].L)
-          var m2 = phylo._create_model(data[family].R)
-
-          var d = utils.prepare_and_run_distance(m1,m2)
-
-          expect(d.Euc).toBe(data[family].root_WRF);
-
-      });
-
-       */
 
 
 }
