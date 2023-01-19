@@ -472,7 +472,7 @@ export default class API {
 
         }
 
-        /*
+
         if (this.distance.Euc !== false) {
 
             divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
@@ -482,7 +482,7 @@ export default class API {
                 "  </li>"
         }
 
-         */
+
 
         if (this.settings.no_distance_message != true) {
             divdiv.innerHTML += "<li class=\"list-group-item d-flex justify-content-between align-items-start\">\n" +
