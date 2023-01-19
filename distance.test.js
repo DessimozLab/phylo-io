@@ -3,7 +3,7 @@
  */
 
 
-var data = require('./distance_testing5.json');
+var data = require('./distance_testing.json');
 const d3 = require("d3");
 const PhyloIO = require("./dist-jest/phylo.js").PhyloIO;
 const utils = require('./src/utils.js')
@@ -193,7 +193,7 @@ for (const family in data) {
 
     })
 
-     test('Sanity check Day Table for Family #' + family, () => {
+    test('Sanity check Day Table for Family #' + family, () => {
 
         const  phylo = PhyloIO.init()
 
