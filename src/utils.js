@@ -523,19 +523,26 @@ function compute_RF_Euc(X1,X2){
 
     for (var k = 1; k < X2.table.length; k++) {
         if (!x2_processed.includes(k)){
-            euclidian += parseFloat(X2.table[k][2])
-            x2_processed.push(k)
+
+            var d = parseFloat(X2.table[k][2])
+
+            if(!isNaN(d)) {
+                euclidian += d
+                x2_processed.push(k)
+            }
 
         }
     }
 
-    var leaf_dist = 0
+    var leaf_dist = 0.00
     for (var key of Object.keys(X1.leaf_dict)) {
 
         leaf_dist += Math.abs(X1.leaf_dict[key] - X2.leaf_dict[key])
     }
 
     var euc = euclidian + leaf_dist
+
+    console.log(euclidian, leaf_dist)
 
     return {
         'E':euc.toFixed(2),
