@@ -29,7 +29,7 @@ function traverse(o,func_pre, func_post) {
 
 }
 
-function build_table(hierarchy, distance_of_root){
+function build_table(hierarchy){
 
     traverse(hierarchy, function(node,children){
         delete node.left_
@@ -131,7 +131,7 @@ function build_table(hierarchy, distance_of_root){
     hierarchy.leaves().forEach( e=> { leaf_to_dist[e.data.name] = e.data.branch_length })
 
 
-    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I, 'leaf_dict': leaf_to_dist, 'distance_of_root':distance_of_root}
+    return {'table': X, 'n_edges': n_edges, 'I2S': I2S, 'S2I': S2I, 'leaf_dict': leaf_to_dist}
 
 
 }
@@ -542,7 +542,6 @@ function compute_RF_Euc(X1,X2){
 
     var euc = euclidian + leaf_dist
 
-    console.log(euclidian, leaf_dist)
 
     return {
         'E':euc.toFixed(2),
@@ -645,6 +644,260 @@ function filter_leaves_hierarchy(h, leaves_to_keep){
     return false
 }
 
+function check_whole_hierarchy_labelled(hierarchy ){
+
+
+    traverse(hierarchy, function(node,children){
+
+        if (typeof node.data['duplication'] === 'undefined' ){
+            node.data['duplication'] = false
+        }
+
+
+    }, null)
+
+    return
+}
+
+function buildX(hierarchy){
+
+/*
+ Define the table X  according to (Day 1985) to have contiguous integers for
+ each clade, and define a clade by the left-most and right-most identifiers,
+ such as [4,7] for the clade [4,5,6,7].
+
+  Note we extend the table to contain the following fields,
+  which will be populated later in the algorithm:
+  3: node defining the clade in T1
+  4: node defining the clade in T2
+  5: size of the island rooted in the clade in T1
+  6: size of the island rooted in the clade in T2
+  7: labels in the island rooted in the clade in T1
+  8: labels in the island rooted in the clade in T2
+
+ */
+
+    var X = []
+    var n = hierarchy.leaves().length
+    var tax2id = {}
+    var n2bip = new Map();
+
+    function buildX_r(T){
+        if (T.children == null && T._children == null){
+            // left right id2taxon nodeT1 nodeT2 sizeIsland1 sizeIsland2 labels1 labels2
+            X.push([0,0,T.data.name,0,0,0,0,new Set(),new Set()])
+            i = X.length -1
+            tax2id[T.data.name] = i
+            return [i,i]
+        }
+
+        else{
+            let min_l = n
+            let max_r = 0
+
+            for (var j = 0; j < T.children.length; j++) {
+                var c = T.children[j]
+
+                var [l,r] = buildX_r(c)
+                min_l = Math.min(l,min_l)
+                max_r = Math.max(r,max_r)
+
+            }
+
+            X[min_l][0]=X[max_r][0]=min_l
+            X[min_l][1]=X[max_r][1]=max_r
+            X[min_l][3]=X[max_r][3]=T
+            n2bip.set(T, [min_l,max_r]);
+
+
+            return [min_l,max_r]
+        }
+
+    }
+
+    buildX_r(hierarchy)
+
+    return [X, tax2id, n2bip]
+}
+
+function findgood(hierarchy,X,tax2id){
+
+
+    function findgood_r(T){
+
+        if (T.children == null && T._children == null){
+            var i = tax2id[T.data.name]
+
+            return [i,i,1]
+        }
+        else {
+            var min_l = n
+            var max_r=0
+            var tot_w=0
+
+            for (var j = 0; j < T.children.length; j++) {
+
+                var c = T.children[j]
+
+                var [l, r, w] = findgood_r(c)
+
+                min_l = Math.min(l, min_l)
+                max_r = Math.max(r, max_r)
+                tot_w += w
+            }
+
+            if (max_r-min_l+1 == tot_w){
+
+                if (X[min_l][0]==min_l && X[min_l][1]==max_r){
+                    X[min_l][4]= T
+                    n2bip.set(T, [min_l,max_r]);
+                }
+                else if (X[max_r][0]==min_l && X[max_r][1]==max_r) {
+                    X[max_r][4]=T
+                    n2bip.set(T, [min_l,max_r]);
+                }
+            }
+
+            return [min_l,max_r,tot_w]
+
+
+        }
+    }
+
+    var n2bip =  new Map();
+    var n = hierarchy.leaves().length
+
+    findgood_r(hierarchy)
+
+    return(n2bip)
+}
+
+function getIslandsDay(t,X,n2bip,isT1){
+
+    /*
+     An island is separated from the rest of the tree
+     by good edges. In the traversal below, we do a preorder
+     traversal and create a new island whenever we meet a clade
+     defined in X
+                         ____
+                        /
+                 **** x6
+                *       \___
+         **** x3                ......
+        *       \___    ______x7
+   ----x1              /        ...
+        *       **** x4        ____
+         **** x2       ``--    /
+                *********** x5
+                              \_____
+
+     */
+
+    function mytraversal(t,parentIslandId=0){
+
+        if (t.children == null && t._children == null){
+            return
+        }
+
+        if (n2bip.has(t)){
+            var [l,r] = n2bip.get(t)
+        }
+        else {
+            var l = 0;
+            var r = 0;
+        }
+
+        var row = -1
+
+        if (X[l][0]===l && X[l][1]===r && X[l][4]!==0){
+            row = l
+        }
+
+        else if (X[r][0]===l && X[r][1]===r && X[r][4]!==0){
+            row = r
+        }
+
+        // CLADE IS COMMON
+        if (row > -1){
+
+            // end of previous island, so new island.
+            islandId = row
+            X[row][off+2].add(t.data.duplication)
+
+
+            for (var j = 0; j < t.children.length; j++) {
+                var c = t.children[j]
+                mytraversal(c,islandId)
+
+            }
+
+        }
+        else {
+            // continue previous island
+            var islandId = parentIslandId
+
+            X[islandId][off+2].add(t.data.duplication)
+            X[islandId][off] += 1
+
+            for (var j = 0; j < t.children.length; j++) {
+                var c = t.children[j]
+
+                mytraversal(c,islandId)
+
+            }
+
+        }
+
+    }
+
+
+    var off;
+
+    if (isT1){
+        off = 5
+    }
+    else{
+        off = 6
+    }
+
+    mytraversal(t)
+
+    return
+
+}
+
+// ADAPTED FROM https://github.com/DessimozLab/pylabeledrf
+function  compute_LRF(t1, t2){
+
+    var [ X, tax2id, n12bip ] = buildX(t1)
+
+    var n22bip = findgood(t2,X,tax2id)
+
+    getIslandsDay(t1,X,n12bip,true)
+    getIslandsDay(t2,X,n22bip,false)
+
+
+    var rf = 0;
+    var subs = 0;
+
+    for (var i = 0; i < X.length; i++) {
+
+        if (X[i][4] != 0){
+
+            rf += X[i][5]+X[i][6]
+
+            let intersection = new Set( [...X[i][7]].filter(x => X[i][8].has(x)));
+
+            if (  intersection.size  == 0){
+                subs +=1
+            }
+        }
+    }
+
+    return rf+subs
+
+}
+
 function prepare_and_run_distance(m1,m2){
 
     var distance = {
@@ -657,7 +910,8 @@ function prepare_and_run_distance(m1,m2){
         'RF_good': false,
         'RF_left': false,
         'RF_right': false,
-        'Euc': false
+        'Euc': false,
+        'LRF':false
     }
 
     // CHECK INTERSECTING LEAVES
@@ -675,16 +929,13 @@ function prepare_and_run_distance(m1,m2){
     }
 
     // FILTER TREE TO KEEP ONLY INTERSECTING LEAVES
-
     var hierachy1 = filter_leaves_hierarchy(h1, intersection )
-    var table1 = build_table(hierachy1,hierachy1.data.branch_length )
+    var table1 = build_table(hierachy1 )
 
     var hierachy2 = filter_leaves_hierarchy(h2, intersection )
-    var table2 = build_table(hierachy2, hierachy2.data.branch_length )
+    var table2 = build_table(hierachy2 )
 
-    var r1 = JSON.parse(JSON.stringify(hierachy1.data.branch_length));
-    var r2 = JSON.parse(JSON.stringify(hierachy2.data.branch_length));
-
+    // CLADISTIC DISTANCE & EUCLIDIAN
     var r = compute_RF_Euc(table1,table2)
     distance.clade = r.RF
     distance.Cl_good = r.good
@@ -692,24 +943,28 @@ function prepare_and_run_distance(m1,m2){
     distance.Cl_right = r.R
     distance.Euc = r.E
 
-
+    // RF
     var hierarchy_mockup_rerooted1 = reroot_hierarchy(hierachy1, intersection[0])
     var hierarchy_mockup_rerooted2 = reroot_hierarchy(hierachy2, intersection[0])
 
-
     // build tables
-    var X1 = build_table(hierarchy_mockup_rerooted1, r1 )
-    var X2 = build_table(hierarchy_mockup_rerooted2,  r2)
-
-
-    //console.log(X1,X2)
+    var X1 = build_table(hierarchy_mockup_rerooted1)
+    var X2 = build_table(hierarchy_mockup_rerooted2)
 
     var r2 = compute_RF_Euc(X1,X2)
     distance.RF = r2.RF
     distance.RF_good = r2.good
     distance.RF_left = r2.L
     distance.RF_right = r2.R
-    //distance.Euc = parseFloat(r2.E) + Math.abs(leaf1_distance-leaf2_distance)
+
+
+    // LRF
+    if ( m1.settings.has_duplications && m2.settings.has_duplications) {
+        check_whole_hierarchy_labelled(hierarchy_mockup_rerooted1)
+        check_whole_hierarchy_labelled(hierarchy_mockup_rerooted2)
+
+        distance.LRF = compute_LRF(hierarchy_mockup_rerooted1, hierarchy_mockup_rerooted2,'duplication' )
+    }
 
     return  distance
 }

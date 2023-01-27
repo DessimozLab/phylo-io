@@ -336,7 +336,7 @@ export default class Model {
                             n.extended_informations[key] = value
                             this.settings.extended_data_type['Ev'] = 'cat'
                             break;
-
+                        case 'DD':
                         case 'D':
                             if (value == 'Y') {
                                 n.duplication = true
