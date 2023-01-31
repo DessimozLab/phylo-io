@@ -2091,6 +2091,11 @@ export default class Interface {
 
             this.add_swicth_UI(this.menu_stack_p, this.viewer.model.settings.stack.showHistogramValues,"Show numbers",   this.viewer.toggle_show_stack_number.bind(this.viewer))
 
+            if (this.viewer.model.settings.stack.has_support){
+                this.add_swicth_UI(this.menu_stack_p, this.viewer.model.settings.stack.only_support,"remove low coverage hogs",   this.viewer.toggle_only_support.bind(this.viewer))
+
+            }
+
 
 
 

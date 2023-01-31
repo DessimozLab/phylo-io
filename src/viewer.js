@@ -221,9 +221,16 @@ export default class Viewer {
 
                     d.stackData = stackData
                 }
-                else {
-                    //console.log("No data for stack in ", d)
+
+                if( this.model.settings.stack.has_support &&d.data.evolutionaryEvents_support) {
+
+                    let stackData_support = []
+                    stackData_support['genes'] = this.barStack(d, 'genes', true);
+                    stackData_support['events'] = this.barStack(d, 'events', true);
+
+                    d.stackData_support = stackData_support
                 }
+
             })
         }
     }
@@ -315,7 +322,14 @@ export default class Viewer {
 
         if (this.container_object.api.settings.phylostratigraphy){
 
-            var datum = node.data.evolutionaryEvents
+            if (this.model.settings.stack.has_support && this.model.settings.stack.only_support){
+                var datum = node.data.evolutionaryEvents_support
+            }
+            else {
+                var datum = node.data.evolutionaryEvents
+            }
+
+
 
             html += `<b># Events</b> <br>`
             html += `Gains: ${datum.gained} <br>`
@@ -1577,6 +1591,14 @@ export default class Viewer {
 
     // stack
 
+    toggle_only_support(){
+
+        this.model.settings.stack.only_support = !this.model.settings.stack.only_support
+
+        this.build_d3_data()
+        this.render(this.hierarchy)
+    }
+
     toggle_show_stack_number(){
         if (this.model.settings.stack.showHistogramValues){
             this.model.settings.stack.showHistogramValues = false
@@ -1720,10 +1742,11 @@ export default class Viewer {
     // STACK
     render_stack(d,e){
 
-
-
         var ms = this.model.settings.stack
-        var data = e.stackData[ms.type];
+
+        var data = (ms.has_support && ms.only_support ) ? e.stackData_support[ms.type] : e.stackData[ms.type];
+
+
         var stackGroup  = this.d3.select(d);
 
 
@@ -1769,7 +1792,13 @@ export default class Viewer {
                 .append("text")
                 .classed("legendsummarytxt", true)
                 .text(function (d) {
-                    var summary_number = ms.type === "genes" ? d.data.nr_hogs : d.numberEvents; // todo add nr_proteins and  numberEvents
+                    if (ms.has_support && ms.only_support){
+                        var summary_number = ms.type === "genes" ? d.data.nr_hogs_support : d.numberEvents_; // todo add nr_proteins and  numberEvents
+                    }
+                    else{
+                        var summary_number = ms.type === "genes" ? d.data.nr_hogs : d.numberEvents; // todo add nr_proteins and  numberEvents
+                    }
+
                     return summary_number > 0 && typeof summary_number == 'number' ? summary_number : "";
                 }).attr("x", function () {
                     return 0 - (xDistanceFromNode + 30)
@@ -1824,11 +1853,14 @@ export default class Viewer {
 
         var ms = this.model.settings.stack
 
+        var max_genome = (ms.has_support && ms.only_support) ? this.model.largestGenome_support : this.model.largestGenome
+        var max_event = (ms.has_support && ms.only_support) ? this.model.largestGenome_support : this.model.largestGenome
+
 
         if(type === 'genes' || !type){
 
-            if(ms.maxStackHeight === "max" && this.model.largestGenome > 0){
-                var normalizer = ms.stackHeight / this.model.largestGenome;
+            if(ms.maxStackHeight === "max" && max_genome > 0){
+                var normalizer = ms.stackHeight / max_genome;
             } else if(Number.isInteger(ms.maxStackHeight)){
                 var normalizer = ms.maxStackHeight / (d.retained + d.duplicated + d.gained + Math.abs(d.lost));
             } else {
@@ -1837,8 +1869,8 @@ export default class Viewer {
 
         } else {
 
-            if(ms.maxStackHeight === "max" && this.model.largestEvents > 0){
-                var normalizer = ms.stackHeight / this.model.largestEvents;
+            if(ms.maxStackHeight === "max" && max_event > 0){
+                var normalizer = ms.stackHeight / max_event;
             } else if(Number.isInteger(ms.maxStackHeight)){
                 var normalizer = m.maxStackHeight / (d.duplications + d.gained + Math.abs(d.lost));
             } else {
@@ -1851,7 +1883,7 @@ export default class Viewer {
 
     }
 
-    barStack(seriesDataAll, type) {
+    barStack(seriesDataAll, type, only_support = false) {
 
         var data;
 
@@ -1862,7 +1894,13 @@ export default class Viewer {
         }
 
         var size = 0;
-        var d = seriesDataAll.data.evolutionaryEvents;
+        if (only_support){
+            var d = seriesDataAll.data.evolutionaryEvents_support;
+        }
+        else{
+            var d = seriesDataAll.data.evolutionaryEvents;
+        }
+
         var posBase = 0; // positive base
         var stackIndex = 0;
         var seriesIndex = 0;
@@ -1871,6 +1909,34 @@ export default class Viewer {
 
         /* in case there's no eveolutionary events */
         normalizer = !isFinite(normalizer) ? 1 : normalizer;
+
+        if (typeof d.gained == 'undefined'){
+            d.gained = 0
+        }
+
+        if (typeof d.gained == 'undefined'){
+            d.gained = 0
+        }
+
+        if (typeof d.retained == 'undefined'){
+            d.retained = 0
+        }
+
+        if (typeof d.duplicated == 'undefined'){
+            d.duplicated = 0
+        }
+
+        if (typeof d.duplications == 'undefined'){
+            d.duplications = 0
+        }
+
+        if (typeof d.lost == 'undefined'){
+            d.lost = 0
+        }
+
+
+
+
 
 
         var realSize;

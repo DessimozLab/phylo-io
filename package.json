@@ -5,7 +5,8 @@
   "scripts": {
     "test": "npm run-script build-jest; jest --silent=false",
     "build": "webpack",
-    "build-jest": "webpack -c webpack.config.jest.js"
+    "build-jest": "webpack -c webpack.config.jest.js",
+    "build-single": "webpack -c webpack_single_file.config.js"
   },
   "keywords": [],
   "author": "",

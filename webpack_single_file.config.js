@@ -1,4 +1,4 @@
-const path = require('path');
+Aconst path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
     output: {
         publicPath: '',
         filename: 'phylo.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist-single'),
         library: 'PhyloIO',
     },
     resolve: {
@@ -21,6 +21,11 @@ module.exports = {
             url: require.resolve("url"),
         }
     },
+    plugins: [
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+        }),
+    ],
     module: {
         rules: [
             {

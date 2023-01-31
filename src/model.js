@@ -68,6 +68,8 @@ export default class Model {
                 'stackHeight' : 120,
                 'stackWidth' : 30,
                 'maxStackHeight': 'max', // ratio -> stack height fixed | max -> largest data = stack height
+                'has_support' : false,
+                'only_support' : false,
 
             },
         }
@@ -140,14 +142,40 @@ export default class Model {
             this.largestEvents = 0; // todo
 
             this.traverse(this.data , function(n,c){
+
                 let g = n.nr_hogs ? n.nr_hogs : n.nr_proteins
                 if (g > this.largestGenome ) {this.largestGenome = g;}
 
                 if (n.evolutionaryEvents){
 
-                    let e = n.evolutionaryEvents.gained + n.evolutionaryEvents.lost + n.evolutionaryEvents.duplications
+                    var ga = n.evolutionaryEvents.gained ? n.evolutionaryEvents.gained : 0
+                    var l = n.evolutionaryEvents.lost ? n.evolutionaryEvents.lost : 0
+                    var d = n.evolutionaryEvents.duplications ? n.evolutionaryEvents.duplications : 0
+
+                    let e = ga + l + d
+
+
                     if (e > this.largestEvents ) {this.largestEvents = e;}
 
+                }
+
+                if (this.settings.stack.has_support){
+
+                    let g_support = n.nr_hogs_support ? n.nr_hogs_support : n.nr_proteins_support
+                    if (g_support > this.largestGenome_support ) {this.largestGenome_support = g_support;}
+
+                    if (n.evolutionaryEvents_support){
+
+
+                        var ga_support = n.evolutionaryEvents_support.gained ? n.evolutionaryEvents_support.gained : 0
+                        var l_support = n.evolutionaryEvents_support.lost ? n.evolutionaryEvents_support.lost : 0
+                        var d_support = n.evolutionaryEvents_support.duplications ? n.evolutionaryEvents_support.duplications : 0
+
+                        let e_support = ga_support + l_support + d_support
+
+                        if (e_support > this.largestEvents_support ) {this.largestEvents_support = e_support;}
+
+                    }
                 }
 
 
