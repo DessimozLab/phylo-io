@@ -1268,7 +1268,7 @@ export default class Interface {
                         /*insert the value for the autocomplete text field:*/
                         that.dismiss_blur = true
                         inp.value = this.getElementsByTagName("input")[0].value;
-                        document.getElementById('search_button_id'+ that.viewer.uid).focus();
+                        document.getElementById('buttonsearch_' + this.container_object.div_id ).focus();
 
                         that.container_object.zoom_to_node(inp.value)
                         that.viewer.maximise_zoom()
@@ -1356,7 +1356,6 @@ export default class Interface {
 
         // add search button
         var search_but = this.tr_buttons.append('button')
-            .attr('id', 'search_button_id' + this.viewer.uid)
             .attr('class', ' square_button search_button')
             .attr('id', 'buttonsearch_' + this.container_object.div_id )
             .attr('data-bs-placement', 'bottom')
@@ -1368,8 +1367,7 @@ export default class Interface {
                 var display = input_el.style.display;
 
                 if (display == 'none'){
-                    let search_el = document.getElementById("search_button_id" + this.viewer.uid);
-
+                    let search_el = document.getElementById('buttonsearch_' + this.container_object.div_id );
 
                     input_el.style.display = 'inline-block';
                     search_el.style.borderTopLeftRadius =  '0px';
@@ -1401,9 +1399,9 @@ export default class Interface {
 
 
 
-        let search_el = document.getElementById("search_button_id" + this.viewer.uid);
+        let search_el = document.getElementById('buttonsearch_' + this.container_object.div_id );
 
-        this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.suggestions)
+        this.autocomplete(document.getElementById("searchinp" + this.viewer.uid ), this.viewer.model.settings.suggestions)
 
         input_el.addEventListener("keyup", ({key}) => {
             if (key === "Enter") {

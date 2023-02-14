@@ -403,9 +403,9 @@ export default class Model {
 
         })
 
-        this.suggestions = [] // autocomplete name
+        this.settings.suggestions = [] // autocomplete name
         this.traverse(json, function(n,c){
-            if (n.name !== ''){this.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
+            if (n.name !== ''){this.settings.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
         return p
     }
 
