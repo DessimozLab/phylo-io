@@ -904,7 +904,9 @@ export default class Model {
 
                         d.extended_informations[item[0]]= item[1]
 
-                        if (this.settings.extended_data_type[item[0]] == 'num') {
+                        if (this.settings.extended_data_type[item[0]] == 'num' && !isNaN(item[1])) {
+
+                            item[1] = item[1].toString().indexOf('.') != -1 ? parseFloat(item[1]) : parseInt(item[1])
 
                             if (this.settings.style.color_extent_max['leaf'][item[0]] < item[1]) {
                                 this.settings.style.color_extent_max['leaf'][item[0]] = item[1]
@@ -983,7 +985,9 @@ export default class Model {
 
                         }
 
-                        else if (this.settings.extended_data_type[item[0]] == 'num') {
+                        else if (this.settings.extended_data_type[item[0]] == 'num' && !isNaN(item[1]) ) {
+
+                            item[1] = item[1].toString().indexOf('.') != -1 ? parseFloat(item[1]) : parseInt(item[1])
 
                             if (this.settings.style.color_extent_max['node'][item[0]] < item[1]) {
                                 this.settings.style.color_extent_max['node'][item[0]] = item[1]
