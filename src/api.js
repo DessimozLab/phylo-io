@@ -378,7 +378,7 @@ export default class API {
 
             if (this.readyState != 4) return;
 
-            if (this.status == 201) {
+            else if (this.status == 201) {
                 var data = JSON.parse(this.responseText);
 
                 if (data.result = 'OK'){
@@ -387,7 +387,12 @@ export default class API {
                 }
             }
 
-            if (this.status == 400) {
+            else if (this.status == 413) {
+                that.session_token = 'ERROR_SIZE';
+                return
+            }
+
+            else if (this.status == 400) {
                 return
             }
         };
@@ -397,6 +402,11 @@ export default class API {
         xhr.setRequestHeader('Content-Type', 'application/json');
 
         var j = this.get_json_pickle()
+
+        if (encodeURI(JSON.stringify(j)).split(/%..|./).length - 1 > 500000000){
+            that.session_token = 'ERROR_SIZE';
+            return;
+        }
 
         xhr.send(j);
 

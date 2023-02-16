@@ -618,8 +618,17 @@
 
         phylo.session_url = s_url
 
-        document.getElementById("share_link").innerText = phylo.session_url
-        document.getElementById("share_link").href = phylo.session_url
+        if (phylo.session_url == 'ERROR_SIZE'){
+            document.getElementById("share_link").innerText = "Your data exceed the size limit, we can't generate a link for this session"
+            document.getElementById("share_link").href = ''
+        }
+
+        else{
+            document.getElementById("share_link").innerText = phylo.session_url
+            document.getElementById("share_link").href = phylo.session_url
+        }
+
+
 
     })
 
