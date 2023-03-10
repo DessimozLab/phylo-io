@@ -17,6 +17,8 @@ export default class API {
             'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
             'sync_zoom': false,
             'syncing_zoom': false,
+            'callback_ancestral_genome_redirection' : function(taxid){console.log(taxid)},
+            'callback_stack_redirection' : function(taxid, parent_taxid){console.log(taxid, parent_taxid)},
         };
 
         this.set_default_parameters() // Settings that can be reset later on (e.g. switch single to compare mode)

@@ -365,6 +365,10 @@ export default class Viewer {
             }
         }
 
+        if (this.container_object.api.settings.phylostratigraphy) {
+            html += `<br> <b>Click to open detail page</b>  <br>`
+        }
+
         this.tooltip.html(html);
     }
 
@@ -995,51 +999,72 @@ export default class Viewer {
 
     click_nodes(event, node) {
 
-        if (node.parent != null){
+        var menu = []
 
-            var menu = [
-                {
-                    title: node.data.collapse ? 'Expand' : 'Collapse' ,
-                    action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
-                },
-                {
-                    title: 'Collapse All' ,
-                    action: () =>  {this.container_object.trigger_("collapseAll", node.data, node)}
-                },
-                {
-                    title: 'Expand All' ,
-                    action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
-                },
-                {
-                    title: 'Swap subtrees' ,
-                    action: () =>  {this.container_object.trigger_("swap", node.data, node)}
-                },
-                {
-                    title: 'Close' ,
-                    action: () =>  {
-                        d3.select("#menu-node").remove()
-                    }
-                }
-            ]
+        // phylostratigraphy mode
+        if (this.container_object.api.settings.phylostratigraphy && event.target.tagName === 'rect'){
+
+            this.container_object.api.settings.callback_stack_redirection(node.data.taxid,node.parent.data.taxid);
+            return
+
         }
-        else { // root
-            var menu = [
-                {
-                    title: 'Expand All' ,
-                    action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
-                },
-                {
-                    title: 'Swap subtrees' ,
-                    action: () =>  {this.container_object.trigger_("swap", node.data, node)}
-                },
-                {
-                    title: 'Close' ,
-                    action: () =>  {
-                        d3.select("#menu-node").remove()
+
+         // Default mode
+        else {
+            if  (node.parent != null){
+
+                var menu = [
+                    {
+                        title: node.data.collapse ? 'Expand' : 'Collapse' ,
+                        action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
+                    },
+                    {
+                        title: 'Collapse All' ,
+                        action: () =>  {this.container_object.trigger_("collapseAll", node.data, node)}
+                    },
+                    {
+                        title: 'Expand All' ,
+                        action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
+                    },
+                    {
+                        title: 'Swap subtrees' ,
+                        action: () =>  {this.container_object.trigger_("swap", node.data, node)}
                     }
-                }
-            ]
+                ]
+            }
+            else { // root
+                var menu = [
+                    {
+                        title: 'Expand All' ,
+                        action: () =>  {this.container_object.trigger_("expandAll", node.data, node)}
+                    },
+                    {
+                        title: 'Swap subtrees' ,
+                        action: () =>  {this.container_object.trigger_("swap", node.data, node)}
+                    },
+
+                ]
+            }
+
+            if (this.container_object.api.settings.phylostratigraphy){
+
+                menu.push({
+                    title: 'Open genome page' ,
+                    action:  () =>  {this.container_object.api.settings.callback_ancestral_genome_redirection(node.data.taxid)}
+                })
+
+            }
+
+
         }
+
+
+        menu.push({
+            title: 'Close' ,
+            action: () =>  {
+                d3.select("#menu-node").remove()
+            }
+        })
 
         var t = this.d3.zoomTransform(this.svg.node())
 
