@@ -190,7 +190,7 @@ export default class Container {
         var m = this.models[this.current_model];
 
         if (action === 'collapse') {
-            this.add_action('Collapse',  this, this.trigger_, [action, data, node] )
+            this.add_action('Collapse this node',  this, this.trigger_, [action, data, node] )
             m.collapse(data)
             this.viewer.apply_collapse_from_data_to_d3(data, node)
             this.viewer.build_d3_cluster()

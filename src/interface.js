@@ -2018,7 +2018,7 @@ export default class Interface {
 
         this.menu_general_b = this.menu_settings.append('button').attr('id', 'accordion_tree'+this.container_object.uid).attr('class', 'accordion').text("Tree")
         this.menu_general_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
-        this.menu_tree_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Branch & Labels")
+        this.menu_tree_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Branches & Labels")
         this.menu_tree_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.menu_search_b = this.menu_settings.append('button').attr('id', 'accordion_branch'+this.container_object.uid).attr('class', 'accordion').text("Search")
@@ -2173,10 +2173,10 @@ export default class Interface {
 
 
         // ADD TOGGLE tooltips
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.subsample_label,"Subsample Labels",   this.viewer.toggle_subsample.bind(this.viewer))
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.subsample_label,"Subsample labels",   this.viewer.toggle_subsample.bind(this.viewer))
 
         // ADD TOGGLE LEAF LABEL
-        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show Leaves Labels",   this.viewer.toggle_leaves.bind(this.viewer))
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show leaf labels",   this.viewer.toggle_leaves.bind(this.viewer))
 
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.show_tooltips,"Show tooltips",   this.viewer.toggle_tooltips.bind(this.viewer))
@@ -2189,7 +2189,7 @@ export default class Interface {
 
         // ADD SLIDER NODE/LINE/TEXT
         /*
-        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node Radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
+        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
             (e ) =>{this.viewer.update_node_radius(e.target.value)})
 
         this.slider_l = this.add_slider_UI(this.menu_tree_p, "Line width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
@@ -2203,7 +2203,7 @@ export default class Interface {
 
          */
 
-        this.add_quartet_buttons(this.menu_tree_p, "Node Radius", "buton_node_radius_", this.container_object.update_node_radius_percent )
+        this.add_quartet_buttons(this.menu_tree_p, "Node radius", "buton_node_radius_", this.container_object.update_node_radius_percent )
         this.add_quartet_buttons(this.menu_tree_p, "Line width", "buton_line_width_", this.container_object.update_line_width_percent)
         this.add_quartet_buttons(this.menu_tree_p, "Leaf label size", "buton_leaf_label_size_", this.container_object.update_font_size_leaf_percent)
         this.add_quartet_buttons(this.menu_tree_p, "Node label size", "buton_node_label_", this.container_object.update_font_size_node_percent)
@@ -2386,7 +2386,7 @@ export default class Interface {
         }
 
 
-        this.menu_coloring_p.append('p').text("Nodes").style('font-weight','bold').style('margin-top','8px')
+        this.menu_coloring_p.append('p').text("Branches").style('font-weight','bold').style('margin-top','8px')
 
         var drop = this.menu_coloring_p.append('div')
             .style('display','block')
@@ -2460,9 +2460,12 @@ export default class Interface {
 
             var domain_leaf = container_.append('div')
                 .style('display','block')
-                .style('margin','12px')
+                .style('margin','8px')
+                .style('margin-bottom','12px')
 
-            domain_leaf.append('label').text("# domain");
+            domain_leaf.append('label').text("Nb. of colors");
+
+
 
             domain_leaf.append('input')
                 .attr('id','inputcoloring_' + type + this.container_object.uid )
@@ -2985,7 +2988,7 @@ export default class Interface {
             .attr("fill", "#333")
             .attr('text-anchor', 'middle')
             .style('font-size', '1.2em')
-            .html('No tree here ! You can <a href="#" id="add_tree_link' + this.container_object.uid +'">add a tree</a> or use examples below.')
+            .html('No tree here! You can <a href="#" id="add_tree_link' + this.container_object.uid +'">add a tree</a> or use the examples below.')
 
         document.querySelector('#add_tree_link'+ this.container_object.uid).addEventListener('click', event => {
             $('#exampleModal' + this.container_object.uid).modal('show')
@@ -2998,7 +3001,7 @@ export default class Interface {
             .attr("transform", "translate("+ (this.viewer.width/2)+"," + (this.viewer.height/2 + 24)  + ")")
             .attr('text-anchor', 'middle')
             .attr("fill", "#bbb")
-            .html("Ready to use examples: <a id='ex1"+ this.container_object.uid +"' style='cursor:pointer;text-decoration: underline'>Tree bundle #1</a> - <a style='cursor:pointer;text-decoration: underline' id='ex2"+ this.container_object.uid +"'>Tree bundle #2</a> ")
+            .html("Ready to use examples: <a id='ex1"+ this.container_object.uid +"' style='cursor:pointer;text-decoration: underline'> Tree collection #1</a> - <a style='cursor:pointer;text-decoration: underline' id='ex2"+ this.container_object.uid +"'>Tree collection #2</a> ")
 
 
 

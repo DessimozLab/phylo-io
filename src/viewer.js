@@ -1015,7 +1015,7 @@ export default class Viewer {
 
                 var menu = [
                     {
-                        title: node.data.collapse ? 'Expand' : 'Collapse' ,
+                        title: node.data.collapse ? 'Expand' : 'Collapse node' ,
                         action: () =>  {this.container_object.trigger_("collapse", node.data, node)}
                     },
                     {
