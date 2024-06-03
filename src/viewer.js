@@ -1117,7 +1117,9 @@ export default class Viewer {
             },{
             title: 'Open as new tree' ,
             action: () =>  {
-                this.container_object.create_model_from_hierarchy_node(node_from_event)
+                this.container_object.create_model_from_hierarchy_node(node_from_event);
+                this.container_object.shift_model(this.container_object.models.length - 1 - this.container_object.current_model);
+                this.fit_to_viewer_height()
 
             }
         },

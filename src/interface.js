@@ -785,6 +785,7 @@ export default class Interface {
             .style('min-width', '92px')
             .style('display', 'flex')
             .style('align-items', 'center')
+            .style('width', 'auto')
 
 
         var sd = stoggle.append('div')
@@ -882,9 +883,9 @@ export default class Interface {
 
 
             //You can add delete key event code as well over here for windows users.
-            if(edit_name.textContent.length === 20 && e.keyCode != 8) {
-                e.preventDefault();
-            }
+            //if(edit_name.textContent.length === 40 && e.keyCode != 8) {
+            //    e.preventDefault();
+            //}
         });
 
         edit_name.addEventListener('focus', (event) => {
