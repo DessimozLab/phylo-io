@@ -1158,7 +1158,7 @@ export default class Viewer {
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
 
-        var fs = 20/k // scaled font size
+        var fs = 14/k // scaled font size
         var vps = 12/k // scaled vertical margin
         var hps = 10/k // scaled horizontal margin
         var rs = 8/k // scaled radius size
@@ -2031,7 +2031,7 @@ export default class Viewer {
 
     isOdd(num) { return num % 2;}
 
-    compute_node_font_size(){
+    compute_node_font_size(internal=false){
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
 
@@ -2039,7 +2039,12 @@ export default class Viewer {
            k=1
         }
 
-        var fs =  this.model.settings.tree.font_size/k ;
+        if (internal){
+            var fs =  this.model.settings.style.font_size_internal/k ;
+        }
+        else {
+            var fs =  this.model.settings.tree.font_size/k ;
+        }
 
         return fs
 
@@ -2125,7 +2130,10 @@ export default class Viewer {
             .attr("text-anchor", function(d) {
                 return d.parent == null || mirror_factor ? "end" : "start"; // todo better deal with internal name
             })
-            .text(function(d) { return d.data.name; });
+            .text(function(d) { return d.data.name; })
+
+
+
 
 
         nodeEnter.filter(function(d) { return (d.children || d._children); })
@@ -2182,6 +2190,7 @@ export default class Viewer {
     node_face_update(nodes){
 
         var on_screen_text_size = this.compute_node_font_size()
+        var on_screen_text_size_int = this.compute_node_font_size(true)
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
         var show_r = this.model.settings.display_internal_label !== false
         var show_lt = this.model.settings.display_internal_label_left_top !== false
@@ -2214,7 +2223,7 @@ export default class Viewer {
             .attr("x", function(d) {
                 let y_offset = (typeof d.data.triangle_width !== 'undefined') ? d.data.triangle_width : 0;
 
-                var scale = (d.children || d._children) ? 1 : k
+                var scale = k //(d.children || d._children) ? 1 : k
 
                 if (mirror_factor){
                     return  -(y_offset + 13/scale);
@@ -2272,31 +2281,50 @@ export default class Viewer {
                 let c =  d.data.search_node ? "#FF0000"  : "#212529";
                 return c
             })
-            .style('font-size', d => {
+            .style('font-size', d => {if (d.children){
+                    return show_r ? on_screen_text_size_int + 'px' : '0px';
+                } return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;}
+            )
+            /*
+            .on('click', function(d,i) {
+                if (i.children == null && i._children == null){
 
-                if (d.children){
-                    return show_r ? this.model.settings.style.font_size_internal + 'px' : '0px';
+                    $('#exampleModal').modal('show');
+
+                    console.log(i.data.name);
                 }
 
-                return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;
+            });
 
+             */
 
-            })
 
         nodes.select('text.left_top')
             .style('font-size', d => {
-                return show_lt ? this.model.settings.style.font_size_internal+ 'px' : '0px';
+                return show_lt ? on_screen_text_size_int+ 'px' : '0px';
             })
             .text( (d) => {
                 return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
             })
+            .attr("y", (d) => {
+                return -13 /k
+            })
+            .attr("x", function (d) {
+                return mirror_factor ? 8/k : -8/k;
+            })
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
-                return show_lb ? this.model.settings.style.font_size_internal + 'px' : '0px';
+                return show_lb ? on_screen_text_size_int + 'px' : '0px';
             })
             .text( (d) => {
                 return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
+            })
+            .attr("y", (d) => {
+                return 13 /k
+            })
+            .attr("x", function (d) {
+                return mirror_factor ? 8/k : -8/k;
             })
     }
 

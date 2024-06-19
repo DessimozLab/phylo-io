@@ -126,8 +126,47 @@ export default class Interface {
 
         }
 
+        // Add modal edit label
+        //this.add_modal_edit_label()
 
+    }
 
+    // MODAL
+
+    add_modal_edit_label(){
+
+        var mod_html =  `
+            <div class="modal" id="exampleModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                    
+                    <div class="modal-header" style="height: 128px;border:none !important">
+                    <h3 class="modal-title" id="exampleModalLabel" style="margin: auto; text-align: center">
+                    <b>TITLE_</b> <br>
+                    
+                    <small style="color:grey">
+                    SUB_TITLE_
+            </small>
+                    </h3>
+                    
+                  </div>
+            
+                        <div class="modal-body" style="background-color: #f8f9fa; padding: 24px 48px;">
+            
+            
+                            TEMPLATE_CORPUS
+                          
+                            </div>
+                            
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+`
+
+        document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
     }
 
     // PLACEHOLDER
