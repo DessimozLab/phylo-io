@@ -2094,6 +2094,7 @@ export default class Viewer {
         nodeEnter.append('text')
             .attr("class", "right")
             .attr("dy", ".35em")
+            .style('cursor', 'pointer')
             .style('font-size', d => {
 
                 var collapse_text = false
@@ -2131,6 +2132,17 @@ export default class Viewer {
                 return d.parent == null || mirror_factor ? "end" : "start"; // todo better deal with internal name
             })
             .text(function(d) { return d.data.name; })
+            .on('click', (d,i) => {
+             if (i.children == null && i._children == null){
+
+                 this.interface.add_modal_edit_label(i);
+                 $('#exampleModal_edit').modal('show');
+
+             }
+
+         });
+
+
 
 
 

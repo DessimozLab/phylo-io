@@ -126,37 +126,43 @@ export default class Interface {
 
         }
 
-        // Add modal edit label
-        //this.add_modal_edit_label()
-
     }
 
     // MODAL
 
-    add_modal_edit_label(){
+    add_modal_edit_label(node){
 
         var mod_html =  `
-            <div class="modal" id="exampleModal" tabindex="-1">
+            <div class="modal" id="exampleModal_edit" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                     
                     <div class="modal-header" style="height: 128px;border:none !important">
                     <h3 class="modal-title" id="exampleModalLabel" style="margin: auto; text-align: center">
-                    <b>TITLE_</b> <br>
+                    <b>Edit Label</b> <br>
                     
-                    <small style="color:grey">
-                    SUB_TITLE_
-            </small>
+        
                     </h3>
                     
                   </div>
             
                         <div class="modal-body" style="background-color: #f8f9fa; padding: 24px 48px;">
+                        
+                        
+               
+                                <input type="text" id="inputPassword6" class="form-control mx-sm-3" value="123456789">
+                               
+                    
             
-            
-                            TEMPLATE_CORPUS
-                          
+              
+                      
                             </div>
+                            
+                            
+                            <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="edit_modal_save">Save changes</button>
+        <button type="button" class="btn btn-secondary" id="edit_modal_close" data-dismiss="modal">Close</button>
+      </div>
                             
                             
                         </div>
@@ -166,7 +172,28 @@ export default class Interface {
             </div>
 `
 
+        mod_html = mod_html.replace('123456789', node.data.name)
+
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
+
+        document.getElementById('edit_modal_save').addEventListener('click', () => {
+            node.data.name = document.getElementById('inputPassword6').value;
+
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
+            document.getElementById('exampleModal_edit').remove()
+            document.getElementsByClassName('modal-backdrop')[0].remove()
+
+        })
+
+
+        document.getElementById('edit_modal_close').addEventListener('click', () => {
+            document.getElementById('exampleModal_edit').remove();
+            document.getElementsByClassName('modal-backdrop')[0].remove()
+        })
+
+
     }
 
     // PLACEHOLDER
