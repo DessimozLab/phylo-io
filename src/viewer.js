@@ -104,7 +104,6 @@ export default class Viewer {
 
 
         d3.select("#svg" + this.uid).on("click", (d,i) => {
-            console.log('click');
             this.interface.menu_settings.style("display", 'none');
             this.interface.menu_export.style("display", 'none')
         })
