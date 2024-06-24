@@ -100,6 +100,14 @@ export default class Viewer {
         // MISC.
         this.settings.stack.colorMap = this.compute_color_map_stack()
 
+        // close setting if click outside on svg
+
+
+        d3.select("#svg" + this.uid).on("click", (d,i) => {
+            console.log('click');
+            this.interface.menu_settings.style("display", 'none');
+            this.interface.menu_export.style("display", 'none')
+        })
 
 
     }
