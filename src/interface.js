@@ -1440,8 +1440,8 @@ export default class Interface {
                     search_el.style.borderBottomLeftRadius = '0px';
                 }
                 else{
-                    this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
-                    this.viewer.maximise_zoom()
+                    this.container_object.highlight_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                    //this.viewer.maximise_zoom()
 
                     input_el.style.display = 'none';
                     search_el.style.borderTopLeftRadius =  '8px';
@@ -1471,8 +1471,8 @@ export default class Interface {
 
         input_el.addEventListener("keyup", ({key}) => {
             if (key === "Enter") {
-                this.container_object.zoom_to_node(document.getElementById("searchinp" + this.viewer.uid).value)
-                this.viewer.maximise_zoom()
+                this.container_object.highlight_node(document.getElementById("searchinp" + this.viewer.uid).value)
+                //this.viewer.maximise_zoom()
             }
         })
 
@@ -2332,7 +2332,7 @@ export default class Interface {
 
 
         // ADD TOGGLE MULTIPLE SEARCH
-        this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Multiple search",   this.viewer.toggle_multiple_search.bind(this.viewer))
+        this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Keep queries highlighted",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
 
         /*
