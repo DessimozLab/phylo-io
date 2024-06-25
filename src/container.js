@@ -316,7 +316,7 @@ export default class Container {
 
     }
 
-    zoom_to_node(name){
+    highlight_node(name){
 
         if (name === ''){return}
 
@@ -375,7 +375,7 @@ export default class Container {
        var n= []
        this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
 
-        this.viewer.centerNode(n[0])
+        //this.viewer.centerNode(n[0])
 
 
     }

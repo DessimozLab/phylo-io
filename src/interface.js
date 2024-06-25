@@ -1318,7 +1318,6 @@ export default class Interface {
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
             for (i = 0; i < arr.length; i++) {
-                /*check if the item starts with the same letters as the text field value:*/
                 if (arr[i].toUpperCase().includes(val.toUpperCase()) ){
                 //if (arr[i].substr(0, val.length).toUpperCase() === val.toUpperCase()) {
                     /*create a DIV element for each matching element:*/
@@ -1337,8 +1336,8 @@ export default class Interface {
                         inp.value = this.getElementsByTagName("input")[0].value;
                         document.getElementById('buttonsearch_' + this.container_object.div_id ).focus();
 
-                        that.container_object.zoom_to_node(inp.value)
-                        that.viewer.maximise_zoom()
+                        that.container_object.highlight_node(inp.value)
+                        //that.viewer.maximise_zoom()
 
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
