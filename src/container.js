@@ -371,13 +371,21 @@ export default class Container {
        p[p.length-1].data.search_node = true;
 
        this.viewer.set_data(this.models[this.current_model])
-       this.viewer.render(this.viewer.hierarchy)
+        this.viewer.render(this.viewer.hierarchy, 0);
+
        var n= []
        this.viewer.hierarchy.each(function(d) { if (d.data.name === name){n.push(d)}})
 
         //this.viewer.centerNode(n[0])
 
 
+    }
+
+    remove_highlight_node(){
+        this.viewer.hierarchy.each(function(d) {
+            d.data.search_path = false;
+            d.data.search_node = false;
+        })
     }
 
     toggle_rooting(){

@@ -45,7 +45,7 @@ export default class Viewer {
 
         // Settings
         this.settings = {
-            'duration' : 500,
+            'duration' : 300,
             'max_visible_leaves' : 30,
             'style': {
                 'offset_top_fit': 140,
@@ -259,7 +259,16 @@ export default class Viewer {
     }
 
     // RENDERING
-    render(source){
+    render(source, duration){
+
+        var duration;
+
+        if (typeof duration !== 'undefined') {
+            duration = duration;
+        }
+        else {
+            duration = this.settings.duration;
+        }
 
         d3.selectAll("#menu-node").remove()
 
@@ -274,8 +283,8 @@ export default class Viewer {
 
 
         // And render them
-        this.render_nodes(source)
-        this.render_edges(source)
+        this.render_nodes(source, duration)
+        this.render_edges(source, duration)
 
 
         if (this.model.settings.first_time_render) {
@@ -379,7 +388,7 @@ export default class Viewer {
         this.tooltip.html(html);
     }
 
-    render_nodes(source){
+    render_nodes(source, duration){
 
         var self_render = this;
         var on_screen_text_size = this.compute_node_font_size()
@@ -510,7 +519,7 @@ export default class Viewer {
 
         // Transition to the proper position for the node
         this.nodeUpdate.transition()
-            .duration(this.settings.duration)
+            .duration(duration)
             .attr("transform", (d) =>  {
                 return "translate(" + mirror_factor*d.y + "," + d.x + ")";
             });
@@ -529,7 +538,7 @@ export default class Viewer {
 
         // Remove any exiting nodes
         var nodeExit = node.exit().transition()
-            .duration(this.settings.duration)
+            .duration(duration)
             .attr("transform", function(d) {
                 return "translate(" + source.y + "," + source.x + ")";
             })
@@ -559,7 +568,7 @@ export default class Viewer {
 
             if (d._children) {
 
-                d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
+                d3.select(nodes[i]).select("path").transition().duration(duration)
                     .attr("d",  (d) => {
 
                         const average = arr => arr.reduce( ( p, c ) => p + c.data.distance_to_root, 0 ) / arr.length;
@@ -583,7 +592,7 @@ export default class Viewer {
 
             }
             if (d.children) {
-                d3.select(nodes[i]).select("path").transition().duration(self_render.settings.duration)
+                d3.select(nodes[i]).select("path").transition().duration(duration)
                     .attr("d", function (d) {
                         d.data.triangle_height = 0
                         return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
@@ -609,7 +618,7 @@ export default class Viewer {
 
                 // Transition to the proper position for the node
                 this.nodeUpdate.transition()
-                    .duration(this.settings.duration)
+                    .duration(duration)
                     .attr("transform", (d) =>  {
 
                         if (d.children ){
@@ -645,7 +654,7 @@ export default class Viewer {
 
                 // Transition to the proper position for the node
                 this.nodeUpdate.transition()
-                    .duration(this.settings.duration)
+                    .duration(duration)
                     .attr("transform", (d) =>  {
 
                         if (d.children ){
@@ -697,7 +706,7 @@ export default class Viewer {
 
     }
 
-    render_edges(source){
+    render_edges(source, duration){
 
         var self_render = this;
         var mirror_factor = this.model.settings.mirror ? -1 : 1
@@ -736,7 +745,7 @@ export default class Viewer {
 
         // Transition back to the parent element position
         linkUpdate.transition()
-            .duration(this.settings.duration)
+            .duration(duration)
             .style('stroke', (d) => {return this.color_edge(d, compared_model);})
             .style('stroke-width',  real_edges_width + 'px'  )
             .attr('d', d => this.square_edges(d, d.parent))
@@ -747,7 +756,7 @@ export default class Viewer {
 
         // Remove any exiting links
         var linkExit = link.exit().transition()
-            .duration(this.settings.duration)
+            .duration(duration)
             .attr('d', d => this.square_edges({x: source.x, y: source.y}, {x: source.x, y: source.y}))
             .remove();
 

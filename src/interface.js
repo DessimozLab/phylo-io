@@ -1334,9 +1334,10 @@ export default class Interface {
                         /*insert the value for the autocomplete text field:*/
                         that.dismiss_blur = true
                         inp.value = this.getElementsByTagName("input")[0].value;
-                        document.getElementById('buttonsearch_' + this.container_object.div_id ).focus();
 
+                        //document.getElementById('buttonsearch_' + this.container_object.div_id ).focus();
                         that.container_object.highlight_node(inp.value)
+
                         //that.viewer.maximise_zoom()
 
                         /*close the list of autocompleted values,
@@ -2334,6 +2335,25 @@ export default class Interface {
         // ADD TOGGLE MULTIPLE SEARCH
         this.add_swicth_UI(this.menu_search_p, this.viewer.model.settings.multiple_search,"Keep queries highlighted",   this.viewer.toggle_multiple_search.bind(this.viewer))
 
+        // ADD reset search button
+
+        this.search_button_div = this.menu_search_p.append('div')
+            .style('display', 'flex')
+            .style('margin-top', '0px')
+
+
+        this.search_button_div.append('button')
+            .attr('class', ' square_button')
+            .attr('id', 'reset_search' + this.viewer.uid)
+            .on("click", d => {
+                this.container_object.remove_highlight_node();
+                this.viewer.set_data(this.container_object.models[this.container_object.current_model])
+                this.viewer.render(this.viewer.hierarchy)
+            })
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append("text")
+            .text("Reset search")
 
         /*
         // ADDITIONAL DATA
