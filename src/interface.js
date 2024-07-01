@@ -2183,7 +2183,7 @@ export default class Interface {
                     panel.style.maxHeight = panel.scrollHeight + "px";
                 }
 
-                that.toggle_select_node_face(that.container_object.uid)
+                //that.toggle_select_node_face(that.container_object.uid)
 
                 /*
 
@@ -2697,49 +2697,111 @@ export default class Interface {
         var h = 160;
         var gutter = 20
 
+        var color_line = 'gray';
+
         var s = parent.append("svg")
             .attr('display', 'block')
             .attr("width", w )
-            .attr("height", h)
+            .attr("height", h+ gutter)
 
+        // vertical
         s.append('line')
-            .style("stroke", "black")
-            .style("stroke-width", 2)
+            .attr("x1", w/3)
+            .attr("y1", gutter)
+            .attr("x2", w/3)
+            .attr("y2", h-gutter)
+            .attr("stroke", color_line)
+
+        // middle line
+        s.append('line')
             .attr("x1", gutter/2)
             .attr("y1", h/2)
-            .attr("x2", w/2)
-            .attr("y2", h/2);
-
-        s.append('line')
-            .style("stroke", "black")
-            .style("stroke-width", 2)
-            .attr("x1", w/2)
-            .attr("y1", gutter)
-            .attr("x2", w/2)
-            .attr("y2", h-gutter);
-
-        s.append('line')
-            .style("stroke", "black")
-            .style("stroke-width", 2)
-            .attr("x1", w/2)
-            .attr("y1", gutter)
-            .attr("x2", w-gutter)
-            .attr("y2", gutter);
-
-        s.append('line')
-            .style("stroke", "black")
-            .style("stroke-width", 2)
-            .attr("x1", w/2)
-            .attr("y1", h-gutter)
-            .attr("x2", w-gutter)
-            .attr("y2", h-gutter);
+            .attr("x2", w/3)
+            .attr("y2", h/2)
+            .attr("stroke", color_line)
 
         s.append('circle')
-            .attr('cx', w/2)
+            .attr('cx', w/3)
             .attr('cy', h/2)
             .attr('r', 5)
             .attr('stroke', 'black')
             .attr('fill', '#69a3b2');
+
+        s.append("text")
+            .attr("x", w/3 - gutter)
+            .attr("y", h/2 - gutter)
+            .attr("dy", ".35em")
+            .text('A');
+
+        s.append("text")
+            .attr("x", w/3 + gutter)
+            .attr("y", h/2 )
+            .attr("dy", ".35em")
+            .text('B');
+
+        s.append("text")
+            .attr("x", w/3 - gutter)
+            .attr("y", h/2 + gutter)
+            .attr("dy", ".35em")
+            .text('C');
+
+
+
+        // top horizontal
+        s.append('line')
+            .attr("stroke", color_line)
+            .attr("x1", w/3)
+            .attr("y1", gutter)
+            .attr("x2", w-3*gutter)
+            .attr("y2", gutter);
+
+        s.append("text")
+            .attr("x", w-2.5*gutter)
+            .attr("y", gutter - 4)
+            .attr("dy", ".35em")
+            .text('...');
+
+        // bottom horizontal
+        s.append('line')
+            .attr("stroke", color_line)
+            .attr("x1", w/3)
+            .attr("y1", h-gutter)
+            .attr("x2", w-3*gutter)
+            .attr("y2", h-gutter);
+
+
+        s.append('circle')
+            .attr('cx', w-3*gutter)
+            .attr('cy', h-gutter)
+            .attr('r', 2)
+            .attr('fill', 'black');
+
+        s.append("text")
+            .attr("x", w-2*gutter)
+            .attr("y", h-gutter)
+            .attr("dy", ".35em")
+            .text('E');
+
+        s.append("text")
+            .attr("x", w-4*gutter)
+            .attr("y", h-2*gutter)
+            .attr("dy", ".35em")
+            .text('D');
+
+        s.append("text")
+            .attr("x", w-4*gutter)
+            .attr("y", h)
+            .attr("dy", ".35em")
+            .text('F');
+
+
+
+
+        // NODE DATUM
+
+        parent.append("p").text('Node labels')
+            .style('margin-bottom','0px')
+            .style('font-weight','bold')
 
 
         var l = Array.from(this.viewer.model.settings.labels['node'])
@@ -2749,7 +2811,8 @@ export default class Interface {
 
         var that = this
 
-        var selectlt = parent.append('select').attr('id','selectlt' + container_id ).attr('class','select dropdrop ').on('change', function(){
+        parent.append('text').style('display','inline').text('A').style('margin-right','4px').style('margin-left','12px')
+        var selectlt = parent.append('select').attr('id','selectlt' + container_id ).attr('class','select_node_face').on('change', function(){
 
             var value =  this.value === 'None' ? false : this.value
 
@@ -2758,18 +2821,10 @@ export default class Interface {
             that.viewer.render(that.viewer.hierarchy)
 
         })
+        parent.append('br')
 
-        var selectlb = parent.append('select').attr('id','selectlb' + container_id ).attr('class','select dropdrop ').on('change', function(){
-
-            var value =  this.value === 'None' ? false : this.value
-
-            that.viewer.model.settings.display_internal_label_left_bottom = value
-
-            that.viewer.render(that.viewer.hierarchy)
-
-        })
-
-        var selectr = parent.append('select').attr('id','selectr' + container_id ).attr('class','select dropdrop').on('change', function(){
+        parent.append('text').style('display','inline').text('B').style('margin-right','4px').style('margin-left','12px')
+        var selectr = parent.append('select').attr('id','selectr' + container_id ).attr('class','select_node_face').on('change', function(){
 
             var value =  this.value === 'None' ? false : this.value
 
@@ -2778,12 +2833,85 @@ export default class Interface {
             that.viewer.render(that.viewer.hierarchy)
 
         })
+        parent.append('br')
+
+        parent.append('text').style('display','inline').text('C').style('margin-right','4px').style('margin-left','12px')
+        var selectlb = parent.append('select').attr('id','selectlb' + container_id ).attr('class','select_node_face').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_internal_label_left_bottom = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+        parent.append('br')
 
         selectlt.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
         selectlb.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
         selectr.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
 
+        parent.append('br')
 
+        // LEAF DATUM
+
+        parent.append("p").text('Leaf labels')
+            .style('margin-bottom','0px')
+            .style('font-weight','bold')
+
+
+        var l2 = Array.from(this.viewer.model.settings.labels['leaf'])
+
+        var options2 = ["None"]
+        options2 = options2.concat(l2)
+
+        var options2_name = ["Default"]
+        options2_name = options2_name.concat(l2)
+
+        var that = this
+
+        parent.append('text').style('display','inline').text('D').style('margin-right','4px').style('margin-left','12px')
+        var selectltl = parent.append('select').attr('id','selectltl' + container_id ).attr('class','select_node_face').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_leaf_label_left_top = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+        parent.append('br')
+
+        parent.append('text').style('display','inline').text('E').style('margin-right','4px').style('margin-left','12px')
+        var selectrl = parent.append('select').attr('id','selectrl' + container_id ).attr('class','select_node_face').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_leaf_label = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+        parent.append('br')
+
+        parent.append('text').style('display','inline').text('F').style('margin-right','4px').style('margin-left','12px')
+        var selectlbl = parent.append('select').attr('id','selectlbl' + container_id ).attr('class','select_node_face').on('change', function(){
+
+            var value =  this.value === 'None' ? false : this.value
+
+            that.viewer.model.settings.display_leaf_label_left_bottom = value
+
+            that.viewer.render(that.viewer.hierarchy)
+
+        })
+        parent.append('br')
+
+        selectltl.selectAll('option').data(options2).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+        selectlbl.selectAll('option').data(options2).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+        selectrl.selectAll('option').data(options2_name).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
+
+
+        parent.append('br')
 
         function selectElement(id, valueToSelect) {
             let element = document.getElementById(id);
@@ -2793,6 +2921,10 @@ export default class Interface {
         selectElement('selectr' + container_id, this.viewer.model.settings.display_internal_label == false ? "None" : this.viewer.model.settings.display_internal_label )
         selectElement('selectlb' + container_id, this.viewer.model.settings.display_internal_label_left_bottom == false ? "None" : this.viewer.model.settings.display_internal_label_left_bottom )
         selectElement('selectlt' + container_id, this.viewer.model.settings.display_internal_label_left_top == false ? "None" : this.viewer.model.settings.display_internal_label_left_top )
+
+        selectElement('selectrl' + container_id, this.viewer.model.settings.display_leaf_label == false ? "Default" : this.viewer.model.settings.display_leaf_label )
+        selectElement('selectlbl' + container_id, this.viewer.model.settings.display_leaf_label_left_bottom == false ? "None" : this.viewer.model.settings.display_leaf_label_left_bottom )
+        selectElement('selectltl' + container_id, this.viewer.model.settings.display_leaf_label_left_top == false ? "None" : this.viewer.model.settings.display_leaf_label_left_top )
 
 
     }

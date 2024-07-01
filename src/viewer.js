@@ -2106,6 +2106,12 @@ export default class Viewer {
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
         var mirror_factor = this.model.settings.mirror ? true : false;
 
+
+        var show_ltl = this.model.settings.display_leaf_label_left_top !== false
+        var show_lbl = this.model.settings.display_leaf_label_left_bottom !== false
+
+
+
         // Add labels for the nodes
         nodeEnter.append('text')
             .attr("class", "right")
@@ -2159,10 +2165,7 @@ export default class Viewer {
          });
 
 
-
-
-
-
+        // INTERNAL LABELS
 
         nodeEnter.filter(function(d) { return (d.children || d._children); })
             .append('text')
@@ -2213,6 +2216,59 @@ export default class Viewer {
             .text( (d) => {
                 return "";
             })
+
+
+
+        // LEAVES LABELS
+
+        nodeEnter.filter(function(d) { return !(d.children || d._children); })
+            .append('text')
+            .attr("class", "left_top_leaf")
+            .attr("dy", ".35em")
+            .style('font-size', d => {
+                return show_ltl ? this.model.settings.style.font_size_internal + 'px' : '0px' ;
+            })
+            .attr("font-weight", (d) =>  {
+                return 400
+            })
+            .attr("y", (d) => {
+                return -13
+            })
+            .attr("x", function(d) {
+                return mirror_factor ? 8 : -8;
+            })
+            .attr("text-anchor", function(d) {
+
+                return mirror_factor ? "start" : "end"
+            })
+            .text( (d) => {
+                return "";
+            })
+
+        nodeEnter.filter(function(d) { return !(d.children || d._children); })
+            .append('text')
+            .attr("class", "left_bottom_leaf")
+            .attr("dy", ".35em")
+            //.attr("alignment-baseline", "hanging" )
+            .style('font-size', d => {
+                return show_lbl ? this.model.settings.style.font_size_internal + 'px': '0px' ;
+            })
+            .attr("font-weight", (d) => {
+                return 400
+            })
+            .attr("y", (d) => {
+                return 13
+            })
+            .attr("x", function (d) {
+                return mirror_factor ? 8 : -8;
+            })
+            .attr("text-anchor", function (d) {
+
+                return mirror_factor ? "start" : "end"
+            })
+            .text( (d) => {
+                return "";
+            })
     }
 
     node_face_update(nodes){
@@ -2224,6 +2280,12 @@ export default class Viewer {
         var show_lt = this.model.settings.display_internal_label_left_top !== false
         var show_lb = this.model.settings.display_internal_label_left_bottom !== false
         var mirror_factor = this.model.settings.mirror;
+
+
+        var show_rl = this.model.settings.display_leaf_label !== false
+        var show_ltl = this.model.settings.display_leaf_label_left_top !== false
+        var show_lbl = this.model.settings.display_leaf_label_left_bottom !== false
+
 
         nodes.select('text.right')
             .text((d) => {
@@ -2245,6 +2307,10 @@ export default class Viewer {
                     }
                     
                     return show_r ? this.get_label_extended_information(d, this.model.settings.display_internal_label) : '';
+                }
+
+                if (show_rl && this.model.settings.display_leaf_label !== 'Default'){
+                    return this.get_label_extended_information(d, this.model.settings.display_leaf_label)
                 }
                 return d.data.name;
             })
@@ -2327,6 +2393,8 @@ export default class Viewer {
              */
 
 
+        // INTERNAL LABELS
+
         nodes.select('text.left_top')
             .style('font-size', d => {
                 return show_lt ? on_screen_text_size_int+ 'px' : '0px';
@@ -2347,6 +2415,36 @@ export default class Viewer {
             })
             .text( (d) => {
                 return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
+            })
+            .attr("y", (d) => {
+                return 13 /k
+            })
+            .attr("x", function (d) {
+                return mirror_factor ? 8/k : -8/k;
+            })
+
+        // LEAVES LABELS
+
+        nodes.select('text.left_top_leaf')
+            .style('font-size', d => {
+                return show_ltl ? on_screen_text_size_int+ 'px' : '0px';
+            })
+            .text( (d) => {
+                return show_ltl ? this.get_label_extended_information(d, this.model.settings.display_leaf_label_left_top) : '';
+            })
+            .attr("y", (d) => {
+                return -13 /k
+            })
+            .attr("x", function (d) {
+                return mirror_factor ? 8/k : -8/k;
+            })
+
+        nodes.select('text.left_bottom_leaf')
+            .style('font-size', d => {
+                return show_lbl ? on_screen_text_size_int + 'px' : '0px';
+            })
+            .text( (d) => {
+                return show_lbl ? this.get_label_extended_information(d, this.model.settings.display_leaf_label_left_bottom): '';
             })
             .attr("y", (d) => {
                 return 13 /k

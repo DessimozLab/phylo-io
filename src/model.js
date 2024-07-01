@@ -281,6 +281,7 @@ export default class Model {
 
         if (this.settings.has_branch_lenght) {
             this.settings.labels['node'].add('Length')
+            this.settings.labels['leaf'].add('Length')
             this.settings.colorlabels['node'].add('Length')
             this.settings.extended_data_type['Length'] = 'num'
 
@@ -325,6 +326,7 @@ export default class Model {
             if (typeof c !== 'undefined' && typeof n.name !== 'undefined' && n.name !== "" ) {
                 n.extended_informations['Data'] = n.name;
                 this.settings.labels['node'].add('Data')
+                this.settings.labels['leaf'].add('Data')
                 this.settings.extended_data_type['Data'] = 'num'
 
                 if (!isNaN(n.name)){
@@ -353,6 +355,7 @@ export default class Model {
                 Object.entries(n.data_nhx).forEach(([key, value]) => {
 
                     this.settings.labels['node'].add(key)
+                    this.settings.labels['leaf'].add(key)
 
                     switch(key){
                         case 'Ev':

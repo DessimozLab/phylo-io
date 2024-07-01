@@ -89,6 +89,11 @@ background-color: #198754;
 
 }
 
+.select_node_face{
+    margin:4px;
+    display: inline;
+}
+
 /* TOP RIGHT SUB MENU */
 
 .tr-buttons{
