@@ -12,9 +12,9 @@ export default class API {
 
         this.settings = {
             'phylostratigraphy' : false,
-            'share_phylo': 'https://zoo.vital-it.ch/viewer/',
-            'share_post': 'https://zoo.vital-it.ch/sharing/create/',
-            'share_get': 'https://zoo.vital-it.ch/sharing/load/?session=',
+            'share_phylo': ' https://beta.phylo.io/viewer/',
+            'share_post': ' https://beta.phylo.io/sharing/create/',
+            'share_get': ' https://beta.phylo.io/sharing/load/?session=',
             'sync_zoom': false,
             'syncing_zoom': false,
             'callback_ancestral_genome_redirection' : function(taxid){console.log(taxid)},
