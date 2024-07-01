@@ -395,7 +395,10 @@ export default class Interface {
                 
                   <div class="card-body">
                   
-                  <h5> <b>(Optional) Step 3 : Add a mapping file </b> </h5>
+                  <h5> <b>Step 3 (Optional) : Add a mapping file </b> 
+                  <a href="#" id='menu_help_add_tree' >
+                <i class="bi-question-circle"></i>
+            </a> </h5>
                   
                   <br>
                   
@@ -421,8 +424,9 @@ export default class Interface {
                 
                 
         `
-    }
 
+
+    }
 
     add_data_icon(){
 
@@ -476,6 +480,8 @@ export default class Interface {
 
 
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
+
+
 
         var modmod = document.getElementById('exampleModal'+ this.container_object.uid);
 
@@ -779,6 +785,13 @@ export default class Interface {
             }
 
         };
+
+
+        document.getElementById("menu_help_add_tree").onclick = function() {
+            $('#modal_help').modal('show');
+
+        };
+
 
 
 

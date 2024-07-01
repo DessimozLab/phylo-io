@@ -25,6 +25,33 @@ export default class API {
 
     }
 
+    // HELP
+
+    add_help_modal(container_id){
+
+
+        var mod_html = `
+         <div class="modal" id="modal_help" tabindex="-1" style="z-index: 2147483647 !important;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phylo.io help center</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Help section is under construction
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>`
+
+        document.getElementById(container_id).insertAdjacentHTML('afterend',mod_html)
+
+    }
+
     set_default_parameters(){
         this.workers = {}
         this.distance_computed= {}
@@ -87,6 +114,11 @@ export default class API {
         this.containers[container_id] = c;
 
         if (this.bound_container.length < 2) {this.bound_container.push(c)}
+
+        if (Object.keys(this.containers).length == 1){
+            this.add_help_modal(container_id);
+        }
+
         return c;
     }
 
