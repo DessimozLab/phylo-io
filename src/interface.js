@@ -1522,7 +1522,7 @@ export default class Interface {
                 
                   <div class="card-body">
                   
-                  <h5> <b>Step 1: Select your mapping file</b> </h5>
+                  <h5> <b>Step 3.1: Select your mapping file</b> </h5>
                   
 
                  <div class="input-group mb-3" style="padding: 24px 24px 0;">
@@ -1530,9 +1530,11 @@ export default class Interface {
                            </div>
                            
                             <p style="padding: 0 24px;"><small>
-                            <b>Accepted format:</b> '.csv' or '.tsv' and must contain column names at first row. 
-                            The mapping is done using the column named 'id' to identify leaves and nodes.
-</small></p>
+                            <b>Accepted format:</b> '.csv' or '.tsv' and must contain column names in the first row. 
+                            There must be a column named ‘id’, which matches the leaves and nodes in the newick file
+                            </small></p>
+                            
+                              
 
                         </div>
                         
@@ -1544,7 +1546,7 @@ export default class Interface {
                 
                   <div class="card-body" id="mod_meta_card2_radio" >
                   
-                  <h5> <b>Step 2: Configure data mapping types</b> </h5>
+                  <h5> <b>Step 3.2: Configure mapping data types</b> </h5>
                   
                   
                          
@@ -1558,7 +1560,7 @@ export default class Interface {
                 
                   <div class="card-body">
                   
-                  <h5> <b>Step 3: Choose a target for additional data</b> </h5>
+                  <h5> <b>Step 3.3: Choose a target for additional data</b> </h5>
                   
                                        <div class="form-check" style="padding: 12px 48px 0;">
                   <input class="form-check-input" type="checkbox" value="" id="mapping_check_leaf" checked>
@@ -1567,7 +1569,7 @@ export default class Interface {
                   </label>
                 </div>
                 <div class="form-check" style="padding: 12px 48px 0;">
-                  <input class="form-check-input" type="checkbox" value="" id="mapping_check_nodes">
+                  <input class="form-check-input" type="checkbox" value="" id="mapping_check_nodes" checked>
                   <label class="form-check-label" for="flexCheckChecked">
                     Apply to Nodes
                   </label>
@@ -2449,6 +2451,8 @@ export default class Interface {
 
         if (options.length > 0){
 
+            // SELECT DATA
+
             options.unshift('None')
 
             color_leaves_div.append('label').text("Data")
@@ -2463,8 +2467,6 @@ export default class Interface {
 
                 })
 
-
-
             selectcoloring_leaf.selectAll('option').data(options).enter()
                 .append('option')
                 .attr('value', function (d) {
@@ -2473,9 +2475,9 @@ export default class Interface {
                 .text(function (d) { return d; });
 
 
-
-
             this.color_leaf_div = this.menu_coloring_p.append('div')
+
+            this.minmax_leaf_div = this.menu_coloring_p.append('div')
 
         }
         else {
@@ -2514,6 +2516,8 @@ export default class Interface {
 
         this.color_node_div = this.menu_coloring_p.append('div')
 
+        this.minmax_node_div = this.menu_coloring_p.append('div')
+
         this.create_color_scheme_picker('node')
 
 
@@ -2523,9 +2527,10 @@ export default class Interface {
 
         this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
 
-        console.log()
 
         this.create_color_scheme_picker(type)
+
+        this.create_min_max_picker(type)
 
         this.viewer.set_color_scale(type);
         this.viewer.render(this.viewer.hierarchy)
@@ -2614,6 +2619,81 @@ export default class Interface {
         else{
             container_.append('label').text("");
         }
+
+
+
+
+}
+
+
+    create_min_max_picker(type){
+
+        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var type_acc = this.viewer.model.settings.extended_data_type[acc]
+
+
+        if (type == 'leaf'){
+            var container_ = this.minmax_leaf_div
+            container_.html('')
+        }
+
+        else if (type == 'node'){
+            var container_ = this.minmax_node_div
+            container_.html('')
+        }
+
+        if (type_acc == 'num'){
+
+            var min_ = container_.append('div')
+                .style('display','block')
+                .style('margin','8px')
+                .style('margin-bottom','12px')
+
+            min_.append('label').text("Min scale value");
+
+            min_.append('input')
+                .attr('type','number')
+                .attr('name','quantity')
+                .attr('min','-9999999999')
+                .attr('value', this.viewer.model.settings.style.color_extent_min[type][acc])
+                .attr('max','9999999999')
+                .style('float','right')
+                .on('change', (d) => {
+
+                    this.viewer.model.settings.style.color_extent_min[type][acc] = parseFloat(d.target.value)
+
+                    this.viewer.set_color_scale(type);
+                    this.viewer.render(this.viewer.hierarchy)
+                    this.remove_color_legend(type)
+                    this.add_color_legend(type)
+                })
+
+            var max_ = container_.append('div')
+                .style('display','block')
+                .style('margin','8px')
+                .style('margin-bottom','12px')
+
+            max_.append('label').text("Max scale value");
+
+            max_.append('input')
+                .attr('type','number')
+                .attr('name','quantity')
+                .attr('min','-9999999999')
+                .attr('value', this.viewer.model.settings.style.color_extent_max[type][acc])
+                .attr('max','9999999999')
+                .style('float','right')
+                .on('change', (d) => {
+                    this.viewer.model.settings.style.color_extent_max[type][acc] = parseFloat(d.target.value)
+
+                    this.viewer.set_color_scale(type);
+                    this.viewer.render(this.viewer.hierarchy)
+                    this.remove_color_legend(type)
+                    this.add_color_legend(type)
+                })
+
+        }
+
+
 
 
 
