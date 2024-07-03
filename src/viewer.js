@@ -829,8 +829,7 @@ export default class Viewer {
 
 
 
-            number = this.model.settings.style.number_domain[type]
-
+            number = this.model.settings.style.number_domain[acc]
 
 
             if (this.model.settings.style.color_accessor[type] != null && this.model.settings.style.color_accessor[type] != 'Topology' ) {
@@ -846,13 +845,13 @@ export default class Viewer {
                 }
 
 
-                colorScaleRange = this.model.settings.style.color_domain[type];
+                colorScaleRange = this.model.settings.style.color_domain[acc];
 
             }
 
             else {
                 this.intercolor[type] = d3.interpolate(1,0)
-                colorScaleRange = this.model.settings.style.color_domain[type];
+                colorScaleRange = this.model.settings.style.color_domain[acc];
             }
 
 
@@ -860,23 +859,23 @@ export default class Viewer {
         }
         else {
 
-            number = '5';
+            number = 5;
             colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
             this.intercolor[type] = d3.interpolate(1, 0);
         }
 
 
         switch (number) {
-            case '2':
+            case 2:
                 colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](1)]
                 break;
-            case '3':
+            case 3:
                 colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.5) ,  this.intercolor[type](1)]
                 break;
-            case '4':
+            case 4:
                 colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.33), this.intercolor[type](0.66) ,  this.intercolor[type](1)]
                 break;
-            case '5':
+            case 5:
                 colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.25) ,this.intercolor[type](0.5) ,this.intercolor[type](0.75) ,  this.intercolor[type](1)]
 
         }

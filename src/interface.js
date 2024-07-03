@@ -1204,7 +1204,8 @@ export default class Interface {
 
         this.container_d3.select(".colorlegend_" + type).remove()
 
-        var tt =this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]]
+        var tt = this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]]
+        var acc = this.viewer.model.settings.style.color_accessor[type];
 
         if ( tt === 'cat' || tt === 'color'){return}
 
@@ -2520,6 +2521,8 @@ export default class Interface {
 
         this.create_color_scheme_picker('node')
 
+        this.create_min_max_picker('node')
+
 
         }
 
@@ -2527,6 +2530,11 @@ export default class Interface {
 
         this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
 
+        var acc = this.viewer.model.settings.style.color_accessor[type]
+
+        if (!(acc in this.viewer.model.settings.style.number_domain)) {
+            this.viewer.model.settings.style.number_domain[acc] = 3
+        }
 
         this.create_color_scheme_picker(type)
 
@@ -2569,18 +2577,17 @@ export default class Interface {
 
             domain_leaf.append('label').text("Nb. of colors");
 
-
-
             domain_leaf.append('input')
                 .attr('id','inputcoloring_' + type + this.container_object.uid )
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','2')
-                .attr('value', this.viewer.model.settings.style.number_domain[type])
+                .attr('value', this.viewer.model.settings.style.number_domain[acc])
                 .attr('max','5')
                 .style('float','right')
                 .on('change', (d) => {
-                    this.viewer.model.settings.style.number_domain[type] =  document.getElementById('inputcoloring_' + type + this.container_object.uid ).value;
+                    delete this.viewer.model.settings.style.color_domain[acc]
+                    this.viewer.model.settings.style.number_domain[acc] =  parseInt(document.getElementById('inputcoloring_' + type + this.container_object.uid ).value);
                     this.create_color_picker(type)
                     this.viewer.set_color_scale(type);
                     this.viewer.render(this.viewer.hierarchy)
@@ -2624,7 +2631,6 @@ export default class Interface {
 
 
 }
-
 
     create_min_max_picker(type){
 
@@ -2706,25 +2712,36 @@ export default class Interface {
 
         colspan.html("")
 
+        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var number = this.viewer.model.settings.style.number_domain[acc];
 
-        var number = this.viewer.model.settings.style.number_domain[type];
-        var default_color = this.viewer.model.settings.style.color_domain_default[type];
-        var w = Math.round(135/number);
-        var color = []
+        if (!(acc in this.viewer.model.settings.style.color_domain)) {
+            this.viewer.model.settings.style.color_domain[acc] = this.viewer.model.settings.style.color_domain_default
 
-        switch (number) {
-            case '2':
-                color = [default_color[0], default_color[4]]
-                break;
-            case '3':
-                color = [default_color[0],default_color[2], default_color[4]]
-                break;
-            case '4':
-                color = [default_color[0],default_color[1],default_color[2], default_color[4]]
-                break;
-            case '5':
-                color = default_color
+            var default_color = this.viewer.model.settings.style.color_domain_default
 
+            var w = Math.round(135/number);
+            var color = []
+
+            switch (number) {
+                case 2:
+                    color = [default_color[0], default_color[4]]
+                    break;
+                case 3:
+                    color = [default_color[0],default_color[2], default_color[4]]
+                    break;
+                case 4:
+                    color = [default_color[0],default_color[1],default_color[2], default_color[4]]
+                    break;
+                case 5:
+                    color = default_color
+
+            }
+
+            this.viewer.model.settings.style.color_domain[acc] = color
+        }
+        else {
+            var color = this.viewer.model.settings.style.color_domain[acc]
         }
 
 
@@ -2747,11 +2764,6 @@ export default class Interface {
 
          }
 
-
-
-
-         this.viewer.model.settings.style.color_domain[type] = color;
-
     }
 
     update_color_pickers(type){
@@ -2764,7 +2776,11 @@ export default class Interface {
             new_col.push(this.value)
         })
 
-        this.viewer.model.settings.style.color_domain[type] = new_col
+        var acc = this.viewer.model.settings.style.color_accessor[type]
+        this.viewer.model.settings.style.color_domain[acc] = new_col
+
+
+
 
 
 
@@ -3021,7 +3037,6 @@ export default class Interface {
 
 
     }
-
 
     add_quartet_buttons(parent, label, id, f, aux){
 
