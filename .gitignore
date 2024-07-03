@@ -2,3 +2,6 @@
 *.swp
 *.log
 !/www/index.html
+node_modules/
+.ipynb_checkpoints/
+
