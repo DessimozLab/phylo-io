@@ -1286,12 +1286,14 @@ export default class Interface {
 
 
         var xx =  gutter
-        var yy =  offset + height/2
+        var yy =  offset
+
+        yy +=  type == 'node' ? 5 : height;
 
         gg.append("text")
             .attr("fill", "#555")
             .attr('transform', "translate("+xx+", " +yy+ ")rotate(-90)")
-            .attr('text-anchor', 'middle')
+            .attr('text-anchor', () => {return type == 'node' ? 'end' : 'start'})
             .attr("dy", ".2em")
             .text(() => {
                 var ms = this.viewer.model.settings.style;
