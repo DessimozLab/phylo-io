@@ -781,9 +781,18 @@ export default class Viewer {
 
         else if (this.model.settings.style.color_accessor['node'] !== null){
 
-            var v = edge.data.extended_informations[this.model.settings.style.color_accessor['node']];
+            var acc = this.model.settings.style.color_accessor['node']
+
+            var v = edge.data.extended_informations[acc];
             if (typeof v == "undefined" ) {return "#555"}
-            else {return this.colorScale['node'](v)}
+            else {
+                if (this.model.settings.extended_data_type[acc] == 'cat') {
+                    return this.colorScale['node'].get_color(v)
+                }
+                else {
+                    return this.colorScale['node'](v)
+                }
+            }
 
         }
 
@@ -797,6 +806,7 @@ export default class Viewer {
 
         var type = (typeof type !== 'undefined') ? type : 'node';
 
+
         var colorScaleDomain = false;
         var colorScaleRange;
         var number;
@@ -808,6 +818,12 @@ export default class Viewer {
             // If categorical do special
             var acc = this.model.settings.style.color_accessor[type]
             var type_acc = this.model.settings.extended_data_type[acc]
+
+
+            if (acc === null){
+                this.colorScale[type] = null
+                return
+            }
 
 
             if (type_acc == 'cat'){
