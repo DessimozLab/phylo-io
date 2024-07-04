@@ -5,7 +5,8 @@ import {MinHash}  from 'minhashjs'
 var uid_model = 0
 var uid_untitle_counter = 0
 import * as parser from 'biojs-io-newick';
-const { parse_nhx } = require('./utils.js')
+const { parse_nhx } = require('./utils.js');
+const { phyloXml } = require('./phyloxml.js');
 
 export default class Model {
 
@@ -394,7 +395,26 @@ export default class Model {
 
 
             }
-
+            // phyloxml specific attributes
+            for (let attr of ["taxonomies", "sequences"]) {
+                if (n.hasOwnProperty(attr)) {
+                    Object.entries(n[attr][0]).forEach(([key, value]) => {
+                        n.extended_informations[attr + "_" + key] = value;
+                        this.settings.extended_data_type[attr + "_" + key] = "cat";
+                    });
+                    if (n.name === undefined || n.name === "") {
+                        if (attr === "taxonomies" && n.taxonomies[0].hasOwnProperty("scientific_name")) {
+                            n.name = n.taxonomies[0].scientific_name;
+                        } else if (attr === "sequences" && n.sequence.hasOwnProperty("name")) {
+                            n.name = n.sequences[0].name;
+                        }
+                    }
+                }
+            }
+            if (n.hasOwnProperty("date")){
+                n.extended_informations['date'] = n.date;
+                this.settings.extended_data_type['date'] = "cat";
+            }
 
             if (n.depth > this.settings.tree.max_depth){
                 this.settings.tree.max_depth = n.depth
@@ -432,10 +452,16 @@ export default class Model {
         else if (this.settings.data_type === "json") {
             return this.input_data
         }
-
-
-
-
+        else if (this.settings.data_type === "phyloxml") {
+            let phylogenies = phyloXml.parse(this.input_data);
+            if (phylogenies === undefined || phylogenies.length === 0){
+                console.error("No phylogenies found");
+                return {};
+            } else if (phylogenies.length > 1) {
+                console.log("dataset contains more than one phylogenies: "+phylogenies.length + " Will only use the first one");
+            }
+            return phylogenies[0].children[0];  // return toplevel clade which is returned as children[0].
+        }
     }
 
     collapse(data, action){

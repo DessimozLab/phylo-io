@@ -377,6 +377,7 @@ export default class Interface {
                         <select class="custom-select" id="add_tree_str_select" style="margin-left: 24px;">
                             <option selected value="newick">Newick</option>
                             <option value="nhx">Extended Newick</option>
+                            <option value="phyloxml">PhyloXML</option>
                         </select>
 
 
