@@ -522,6 +522,13 @@ export default class Interface {
             container_object.viewer.render(container_object.viewer.hierarchy);
             //container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
+            if (mapping){
+
+                document.getElementsByClassName('menu_settings')[0].style.display = 'block'
+                document.getElementById('accordion_color' + container_object.uid).click()
+
+            }
+
 
             if (thaty.api.settings.compute_distance && thaty.api.bound_container.includes(thaty)){
                 thaty.api.send_worker_distance()
@@ -2113,9 +2120,9 @@ export default class Interface {
         //this.menu_metadata_p =  this.menu_settings.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.menu_coloring_b = this.menu_settings.append('button').attr('id', 'accordion_color'+this.container_object.uid).attr('class', 'accordion').text("Coloring")
-        this.menu_coloring_panel =  this.menu_settings.append('div').attr('class', 'panel')
+        this.menu_coloring_panel =  this.menu_settings.append('div').attr('class', 'panel').attr('id', 'coloring_panel' + this.container_object.uid)
 
-        this.menu_coloring_p = this.menu_coloring_panel.append("div").style("padding", "14px")
+        this.menu_coloring_p = this.menu_coloring_panel.append("div").style("padding", "14px").attr('id', 'coloring_p' + this.container_object.uid)
 
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram ) {
         this.menu_stack_b = this.menu_settings.append('button').attr('class', 'accordion').text("Bar Graph")
