@@ -474,10 +474,7 @@ export default class Interface {
         mod_html = mod_html.replace('mapping_check_nodes', 'tree_adder_mapping_check_nodes' + this.container_object.uid)
         mod_html = mod_html.replace('mapping_check_leaf', 'tree_adder_mapping_check_leaf' + this.container_object.uid)
 
-        //
-
-
-
+        mod_html = mod_html.replaceAll('add_mapping_ref_select', 'add_mapping_ref_select' + this.container_object.uid)
 
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
@@ -502,11 +499,11 @@ export default class Interface {
                 moddy.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
 
                 if (moddy.settings.use_meta_for_leaf){
-                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api)
+                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
                 }
 
                 if (moddy.settings.use_meta_for_node){
-                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api)
+                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
                 }
 
             }
@@ -549,18 +546,18 @@ export default class Interface {
 
                     var parameters = that.get_mapping_parameter_from_UI(true)
 
-                    console.log(parameters)
                     const reader = new FileReader();
 
                     reader.addEventListener('load', (event) => {
 
                         var meta = []
+                        var ref_id = parameters.reference
 
                         if (mapping_file.name.split('.').pop() == 'tsv'){
-                            d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                            d3.tsvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                         }
                         else{
-                            d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                            d3.csvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                         }
 
 
@@ -600,12 +597,14 @@ export default class Interface {
 
                             var meta = []
 
+                            var ref_id = parameters.reference
+
 
                             if (mapping_file.name.split('.').pop() == 'tsv'){
-                                d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                                d3.tsvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                             }
                             else{
-                                d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                                d3.csvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                             }
 
                             add_tree_helpers(this.container_object, evt.target.result, format, {'meta': meta, 'parameters': parameters})
@@ -721,6 +720,17 @@ export default class Interface {
                             }
                         }
                     })
+
+                    // Add columns to select
+                    var select = document.getElementById('add_mapping_ref_select' + that.container_object.uid)
+
+                    for (var key of Object.keys(numerisator)){
+                        var opt = document.createElement('option');
+                        opt.value = key;
+                        opt.innerHTML = key;
+                        select.appendChild(opt);
+                    }
+
 
                     // creates radios
                     var radio_container = document.getElementById( 'tree_adder_mod_meta_card2_radio' + that.container_object.uid)
@@ -1541,8 +1551,20 @@ export default class Interface {
                            
                             <p style="padding: 0 24px;"><small>
                             <b>Accepted format:</b> '.csv' or '.tsv' and must contain column names in the first row. 
-                            There must be a column named ‘id’, which matches the leaves and nodes in the newick file
+                            You can choose a column as reference for the mapping using the selection widget below, where reference name should matched the leaves and nodes names in the input file. 
                             </small></p>
+                            
+                            <div class="text-center" style="margin-left: 48px;margin-right: 48px;">
+                            
+                            <div class="form-floating">
+                              <select class="form-select" id="add_mapping_ref_select" aria-label="Floating label select example">
+                                <option value="id" selected>id</option>
+                              </select>
+                              <label for="add_mapping_ref_select">Select reference column name</label>
+                            </div>
+                            
+      
+                    </div>
                             
                               
 
@@ -1628,6 +1650,9 @@ export default class Interface {
         mod_html = mod_html.replace('mapping_check_nodes', 'mapping_check_nodes' + this.container_object.uid)
         mod_html = mod_html.replace('mapping_check_leaf', 'mapping_check_leaf' + this.container_object.uid)
 
+        mod_html = mod_html.replaceAll('add_mapping_ref_select', 'add_mapping_ref_select_modal' + this.container_object.uid)
+
+
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
         // Add JS for modal corpus
@@ -1675,6 +1700,16 @@ export default class Interface {
                             }
                         }
                     })
+
+                    // Add columns to select
+                    var select = document.getElementById('add_mapping_ref_select_modal' + that.container_object.uid)
+                    for (var key of Object.keys(numerisator)){
+                        var opt = document.createElement('option');
+                        opt.value = key;
+                        opt.innerHTML = key;
+                        select.appendChild(opt);
+                    }
+
 
                     // creates radios
                     var radio_container = document.getElementById( 'mod_meta_card2_radio' + that.container_object.uid)
@@ -1759,18 +1794,18 @@ export default class Interface {
 
                 var parameters = that.get_mapping_parameter_from_UI()
 
-                console.log(parameters)
                 const reader = new FileReader();
 
                 reader.addEventListener('load', (event) => {
 
                     var meta = []
+                    var ref_id = parameters.reference
 
                     if (file.name.split('.').pop() == 'tsv'){
-                        d3.tsvParse(event.target.result, (d) => {meta[d.id] = d});
+                        d3.tsvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                     }
                     else{
-                        d3.csvParse(event.target.result, (d) => {meta[d.id] = d});
+                        d3.csvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                     }
 
                     that.viewer.model.settings.use_meta_for_leaf = parameters.use_meta_for_leaf
@@ -1779,11 +1814,11 @@ export default class Interface {
 
 
                     if (that.viewer.model.settings.use_meta_for_leaf){
-                        that.viewer.model.add_meta_leaves(meta, parameters.headers, that.container_object.api)
+                        that.viewer.model.add_meta_leaves(meta, parameters.headers, that.container_object.api, parameters.reference)
                     }
 
                     if (that.viewer.model.settings.use_meta_for_node){
-                        that.viewer.model.add_meta_nodes(meta, parameters.headers, that.container_object.api)
+                        that.viewer.model.add_meta_nodes(meta, parameters.headers, that.container_object.api, parameters.reference)
                     }
 
 
@@ -1856,15 +1891,16 @@ export default class Interface {
         });
 
         if (modal){
+            console.log(modal);
             p['use_meta_for_node'] = document.getElementById( 'tree_adder_mapping_check_nodes' + this.container_object.uid).checked
             p['use_meta_for_leaf'] = document.getElementById( 'tree_adder_mapping_check_leaf' + this.container_object.uid).checked
+            p['reference'] = document.getElementById( 'add_mapping_ref_select' + this.container_object.uid).value
         }
         else{
             p['use_meta_for_node'] = document.getElementById( 'mapping_check_nodes' + this.container_object.uid).checked
             p['use_meta_for_leaf'] = document.getElementById( 'mapping_check_leaf' + this.container_object.uid).checked
+            p['reference'] = document.getElementById( 'add_mapping_ref_select_modal' + this.container_object.uid).value
         }
-
-
 
 
 

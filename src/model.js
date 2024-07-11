@@ -882,12 +882,12 @@ export default class Model {
 
     }
 
-    add_meta_leaves(meta, headers, api){
+    add_meta_leaves(meta, headers, api, reference){
 
         // headers: column_name -> type
 
         Object.keys(headers).forEach(item => {
-            if (item != 'id' || item != 'Length' ) {
+            if (item != reference || item != 'Length' ) {
 
                 this.settings.extended_data_type[item] = headers[item]
                 this.settings.domain_extended_data[item] = []
@@ -906,7 +906,7 @@ export default class Model {
             if (d.name in meta){
 
                 Object.entries(meta[d.name]).forEach(item => {
-                    if (item[0] != 'id'){
+                    if (item[0] != reference){
 
                         d.extended_informations[item[0]]= item[1]
 
@@ -942,7 +942,7 @@ export default class Model {
 
 
         Object.keys(headers).forEach(item => {
-            if (item != 'id' || item != 'Length' ) {
+            if (item != reference || item != 'Length' ) {
 
 
                 if (headers[item] == 'cat'){
@@ -957,11 +957,11 @@ export default class Model {
 
     }
 
-    add_meta_nodes(meta, headers, api){
+    add_meta_nodes(meta, headers, api, reference){
 
 
         Object.keys(headers).forEach(item => {
-            if (item != 'id' || item != 'Length' ) {
+            if (item != reference|| item != 'Length' ) {
                 this.settings.extended_data_type[item] = headers[item]
                 this.settings.domain_extended_data[item] = []
                 this.settings.labels['node'].add(item)
@@ -976,12 +976,16 @@ export default class Model {
         })
 
 
+
+
+
         this.traverse(this.data, function(n,c){
+
 
             if (n.extended_informations['Data'] in meta){
 
                 Object.entries(meta[n.extended_informations['Data']]).forEach(item => {
-                    if (item[0] != 'id'){
+                    if (item[0] != reference){
                         n.extended_informations[item[0]]= item[1]
 
                         if (this.settings.extended_data_type[item[0]] == 'cat'){
@@ -1012,7 +1016,7 @@ export default class Model {
 
         Object.keys(headers).forEach(item => {
 
-            if (item != 'id' || item != 'Length' ) {
+            if (item != reference || item != 'Length' ) {
 
 
                 if (headers[item] == 'cat'){

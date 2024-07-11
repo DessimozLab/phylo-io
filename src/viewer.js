@@ -784,6 +784,7 @@ export default class Viewer {
             var acc = this.model.settings.style.color_accessor['node']
 
             var v = edge.data.extended_informations[acc];
+
             if (typeof v == "undefined" ) {return "#555"}
             else {
                 if (this.model.settings.extended_data_type[acc] == 'cat') {
