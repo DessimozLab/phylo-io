@@ -2306,6 +2306,9 @@ export default class Interface {
         // ADD TOGGLE LEAF LABEL
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show leaf labels",   this.viewer.toggle_leaves.bind(this.viewer))
 
+        // ADD TOGGLE NODE LABEL
+        this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.display_leaves,"Show node labels",   this.viewer.toggle_node_labels.bind(this.viewer))
+
         // ADD TOGGLE tooltips
         this.add_swicth_UI(this.menu_tree_p, this.viewer.model.settings.show_tooltips,"Show tooltips",   this.viewer.toggle_tooltips.bind(this.viewer))
 

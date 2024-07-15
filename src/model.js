@@ -19,6 +19,7 @@ export default class Model {
             'labels' : {'leaf' : new Set(), 'node':new Set()},
             'colorlabels' :{'leaf' : new Set(), 'node':new Set(["Topology"])},
             'display_leaves' : true,
+            'display_nodes_labels' : true,
             'mirror': false,
             'name': null,
             'first_time_render': true,
@@ -314,6 +315,7 @@ export default class Model {
             n.extended_informations = {}
             n.elementS = {}
             n.elementBCN = {}
+            n.force_label_show = null;
 
             if(n.branch_length){
                 n.extended_informations['Length'] = n.branch_length;
@@ -444,6 +446,10 @@ export default class Model {
         else if (action == false){data.collapse = false}
         else{data.collapse ? data.collapse = false : data.collapse = true;}
 
+    }
+
+    toggle_show_label(data){
+        data.force_label_show ||  data.force_label_show == null ? data.force_label_show = false : data.force_label_show = true;
     }
 
     collapseAll(data, action){

@@ -1061,6 +1061,10 @@ export default class Viewer {
                     {
                         title: 'Swap subtrees' ,
                         action: () =>  {this.container_object.trigger_("swap", node.data, node)}
+                    },
+                    {
+                        title: node.data.force_label_show == null || node.data.force_label_show ? 'Hide label'  : 'Show label' ,
+                        action: () =>  {this.container_object.trigger_("force_show_label", node.data, node)}
                     }
                 ]
             }
@@ -1273,6 +1277,10 @@ export default class Viewer {
 
 
 
+    }
+
+    apply_show_label_from_data_to_d3(data, d){
+        d.force_label_show = data.force_label_show
     }
 
     apply_collapse_from_data_to_d3(data, d){
@@ -1611,6 +1619,14 @@ export default class Viewer {
         this.render(this.hierarchy)
 
     }
+
+    toggle_node_labels(){
+        this.model.settings.display_nodes_labels = !this.model.settings.display_nodes_labels
+        this.render(this.hierarchy)
+
+    }
+
+
 
     toggle_tooltips(){
         this.model.settings.show_tooltips = !this.model.settings.show_tooltips
@@ -2118,8 +2134,9 @@ export default class Viewer {
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
 
         var on_screen_text_size = this.compute_node_font_size()
-        var show_lt = this.model.settings.display_internal_label_left_top !== false
-        var show_lb = this.model.settings.display_internal_label_left_bottom !== false
+        var show_node_face = this.model.settings.display_nodes_labels !== false
+        var show_lt = show_node_face ?  this.model.settings.display_internal_label_left_top !== false: false
+        var show_lb = show_node_face ? this.model.settings.display_internal_label_left_bottom !== false : false
         var mirror_factor = this.model.settings.mirror ? true : false;
 
 
@@ -2292,9 +2309,13 @@ export default class Viewer {
         var on_screen_text_size = this.compute_node_font_size()
         var on_screen_text_size_int = this.compute_node_font_size(true)
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
-        var show_r = this.model.settings.display_internal_label !== false
-        var show_lt = this.model.settings.display_internal_label_left_top !== false
-        var show_lb = this.model.settings.display_internal_label_left_bottom !== false
+
+
+        var show_node_face = this.model.settings.display_nodes_labels !== false
+        var show_r = show_node_face ? this.model.settings.display_internal_label !== false : false
+        var show_lt = show_node_face ?  this.model.settings.display_internal_label_left_top !== false: false
+        var show_lb = show_node_face ? this.model.settings.display_internal_label_left_bottom !== false : false
+
         var mirror_factor = this.model.settings.mirror;
 
 
@@ -2321,8 +2342,13 @@ export default class Viewer {
 
                         return '[' + l[0].name + ' ... ' +  l[l.length-1].name + ']'
                     }
+
+
+                    if (d.data.force_label_show == false){
+                        return '';
+                    }
                     
-                    return show_r ? this.get_label_extended_information(d, this.model.settings.display_internal_label) : '';
+                    return show_r || d.data.force_label_show ? this.get_label_extended_information(d, this.model.settings.display_internal_label) : '';
                 }
 
                 if (show_rl && this.model.settings.display_leaf_label !== 'Default'){
@@ -2392,7 +2418,10 @@ export default class Viewer {
                 return c
             })
             .style('font-size', d => {if (d.children){
-                    return show_r ? on_screen_text_size_int + 'px' : '0px';
+                if (d.data.force_label_show == false){
+                    return '0px';
+                }
+                    return show_r || d.data.force_label_show ? on_screen_text_size_int + 'px' : '0px';
                 } return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;}
             )
             /*
@@ -2413,10 +2442,16 @@ export default class Viewer {
 
         nodes.select('text.left_top')
             .style('font-size', d => {
-                return show_lt ? on_screen_text_size_int+ 'px' : '0px';
+                if (d.data.force_label_show == false){
+                    return '0px';
+                }
+                return show_lt || d.data.force_label_show ? on_screen_text_size_int+ 'px' : '0px';
             })
             .text( (d) => {
-                return show_lt ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
+                if (d.data.force_label_show == false){
+                    return '';
+                }
+                return show_lt || d.data.force_label_show ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_top) : '';
             })
             .attr("y", (d) => {
                 return -13 /k
@@ -2427,10 +2462,16 @@ export default class Viewer {
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
-                return show_lb ? on_screen_text_size_int + 'px' : '0px';
+                if (d.data.force_label_show == false){
+                    return '0px';
+                }
+                return show_lb || d.data.force_label_show ? on_screen_text_size_int + 'px' : '0px';
             })
             .text( (d) => {
-                return show_lb ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
+                if (d.data.force_label_show == false){
+                    return '';
+                }
+                return show_lb || d.data.force_label_show ? this.get_label_extended_information(d, this.model.settings.display_internal_label_left_bottom): '';
             })
             .attr("y", (d) => {
                 return 13 /k

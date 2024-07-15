@@ -275,6 +275,16 @@ export default class Container {
             }
             this.viewer.render(this.viewer.hierarchy)
         }
+        else if (action === 'force_show_label'){
+
+            this.add_action('Show Label',  this, this.trigger_, ['force_show_label', data, node] )
+            m.toggle_show_label(data)
+            this.viewer.apply_show_label_from_data_to_d3(data, node)
+            this.viewer.build_d3_cluster()
+            this.viewer.render(node)
+
+
+        }
 
     }
 
