@@ -1762,8 +1762,8 @@ export default class Viewer {
             var r= Math.floor(Math.random() * 101);
 
             if (r > 50) {alert("[Common] If I may just give a little feedback... [ following 1200 lines truncated]")}
-            else if (r > 10) {alert("[Rare] If I may just give a little feedback... [ following 1200 lines truncated]")}
-            else{alert("[Lengendary] Have you heard about banana ?")}
+            else if (r > 10) {alert("[Rare] If I may just give a little feedback... [ following 6800 lines truncated]")}
+            else{alert("[Lengendary] Have you heard about banana and human genome similarity,?")}
 
 
         }

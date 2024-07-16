@@ -288,7 +288,7 @@ export default class Container {
 
     }
 
-    // collapse all node from depth todo create collapse/colllapse all function
+    // collapse all node from depth
     collapse_depth(depth, tree){
 
         var f
@@ -323,6 +323,65 @@ export default class Container {
         this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy,  f )
 
 
+
+    }
+
+    collapse_node_not_colored(type){
+
+        var model =  this.models[this.current_model];
+        var viewer =  this.viewer;
+
+            var f_pre = function(node, children){
+
+                var acc = model.settings.style.color_accessor[type] //  {'leaf' : null, 'node': null},
+                var g = node.data.extended_informations[acc];
+
+                // check if g is undefined
+
+                if (g === undefined){
+                    node.colored = false;
+                }
+                else{
+                    node.colored = true;
+                }
+
+            }
+
+            var f_post = function(child, node){
+
+            if (child.children || child._children){
+
+                var children_list = child.children ? child.children : child._children
+
+                var colored = false;
+                for (const childrenListKey in children_list) {
+
+                    var e = children_list[childrenListKey]
+
+                    if (e.colored){
+                        colored = true;
+                        break
+                    }
+
+                }
+
+
+                if (colored){
+                    model.collapse(child.data, false)
+                    child.colored = true;
+                }
+                else {
+                    model.collapse(child.data, true)
+                    child.colored = false;
+
+                }
+                viewer.apply_collapse_from_data_to_d3(child.data, child)
+            }
+
+
+        }
+
+            this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy,f_pre, f_post)
 
     }
 
