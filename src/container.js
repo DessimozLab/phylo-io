@@ -326,22 +326,19 @@ export default class Container {
 
     }
 
-    collapse_node_not_colored(type){
+    collapse_node_not_colored(){
 
         var model =  this.models[this.current_model];
         var viewer =  this.viewer;
 
             var f_pre = function(node, children){
 
-                var acc = model.settings.style.color_accessor[type] //  {'leaf' : null, 'node': null},
-                var g = node.data.extended_informations[acc];
+                node.colored = false;
 
-                // check if g is undefined
+                var acc_node = node.data.extended_informations[model.settings.style.color_accessor['node']]
+                var acc_leaf = node.data.extended_informations[model.settings.style.color_accessor['leaf']]
 
-                if (g === undefined){
-                    node.colored = false;
-                }
-                else{
+                if (acc_node !== undefined || acc_leaf !== undefined ){
                     node.colored = true;
                 }
 
