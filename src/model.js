@@ -76,6 +76,7 @@ export default class Model {
                 'only_support' : false,
 
             },
+            'sync_coloring': false,
         }
 
         if (settings) {
@@ -287,10 +288,14 @@ export default class Model {
             this.settings.labels['node'].add('Length')
             this.settings.labels['leaf'].add('Length')
             this.settings.colorlabels['node'].add('Length')
+            this.settings.colorlabels['leaf'].add('Length')
             this.settings.extended_data_type['Length'] = 'num'
 
             this.settings.style.color_extent_max['node']['Length'] = 0;
             this.settings.style.color_extent_min['node']['Length'] = 1000000000;
+
+            this.settings.style.color_extent_max['leaf']['Length'] = 0;
+            this.settings.style.color_extent_min['leaf']['Length'] = 1000000000;
         }
 
 
@@ -321,10 +326,12 @@ export default class Model {
                 n.extended_informations['Length'] = n.branch_length;
                 if (this.settings.style.color_extent_max['node']['Length'] < n.branch_length){
                     this.settings.style.color_extent_max['node']['Length'] = n.branch_length
+                    this.settings.style.color_extent_max['leaf']['Length'] = n.branch_length
                 }
 
                 if (this.settings.style.color_extent_min['node']['Length'] > n.branch_length){
                     this.settings.style.color_extent_min['node']['Length'] = n.branch_length
+                    this.settings.style.color_extent_min['leaf']['Length'] = n.branch_length
                 }
             }
 

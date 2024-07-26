@@ -114,7 +114,9 @@ export default class Interface {
             this.add_color_legend('node')
         }
 
-        if (this.viewer.model.settings.style.color_accessor['leaf'] !== null){
+
+        if (this.viewer.model.settings.style.color_accessor['leaf'] !== null && !this.viewer.model.settings.sync_coloring){
+
             this.viewer.set_color_scale('leaf')
             this.add_color_legend('leaf')
         }
@@ -520,10 +522,7 @@ export default class Interface {
             //container_object.viewer.update_collapse_level(container_object.models[container_object.current_model].settings.collapse_level)
 
             if (mapping){
-
-                document.getElementsByClassName('menu_settings')[0].style.display = 'block'
-                document.getElementById('accordion_color' + container_object.uid).click()
-
+                thaty.open_color_settings()
             }
 
 
@@ -846,6 +845,13 @@ export default class Interface {
             </div>
 `
     }
+
+    open_color_settings(){
+        document.getElementsByClassName('menu_settings')[0].style.display = 'block'
+        document.getElementById('accordion_color' + this.container_object.uid).click()
+    }
+
+
 
     // TOGGLE
     add_toggle(){
@@ -1219,15 +1225,15 @@ export default class Interface {
     //COLORING
     add_color_legend(type){
 
-        this.container_d3.select(".colorlegend_" + type).remove()
+
+        var type = (typeof type !== 'undefined') && (type != 'both') ? type : 'node';
 
         var tt = this.viewer.model.settings.extended_data_type[this.viewer.model.settings.style.color_accessor[type]]
         var acc = this.viewer.model.settings.style.color_accessor[type];
 
         if ( tt === 'cat' || tt === 'color'){return}
 
-
-        var type = (typeof type !== 'undefined') ? type : 'node';
+        this.container_d3.select(".colorlegend_" + type).remove()
 
         let top_padding = 16;
         let left_padding = 16;
@@ -1320,7 +1326,11 @@ export default class Interface {
             })
 
     }
-    remove_color_legend(type){this.container_d3.select(".colorlegend_" + type).remove()}
+
+    remove_color_legend(type){
+        type = type == 'both' ? 'node' : type
+        this.container_d3.select(".colorlegend_" + type).remove()
+    }
 
     // SEARCH
 
@@ -1891,7 +1901,6 @@ export default class Interface {
         });
 
         if (modal){
-            console.log(modal);
             p['use_meta_for_node'] = document.getElementById( 'tree_adder_mapping_check_nodes' + this.container_object.uid).checked
             p['use_meta_for_leaf'] = document.getElementById( 'tree_adder_mapping_check_leaf' + this.container_object.uid).checked
             p['reference'] = document.getElementById( 'add_mapping_ref_select' + this.container_object.uid).value
@@ -2487,90 +2496,171 @@ export default class Interface {
 
 
         // COLORING
+
+        this.add_settings_coloring()
+
+        }
+
+    add_settings_coloring(){
+
         var that = this;
 
 
-        this.menu_coloring_p.append('p').text("Leaves").style('font-weight','bold')
+        if (this.viewer.model.settings.sync_coloring){
 
-        var color_leaves_div = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin-left','8px')
+            this.menu_coloring_p.append('p').text("Branches & Leaves").style('font-weight','bold')
 
-        var options = Array.from(this.viewer.model.settings.colorlabels['leaf'])
+            var color_both_div = this.menu_coloring_p.append('div')
+                .style('display','block')
+                .style('margin-left','8px')
 
-        if (options.length > 0){
+            var options_leaf = Array.from(this.viewer.model.settings.colorlabels['leaf'])
+            var options_node = Array.from(this.viewer.model.settings.colorlabels['node'])
 
-            // SELECT DATA
+            var options = [...new Set( options_leaf.concat(options_node))]
 
-            options.unshift('None')
+            if (options.length > 0){
 
-            color_leaves_div.append('label').text("Data")
+                // SELECT DATA
+                options.unshift('None')
+                color_both_div.append('label').text("Data")
 
-            var selectcoloring_leaf = color_leaves_div.append('select')
-                .attr('id','selectcoloring_leaf' + this.container_object.uid )
+                var selectcoloring_both = color_both_div.append('select')
+                    .attr('id','selectcoloring_both' + this.container_object.uid )
+                    .attr('class','select')
+                    .style('float','right')
+                    .on('change', function(){
+                        that.on_change_coloring_scheme('both', this.value)
+                    })
+
+                selectcoloring_both.selectAll('option').data(options).enter()
+                    .append('option')
+                    .attr('value', function (d) {
+                        return d; })
+                    .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['node'] })
+                    .text(function (d) { return d; });
+
+
+                this.color_leaf_both = this.menu_coloring_p.append('div')
+
+                this.minmax_leaf_both = this.menu_coloring_p.append('div')
+
+                this.create_color_scheme_picker('both')
+
+                this.create_min_max_picker('both')
+
+            }
+            else {
+                color_both_div.style('float','right').append('label').text("No Data available");
+                this.menu_coloring_p.append('br')
+
+            }
+
+        }
+
+        else {
+            this.menu_coloring_p.append('p').text("Leaves").style('font-weight','bold')
+
+            var color_leaves_div = this.menu_coloring_p.append('div')
+                .style('display','block')
+                .style('margin-left','8px')
+
+            var options = Array.from(this.viewer.model.settings.colorlabels['leaf'])
+
+
+            if (options.length > 0){
+
+                // SELECT DATA
+
+                options.unshift('None')
+
+                color_leaves_div.append('label').text("Data")
+
+                var selectcoloring_leaf = color_leaves_div.append('select')
+                    .attr('id','selectcoloring_leaf' + this.container_object.uid )
+                    .attr('class','select')
+                    .style('float','right')
+                    .on('change', function(){
+
+                        that.on_change_coloring_scheme('leaf', this.value)
+
+                    })
+
+                selectcoloring_leaf.selectAll('option').data(options).enter()
+                    .append('option')
+                    .attr('value', function (d) {
+                        return d; })
+                    .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['leaf'] })
+                    .text(function (d) { return d; });
+
+
+                this.color_leaf_div = this.menu_coloring_p.append('div')
+
+                this.minmax_leaf_div = this.menu_coloring_p.append('div')
+
+            }
+            else {
+                color_leaves_div.style('float','right').append('label').text("No Data available");
+                this.menu_coloring_p.append('br')
+
+            }
+
+            if (this.viewer.model.settings.style.color_accessor['leaf'] !== null) {
+
+                this.color_leaf_div = this.menu_coloring_p.append('div')
+
+                this.minmax_leaf_div = this.menu_coloring_p.append('div')
+
+                this.create_color_scheme_picker('leaf')
+
+                this.create_min_max_picker('leaf')
+            }
+
+
+            this.menu_coloring_p.append('p').text("Branches").style('font-weight','bold').style('margin-top','8px')
+
+            var drop = this.menu_coloring_p.append('div')
+                .style('display','block')
+                .style('margin-left','8px')
+
+
+            drop.append('label').text("Data");
+
+            var selectcoloring = drop.append('select')
+                .attr('id','selectcoloring' + this.container_object.uid )
                 .attr('class','select')
                 .style('float','right')
                 .on('change', function(){
 
-                    that.on_change_coloring_scheme('leaf', this.value)
+                    that.on_change_coloring_scheme('node', this.value)
 
                 })
 
-            selectcoloring_leaf.selectAll('option').data(options).enter()
-                .append('option')
-                .attr('value', function (d) {
-                    return d; })
-                .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['leaf'] })
-                .text(function (d) { return d; });
+            var options = Array.from(this.viewer.model.settings.colorlabels['node'])
+            options.push("None")
+
+            if (this.viewer.model.settings.style.color_accessor['node'] !== null) {
+
+                selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) {
+                    return d;
+                })
+                    .property("selected", (d) => {
+                        return d == this.viewer.model.settings.style.color_accessor['node']
+                    })
+                    .text(function (d) {
+                        return d;
+                    });
 
 
-            this.color_leaf_div = this.menu_coloring_p.append('div')
+                this.color_node_div = this.menu_coloring_p.append('div')
 
-            this.minmax_leaf_div = this.menu_coloring_p.append('div')
+                this.minmax_node_div = this.menu_coloring_p.append('div')
 
+                this.create_color_scheme_picker('node')
+
+                this.create_min_max_picker('node')
+            }
         }
-        else {
-            color_leaves_div.style('float','right').append('label').text("No Data available");
-            this.menu_coloring_p.append('br')
-
-        }
-
-
-        this.menu_coloring_p.append('p').text("Branches").style('font-weight','bold').style('margin-top','8px')
-
-        var drop = this.menu_coloring_p.append('div')
-            .style('display','block')
-            .style('margin-left','8px')
-
-
-        drop.append('label').text("Data");
-
-        var selectcoloring = drop.append('select')
-            .attr('id','selectcoloring' + this.container_object.uid )
-            .attr('class','select')
-            .style('float','right')
-            .on('change', function(){
-
-                that.on_change_coloring_scheme('node', this.value)
-
-        })
-
-        var options = Array.from(this.viewer.model.settings.colorlabels['node'])
-        options.push("None")
-
-        selectcoloring.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; })
-            .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['node'] })
-            .text(function (d) { return d; });
-
-
-        this.color_node_div = this.menu_coloring_p.append('div')
-
-        this.minmax_node_div = this.menu_coloring_p.append('div')
-
-        this.create_color_scheme_picker('node')
-
-        this.create_min_max_picker('node')
-
 
         // Add button for collapse uncolored taxon
         this.collapse_color_button_div = this.menu_coloring_p.append('div')
@@ -2587,19 +2677,31 @@ export default class Interface {
                 this.viewer.render(this.viewer.hierarchy)
                 this.viewer.maximise_zoom()
             })
-            .style('margin', '8px')
+            .style('margin', '12px')
             .style('flex-grow', '1')
             .append("text")
             .text("Collapse uncolored sub-tree ")
 
 
-        }
+        // add sync coloring
+        this.add_swicth_UI(this.menu_coloring_p, this.viewer.model.settings.sync_coloring,"Sync branches and leaves coloring",   this.viewer.toggle_sync_coloring.bind(this.viewer))
+
+    }
 
     on_change_coloring_scheme(type, val){
 
-        this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
+        if (type == 'both'){
+            this.viewer.model.settings.style.color_accessor['node'] =  val === 'None' ? null : val;
+            this.viewer.model.settings.style.color_accessor['leaf'] =  val === 'None' ? null : val;
+            var acc = this.viewer.model.settings.style.color_accessor['node']
+        }
+        else {
+            this.viewer.model.settings.style.color_accessor[type] =  val === 'None' ? null : val;
 
-        var acc = this.viewer.model.settings.style.color_accessor[type]
+            var acc = this.viewer.model.settings.style.color_accessor[type]
+        }
+
+
 
         if (!(acc in this.viewer.model.settings.style.number_domain)) {
             this.viewer.model.settings.style.number_domain[acc] = 3
@@ -2609,32 +2711,58 @@ export default class Interface {
 
         this.create_min_max_picker(type)
 
-        this.viewer.set_color_scale(type);
+        if (type == 'both') {
+            this.viewer.set_color_scale('node');
+            this.viewer.set_color_scale('leaf');
+        }
+        else{
+            this.viewer.set_color_scale(type);
+        }
         this.viewer.render(this.viewer.hierarchy)
 
-        this.remove_color_legend(type)
+
+        if (type == 'both') {
+            this.remove_color_legend('node');
+            this.remove_color_legend('leaf');
+        }
+        else{
+            this.remove_color_legend(type);
+        }
+
+
         if(this.viewer.model.settings.style.color_accessor[type]) {
             this.add_color_legend(type)
         }
 
         this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
 
+
     }
 
     create_color_scheme_picker(type){
 
-        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var acc = type == 'both' ?  this.viewer.model.settings.style.color_accessor['node'] : this.viewer.model.settings.style.color_accessor[type]
         var type_acc = this.viewer.model.settings.extended_data_type[acc]
-
 
         if (type == 'leaf'){
             var container_ = this.color_leaf_div
             container_.html('')
+
+
         }
 
         else if (type == 'node'){
             var container_ = this.color_node_div
             container_.html('')
+
+
+        }
+
+        else if (type == 'both'){
+            var container_ = this.color_leaf_both
+            container_.html('')
+
+
         }
 
         if (type_acc == 'num'){
@@ -2655,12 +2783,19 @@ export default class Interface {
                 .attr('max','5')
                 .style('float','right')
                 .on('change', (d) => {
+
                     delete this.viewer.model.settings.style.color_domain[acc]
+
                     this.viewer.model.settings.style.number_domain[acc] =  parseInt(document.getElementById('inputcoloring_' + type + this.container_object.uid ).value);
                     this.create_color_picker(type)
-                    this.viewer.set_color_scale(type);
+                    if (type == 'both') {
+                        this.viewer.set_color_scale('node');
+                        this.viewer.set_color_scale('leaf');
+                    }
+                    else{
+                        this.viewer.set_color_scale(type);
+                    }
                     this.viewer.render(this.viewer.hierarchy)
-
 
                 })
 
@@ -2677,18 +2812,30 @@ export default class Interface {
 
         }
 
-
         else if (type_acc == 'color' ){
             container_.append('label').text("Use color loaded").style('float', 'right');
             container_.append('br')
-            this.viewer.set_color_scale(type);
+            if (type == 'both') {
+                this.viewer.set_color_scale('node');
+                this.viewer.set_color_scale('leaf');
+            }
+            else{
+                this.viewer.set_color_scale(type);
+            }
             this.viewer.render(this.viewer.hierarchy)
         }
 
         else if (type_acc == 'cat' || typeof type_acc == 'undefined'){
             container_.append('label').text("Default color scheme").style('float', 'right');
             container_.append('br')
-            this.viewer.set_color_scale(type);
+
+            if (type == 'both') {
+                this.viewer.set_color_scale('node');
+                this.viewer.set_color_scale('leaf');
+            }
+            else{
+                this.viewer.set_color_scale(type);
+            }
             this.viewer.render(this.viewer.hierarchy)
         }
 
@@ -2703,18 +2850,40 @@ export default class Interface {
 
     create_min_max_picker(type){
 
-        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var acc = type == 'both' ?  this.viewer.model.settings.style.color_accessor['node'] : this.viewer.model.settings.style.color_accessor[type]
         var type_acc = this.viewer.model.settings.extended_data_type[acc]
 
 
         if (type == 'leaf'){
             var container_ = this.minmax_leaf_div
             container_.html('')
+
+            var val_min = this.viewer.model.settings.style.color_extent_min[type][acc]
+            var val_max = this.viewer.model.settings.style.color_extent_max[type][acc]
         }
 
         else if (type == 'node'){
             var container_ = this.minmax_node_div
             container_.html('')
+
+            var val_min = this.viewer.model.settings.style.color_extent_min[type][acc]
+            var val_max = this.viewer.model.settings.style.color_extent_max[type][acc]
+        }
+
+        else if (type == 'both'){
+            var container_ = this.minmax_leaf_both
+            container_.html('')
+
+            if (this.viewer.model.settings.style.color_extent_min['node'][acc] !=100000){
+                var val_min = this.viewer.model.settings.style.color_extent_min['node'][acc]
+                var val_max = this.viewer.model.settings.style.color_extent_max['node'][acc]
+            }
+            else{
+                var val_min = this.viewer.model.settings.style.color_extent_min['leaf'][acc]
+                var val_max = this.viewer.model.settings.style.color_extent_max['leaf'][acc]
+            }
+
+
         }
 
         if (type_acc == 'num'){
@@ -2730,17 +2899,33 @@ export default class Interface {
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','-9999999999')
-                .attr('value', this.viewer.model.settings.style.color_extent_min[type][acc])
+                .attr('value', val_min)
                 .attr('max','9999999999')
                 .style('float','right')
                 .on('change', (d) => {
 
-                    this.viewer.model.settings.style.color_extent_min[type][acc] = parseFloat(d.target.value)
+                    if (type == 'both'){
+                        this.viewer.model.settings.style.color_extent_min['leaf'][acc] = parseFloat(d.target.value)
+                        this.viewer.model.settings.style.color_extent_min['node'][acc] = parseFloat(d.target.value)
 
-                    this.viewer.set_color_scale(type);
-                    this.viewer.render(this.viewer.hierarchy)
-                    this.remove_color_legend(type)
-                    this.add_color_legend(type)
+                        this.viewer.set_color_scale('node');
+                        this.viewer.set_color_scale('leaf');
+                        this.viewer.render(this.viewer.hierarchy)
+                        this.remove_color_legend('node')
+                        this.remove_color_legend('leaf')
+                        this.add_color_legend('node')
+                    }
+
+                    else {
+                        this.viewer.model.settings.style.color_extent_min[type][acc] = parseFloat(d.target.value)
+
+                        this.viewer.set_color_scale(type);
+                        this.viewer.render(this.viewer.hierarchy)
+                        this.remove_color_legend(type)
+                        this.add_color_legend(type)
+                    }
+
+
                 })
 
             var max_ = container_.append('div')
@@ -2754,23 +2939,33 @@ export default class Interface {
                 .attr('type','number')
                 .attr('name','quantity')
                 .attr('min','-9999999999')
-                .attr('value', this.viewer.model.settings.style.color_extent_max[type][acc])
+                .attr('value', val_max)
                 .attr('max','9999999999')
                 .style('float','right')
                 .on('change', (d) => {
-                    this.viewer.model.settings.style.color_extent_max[type][acc] = parseFloat(d.target.value)
+                    if (type == 'both'){
+                        this.viewer.model.settings.style.color_extent_max['node'][acc] = parseFloat(d.target.value)
+                        this.viewer.model.settings.style.color_extent_max['leaf'][acc] = parseFloat(d.target.value)
 
-                    this.viewer.set_color_scale(type);
-                    this.viewer.render(this.viewer.hierarchy)
-                    this.remove_color_legend(type)
-                    this.add_color_legend(type)
+                        this.viewer.set_color_scale('node');
+                        this.viewer.set_color_scale('leaf');
+                        this.viewer.render(this.viewer.hierarchy)
+                        this.remove_color_legend('node')
+                        this.remove_color_legend('leaf')
+                        this.add_color_legend('node')
+                    }
+                    else {
+                        this.viewer.model.settings.style.color_extent_max[type][acc] = parseFloat(d.target.value)
+
+                        this.viewer.set_color_scale(type);
+                        this.viewer.render(this.viewer.hierarchy)
+                        this.remove_color_legend(type)
+                        this.add_color_legend(type)
+                    }
+
                 })
 
         }
-
-
-
-
 
 
 }
@@ -2781,7 +2976,7 @@ export default class Interface {
 
         colspan.html("")
 
-        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var acc = type == 'both' ?  this.viewer.model.settings.style.color_accessor['node'] : this.viewer.model.settings.style.color_accessor[type]
         var number = this.viewer.model.settings.style.number_domain[acc];
 
         if (!(acc in this.viewer.model.settings.style.color_domain)) {
@@ -2825,9 +3020,18 @@ export default class Interface {
 
                  this.update_color_pickers(type)
 
-                 this.viewer.set_color_scale(type);
+                 if (type == 'both'){
+                     this.viewer.set_color_scale('node');
+                     this.viewer.set_color_scale('leaf');
+                 }
+                 else {
+                     this.viewer.set_color_scale(type);
+                 }
+
+
                  this.viewer.render(this.viewer.hierarchy)
-                 this.remove_color_legend(type)
+                 this.viewer.set_color_scale('node');
+                 this.viewer.set_color_scale('leaf');
                  this.add_color_legend(type)
              })
 
@@ -2845,12 +3049,9 @@ export default class Interface {
             new_col.push(this.value)
         })
 
-        var acc = this.viewer.model.settings.style.color_accessor[type]
+        var acc = type == 'both' ? this.viewer.model.settings.style.color_accessor['node'] :this.viewer.model.settings.style.color_accessor[type]
+
         this.viewer.model.settings.style.color_domain[acc] = new_col
-
-
-
-
 
 
     }

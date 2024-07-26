@@ -1655,6 +1655,29 @@ export default class Viewer {
         this.model.settings.multiple_search = !this.model.settings.multiple_search
     }
 
+    toggle_sync_coloring(){
+        this.model.settings.sync_coloring = !this.model.settings.sync_coloring;
+
+        var acc = this.model.settings.style.color_accessor['node']
+        this.model.settings.style.color_accessor['leaf'] = acc
+
+        if (this.model.settings.style.color_extent_min['node'][acc] !=100000){
+            this.model.settings.style.color_extent_max['leaf'][acc] = this.model.settings.style.color_extent_max['node'][acc]
+            this.model.settings.style.color_extent_min['leaf'][acc] = this.model.settings.style.color_extent_min['node'][acc]
+        }
+
+        else {
+            this.model.settings.style.color_extent_max['node'][acc] = this.model.settings.style.color_extent_max['leaf'][acc]
+            this.model.settings.style.color_extent_min['node'][acc] = this.model.settings.style.color_extent_min['leaf'][acc]
+
+        }
+
+        this.container_object.interface = new Interface(this, this.container_object)
+        this.interface.open_color_settings()
+
+
+    }
+
     toggle_use_meta_for_leaf(){
         this.model.settings.use_meta_for_leaf = !this.model.settings.use_meta_for_leaf
     }
@@ -2375,7 +2398,6 @@ export default class Viewer {
 
                     var acc = this.model.settings.style.color_accessor['leaf']
                     var type_acc = this.model.settings.extended_data_type[acc]
-
 
 
                     if (type_acc === 'color'){
