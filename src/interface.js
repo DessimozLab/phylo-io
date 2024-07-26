@@ -2730,8 +2730,12 @@ export default class Interface {
         }
 
 
-        if(this.viewer.model.settings.style.color_accessor[type]) {
-            this.add_color_legend(type)
+
+        if (type == 'both' && this.viewer.model.settings.style.color_accessor['node']) {
+            this.add_color_legend('node')
+        }
+        else if (this.viewer.model.settings.style.color_accessor[type]){
+            this.remove_color_legend(type);
         }
 
         this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
