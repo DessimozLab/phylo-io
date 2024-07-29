@@ -776,7 +776,7 @@ export default class Viewer {
                     var metrics = []
 
                     this.model.traverse_hierarchy(node_, function(node,children){
-                        if (node.children != null || node._children != null){
+                        if (children){
                             metrics.push(node.data.extended_informations[acc_l])
                         }
                     })
