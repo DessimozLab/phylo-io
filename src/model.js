@@ -77,6 +77,7 @@ export default class Model {
 
             },
             'sync_coloring': false,
+            'selected_triangle_coloring': 'None'
         }
 
         if (settings) {

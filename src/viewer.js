@@ -589,6 +589,7 @@ export default class Viewer {
 
                         return "M" + 0 + "," + 0 + "L" + mirror_factor*y_length + "," + (-x_length) + "L" + mirror_factor*y_length + "," + (x_length) + "L" + 0 + "," + 0;
                     })
+                    .style('fill', (d) => this.color_triangle(d))
 
             }
             if (d.children) {
@@ -704,6 +705,101 @@ export default class Viewer {
 
 
 
+    }
+
+    color_triangle(node_){
+
+        var mean = array => array.reduce((a, b) => a + b) / array.length;
+
+        function mostFrequentElement(array) {
+            var frequencyMap = {};
+            var maxCount = 0;
+            var mostFrequentElement;
+
+            for (var i = 0; i < array.length; i++) {
+                var element = array[i];
+                if (frequencyMap[element] === undefined) {
+                    frequencyMap[element] = 1;
+                } else {
+                    frequencyMap[element]++;
+                }
+
+                if (frequencyMap[element] > maxCount) {
+                    maxCount = frequencyMap[element];
+                    mostFrequentElement = element;
+                }
+            }
+
+            return mostFrequentElement;
+        }
+
+        function removeFalsyValues(array) {
+            return array.filter(Boolean);
+        }
+
+        switch (this.model.settings.selected_triangle_coloring) {
+            case 'Leaves':
+                var acc_l = this.model.settings.style.color_accessor['leaf']
+
+                if (acc_l){
+
+                    var metrics = []
+
+                    this.model.traverse_hierarchy(node_, function(node,children){
+                        if (node.children == null && node._children == null){
+                            metrics.push(node.data.extended_informations[acc_l])
+                        }
+                    })
+
+                    metrics = removeFalsyValues(metrics)
+
+                    var type_l = this.model.settings.extended_data_type[acc_l]
+
+                    switch (type_l){
+                        case 'color':
+                            return mostFrequentElement(metrics)
+                        case 'cat':
+                            return this.colorScale['leaf'].get_color(mostFrequentElement(metrics))
+                        case 'num':
+                            return this.colorScale['leaf'](mean(metrics.map(Number.parseFloat)))
+                    }
+
+                }
+
+                break;
+
+            case 'Branches':
+                var acc_l = this.model.settings.style.color_accessor['node']
+
+                if (acc_l){
+
+                    var metrics = []
+
+                    this.model.traverse_hierarchy(node_, function(node,children){
+                        if (node.children != null || node._children != null){
+                            metrics.push(node.data.extended_informations[acc_l])
+                        }
+                    })
+
+                    metrics = removeFalsyValues(metrics)
+
+                    var type_l = this.model.settings.extended_data_type[acc_l]
+
+                    switch (type_l){
+                        case 'color':
+                            return mostFrequentElement(metrics)
+                        case 'cat':
+                            return this.colorScale['node'].get_color(mostFrequentElement(metrics))
+                        case 'num':
+                            return this.colorScale['node'](mean(metrics.map(Number.parseFloat)))
+                    }
+
+                }
+
+                break
+        }
+
+        return '#666'
     }
 
     render_edges(source, duration){
@@ -2437,6 +2533,13 @@ export default class Viewer {
                 }
 
                 let c =  d.data.search_node ? "#FF0000"  : "#212529";
+
+                if (d.data.collapse){
+                    return this.color_triangle(d)
+                }
+
+
+
                 return c
             })
             .style('font-size', d => {if (d.children){

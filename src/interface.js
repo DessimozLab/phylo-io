@@ -2662,6 +2662,9 @@ export default class Interface {
             }
         }
 
+
+        this.menu_coloring_p.append('hr').style('margin', '20px 0px 4px 0px')
+
         // Add button for collapse uncolored taxon
         this.collapse_color_button_div = this.menu_coloring_p.append('div')
             .style('display', 'flex')
@@ -2677,7 +2680,7 @@ export default class Interface {
                 this.viewer.render(this.viewer.hierarchy)
                 this.viewer.maximise_zoom()
             })
-            .style('margin', '12px')
+            .style('margin', '12px 0px')
             .style('flex-grow', '1')
             .append("text")
             .text("Collapse uncolored sub-tree ")
@@ -2686,6 +2689,30 @@ export default class Interface {
         // add sync coloring
         this.add_swicth_UI(this.menu_coloring_p, this.viewer.model.settings.sync_coloring,"Sync branches and leaves coloring",   this.viewer.toggle_sync_coloring.bind(this.viewer))
 
+        var color_triangle_div = this.menu_coloring_p.append('div')
+            .style('display','block')
+            //.style('margin-left','8px')
+
+        var options_triangle = ['None', 'Leaves', 'Branches'];
+
+        color_triangle_div.append('label').text("Color collapsed subtrees by")
+
+            var selectcoloring_triangle = color_triangle_div.append('select')
+                .attr('id','selectcoloring_triangle' + this.container_object.uid )
+                .attr('class','select')
+                .style('float','right')
+                .on('change', function(){
+                    that.viewer.model.settings.selected_triangle_coloring = this.value;
+                    that.viewer.render(that.viewer.hierarchy)
+
+                })
+
+        selectcoloring_triangle.selectAll('option').data(options_triangle).enter()
+                .append('option')
+                .attr('value', function (d) {
+                    return d; })
+                .property("selected", (d) => { return d == this.viewer.model.settings.selected_triangle_coloring })
+                .text(function (d) { return d; });
     }
 
     on_change_coloring_scheme(type, val){
