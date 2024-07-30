@@ -823,21 +823,8 @@ export default class Viewer {
 
         var linkUpdate = linkEnter.merge(link);
 
+        var compared_model = this.get_compared_model()
 
-        var compared_model = false
-        if (this.container_object.api.settings.compareMode && this.container_object.api.bound_container.includes(this.container_object)){
-
-            var con1 = this.container_object.api.bound_container[0]
-            var con2 =  this.container_object.api.bound_container[1]
-
-            var other_container = con1 == this.container_object ? con2 : con1
-
-            if (other_container.models.length > 0 && other_container.viewer.model && this.model.settings.similarity.includes(other_container.viewer.model.uid) ){
-
-                compared_model = other_container.viewer.model.uid
-            }
-
-        }
 
         // Transition back to the parent element position
         linkUpdate.transition()
@@ -855,6 +842,28 @@ export default class Viewer {
             .duration(duration)
             .attr('d', d => this.square_edges({x: source.x, y: source.y}, {x: source.x, y: source.y}))
             .remove();
+
+    }
+
+    get_compared_model(){
+
+        var compared_model = false
+
+        if (this.container_object.api.settings.compareMode && this.container_object.api.bound_container.includes(this.container_object)){
+
+            var con1 = this.container_object.api.bound_container[0]
+            var con2 =  this.container_object.api.bound_container[1]
+
+            var other_container = con1 == this.container_object ? con2 : con1
+
+            if (other_container.models.length > 0 && other_container.viewer.model && this.model.settings.similarity.includes(other_container.viewer.model.uid) ){
+
+                compared_model = other_container.viewer.model.uid
+            }
+
+        }
+
+        return compared_model
 
     }
 
@@ -2245,6 +2254,16 @@ export default class Viewer {
     }
 
     get_label_extended_information(node, type){
+
+
+        if (type == 'Topology'){
+
+            var topo = node.data.elementS[this.get_compared_model()]
+
+            return topo ? topo.toFixed(2) : ''
+
+        }
+
         return (type == 'Name') ? node.data.name :  node.data.extended_informations[type]
     }
 

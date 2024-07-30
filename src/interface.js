@@ -3216,7 +3216,7 @@ export default class Interface {
 
         var l = Array.from(this.viewer.model.settings.labels['node'])
 
-        var options = ["None"]
+        var options = ["None", 'Topology']
         options = options.concat(l)
 
         var that = this
