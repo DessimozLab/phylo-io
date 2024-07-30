@@ -2013,7 +2013,7 @@ export default class Interface {
         this.export_as = this.menu_exportfile_p.append('div')
             .style('display', 'flex')
 
-        this.export_as.append('button') // todo clean click
+        this.export_as.append('button')
             .attr('class', ' square_button')
             .on("click", d => {
                 this.container_object.export_as_newick()
@@ -2022,6 +2022,16 @@ export default class Interface {
             .style('flex-grow', '1')
             .append("text")
             .text("Newick")
+
+        this.export_as.append('button')
+            .attr('class', ' square_button')
+            .on("click", d => {
+                this.container_object.export_as_nhx()
+            })
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+            .append("text")
+            .text("NHX")
 
     }
 

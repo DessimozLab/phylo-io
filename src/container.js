@@ -726,6 +726,51 @@ export default class Container {
 
     }
 
+    escape_string_for_nhx(str){
+        // replace ( ) [ ] , : ; as well as white space with _
+        return str.replace(/[\s\(\)\[\],:;]/g, '_')
+    }
+    convertToExtendedNewick(node) {
+        let result = '';
+
+        if (node.children) {
+            const childrenNewick = node.children.map(this.convertToExtendedNewick, this).join(',');
+            result += `(${childrenNewick})`;
+        }
+
+        result += node.name;
+
+
+        if (node.extended_informations['Length'] !== undefined) {
+            result += `:${node.branch_length}`;
+        }
+
+        var str_extended = ''
+
+        for (const key in node.extended_informations) {
+            if (key !== 'Length' && node.extended_informations[key] ) {
+                str_extended += `:${key}=${this.escape_string_for_nhx(node.extended_informations[key])}`;
+            }
+        }
+
+        if (str_extended !== '') {
+            result += `[&&NHX${str_extended}]`
+        }
+
+        return result;
+    }
+
+    export_as_nhx(){
+        var nhx = this.convertToExtendedNewick(this.viewer.model.data)
+
+        save_file_as(this.viewer.model.settings.name  + ".nhx", nhx)
+
+
+    }
+
+
+
+
 };
 
 
