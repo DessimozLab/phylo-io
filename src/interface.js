@@ -132,7 +132,7 @@ export default class Interface {
 
     // MODAL
 
-    add_modal_edit_label(node){
+    add_modal_edit_label(node, type){
 
         var mod_html =  `
             <div class="modal" id="exampleModal_edit" tabindex="-1">
@@ -174,12 +174,26 @@ export default class Interface {
             </div>
 `
 
-        mod_html = mod_html.replace('123456789', node.data.name)
+        if (type == 'Default' || type == false){
+            mod_html = mod_html.replace('123456789', node.data.name)
+        }
+        else{
+            mod_html = mod_html.replace('123456789', node.data.extended_informations[type])
+        }
 
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
 
         document.getElementById('edit_modal_save').addEventListener('click', () => {
-            node.data.name = document.getElementById('inputPassword6').value;
+
+
+            if (type == 'Default' || type == false){
+                node.data.name = document.getElementById('inputPassword6').value;
+            }
+            else{
+                node.data.extended_informations[type] = document.getElementById('inputPassword6').value;
+            }
+
+
 
             this.viewer.build_d3_cluster()
             this.viewer.render(node)

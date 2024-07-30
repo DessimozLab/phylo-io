@@ -446,9 +446,6 @@ export default class Viewer {
             .on("mousedown", function(d,i) {
                d.stopPropagation();
             })
-            .on('click', (d, i) =>  {
-                if (i.children || i._children) {this.click_nodes(d,i)}
-            })
             .on('mouseover', (d, i) => {
                 if (this.model.settings.show_tooltips){
 
@@ -496,7 +493,10 @@ export default class Viewer {
             .style("stroke-width",  "6px" )
             .style("fill", function(d) {
                 return d.data.duplication && show_duplications  ? 'red' : d._children ? "lightsteelblue" : "#fff";
-            });
+            })
+        .on('click', (d, i) =>  {
+                if (i.children || i._children) {this.click_nodes(d,i)}
+            })
 
 
         this.node_face_enter(nodeEnter)
@@ -507,6 +507,9 @@ export default class Viewer {
             .style("fill", "#666")
             .attr("d", function (d) {
                 return "M" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0 + "L" + 0 + "," + 0;
+            })
+            .on('click', (d, i) =>  {
+                if (i.children || i._children) {this.click_nodes(d,i)}
             })
 
         if (this.model.settings.has_histogram_data && this.model.settings.show_histogram) {
@@ -2328,7 +2331,7 @@ export default class Viewer {
             .on('click', (d,i) => {
              if (i.children == null && i._children == null){
 
-                 this.interface.add_modal_edit_label(i);
+                 this.interface.add_modal_edit_label(i, 'Default');
                  $('#exampleModal_edit').modal('show');
 
              }
@@ -2568,18 +2571,22 @@ export default class Viewer {
                     return show_r || d.data.force_label_show ? on_screen_text_size_int + 'px' : '0px';
                 } return d.subsampled   ? on_screen_text_size + 'px' : '0px' ;}
             )
-            /*
-            .on('click', function(d,i) {
+            .on('click', (d,i) => {
                 if (i.children == null && i._children == null){
 
-                    $('#exampleModal').modal('show');
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_leaf_label);
+                    $('#exampleModal_edit').modal('show');
 
-                    console.log(i.data.name);
+                }
+
+                else {
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_internal_label);
+                    $('#exampleModal_edit').modal('show');
                 }
 
             });
 
-             */
+
 
 
         // INTERNAL LABELS
@@ -2603,6 +2610,14 @@ export default class Viewer {
             .attr("x", function (d) {
                 return mirror_factor ? 8/k : -8/k;
             })
+            .on('click', (d,i) => {
+
+
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_internal_label_left_top);
+                    $('#exampleModal_edit').modal('show');
+
+
+            });
 
         nodes.select('text.left_bottom')
             .style('font-size', d => {
@@ -2623,6 +2638,15 @@ export default class Viewer {
             .attr("x", function (d) {
                 return mirror_factor ? 8/k : -8/k;
             })
+            .on('click', (d,i) => {
+
+
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_internal_label_left_bottom);
+                    $('#exampleModal_edit').modal('show');
+
+
+
+            });
 
         // LEAVES LABELS
 
@@ -2639,6 +2663,14 @@ export default class Viewer {
             .attr("x", function (d) {
                 return mirror_factor ? 8/k : -8/k;
             })
+            .on('click', (d,i) => {
+
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_leaf_label_left_top);
+                    $('#exampleModal_edit').modal('show');
+
+
+
+            });
 
         nodes.select('text.left_bottom_leaf')
             .style('font-size', d => {
@@ -2653,6 +2685,15 @@ export default class Viewer {
             .attr("x", function (d) {
                 return mirror_factor ? 8/k : -8/k;
             })
+            .on('click', (d,i) => {
+
+
+                    this.interface.add_modal_edit_label(i, this.model.settings.display_leaf_label_left_bottom);
+                    $('#exampleModal_edit').modal('show');
+
+
+
+            });
     }
 
     node_face_exit(nodeExit){
