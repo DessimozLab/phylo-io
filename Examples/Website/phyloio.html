@@ -46,6 +46,17 @@
 
     }
 
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    #left_menu_div::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    #left_menu_div {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
 </style>
 
 <body>
@@ -73,7 +84,7 @@
 
     </div>
 
-    <div class="d-flex flex-column flex-shrink-0 " style="width: 4.5rem;background-color: rgb(33, 37, 41); overflow: scroll">
+    <div class="d-flex flex-column flex-shrink-0 " id="left_menu_div" style="width: 4.5rem;background-color: rgb(33, 37, 41); overflow: scroll">
 
 
 
