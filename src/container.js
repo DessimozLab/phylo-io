@@ -245,7 +245,11 @@ export default class Container {
                 this.api.delete_modele_distance(m)
                 this.api.send_worker_distance()
             }
+
             this.viewer.render(this.viewer.hierarchy)
+
+            this.update_highlighted_node()
+
 
         }
         else if (action === 'trim'){
@@ -452,6 +456,26 @@ export default class Container {
             d.data.search_path = false;
             d.data.search_node = false;
         })
+    }
+
+    update_highlighted_node(){
+        var highlighted = []
+
+        this.viewer.hierarchy.each(function(d) {
+
+            d.data.search_path = false;
+
+            if (d.data.search_node){
+                highlighted.push(d)
+
+            }
+        })
+
+        for (const highlightedKey in highlighted) {
+            this.highlight_node(highlighted[highlightedKey].data.name)
+        }
+
+
     }
 
     toggle_rooting(){
