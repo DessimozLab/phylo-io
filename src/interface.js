@@ -736,6 +736,7 @@ export default class Interface {
 
                     // Add columns to select
                     var select = document.getElementById('add_mapping_ref_select' + that.container_object.uid)
+                    select.innerHTML = '';
 
                     for (var key of Object.keys(numerisator)){
                         var opt = document.createElement('option');
@@ -747,6 +748,8 @@ export default class Interface {
 
                     // creates radios
                     var radio_container = document.getElementById( 'tree_adder_mod_meta_card2_radio' + that.container_object.uid)
+                    radio_container.innerHTML = '';
+
                     var get_el = function(){return `
                         
                             <div  style = "padding: 12px 24px 0;">  <span><b style = "margin-right: 12px" > Column:  </b> "NAME_"</span>  <br>
@@ -1683,6 +1686,7 @@ export default class Interface {
         var that = this
 
         document.getElementById('modal_add_mapping_file_input' + this.container_object.uid).onchange = function() {
+
             let input = this.files[0];
 
             if (input) {
@@ -1727,6 +1731,7 @@ export default class Interface {
 
                     // Add columns to select
                     var select = document.getElementById('add_mapping_ref_select_modal' + that.container_object.uid)
+                    select.innerHTML = ''
                     for (var key of Object.keys(numerisator)){
                         var opt = document.createElement('option');
                         opt.value = key;
@@ -1734,9 +1739,10 @@ export default class Interface {
                         select.appendChild(opt);
                     }
 
-
                     // creates radios
                     var radio_container = document.getElementById( 'mod_meta_card2_radio' + that.container_object.uid)
+                    radio_container.innerHTML = ''
+
                     var get_el = function(){return `
                         
                             <div  style = "padding: 12px 24px 0;">  <span><b style = "margin-right: 12px" > Column:  </b> "NAME_"</span>  <br>
@@ -1853,8 +1859,6 @@ export default class Interface {
                 reader.readAsText(file);
 
             }
-
-
 
 
         }
