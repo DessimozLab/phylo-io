@@ -2214,7 +2214,7 @@ export default class Viewer {
 
         var k = this.d3.zoomTransform(d3.select("#master_g" + this.uid).node()).k
 
-        if (!this.model.settings.subsample_label){
+        if (!this.model.settings.subsample_label && !internal){
            k=1
         }
 
