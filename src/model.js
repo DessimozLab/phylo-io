@@ -770,7 +770,7 @@ export default class Model {
     createDeepLeafList(filter) {
 
         function is_leaf(str) {
-            return !str.includes("||");
+            return !str.includes("|__|");
         }
 
          var build_deepLeafList = function(child, node){
@@ -778,7 +778,7 @@ export default class Model {
              if ( child.hasOwnProperty('children') ){
                  var dp = child.deepLeafList.filter(is_leaf).sort()
                  if (!dp.every((e) => e === '')){
-                     child.deepLeafList.push(dp.join('||'));
+                     child.deepLeafList.push(dp.join('|__|'));
                  }
 
              }

@@ -87,7 +87,7 @@ function find_BCN(nodes_list, target_forest, target_uid){
     nodes_list.forEach((node) => {
 
         function is_leaf(str) {
-            return !str.includes("||");
+            return !str.includes("|__|");
         }
 
         var matches = target_forest.query(node.min_hash,10)
