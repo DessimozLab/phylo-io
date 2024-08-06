@@ -726,7 +726,10 @@ export default class Interface {
 
                     // Get columns + types
                     var numerisator = {}
-                    data['columns'].forEach((currentElement) => { if (currentElement != 'id'){  numerisator[currentElement] = 'num'}})
+                    numerisator['id'] = 'cat'
+                    data['columns'].forEach((currentElement) => {
+                        if (currentElement != 'id'){  numerisator[currentElement] = 'num'}
+                    })
                     data.forEach((currentElement) => {
                         for (var key of Object.keys(numerisator)) {
                             if (isNaN(currentElement[key])){
@@ -734,6 +737,8 @@ export default class Interface {
                             }
                         }
                     })
+
+                    console.log(numerisator, data)
 
                     // Add columns to select
                     var select = document.getElementById('add_mapping_ref_select' + that.container_object.uid)
@@ -745,6 +750,8 @@ export default class Interface {
                         opt.innerHTML = key;
                         select.appendChild(opt);
                     }
+
+
 
 
                     // creates radios
