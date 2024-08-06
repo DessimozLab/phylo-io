@@ -2798,7 +2798,7 @@ export default class Interface {
             this.add_color_legend('node')
         }
         else if (this.viewer.model.settings.style.color_accessor[type]){
-            this.remove_color_legend(type);
+            this.add_color_legend(type);
         }
 
         this.menu_coloring_panel.style("max-height", this.menu_coloring_p.style("height"))
@@ -3095,11 +3095,13 @@ export default class Interface {
                      this.viewer.set_color_scale(type);
                  }
 
-
-                 this.viewer.render(this.viewer.hierarchy)
                  this.viewer.set_color_scale('node');
                  this.viewer.set_color_scale('leaf');
+                 this.viewer.render(this.viewer.hierarchy)
+                 this.remove_color_legend(type)
                  this.add_color_legend(type)
+
+
              })
 
          }
