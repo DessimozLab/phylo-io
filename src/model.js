@@ -371,6 +371,10 @@ export default class Model {
                     this.settings.labels['node'].add(key)
                     this.settings.labels['leaf'].add(key)
 
+                    this.settings.colorlabels['node'].add(key)
+                    this.settings.colorlabels['leaf'].add(key)
+
+
                     switch(key){
                         case 'Ev':
                             if (value == 'duplication') {
@@ -439,9 +443,85 @@ export default class Model {
 
         })
 
+        // check the type of all extended data
+        this.traverse(p, function(n,c){
+
+            for (var key in n.extended_informations){
+                if (n.extended_informations.hasOwnProperty(key)) {
+
+                    if (this.settings.extended_data_type[key] === 'num'){
+                        continue
+                    }
+
+                    if (!isNaN(n.extended_informations[key])){
+                        this.settings.extended_data_type[key] = 'num'
+                    }
+
+                }
+            }
+
+        })
+
+
+        this.settings.colorlabels['node'].forEach( (value) => {
+            if (this.settings.extended_data_type[value] === 'num' ) {
+                this.settings.style.color_extent_max['node'][value] = 0
+                this.settings.style.color_extent_min['node'][value] = 1000000000
+            }
+        });
+
+        this.settings.colorlabels['leaf'].forEach( (value) => {
+            if (this.settings.extended_data_type[value] === 'num' ) {
+                this.settings.style.color_extent_max['leaf'][value] = 0
+                this.settings.style.color_extent_min['leaf'][value] = 1000000000
+            }
+        });
+
+
+        this.traverse(p, function(n,c) {
+            for (var key in n.extended_informations) {
+
+                if (n.extended_informations.hasOwnProperty(key)) {
+
+
+
+                    if (this.settings.extended_data_type[key] === 'num') {
+
+                        // check if min and max are set for node and leaf
+
+                        var val = n.extended_informations[key].toString().indexOf('.') != -1 ? parseFloat(n.extended_informations[key]) : parseInt(n.extended_informations[key])
+
+                        if (this.settings.style.color_extent_max['node'][key] < val) {
+                            this.settings.style.color_extent_max['node'][key] = val
+
+                        }
+
+                        if (this.settings.style.color_extent_min['node'][key] > val) {
+                            this.settings.style.color_extent_min['node'][key] = val
+                        }
+
+                        if (this.settings.style.color_extent_max['leaf'][key] < val) {
+                            this.settings.style.color_extent_max['leaf'][key] = val
+                        }
+
+                        if (this.settings.style.color_extent_min['leaf'][key] > val) {
+                            this.settings.style.color_extent_min['leaf'][key] = val
+                        }
+
+                    }
+
+                }
+            }
+
+        })
+
+
+
         this.settings.suggestions = [] // autocomplete name
         this.traverse(json, function(n,c){
+
             if (n.name !== ''){this.settings.suggestions.push(n.name)}}) //todo add id also and ncBI and more + check empty cfucntion
+
         return p
     }
 
@@ -1014,10 +1094,6 @@ export default class Model {
             }
 
         })
-
-
-
-
 
         this.traverse(this.data, function(n,c){
 
