@@ -738,7 +738,6 @@ export default class Interface {
                         }
                     })
 
-                    console.log(numerisator, data)
 
                     // Add columns to select
                     var select = document.getElementById('add_mapping_ref_select' + that.container_object.uid)
@@ -1728,6 +1727,7 @@ export default class Interface {
 
                     // Get columns + types
                     var numerisator = {}
+                    numerisator['id'] = 'cat'
                     data['columns'].forEach((currentElement) => { if (currentElement != 'id'){  numerisator[currentElement] = 'num'}})
                     data.forEach((currentElement) => {
                         for (var key of Object.keys(numerisator)) {
@@ -1746,6 +1746,8 @@ export default class Interface {
                         opt.innerHTML = key;
                         select.appendChild(opt);
                     }
+
+
 
                     // creates radios
                     var radio_container = document.getElementById( 'mod_meta_card2_radio' + that.container_object.uid)
@@ -1862,6 +1864,8 @@ export default class Interface {
 
 
                     that.viewer.interface = new Interface(that.viewer, that.viewer.container_object)
+
+                    that.open_color_settings()
 
                 });
                 reader.readAsText(file);
@@ -2381,8 +2385,7 @@ export default class Interface {
 
         this.add_quartet_buttons(this.menu_tree_p, "Node radius", "buton_node_radius_", this.container_object.update_node_radius_percent )
         this.add_quartet_buttons(this.menu_tree_p, "Line width", "buton_line_width_", this.container_object.update_line_width_percent)
-        this.add_quartet_buttons(this.menu_tree_p, "Leaf label size", "buton_leaf_label_size_", this.container_object.update_font_size_leaf_percent)
-        this.add_quartet_buttons(this.menu_tree_p, "Node label size", "buton_node_label_", this.container_object.update_font_size_node_percent)
+
 
 
 
@@ -3299,6 +3302,9 @@ export default class Interface {
         selectlb.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
         selectr.selectAll('option').data(options).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
 
+        this.add_quartet_buttons_single_line(this.menu_tree_p, "Font size", "buton_node_label_", this.container_object.update_font_size_node_percent)
+
+
         parent.append('br')
 
         // LEAF DATUM
@@ -3352,14 +3358,17 @@ export default class Interface {
             that.viewer.render(that.viewer.hierarchy)
 
         })
-        parent.append('br')
+
+
 
         selectltl.selectAll('option').data(options2).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
         selectlbl.selectAll('option').data(options2).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
         selectrl.selectAll('option').data(options2_name).enter().append('option').attr('value', function (d) { return d; }).text(function (d) { return d; });
 
+        this.add_quartet_buttons_single_line(this.menu_tree_p, "Font size", "buton_leaf_label_size_", this.container_object.update_font_size_leaf_percent)
 
         parent.append('br')
+
 
         function selectElement(id, valueToSelect) {
             let element = document.getElementById(id);
@@ -3373,6 +3382,122 @@ export default class Interface {
         selectElement('selectrl' + container_id, this.viewer.model.settings.display_leaf_label == false ? "Default" : this.viewer.model.settings.display_leaf_label )
         selectElement('selectlbl' + container_id, this.viewer.model.settings.display_leaf_label_left_bottom == false ? "None" : this.viewer.model.settings.display_leaf_label_left_bottom )
         selectElement('selectltl' + container_id, this.viewer.model.settings.display_leaf_label_left_top == false ? "None" : this.viewer.model.settings.display_leaf_label_left_top )
+
+
+    }
+
+    add_quartet_buttons_single_line(parent, label, id, f, aux){
+
+        var f = f || function(){};
+        var aux = aux || null;
+
+        var container = parent.append('div')
+            .style('display', 'flex')
+            .style('align-items', 'center');
+
+        container.append("p").text(label)
+            .style('margin-bottom','0px')
+            .style('font-weight','bold')
+            .style('font-size','small')
+            .style('margin-right','8px')
+
+        var buttons = container.append('div')
+            .style('display', 'flex')
+            .style('margin-top', '0px')
+            .style('margin-bottom', '4px')
+
+
+        var butty_putty1 = buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'first' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,-0.50, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+
+
+        butty_putty1.append("div").append('i')
+            .style('color', '#888')
+            .style('font-size', '12px')
+            .attr('class', ' fas fa-minus ')
+
+        butty_putty1.append('p')
+            .text('-50%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+        var butty_putty2 = buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'second' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,-0.20, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+
+
+        butty_putty2.append("div").append('i')
+            .style('color', '#888')
+            .style('font-size', '8px')
+            .attr('class', ' fas fa-minus ')
+
+        butty_putty2.append('p')
+            .text('-20%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+
+        var butty_putty3 = buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'third' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,0.20, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+
+
+
+        butty_putty3.append("div").append('i')
+            .style('color', '#888')
+            .style('font-size', '8px')
+            .attr('class', ' fas fa-plus ')
+
+        butty_putty3.append('p')
+            .text('+20%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+
+
+        var butty_putty4 = buttons.append('button')
+            .attr('class', ' square_button')
+            .style('border-radius', '0px')
+            .style('padding', '2px')
+            .attr('id', id + 'fourth' +  this.container_object.uid )
+            .on("click", (e) =>  f.call(this.container_object,0.50, aux  ) )
+            .style('margin', '2px')
+            .style('flex-grow', '1')
+
+
+
+        butty_putty4.append("div").append('i')
+            .style('color', '#888')
+            .style('font-size', '12px')
+            .attr('class', ' fas fa-plus ')
+
+        butty_putty4.append('p')
+            .text('+50%')
+            .style('font-size', 'xx-small')
+            .style('line-height', 'normal')
+            .style('margin-bottom', '4px')
+
+        return buttons
+
 
 
     }
