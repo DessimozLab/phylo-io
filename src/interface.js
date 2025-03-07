@@ -490,6 +490,7 @@ export default class Interface {
 
         mod_html = mod_html.replace('mapping_check_nodes', 'tree_adder_mapping_check_nodes' + this.container_object.uid)
         mod_html = mod_html.replace('mapping_check_leaf', 'tree_adder_mapping_check_leaf' + this.container_object.uid)
+        mod_html = mod_html.replace('mapping_apply_to_all', 'tree_adder_mapping_apply_to_all' + this.container_object.uid)
 
         mod_html = mod_html.replaceAll('add_mapping_ref_select', 'add_mapping_ref_select' + this.container_object.uid)
 
@@ -510,18 +511,44 @@ export default class Interface {
 
             if (mapping !== false){
 
-                let moddy = container_object.models[container_object.current_model]
+                if (mapping.parameters.apply_to_all){
 
-                moddy.settings.use_meta_for_leaf = mapping.parameters.use_meta_for_leaf
-                moddy.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
+                    // apply add_meta_leaves to all models in the container
+                    container_object.models.forEach((model) => {
 
-                if (moddy.settings.use_meta_for_leaf){
-                    moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
+                        model.settings.use_meta_for_leaf = mapping.parameters.use_meta_for_leaf
+                        model.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
+
+                        if (mapping.parameters.use_meta_for_leaf){
+                            model.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
+                        }
+                        if (mapping.parameters.use_meta_for_node){
+                            model.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
+                        }
+
+
+                    })
+
+                }
+                else {
+
+                    let moddy = container_object.models[container_object.current_model]
+
+                    moddy.settings.use_meta_for_leaf = mapping.parameters.use_meta_for_leaf
+                    moddy.settings.use_meta_for_node = mapping.parameters.use_meta_for_node
+
+
+                    if (moddy.settings.use_meta_for_leaf){
+                        moddy.add_meta_leaves(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
+                    }
+
+                    if (moddy.settings.use_meta_for_node){
+                        moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
+                    }
+
+
                 }
 
-                if (moddy.settings.use_meta_for_node){
-                    moddy.add_meta_nodes(mapping.meta, mapping.parameters.headers, container_object.api, mapping.parameters.reference)
-                }
 
             }
 
@@ -559,6 +586,7 @@ export default class Interface {
                 if (mapping_file) {
 
                     var parameters = that.get_mapping_parameter_from_UI(true)
+
 
                     const reader = new FileReader();
 
@@ -1626,9 +1654,9 @@ export default class Interface {
                 
                   <div class="card-body">
                   
-                  <h5> <b>Step 3.3: Choose a target for additional data</b> </h5>
+                  <h5> <b>Step 3.2: Choose a target for additional data</b> </h5>
                   
-                                       <div class="form-check" style="padding: 12px 48px 0;">
+                <div class="form-check" style="padding: 12px 48px 0;">
                   <input class="form-check-input" type="checkbox" value="" id="mapping_check_leaf" checked>
                   <label class="form-check-label" for="flexCheckDefault">
                     Apply to leaves
@@ -1638,6 +1666,21 @@ export default class Interface {
                   <input class="form-check-input" type="checkbox" value="" id="mapping_check_nodes" checked>
                   <label class="form-check-label" for="flexCheckChecked">
                     Apply to Nodes
+                  </label>
+                  
+                
+                  
+                  
+                </div>
+                
+                <br>
+                
+                 <h5> <b>Optional</b> </h5>
+               
+                <div class="form-check" style="padding: 12px 48px 0;">
+                  <input class="form-check-input" type="checkbox" value="" id="mapping_apply_to_all">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    Apply to all trees
                   </label>
                 </div>
                  
@@ -1683,8 +1726,13 @@ export default class Interface {
         mod_html = mod_html.replace('upload_mapping_validation', 'upload_mapping_validation' + this.container_object.uid)
         mod_html = mod_html.replace('mapping_check_nodes', 'mapping_check_nodes' + this.container_object.uid)
         mod_html = mod_html.replace('mapping_check_leaf', 'mapping_check_leaf' + this.container_object.uid)
+        mod_html = mod_html.replace('mapping_apply_to_all', 'mapping_apply_to_all' + this.container_object.uid)
+
 
         mod_html = mod_html.replaceAll('add_mapping_ref_select', 'add_mapping_ref_select_modal' + this.container_object.uid)
+
+        mod_html = mod_html.replaceAll('Step 3.1', 'Step 1')
+        mod_html = mod_html.replaceAll('Step 3.2', 'Step 2')
 
 
         document.getElementById(this.container_object.div_id).insertAdjacentHTML('afterend',mod_html)
@@ -1848,22 +1896,49 @@ export default class Interface {
                         d3.csvParse(event.target.result, (d) => {meta[d[ref_id]] = d});
                     }
 
-                    that.viewer.model.settings.use_meta_for_leaf = parameters.use_meta_for_leaf
-                    that.viewer.model.settings.use_meta_for_node = parameters.use_meta_for_node
 
 
+                    if (parameters.apply_to_all){
+                        // apply add_meta_leaves to all models in the container
+                        that.container_object.models.forEach((model) => {
 
-                    if (that.viewer.model.settings.use_meta_for_leaf){
-                        that.viewer.model.add_meta_leaves(meta, parameters.headers, that.container_object.api, parameters.reference)
+                            model.settings.use_meta_for_leaf = parameters.use_meta_for_leaf
+                            model.settings.use_meta_for_node = parameters.use_meta_for_node
+
+                            if (parameters.use_meta_for_leaf){
+                                model.add_meta_leaves(meta, parameters.headers, that.container_object.api, parameters.reference)
+                            }
+                            if (parameters.use_meta_for_node){
+                                model.add_meta_nodes(meta, parameters.headers, that.container_object.api, parameters.reference)
+                            }
+
+
+                        })
+
+                    }
+                    else {
+
+                        that.viewer.model.settings.use_meta_for_leaf = parameters.use_meta_for_leaf
+                        that.viewer.model.settings.use_meta_for_node = parameters.use_meta_for_node
+
+                        if (that.viewer.model.settings.use_meta_for_leaf){
+                            that.viewer.model.add_meta_leaves(meta, parameters.headers, that.container_object.api, parameters.reference)
+                        }
+
+                        if (that.viewer.model.settings.use_meta_for_node){
+                            that.viewer.model.add_meta_nodes(meta, parameters.headers, that.container_object.api, parameters.reference)
+                        }
+
+
                     }
 
-                    if (that.viewer.model.settings.use_meta_for_node){
-                        that.viewer.model.add_meta_nodes(meta, parameters.headers, that.container_object.api, parameters.reference)
-                    }
+
+
 
 
 
                     that.viewer.interface = new Interface(that.viewer, that.viewer.container_object)
+
 
                     that.open_color_settings()
 
@@ -1933,14 +2008,15 @@ export default class Interface {
         if (modal){
             p['use_meta_for_node'] = document.getElementById( 'tree_adder_mapping_check_nodes' + this.container_object.uid).checked
             p['use_meta_for_leaf'] = document.getElementById( 'tree_adder_mapping_check_leaf' + this.container_object.uid).checked
+            p['apply_to_all'] = document.getElementById( 'tree_adder_mapping_apply_to_all' + this.container_object.uid).checked
             p['reference'] = document.getElementById( 'add_mapping_ref_select' + this.container_object.uid).value
         }
         else{
             p['use_meta_for_node'] = document.getElementById( 'mapping_check_nodes' + this.container_object.uid).checked
             p['use_meta_for_leaf'] = document.getElementById( 'mapping_check_leaf' + this.container_object.uid).checked
+            p['apply_to_all'] = document.getElementById( 'mapping_apply_to_all' + this.container_object.uid).checked
             p['reference'] = document.getElementById( 'add_mapping_ref_select_modal' + this.container_object.uid).value
         }
-
 
 
         return p
