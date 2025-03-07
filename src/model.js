@@ -78,7 +78,9 @@ export default class Model {
 
             },
             'sync_coloring': false,
-            'selected_triangle_coloring': 'None'
+            'selected_triangle_coloring': 'None',
+            'colorScale': {'leaf' : null, 'node':null},
+            'intercolor': {'leaf' : null, 'node': null}
         }
 
         if (settings) {
@@ -134,6 +136,8 @@ export default class Model {
             this.traverse(data, function(n,c){
                 n.leaves = this.get_leaves(n)
             })
+            this.set_color_scale('node');
+            this.set_color_scale('leaf');
         }
 
         this.data.root = true;
@@ -227,6 +231,109 @@ export default class Model {
         }
 
         return o
+
+    }
+
+    set_color_scale(type){
+
+        var type = (typeof type !== 'undefined') ? type : 'node';
+
+
+        var colorScaleDomain = false;
+        var colorScaleRange;
+        var number;
+
+
+        if (typeof this != "undefined" && this) {
+
+
+            // If categorical do special
+            var acc = this.settings.style.color_accessor[type]
+            var type_acc = this.settings.extended_data_type[acc]
+
+
+            if (acc === null){
+                this.settings.colorScale[type] = null
+                return
+            }
+
+
+            if (type_acc == 'cat'){
+
+                this.settings.colorScale[type] = this.container_object.api.get_color_scale(acc)
+
+
+
+                //var dom = this.settings.domain_extended_data[acc]
+                //this.settings.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
+                return
+            }
+
+            else if (type_acc == 'color'){
+
+                this.settings.colorScale[type] = null
+                return
+            }
+
+
+
+            number = this.settings.style.number_domain[acc]
+
+
+            if (this.settings.style.color_accessor[type] != null && this.settings.style.color_accessor[type] != 'Topology' ) {
+
+                var ms = this.settings.style;
+
+                var ca = ms.color_accessor[type];
+
+                if (ms.color_extent_max[type][ca] == ms.color_extent_min[type][ca]){
+                    this.settings.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_max[type][ca]-1)
+                }else{
+                    this.settings.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_min[type][ca])
+                }
+
+
+                colorScaleRange = this.settings.style.color_domain[acc];
+
+            }
+
+            else {
+                this.settings.intercolor[type] = d3.interpolate(1,0)
+                colorScaleRange = this.settings.style.color_domain[acc];
+            }
+
+
+
+        }
+        else {
+
+            number = 5;
+            colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
+            this.settings.intercolor[type] = d3.interpolate(1, 0);
+        }
+
+
+        switch (number) {
+            case 2:
+                colorScaleDomain = [this.settings.intercolor[type](0),this.settings.intercolor[type](1)]
+                break;
+            case 3:
+                colorScaleDomain = [this.settings.intercolor[type](0),this.settings.intercolor[type](0.5) , this.settings.intercolor[type](1)]
+                break;
+            case 4:
+                colorScaleDomain = [this.settings.intercolor[type](0),this.settings.intercolor[type](0.33),this.settings.intercolor[type](0.66) , this.settings.intercolor[type](1)]
+                break;
+            case 5:
+                colorScaleDomain = [this.settings.intercolor[type](0),this.settings.intercolor[type](0.25) ,this.settings.intercolor[type](0.5) ,this.settings.intercolor[type](0.75) , this.settings.intercolor[type](1)]
+
+        }
+
+
+        this.settings.colorScale[type] = d3.scaleLinear()
+            .domain(colorScaleDomain)
+            .range(colorScaleRange);
+
+
 
     }
 

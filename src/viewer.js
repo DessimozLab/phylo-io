@@ -64,9 +64,9 @@ export default class Viewer {
         this.width = parseFloat(window.getComputedStyle(this.container).width)  -  this.settings.style.margin.left - 2*this.settings.style.margin.right;
         this.height = parseFloat(window.getComputedStyle(this.container).height) - 2*this.settings.style.margin.top - this.settings.style.margin.bottom;
 
-        this.colorScale = {'leaf' : null, 'node':null}
-        this.intercolor = {'leaf' : null, 'node': null}
-        this.set_color_scale()
+        if (this.model){
+            this.model.set_color_scale()
+        }
 
         // ZOOM
         this.force_zoom_rescaling = false
@@ -122,7 +122,9 @@ export default class Viewer {
 
         this.build_d3_data();
 
-        this.set_color_scale()
+        if (this.model){
+            this.model.set_color_scale()
+        }
 
         if (refresh_interface){
             this.interface = new Interface(this, this.container_object)
@@ -762,9 +764,9 @@ export default class Viewer {
                         case 'color':
                             return mostFrequentElement(metrics)
                         case 'cat':
-                            return this.colorScale['leaf'].get_color(mostFrequentElement(metrics))
+                            return this.model.settings.colorScale['leaf'].get_color(mostFrequentElement(metrics))
                         case 'num':
-                            return this.colorScale['leaf'](mean(metrics.map(Number.parseFloat)))
+                            return this.model.settings.colorScale['leaf'](mean(metrics.map(Number.parseFloat)))
                     }
 
                 }
@@ -792,9 +794,9 @@ export default class Viewer {
                         case 'color':
                             return mostFrequentElement(metrics)
                         case 'cat':
-                            return this.colorScale['node'].get_color(mostFrequentElement(metrics))
+                            return this.model.settings.colorScale['node'].get_color(mostFrequentElement(metrics))
                         case 'num':
-                            return this.colorScale['node'](mean(metrics.map(Number.parseFloat)))
+                            return this.model.settings.colorScale['node'](mean(metrics.map(Number.parseFloat)))
                     }
 
                 }
@@ -876,7 +878,7 @@ export default class Viewer {
 
         else if (this.model.settings.style.color_accessor['node'] === "Topology" && compared_model !== false && edge.data.elementS[compared_model]  ) {
 
-            return this.colorScale['node'](edge.data.elementS[compared_model])
+            return this.model.settings.colorScale['node'](edge.data.elementS[compared_model])
         }
 
         else if (this.model.settings.style.color_accessor['node'] === 'color'){
@@ -896,10 +898,10 @@ export default class Viewer {
             if (typeof v == "undefined" ) {return "#555"}
             else {
                 if (this.model.settings.extended_data_type[acc] == 'cat') {
-                    return this.colorScale['node'].get_color(v)
+                    return this.model.settings.colorScale['node'].get_color(v)
                 }
                 else {
-                    return this.colorScale['node'](v)
+                    return this.model.settings.colorScale['node'](v)
                 }
             }
 
@@ -911,108 +913,7 @@ export default class Viewer {
 
     }
 
-    set_color_scale(type){
 
-        var type = (typeof type !== 'undefined') ? type : 'node';
-
-
-        var colorScaleDomain = false;
-        var colorScaleRange;
-        var number;
-
-
-        if (typeof this.model != "undefined" && this.model) {
-
-
-            // If categorical do special
-            var acc = this.model.settings.style.color_accessor[type]
-            var type_acc = this.model.settings.extended_data_type[acc]
-
-
-            if (acc === null){
-                this.colorScale[type] = null
-                return
-            }
-
-
-            if (type_acc == 'cat'){
-
-                this.colorScale[type] = this.container_object.api.get_color_scale(acc)
-
-
-
-                //var dom = this.model.settings.domain_extended_data[acc]
-                //this.colorScale[type] = d3.scaleOrdinal().domain(dom).range(d3.schemePaired);
-                return
-            }
-
-            else if (type_acc == 'color'){
-
-                this.colorScale[type] = null
-                return
-            }
-
-
-
-            number = this.model.settings.style.number_domain[acc]
-
-
-            if (this.model.settings.style.color_accessor[type] != null && this.model.settings.style.color_accessor[type] != 'Topology' ) {
-
-                var ms = this.model.settings.style;
-
-                var ca = ms.color_accessor[type];
-
-                if (ms.color_extent_max[type][ca] == ms.color_extent_min[type][ca]){
-                    this.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_max[type][ca]-1)
-                }else{
-                    this.intercolor[type] = d3.interpolate( ms.color_extent_max[type][ca], ms.color_extent_min[type][ca])
-                }
-
-
-                colorScaleRange = this.model.settings.style.color_domain[acc];
-
-            }
-
-            else {
-                this.intercolor[type] = d3.interpolate(1,0)
-                colorScaleRange = this.model.settings.style.color_domain[acc];
-            }
-
-
-
-        }
-        else {
-
-            number = 5;
-            colorScaleRange = ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']
-            this.intercolor[type] = d3.interpolate(1, 0);
-        }
-
-
-        switch (number) {
-            case 2:
-                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](1)]
-                break;
-            case 3:
-                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.5) ,  this.intercolor[type](1)]
-                break;
-            case 4:
-                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.33), this.intercolor[type](0.66) ,  this.intercolor[type](1)]
-                break;
-            case 5:
-                colorScaleDomain = [this.intercolor[type](0), this.intercolor[type](0.25) ,this.intercolor[type](0.5) ,this.intercolor[type](0.75) ,  this.intercolor[type](1)]
-
-        }
-
-
-        this.colorScale[type] = d3.scaleLinear()
-            .domain(colorScaleDomain)
-            .range(colorScaleRange);
-
-
-
-    }
 
     separate(a, b) {
 
@@ -2543,7 +2444,7 @@ export default class Viewer {
                             }
 
                             else{
-                                return this.colorScale['leaf'](v)
+                                return this.model.settings.colorScale['leaf'](v)
                             }
 
 

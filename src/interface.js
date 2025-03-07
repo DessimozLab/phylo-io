@@ -117,7 +117,7 @@ export default class Interface {
 
         if (this.viewer.model.settings.style.color_accessor['leaf'] !== null && !this.viewer.model.settings.sync_coloring){
 
-            this.viewer.set_color_scale('leaf')
+            this.viewer.model.set_color_scale('leaf')
             this.add_color_legend('leaf')
         }
 
@@ -1275,8 +1275,8 @@ export default class Interface {
         var values = []
 
         for (let i = 0; i < 100; i++) {
-            let n = this.viewer.intercolor[type]((i/100).toFixed(2));
-            values.push(this.viewer.colorScale[type](n));
+            let n = this.viewer.model.settings.intercolor[type]((i/100).toFixed(2));
+            values.push(this.viewer.model.settings.colorScale[type](n));
         }
 
             gg.selectAll("rect")
@@ -2778,11 +2778,11 @@ export default class Interface {
         this.create_min_max_picker(type)
 
         if (type == 'both') {
-            this.viewer.set_color_scale('node');
-            this.viewer.set_color_scale('leaf');
+            this.viewer.model.set_color_scale('node');
+            this.viewer.model.set_color_scale('leaf');
         }
         else{
-            this.viewer.set_color_scale(type);
+            this.viewer.model.set_color_scale(type);
         }
         this.viewer.render(this.viewer.hierarchy)
 
@@ -2859,11 +2859,11 @@ export default class Interface {
                     this.viewer.model.settings.style.number_domain[acc] =  parseInt(document.getElementById('inputcoloring_' + type + this.container_object.uid ).value);
                     this.create_color_picker(type)
                     if (type == 'both') {
-                        this.viewer.set_color_scale('node');
-                        this.viewer.set_color_scale('leaf');
+                        this.viewer.model.set_color_scale('node');
+                        this.viewer.model.set_color_scale('leaf');
                     }
                     else{
-                        this.viewer.set_color_scale(type);
+                        this.viewer.model.set_color_scale(type);
                     }
                     this.viewer.render(this.viewer.hierarchy)
 
@@ -2886,11 +2886,11 @@ export default class Interface {
             container_.append('label').text("Use color loaded").style('float', 'right');
             container_.append('br')
             if (type == 'both') {
-                this.viewer.set_color_scale('node');
-                this.viewer.set_color_scale('leaf');
+                this.viewer.model.set_color_scale('node');
+                this.viewer.model.set_color_scale('leaf');
             }
             else{
-                this.viewer.set_color_scale(type);
+                this.viewer.model.set_color_scale(type);
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -2900,11 +2900,11 @@ export default class Interface {
             container_.append('br')
 
             if (type == 'both') {
-                this.viewer.set_color_scale('node');
-                this.viewer.set_color_scale('leaf');
+                this.viewer.model.set_color_scale('node');
+                this.viewer.model.set_color_scale('leaf');
             }
             else{
-                this.viewer.set_color_scale(type);
+                this.viewer.model.set_color_scale(type);
             }
             this.viewer.render(this.viewer.hierarchy)
         }
@@ -2978,8 +2978,8 @@ export default class Interface {
                         this.viewer.model.settings.style.color_extent_min['leaf'][acc] = parseFloat(d.target.value)
                         this.viewer.model.settings.style.color_extent_min['node'][acc] = parseFloat(d.target.value)
 
-                        this.viewer.set_color_scale('node');
-                        this.viewer.set_color_scale('leaf');
+                        this.viewer.model.set_color_scale('node');
+                        this.viewer.model.set_color_scale('leaf');
                         this.viewer.render(this.viewer.hierarchy)
                         this.remove_color_legend('node')
                         this.remove_color_legend('leaf')
@@ -2989,7 +2989,7 @@ export default class Interface {
                     else {
                         this.viewer.model.settings.style.color_extent_min[type][acc] = parseFloat(d.target.value)
 
-                        this.viewer.set_color_scale(type);
+                        this.viewer.model.set_color_scale(type);
                         this.viewer.render(this.viewer.hierarchy)
                         this.remove_color_legend(type)
                         this.add_color_legend(type)
@@ -3017,8 +3017,8 @@ export default class Interface {
                         this.viewer.model.settings.style.color_extent_max['node'][acc] = parseFloat(d.target.value)
                         this.viewer.model.settings.style.color_extent_max['leaf'][acc] = parseFloat(d.target.value)
 
-                        this.viewer.set_color_scale('node');
-                        this.viewer.set_color_scale('leaf');
+                        this.viewer.model.set_color_scale('node');
+                        this.viewer.model.set_color_scale('leaf');
                         this.viewer.render(this.viewer.hierarchy)
                         this.remove_color_legend('node')
                         this.remove_color_legend('leaf')
@@ -3027,7 +3027,7 @@ export default class Interface {
                     else {
                         this.viewer.model.settings.style.color_extent_max[type][acc] = parseFloat(d.target.value)
 
-                        this.viewer.set_color_scale(type);
+                        this.viewer.model.set_color_scale(type);
                         this.viewer.render(this.viewer.hierarchy)
                         this.remove_color_legend(type)
                         this.add_color_legend(type)
@@ -3091,15 +3091,15 @@ export default class Interface {
                  this.update_color_pickers(type)
 
                  if (type == 'both'){
-                     this.viewer.set_color_scale('node');
-                     this.viewer.set_color_scale('leaf');
+                     this.viewer.model.set_color_scale('node');
+                     this.viewer.model.set_color_scale('leaf');
                  }
                  else {
-                     this.viewer.set_color_scale(type);
+                     this.viewer.model.set_color_scale(type);
                  }
 
-                 this.viewer.set_color_scale('node');
-                 this.viewer.set_color_scale('leaf');
+                 this.viewer.model.set_color_scale('node');
+                 this.viewer.model.set_color_scale('leaf');
                  this.viewer.render(this.viewer.hierarchy)
                  this.remove_color_legend(type)
                  this.add_color_legend(type)
