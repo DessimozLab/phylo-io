@@ -1204,10 +1204,12 @@ export default class Model {
 
         this.traverse(this.data, function(n,c){
 
+            var name_value = n.name in meta ? n.name : n.extended_informations['Data'] in meta ? n.extended_informations['Data'] : false
 
-            if (n.extended_informations['Data'] in meta){
+            if (name_value){
 
-                Object.entries(meta[n.extended_informations['Data']]).forEach(item => {
+                Object.entries(meta[name_value]).forEach(item => {
+
                     if (item[0] != reference){
                         n.extended_informations[item[0]]= item[1]
 
