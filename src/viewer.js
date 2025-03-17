@@ -628,6 +628,7 @@ export default class Viewer {
                     .attr("transform", (d) =>  {
 
                         if (d.children ){
+                            d.off_set_to_tip = 0
                             return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
                         }
 
@@ -664,6 +665,7 @@ export default class Viewer {
                     .attr("transform", (d) =>  {
 
                         if (d.children ){
+                            d.off_set_to_tip = 0
                             return "translate(" + (mirror_factor*d.y) + "," + d.x + ")";
                         }
 
