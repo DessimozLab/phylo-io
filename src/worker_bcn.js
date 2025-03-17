@@ -79,6 +79,9 @@ function compute_similarity_container_pair(t1,t2){
     t1.data = t1.remove_circularity_only_parent_and_leaves()
     t2.data = t2.remove_circularity_only_parent_and_leaves()
 
+    t1.remove_all_color_scale()
+    t2.remove_all_color_scale()
+
     return [t1,t2]
 
 }

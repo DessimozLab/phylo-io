@@ -198,6 +198,18 @@ export default class Model {
 
     }
 
+    set_all_color_scale(){
+        this.set_color_scale('node');
+        this.set_color_scale('leaf');
+    }
+
+    remove_all_color_scale(){
+        this.settings.colorScale ={'leaf' : null, 'node':null}
+        this.settings.intercolor ={'leaf' : null, 'node':null}
+    }
+
+
+
     get_name(){
         return this.settings.name
     }

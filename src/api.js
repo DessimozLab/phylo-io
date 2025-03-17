@@ -208,6 +208,10 @@ export default class API {
 
                 con2.message_loader = null
                 con2.viewer.interface.update_loader_message()
+
+                con1.viewer.model.set_all_color_scale();
+                con2.viewer.model.set_all_color_scale();
+
             }
 
             var datum = {'tree1':con1.viewer.model, 'tree2':con2.viewer.model}
@@ -223,6 +227,9 @@ export default class API {
 
             con2.message_loader = msg
             con2.viewer.interface.update_loader_message()
+
+            datum.tree1.remove_all_color_scale()
+            datum.tree2.remove_all_color_scale()
 
             worker_comp.postMessage(datum);
         }
@@ -382,6 +389,9 @@ export default class API {
 
         worker_distance.onmessage = (e) => {
 
+            mod2.set_all_color_scale();
+            mod1.set_all_color_scale();
+
 
             this.set_distance(mod1,mod2,e.data)
 
@@ -396,8 +406,13 @@ export default class API {
 
         this.set_worker('distance',worker_distance)
 
+        var datum ={'mod1':mod1, 'mod2':mod2}
 
-        worker_distance.postMessage({'mod1':mod1, 'mod2':mod2});
+        datum.mod1.remove_all_color_scale()
+        datum.mod2.remove_all_color_scale()
+
+
+        worker_distance.postMessage(datum);
 
     }
 
