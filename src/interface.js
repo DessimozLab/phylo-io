@@ -1302,9 +1302,11 @@ export default class Interface {
 
         var values = []
 
-        for (let i = 0; i < 100; i++) {
-            let n = this.viewer.model.settings.intercolor[type]((i/100).toFixed(2));
-            values.push(this.viewer.model.settings.colorScale[type](n));
+        if (this.viewer.model.settings.intercolor[type]) {
+            for (let i = 0; i < 100; i++) {
+                let n = this.viewer.model.settings.intercolor[type]((i / 100).toFixed(2));
+                values.push(this.viewer.model.settings.colorScale[type](n));
+            }
         }
 
             gg.selectAll("rect")
@@ -1325,6 +1327,10 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
+                if (ms.color_accessor[type] == 'Topology'){
+                    return 1
+                }
+
                 if (ms.color_accessor[type]){
                     var n = ms.color_extent_max[type][ms.color_accessor[type]];
                     return Number.isInteger(n) ? n : parseFloat(n).toFixed(3);
@@ -1341,6 +1347,10 @@ export default class Interface {
             .attr("dy", ".2em")
             .text(() => {
                 var ms = this.viewer.model.settings.style;
+
+                if (ms.color_accessor[type] == 'Topology'){
+                    return 0
+                }
 
                 if (ms.color_accessor[type]){
 
