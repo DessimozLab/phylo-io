@@ -37,7 +37,6 @@ export default class Model {
             'display_duplication' : false,
             'has_branch_lenght' : true,
             'has_duplications' : false,
-            'dessimode': false,
             'multiple_search':false,
             'show_histogram' : false,
             'align_tip' : false,

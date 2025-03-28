@@ -386,6 +386,58 @@ export default class Container {
 
     }
 
+    collapse_node_same_color(){
+
+        var model =  this.models[this.current_model];
+        var viewer =  this.viewer;
+        var compared_model = viewer.get_compared_model()
+
+        var f_pre = function(node, children){
+
+            node.colored = false;
+
+            var acc_node = node.data.extended_informations[model.settings.style.color_accessor['node']]
+            var acc_leaf = node.data.extended_informations[model.settings.style.color_accessor['leaf']]
+
+            if (acc_node !== undefined || acc_leaf !== undefined ){
+                node.colored = true;
+                node.renderedColor = viewer.color_edge(node, compared_model);
+                node.coloredValue = node.data.extended_informations[model.settings.style.color_accessor['node']];
+            }
+
+        }
+
+        var f_post = function(child, node){
+
+            if (child.children || child._children){
+
+                var children_list = child.children ? child.children : child._children
+
+                var renderedColors = Array.from(children_list).filter(e => e.coloredValue).map(e => e.coloredValue)
+
+                // check if difference between min and max value > 10% of the max value
+                var min = Math.min(...renderedColors)
+                var max = Math.max(...renderedColors)
+                var unicolored = (max - min) < 0.1 * max
+
+
+                if (unicolored){
+                    model.collapse(child.data, true)
+                }
+                else {
+                    model.collapse(child.data, false)
+
+                }
+                viewer.apply_collapse_from_data_to_d3(child.data, child)
+            }
+
+
+        }
+
+        this.models[this.current_model].traverse_hierarchy(this.viewer.hierarchy,f_pre, f_post)
+
+    }
+
     highlight_node(name){
 
         if (name === ''){return}

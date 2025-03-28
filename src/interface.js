@@ -2810,6 +2810,25 @@ export default class Interface {
             .append("text")
             .text("Collapse uncolored sub-tree ")
 
+        // Add button for collapse unicolored taxon
+        this.collapse_unicolor_button_div = this.menu_coloring_p.append('div')
+            .style('display', 'flex')
+            .style('margin-top', '0px')
+
+        this.collapse_unicolor_button_div.append('button')
+            .attr('class', ' square_button')
+            .attr('id', 'collapse_unicolor_search' + this.viewer.uid)
+            .on("click", d => {
+                this.container_object.collapse_node_same_color()
+                this.viewer.build_d3_cluster()
+                this.viewer.render(this.viewer.hierarchy)
+                this.viewer.maximise_zoom()
+            })
+            .style('margin', '12px 0px')
+            .style('flex-grow', '1')
+            .append("text")
+            .text("Collapse monocolored sub-tree ")
+
 
         // add sync coloring
         this.add_swicth_UI(this.menu_coloring_p, this.viewer.model.settings.sync_coloring,"Sync branches and leaves coloring",   this.viewer.toggle_sync_coloring.bind(this.viewer))
