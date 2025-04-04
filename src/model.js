@@ -582,7 +582,7 @@ export default class Model {
 
 
         this.settings.colorlabels['node'].forEach( (value) => {
-            if (this.settings.extended_data_type[value] === 'num' ) {
+            if (this.settings.extended_data_type[value] === 'num' && value !== 'Topology' ) {
                 this.settings.style.color_extent_max['node'][value] = 0
                 this.settings.style.color_extent_min['node'][value] = 1000000000
             }

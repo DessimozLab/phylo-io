@@ -1327,9 +1327,11 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
-                if (ms.color_accessor[type] == 'Topology'){
+                /*if (ms.color_accessor[type] == 'Topology'){
                     return 1
                 }
+
+                 */
 
                 if (ms.color_accessor[type]){
                     var n = ms.color_extent_max[type][ms.color_accessor[type]];
@@ -1348,9 +1350,13 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
+                /*
+
                 if (ms.color_accessor[type] == 'Topology'){
                     return 0
                 }
+
+                 */
 
                 if (ms.color_accessor[type]){
 
@@ -3139,6 +3145,71 @@ export default class Interface {
                     }
 
                 })
+
+            // add button to auto setup min and max from other viewer. It need to accound for compare mode and for other contrainer
+
+            if (this.api.settings.compareMode){
+
+                var button_ = container_.append('div')
+                    .style('display','flex')
+                    .style('margin','8px')
+                    .style('margin-bottom','12px')
+
+                button_.append('button')
+                    .attr('class', ' square_button')
+                    .attr('id', 'auto_minmax_' + type + this.container_object.uid)
+                    .on("click", d => {
+
+                        // get the other compared container using bound_container and .viewer to select wich is the one bind to current interface and not
+                        // the one that is compared
+
+                        var con1 = this.api.bound_container[0]
+                        var con2 =  this.api.bound_container[1]
+                        var other_viewer = con1.viewer == this.viewer ? con2.viewer.model.settings.style : con1.viewer.model.settings.style
+
+
+                        if (type == 'both'){
+
+
+                            this.viewer.model.settings.style.color_extent_max['node'][acc] = other_viewer.color_extent_max['node'][acc]
+                            this.viewer.model.settings.style.color_extent_max['leaf'][acc] = other_viewer.color_extent_max['leaf'][acc]
+
+                            this.viewer.model.settings.style.color_extent_min['node'][acc] = other_viewer.color_extent_min['node'][acc]
+                            this.viewer.model.settings.style.color_extent_min['leaf'][acc] = other_viewer.color_extent_min['leaf'][acc]
+
+                            this.viewer.model.set_color_scale('node');
+                            this.viewer.model.set_color_scale('leaf');
+                            this.viewer.render(this.viewer.hierarchy)
+                            this.remove_color_legend('node')
+                            this.remove_color_legend('leaf')
+                            this.add_color_legend('node')
+
+                            min_.select('input').property('value', this.viewer.model.settings.style.color_extent_min['leaf'][acc])
+                            max_.select('input').property('value', this.viewer.model.settings.style.color_extent_max['leaf'][acc])
+
+                        }
+                        else {
+                            this.viewer.model.settings.style.color_extent_max[type][acc] = other_viewer.color_extent_max[type][acc]
+                            this.viewer.model.settings.style.color_extent_min[type][acc] = other_viewer.color_extent_min[type][acc]
+
+                            this.viewer.model.set_color_scale(type);
+                            this.viewer.render(this.viewer.hierarchy)
+                            this.remove_color_legend(type)
+                            this.add_color_legend(type)
+
+                            min_.select('input').property('value', this.viewer.model.settings.style.color_extent_min[type][acc])
+                            max_.select('input').property('value', this.viewer.model.settings.style.color_extent_max[type][acc])
+                        }
+
+
+
+                    })
+                    .style('margin', '2px')
+                    .style('flex-grow', '1')
+                    .append("text")
+                    .text("Auto min/max")
+
+            }
 
         }
 
