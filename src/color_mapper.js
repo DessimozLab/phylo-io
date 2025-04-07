@@ -7,9 +7,11 @@ export default class Color_mapper {
 
         this.cpt = 1
 
-        this.scale = d3.scaleSequential(d3.interpolateRainbow)
+        this.scheme = d3.scaleSequential(d3.interpolateRainbow)
+        this.scheme_name = 'Viridis'
+
+        this.scale = this.scheme
             .domain([0, this.cpt/2, this.cpt])
-            //.range(["red", "green", "blue"])
 
         this.domain_mapping = {}
 
@@ -26,10 +28,13 @@ export default class Color_mapper {
         }
     }
 
+    update_scheme(val, name){
+        this.scheme = val
+        this.scheme_name = name
+    }
+
     update(){
-        this.scale = d3.scaleSequential(d3.interpolateRainbow)
-            .domain([0, this.cpt/2, this.cpt])
-            //.range(["red", "green", "blue"])
+        this.scale = d3.scaleSequential(this.scheme).domain([0, this.cpt/2, this.cpt])
 
     }
 

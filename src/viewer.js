@@ -65,7 +65,7 @@ export default class Viewer {
         this.height = parseFloat(window.getComputedStyle(this.container).height) - 2*this.settings.style.margin.top - this.settings.style.margin.bottom;
 
         if (this.model){
-            this.model.set_color_scale()
+            this.model.set_color_scale(undefined,this.container_object.api)
         }
 
         // ZOOM
@@ -123,7 +123,7 @@ export default class Viewer {
         this.build_d3_data();
 
         if (this.model){
-            this.model.set_color_scale()
+            this.model.set_color_scale(undefined, this.container_object.api)
         }
 
         if (refresh_interface){

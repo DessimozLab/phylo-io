@@ -245,9 +245,11 @@ export default class Model {
 
     }
 
-    set_color_scale(type){
+    set_color_scale(type, api){
+
 
         var type = (typeof type !== 'undefined') ? type : 'node';
+        var api = (typeof type !== 'undefined') ? api : null;
 
 
         var colorScaleDomain = false;
@@ -271,8 +273,7 @@ export default class Model {
 
             if (type_acc == 'cat'){
 
-                this.settings.colorScale[type] = this.container_object.api.get_color_scale(acc)
-
+                this.settings.colorScale[type] = api.get_color_scale(acc)
 
 
                 //var dom = this.settings.domain_extended_data[acc]
