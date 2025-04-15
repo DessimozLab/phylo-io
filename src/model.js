@@ -200,11 +200,12 @@ export default class Model {
     set_all_color_scale(){
         this.set_color_scale('node');
         this.set_color_scale('leaf');
+        this.set_color_scale('circle');
     }
 
     remove_all_color_scale(){
-        this.settings.colorScale ={'leaf' : null, 'node':null}
-        this.settings.intercolor ={'leaf' : null, 'node':null}
+        this.settings.colorScale ={'leaf' : null, 'node':null, 'circle': {}}
+        this.settings.intercolor ={'leaf' : null, 'node':null, 'circle': {}}
     }
 
 

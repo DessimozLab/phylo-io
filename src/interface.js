@@ -3008,7 +3008,6 @@ export default class Interface {
             container_.html('')
         }
 
-        console.log(this, acc, type_acc)
         if (!acc){return}
 
         if (type_acc == 'num'){
@@ -3121,7 +3120,7 @@ export default class Interface {
             selectcoloring_both.selectAll('option').data(options_name).enter()
                 .append('option')
                 .attr('value', function (d) { return d  })
-                .property("selected", (d) => { console.log(d,this.api.get_color_scale(this.viewer.model.settings.style.color_accessor[type_scheme]).scheme_name ); return d == this.api.get_color_scale(this.viewer.model.settings.style.color_accessor[type_scheme]).scheme_name })
+                .property("selected", (d) => {  return d == this.api.get_color_scale(this.viewer.model.settings.style.color_accessor[type_scheme]).scheme_name })
                 .text(function (d) { return d; });
 
 
