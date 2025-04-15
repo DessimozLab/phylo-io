@@ -534,8 +534,39 @@ export default class Viewer {
 
         this.nodeUpdate.select('circle.node')
             .attr('r', d => d._children || (!this.model.rooted && d.data.root ) ?  1e-6 : real_node_radius )
-            .style("fill", function(d) {
-                return d.data.duplication && show_duplications ? 'red' : d._children ? "lightsteelblue" : "#666";
+            .style("fill",   (d) => {
+                if ( d.data.duplication && show_duplications){
+                    return 'red'
+                }
+
+                else if (this.model.settings.style.color_accessor['circle'] !== null) {
+
+
+                    var acc = this.model.settings.style.color_accessor['circle']
+                    var type_acc = this.model.settings.extended_data_type[acc]
+                    var g = d.data.extended_informations[acc]
+
+                    if (type_acc == 'cat'){
+
+                        var cs = this.container_object.api.get_color_scale(acc)
+                        return cs.get_color(g)
+
+                    }
+
+                    else{
+                        return this.model.settings.colorScale['circle'](g)
+                    }
+
+
+
+
+                }
+
+                else {
+                    return '#666'
+                }
+
+
             })
             .attr('cursor', 'pointer');
 

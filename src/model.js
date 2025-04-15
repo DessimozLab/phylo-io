@@ -46,9 +46,9 @@ export default class Model {
             'similarity': [],
             'style': {
                 'font_size_internal' : 14,
-                'color_accessor' : {'leaf' : null, 'node': "Topology"},
-                'color_extent_min': {'leaf' : {}, 'node': {"Topology":0}},
-                'color_extent_max':{'leaf' : {}, 'node': {"Topology":1}},
+                'color_accessor' : {'leaf' : null, 'node': "Topology", 'circle': null},
+                'color_extent_min': {'leaf' : {}, 'node': {"Topology":0}, 'circle': {} },
+                'color_extent_max':{'leaf' : {}, 'node': {"Topology":1}, 'circle': {}},
                 'number_domain':{ 'Topology': 5, 'Length': 5},
                 'color_domain':{'Topology' : ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'], 'Length': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC']},
                 'color_domain_default': ['#253494', '#2C7FB8', '#41B6C4', '#C7E9B4', '#FFFFCC'],
@@ -78,8 +78,8 @@ export default class Model {
             },
             'sync_coloring': false,
             'selected_triangle_coloring': 'None',
-            'colorScale': {'leaf' : null, 'node':null},
-            'intercolor': {'leaf' : null, 'node': null}
+            'colorScale': {'leaf' : null, 'node':null, 'circle': {}},
+            'intercolor': {'leaf' : null, 'node': null, 'circle': {}}
         }
 
         if (settings) {

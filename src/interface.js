@@ -122,6 +122,12 @@ export default class Interface {
             this.add_color_legend('leaf')
         }
 
+        if (this.viewer.model.settings.style.color_accessor['circle'] !== null){
+
+            this.viewer.model.set_color_scale('circle', this.api)
+            this.add_color_legend('circle')
+        }
+
         // Add Stack
         if (this.viewer.model.settings.has_histogram_data && this.viewer.model.settings.show_histogram){
 
@@ -1295,7 +1301,7 @@ export default class Interface {
         let gutter = 8;
         let rect_height = height/100;
 
-        var offset = type == 'node' ? (this.viewer.height/2) + 30 : this.viewer.height/2-height - 10
+        var offset = type == 'node' ? (this.viewer.height/2) + 30 : type == 'leaf' ? this.viewer.height/2-height - 10 : this.viewer.height/2 - 2*height - 40;
 
         let gg = this.viewer.svg_d3.node().append('g')
             .attr("class", 'colorlegend_' + type)
@@ -1328,12 +1334,6 @@ export default class Interface {
             .text(() => {
                 var ms = this.viewer.model.settings.style;
 
-                /*if (ms.color_accessor[type] == 'Topology'){
-                    return 1
-                }
-
-                 */
-
                 if (ms.color_accessor[type]){
                     var n = ms.color_extent_max[type][ms.color_accessor[type]];
                     return Number.isInteger(n) ? n : parseFloat(n).toFixed(3);
@@ -1350,14 +1350,6 @@ export default class Interface {
             .attr("dy", ".2em")
             .text(() => {
                 var ms = this.viewer.model.settings.style;
-
-                /*
-
-                if (ms.color_accessor[type] == 'Topology'){
-                    return 0
-                }
-
-                 */
 
                 if (ms.color_accessor[type]){
 
@@ -2633,6 +2625,69 @@ export default class Interface {
 
         }
 
+
+    add_node_coloring_UI(container_div){
+
+        var that = this;
+
+        container_div.append('p').text("Nodes").style('font-weight','bold').style('margin-top','8px')
+
+        var drop = container_div.append('div')
+            .style('display','block')
+            .style('margin-left','8px')
+
+
+        var options = Array.from(this.viewer.model.settings.colorlabels['node'])
+        options.push("None")
+
+        if (options.length > 0){
+
+            // SELECT DATA
+
+            options.unshift('None')
+
+            drop.append('label').text("Data");
+
+            var selectcoloring = drop.append('select')
+                .attr('id','selectcoloringcircle' + this.container_object.uid )
+                .attr('class','select')
+                .style('float','right')
+                .on('change', function(){
+
+                    that.on_change_coloring_scheme('circle', this.value)
+                })
+
+            selectcoloring.selectAll('option').data(options).enter()
+                .append('option')
+                .attr('value', function (d) {
+                    return d; })
+                .property("selected", (d) => { return d == this.viewer.model.settings.style.color_accessor['circle'] })
+                .text(function (d) { return d; });
+
+
+            this.color_circle_div = container_div.append('div')
+
+            this.minmax_circle_div = container_div.append('div')
+
+
+            if (this.viewer.model.settings.style.color_accessor['circle'] !== null) {
+
+                this.create_color_scheme_picker('circle')
+
+                this.create_min_max_picker('circle')
+            }
+
+
+
+        }
+        else {
+            drop.style('float','right').append('label').text("No Data available");
+            this.menu_coloring_p.append('br')
+
+        }
+
+    }
+
     add_settings_coloring(){
 
         var that = this;
@@ -2691,7 +2746,7 @@ export default class Interface {
         }
 
         else {
-            this.menu_coloring_p.append('p').text("Leaves").style('font-weight','bold')
+            this.menu_coloring_p.append('p').text("Leaf Labels").style('font-weight','bold')
 
             var color_leaves_div = this.menu_coloring_p.append('div')
                 .style('display','block')
@@ -2793,6 +2848,8 @@ export default class Interface {
                 this.create_min_max_picker('node')
             }
         }
+
+        this.add_node_coloring_UI(this.menu_coloring_p)
 
 
         this.menu_coloring_p.append('hr').style('margin', '20px 0px 4px 0px')
@@ -2926,13 +2983,12 @@ export default class Interface {
         var that = this;
 
         var acc = type == 'both' ?  this.viewer.model.settings.style.color_accessor['node'] : this.viewer.model.settings.style.color_accessor[type]
+
         var type_acc = this.viewer.model.settings.extended_data_type[acc]
 
         if (type == 'leaf'){
             var container_ = this.color_leaf_div
             container_.html('')
-
-
         }
 
         else if (type == 'node'){
@@ -2946,8 +3002,14 @@ export default class Interface {
             var container_ = this.color_leaf_both
             container_.html('')
 
-
         }
+        else if (type == 'circle'){
+            var container_ = this.color_circle_div
+            container_.html('')
+        }
+
+        console.log(this, acc, type_acc)
+        if (!acc){return}
 
         if (type_acc == 'num'){
 
@@ -3022,13 +3084,6 @@ export default class Interface {
             var options_name = Object.keys(options)
 
 
-            if (type == 'both') {
-                console.log(that.api.get_color_scale(that.viewer.model.settings.style.color_accessor['leaf']));
-            }
-            else {
-                console.log(that.api.get_color_scale(that.viewer.model.settings.style.color_accessor[type]));
-            }
-
             // SELECT DATA
             color_scheme_div.append('label').text("Color scheme")
 
@@ -3101,6 +3156,26 @@ export default class Interface {
 
             var val_min = this.viewer.model.settings.style.color_extent_min[type][acc]
             var val_max = this.viewer.model.settings.style.color_extent_max[type][acc]
+        }
+
+        else if (type == 'circle'){
+            var container_ = this.minmax_circle_div
+            container_.html('')
+
+            var max_ = this.viewer.model.settings.style.color_extent_max
+            var min_ = this.viewer.model.settings.style.color_extent_min
+
+            if (max_['circle'][acc] === undefined){
+                max_['circle'][acc] = max_['node'][acc];
+            }
+            if (min_['circle'][acc] === undefined){
+                min_['circle'][acc] = min_['node'][acc];
+            }
+
+
+            var val_min = this.viewer.model.settings.style.color_extent_min['circle'][acc]
+            var val_max = this.viewer.model.settings.style.color_extent_max['circle'][acc]
+
         }
 
         else if (type == 'both'){
