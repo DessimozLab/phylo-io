@@ -42,8 +42,7 @@ export default class Interface {
         this.container_d3.selectAll(".corner_placeholder").remove()
         this.container_d3.selectAll(".modal_data").remove()
         this.remove_scale()
-        this.remove_color_legend('node')
-        this.remove_color_legend('leaf')
+        this.remove_all_color_legend()
         this.container_d3.selectAll(".menu_settings").remove()
         this.container_d3.selectAll(".empty_message").remove()
         this.container_d3.select('#histogram-legend').remove();
@@ -405,8 +404,15 @@ export default class Interface {
 
 
                     </div>
-
-
+                    
+                     <div class="form-check" style="padding: 12px 48px 0;">
+                      <input class="form-check-input" type="checkbox" value="" id="internal_for_branch" >
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Use internal label for branches (e.g. boostrap values)
+                      </label>
+                    </div>
+                    
+                
                     
                 </div>
 
@@ -481,6 +487,7 @@ export default class Interface {
         mod_html = mod_html.replace('add_tree_file_input', 'add_tree_file_input' + this.container_object.uid)
         mod_html = mod_html.replace('exampleModal', 'exampleModal' + this.container_object.uid)
         mod_html = mod_html.replace('add_tree_str_select', 'add_tree_str_select' + this.container_object.uid)
+        mod_html = mod_html.replace('internal_for_branch', 'internal_for_branch' + this.container_object.uid)
         mod_html = mod_html.replace('modal_add_tree_final_button', 'modal_add_tree_final_button' + this.container_object.uid)
         mod_html = mod_html.replace('upload_mapping_close', 'upload_mapping_close' + this.container_object.uid)
         mod_html = mod_html.replace('upload_mapping_validation', 'upload_mapping_validation' + this.container_object.uid)
@@ -515,6 +522,12 @@ export default class Interface {
 
             container_object.add_tree(str, {'data_type':format})
             container_object.current_model =  container_object.models.length-1
+
+            // check if internal_for_branch is checked or not and setup default_internal_label_is_for_branch
+
+            if (document.getElementById('internal_for_branch' + container_object.uid).checked){
+                container_object.models[container_object.current_model].settings.edge_related_data.push('Data');
+            }
 
             if (mapping !== false){
 
@@ -1391,6 +1404,12 @@ export default class Interface {
     remove_color_legend(type){
         type = type == 'both' ? 'node' : type
         this.container_d3.select(".colorlegend_" + type).remove()
+    }
+
+    remove_all_color_legend(){
+        this.container_d3.selectAll(".colorlegend_node").remove()
+        this.container_d3.selectAll(".colorlegend_leaf").remove()
+        this.container_d3.selectAll(".colorlegend_circle").remove()
     }
 
     // SEARCH
@@ -2452,32 +2471,14 @@ export default class Interface {
 
         }
 
-        // ADD SLIDER NODE/LINE/TEXT
-        /*
-        this.slider_n = this.add_slider_UI(this.menu_tree_p, "Node radius", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.node_radius, 1, "slider_node_radius_",
-            (e ) =>{this.viewer.update_node_radius(e.target.value)})
-
-        this.slider_l = this.add_slider_UI(this.menu_tree_p, "Line width", 1, this.viewer.model.settings.tree.node_vertical_size/2, this.viewer.model.settings.tree.line_width, 1, "slider_line_width_",
-            (e ) =>{this.viewer.update_line_width(e.target.value)})
-
-               this.slider_t = this.add_slider_UI(this.menu_tree_p, "Leaf label size", 4, 50, this.viewer.model.settings.tree.font_size, 1, "slider_text_size_",
-            (e ) =>{this.viewer.update_font_size(e.target.value)})
-
-        this.slider_i = this.add_slider_UI(this.menu_tree_p, "Node label size", 1, this.viewer.model.settings.tree.node_vertical_size*2, this.viewer.model.settings.style.font_size_internal, 1, "slider_text_node_size_",
-            (e ) =>{this.viewer.update_font_size_node(e.target.value)})
-
-         */
-
         this.add_quartet_buttons(this.menu_tree_p, "Node radius", "buton_node_radius_", this.container_object.update_node_radius_percent )
+
+
         this.add_quartet_buttons(this.menu_tree_p, "Line width", "buton_line_width_", this.container_object.update_line_width_percent)
 
 
 
-
-
-
         // COLLAPSE
-
         this.slider_c = this.add_slider_UI(this.menu_general_p,
             this.viewer.model.settings.collapse_level == 0 ? "Autocollapse: Off" : "Autocollapse: " + this.viewer.model.settings.collapse_level,
             0, this.viewer.model.settings.tree.max_depth , this.viewer.model.settings.collapse_level, 0,"slider_collapse_level_",)

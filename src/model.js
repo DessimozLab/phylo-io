@@ -16,6 +16,8 @@ export default class Model {
         this.settings = {
             'uid': null,
             'domain_extended_data' : {},
+            'edge_related_data' : ['Length'],
+            'default_internal_label_is_for_branch': false,
             'extended_data_type' : {'Topology': 'num'},
             'labels' : {'leaf' : new Set(), 'node':new Set()},
             'colorlabels' :{'leaf' : new Set(), 'node':new Set(["Topology"])},
@@ -520,6 +522,11 @@ export default class Model {
                             n.extended_informations[key] = value
                             this.settings.extended_data_type['D'] = 'cat'
                             break;
+                        case 'XB':
+                        case 'B':
+                            this.settings.edge_related_data.push(key)
+                            n.extended_informations[key] = value
+                            this.settings.extended_data_type[key] = 'num'
                         default:
                             n.extended_informations[key] = value
                             this.settings.extended_data_type[key] = 'cat'
@@ -746,10 +753,18 @@ export default class Model {
 
         var root = {"children": [], "name": "", "branch_length": 0, "extended_informations": {}}
 
+
         for (var key in data.extended_informations) {
-            if (data.extended_informations.hasOwnProperty(key)) {
+
+
+            if (this.settings.edge_related_data.includes(key)) {
+                root.extended_informations[key] =  data.extended_informations[key]
+            }
+
+            else{
                 root.extended_informations[key] =  null
             }
+
         }
 
         // source and target node of the clicked edges
@@ -778,8 +793,9 @@ export default class Model {
 
 
 
-        // While we are at the old root reverse child/parent order
-        var parent = parent
+        //                      ((C,D)1,(A,(B,X)3)2,E); to test
+
+        // Until we reach the old root reverse child/parent order
         var child = root
         var stack = []
 
@@ -790,15 +806,34 @@ export default class Model {
             child = parent
             parent = parent.parent
 
-
+            parent.values_before_reverse = {}
             parent.branch_length_before_reverse = parent.branch_length
-            if (child.branch_length_before_reverse){
-                parent.branch_length = child.branch_length_before_reverse
-                parent.extended_informations['Length'] = child.branch_length_before_reverse
-            }
-            else{
-                parent.branch_length = child.branch_length
-                parent.extended_informations['Length'] = child.branch_length
+
+            for (var key of this.settings.edge_related_data) {
+
+                var value = key;
+
+                parent.values_before_reverse[value] = parent.extended_informations[value]
+
+
+                    if (value=== 'Length'){
+                        parent.branch_length = child.branch_length_before_reverse || child.branch_length;
+                        parent.extended_informations['Length'] = parent.branch_length;
+
+                    }
+                    else{
+                        if ( child.values_before_reverse && value in child.values_before_reverse){
+                            parent.extended_informations[value] = child.values_before_reverse[value]
+                        }
+                        else{
+                            parent.extended_informations[value] = child.extended_informations[value]
+                            child.extended_informations[value] = null
+                        }
+
+                    }
+
+
+
             }
 
 
@@ -845,6 +880,19 @@ export default class Model {
             old_root.root = false
             old_root.branch_length = leading_branch.branch_length
             parent.extended_informations['Length'] = leading_branch.branch_length
+        }
+
+
+        for (var key of this.settings.edge_related_data) {
+
+            for (var childy of root.children) {
+
+                console.log(childy, childy.extended_informations[key], root.extended_informations[key] )
+                childy.extended_informations[key] =  root.extended_informations[key]
+
+            }
+
+            root.extended_informations[key] =  null
         }
 
 
