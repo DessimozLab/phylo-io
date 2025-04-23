@@ -472,7 +472,7 @@ export default class Interface {
             .append("div")
             .attr("class","label")
 
-            b.html("  <i class='fas fa-plus' style='color:#888'></i> Add tree")
+            b.html("  <i class='bi bi-plus' style='color:#888'></i> Add tree")
 
         let mod_html = this.get_modal_template()
 
@@ -944,7 +944,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-chevron-left ')
+            .attr('class', ' bi bi-chevron-left ')
 
         butty_putty.append('p')
             .text('Previous')
@@ -1004,7 +1004,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#fff')
-            .attr('class', ' fas fa-check ')
+            .attr('class', ' bi bi-check ')
 
         sub_div.append('button')
             .attr('class', 'square_button button_edit_name')
@@ -1013,7 +1013,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#fff')
-            .attr('class', ' fas fa-trash ')
+            .attr('class', ' bi bi-trash ')
 
 
         var butty_putty = sub_div.append('button')
@@ -1028,7 +1028,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-chevron-right ')
+            .attr('class', ' bi bi-chevron-right ')
 
         butty_putty.append('p')
             .text('Next')
@@ -1114,7 +1114,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-text-height ')
+            .attr('class', ' bi bi-fonts ')
 
         butty_putty.append('p')
             .text('Optimise text')
@@ -1143,7 +1143,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-compress ')
+            .attr('class', ' bi bi-arrows-angle-contract ')
 
         butty_putty.append('p')
             .text('Optimise view')
@@ -1171,7 +1171,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-expand ')
+            .attr('class', ' bi bi-arrows-fullscreen ')
 
         butty_putty.append('p')
             .text('Fit screen')
@@ -1197,7 +1197,7 @@ export default class Interface {
             .on('click', d => { return this.container_object.toggle_rooting()})
             .attr("class", "label")
             .append('small')
-            .html(this.viewer.model.rooted ? 'Rooted Tree <i class=\"fas fa-sync-alt\"></i>' : 'Unrooted Tree <i class=\"fas fa-sync-alt\"></i> ')
+            .html(this.viewer.model.rooted ? 'Rooted Tree <i class=\"bi bi-sync-alt\"></i>' : 'Unrooted Tree <i class=\"bi bi-sync-alt\"></i> ')
     }
 
     // ZOOM
@@ -1218,7 +1218,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-search-plus ')
+            .attr('class', ' bi bi-zoom-in ')
 
         butty_putty.append('p')
             .text('Zoom in')
@@ -1241,7 +1241,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-search-minus ')
+            .attr('class', ' bi bi-zoom-out ')
 
         butty_putty.append('p')
             .text('Zoom out')
@@ -1579,7 +1579,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-search ')
+            .attr('class', ' bi bi-search ')
 
         search_but.append('p')
             .text('Search')
@@ -1994,7 +1994,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', 'fas fa-file-lines')
+            .attr('class', 'bi bi-file-earmark-medical')
 
         divybuty.append('p')
             .text('Mapping')
@@ -2059,27 +2059,24 @@ export default class Interface {
             .attr('data-bs-placement', 'bottom')
             .attr('title', 'Export this tree as graphic or text file')
 
-            var divybuty = ex_b.attr('class', ' square_button')
-            .style('margin', '2px')
-            .on("click", d => {
-                if (this.menu_export.style('display') === 'none'){
-                     this.menu_settings.style("display", 'none') // make it more general to all menu/button
-                    ex_b.style('background-color', '#CCC');
-                     document.getElementById("button_settings" + this.container_object.uid).style.backgroundColor =  'rgba(239, 239, 239, 0.95)';
-                    return this.menu_export.style("display", 'block')
-                }
-                ex_b.style('background-color', 'rgba(239, 239, 239, 0.95)');
-                return this.menu_export.style("display", 'none')
-            })
-
-
-
+        var divybuty = ex_b.attr('class', ' square_button')
+                .style('margin', '2px')
+                .on("click", d => {
+                    if (this.menu_export.style('display') === 'none') {
+                        this.menu_settings.style("display", 'none') // make it more general to all menu/button
+                        ex_b.style('background-color', '#CCC');
+                        document.getElementById("button_settings" + this.container_object.uid).style.backgroundColor = 'rgba(239, 239, 239, 0.95)';
+                        return this.menu_export.style("display", 'block')
+                    }
+                    ex_b.style('background-color', 'rgba(239, 239, 239, 0.95)');
+                    return this.menu_export.style("display", 'none')
+                })
 
         divybuty.append("div")
-            .attr("class","label")
+            .attr("class", "label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-download ')
+            .attr('class', 'bi-file-earmark-arrow-up')
 
         divybuty.append('p')
             .text('Download')
@@ -2087,7 +2084,6 @@ export default class Interface {
 
 
         this.tooltip_export = new bootstrap.Tooltip(document.getElementById('button_export' + this.container_object.uid))
-
 
 
         // add the sub menu container
@@ -2099,7 +2095,7 @@ export default class Interface {
         // ADD THE ACCORDION SYSTEM
 
         this.menu_exportimage_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as Graphic")
-        this.menu_exportimage_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        this.menu_exportimage_p = this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.export_as = this.menu_exportimage_p.append('div')
             .style('display', 'flex')
@@ -2126,9 +2122,8 @@ export default class Interface {
             .text("SVG")
 
 
-
         this.menu_exportfile_b = this.menu_export.append('button').attr('class', 'accordion').text("Export as Text")
-        this.menu_exportfile_p =  this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
+        this.menu_exportfile_p = this.menu_export.append('div').attr('class', 'panel').append("div").style("padding", "14px")
 
         this.export_as = this.menu_exportfile_p.append('div')
             .style('display', 'flex')
@@ -2155,7 +2150,7 @@ export default class Interface {
 
     }
 
-    screen_shot(format){
+    screen_shot(format) {
 
         var svg = this.viewer.d3.select("#svg" + this.viewer.uid)
         this.addLogo(svg);
@@ -2216,7 +2211,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-undo ')
+            .attr('class', 'bi-arrow-counterclockwise')
 
         divybuty.append('p')
             .text('Undo')
@@ -2279,7 +2274,7 @@ export default class Interface {
             .attr("class","label")
             .append('i')
             .style('color', '#888')
-            .attr('class', ' fas fa-sliders-h ')
+            .attr('class', 'bi bi-sliders')
 
         set_b.append('p')
             .text('Settings')
@@ -3723,7 +3718,7 @@ export default class Interface {
         butty_putty1.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
-            .attr('class', ' fas fa-minus ')
+            .attr('class', 'bi bi-dash')
 
         butty_putty1.append('p')
             .text('-50%')
@@ -3744,7 +3739,7 @@ export default class Interface {
         butty_putty2.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
-            .attr('class', ' fas fa-minus ')
+            .attr('class', ' bi bi-dash ')
 
         butty_putty2.append('p')
             .text('-20%')
@@ -3767,7 +3762,7 @@ export default class Interface {
         butty_putty3.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
-            .attr('class', ' fas fa-plus ')
+            .attr('class', ' bi bi-plus ')
 
         butty_putty3.append('p')
             .text('+20%')
@@ -3791,7 +3786,7 @@ export default class Interface {
         butty_putty4.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
-            .attr('class', ' fas fa-plus ')
+            .attr('class', ' bi bi-plus ')
 
         butty_putty4.append('p')
             .text('+50%')
@@ -3833,7 +3828,7 @@ export default class Interface {
         butty_putty1.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
-            .attr('class', ' fas fa-minus ')
+            .attr('class', ' bi bi-dash ')
 
         butty_putty1.append('p')
             .text('-50%')
@@ -3854,7 +3849,7 @@ export default class Interface {
         butty_putty2.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
-            .attr('class', ' fas fa-minus ')
+            .attr('class', ' bi bi-dash ')
 
         butty_putty2.append('p')
             .text('-20%')
@@ -3877,7 +3872,7 @@ export default class Interface {
         butty_putty3.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '8px')
-            .attr('class', ' fas fa-plus ')
+            .attr('class', ' bi bi-plus ')
 
         butty_putty3.append('p')
             .text('+20%')
@@ -3901,7 +3896,7 @@ export default class Interface {
         butty_putty4.append("div").append('i')
             .style('color', '#888')
             .style('font-size', '12px')
-            .attr('class', ' fas fa-plus ')
+            .attr('class', ' bi bi-plus ')
 
         butty_putty4.append('p')
             .text('+50%')
