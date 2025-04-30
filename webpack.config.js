@@ -21,6 +21,10 @@ module.exports = {
             url: require.resolve("url"),
         }
     },
+    optimization: {
+        splitChunks: false,      // disable vendor splitting
+        runtimeChunk: false      // disable runtime chunk
+    },
     module: {
         rules: [
             {

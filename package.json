@@ -27,7 +27,8 @@
     "style-loader": "^2.0.0",
     "url": "^0.11.0",
     "webpack": "^5.35.0",
-    "webpack-cli": "^4.6.0"
+    "webpack-cli": "^4.6.0",
+    "worker-loader": "^3.0.8"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
