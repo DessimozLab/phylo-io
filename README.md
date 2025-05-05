@@ -112,5 +112,101 @@ phylo.start()
 ```
 
 
+// DUMP HELP 
+
+Help
+Welcome to the Phylo.io Help Section. This guide will explain the features of Phylo.io and how to use them effectively.
+
+Introduction
+
+Phylo.io is a state-of-the-art tool designed for visualizing and comparing phylogenetic trees. It provides an easy-to-use interface for exploring and analyzing phylogenetic data.
+
+Main Features
+Tree Visualization: This is the primary feature of Phylo.io. It allows you to view and interact with phylogenetic trees. You can zoom in and out, pan across the tree, and click on nodes to view more information.
+Tree Comparison: Phylo.io allows you to compare two phylogenetic trees side by side. The differences between the trees are highlighted, making it easy to identify and analyze discrepancies.
+File Support: Phylo.io supports newick and extended newick.
+Export: You can annotate and configure trees with additional information and export your work in various formats, such as SVG, PNG, and PDF.
+
+How to Use Phylo.io
+Search the docs…
+
+
+Loading a Phylogenetic Tree
+
+Upload your phylogenetic tree by clicking on “+ Add tree” in the upper right-hand corner of the landing page.
+
+Step 1: Add data from text or file.
+Here, you can paste a text string of your tree or upload a tree from a file. Note only newick and extended newick files are accepted.
+File size is limited to XXX MB.
+Step 2: [Should be done automatically]
+Step 3 (Optional): Add a Mapping file.
+Mapping files contain additional data which can be displayed on the phylogenetic tree. This can be used for coloring leaves and/or branches of the tree.
+Mapping file requirements:
+Must be in csv or tsv format
+Must contain column headers as the first row
+Must contain a column named ‘id’, which matches the leaf/internal node names.
+Mapping files can contain categorical or numerical data. Categorical data allows coloring by qualitative color palettes; numerical data allows for coloring by quantitative color spectra. The column data types should be configured in the Mapping file configuration step.
+Additionally, there may be a column that contains colors; these can be the standard color names (supported by matplotlib), Hex, or RGB color codes. The color column must be specified in the Mapping file configuration step.
+
+Navigating the Tree
+Describe how to zoom, scroll, and select nodes.
+
+Once the tree is loaded and displayed, the tree can be navigated by panning, or zooming in/out with the mouse or by the buttons on the lower right side.
+Searching the tree
+
+
+Customizing the Tree
+Discuss how to adjust tree height, width, node radius, line width, leaf label size, node label size, branch coloring, etc. Also, explain how to build the node face.
+
+Tree topology can be manipulated by clicking on nodes or branches.
+Reroot a tree by clicking on a branch you want to be the outgroup and clicking “Reroot”
+Remove a subtree by clicking on the branch leading to that subtree and clicking “Trim subtree”
+Swap subtrees by clicking on an internal node and clicking “Swap subtrees”
+Collapse subtrees by clicking on an internal node and clicking “Collapse”
+Expand a collapsed subtree by clicking on the internal node or triangle and clicking “Expand” (...) or “Expand all” (...)
+Adjust tree dimensions/layout
+The following controls can be found in Settings -> Tree.
+Switch between cladogram view and view with branch lengths as defined in the newick by the Use branch lengths toggle.
+Align leaves to one side with the Align leaves toggle
+Flip the tree horizontally with the Mirror tree toggle.
+Adjust the Tree height (i.e. control the spacing between leaves) with the -50%, -20%, +20%, and +50% buttons.
+Adjust the Tree width (i.e. scale the branch lengths) with the -50%, -20%, +20%, and +50% buttons.
+Choose the depth at which to autocollapse subtrees with the Autocollapse slider. The depth is the number of edges from the root to a given node.
+For more tips on viewing large trees, see the next section, “Viewing Large Trees”
+Adjust the branches and labels
+The following controls can be found in Settings -> Branches & Labels.
+Choose what to display at internal nodes by using the drop-down menu to select the data. The data can be displayed to the upper left, bottom left, or center right of the node.
+To display all the labels and not subsample them automatically with the Subsample Labels toggle.
+Turn on or off the leaf labels with the Show Leaf Labels toggle.
+Display the data associated with each branch/leaf with the Show tooltips toggle.
+Adjust the Node radius (i.e. size with the internal nodes) with the -50%, -20%, +20%, and +50% buttons.
+Adjust the Line width (i.e. size with the thickness of the branches) with the -50%, -20%, +20%, and +50% buttons.
+Adjust the Leaf label size (i.e. font size of the leaves) with the -50%, -20%, +20%, and +50% buttons.
+Adjust the Node label size (i.e. font size of the internal node labels) with the -50%, -20%, +20%, and +50% buttons.
+Coloring the tree
+The following controls can be found in Settings -> Coloring.
+Adjust the color of the leaves and/or branches using data from the extended newick or in the Mapping file [link to Mapping file section].
+After choosing data to display, if the data is categorical, you can choose the color loaded as a column or one of the preloaded color palettes. If the data is numerical, you can choose your color spectrum with the widget. The Number of colors can be adjusted and picked by clicking on the boxes.
+
+
+Viewing Large Trees
+Explain the label subsampling, autocollapse, and "Fit Tree into Viewer" features.
+
+To bring the whole of the tree, while keeping the style settings, into the current browser frame, use the Fit screen button (bottom right button)
+To automatically display the tree with collapsed nodes and fit into the frame, use the Optimise view button  (bottom right button)
+Autocollapse depth [link]
+
+Comparing Two Trees
+Describe how to load two trees for comparison, synchronized zoom, highlighting corresponding nodes, and computing distance metrics.
+
+
+
+
+
+Managing and Sharing Trees
+Explain how to save a tree within a session, switch between trees, share a session, and export a tree.
+
+
+
 
 
