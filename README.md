@@ -66,7 +66,7 @@ c2.add_tree(newick2)
 Here are settings you can specify when adding a tree ('SETTINGS' in the example above):
 
 ```js
-{
+
     'display_leaves' : true, 
     'display_nodes_labels' : true,
     'mirror': false,
@@ -91,7 +91,8 @@ Here are settings you can specify when adding a tree ('SETTINGS' in the example 
         'line_width' : 3,
         'font_size':14, 
     },
-    'collapse_level': 0,
+    'collapse_level': 0
+
 ```
 
  Finally, you can start phylo.io:
@@ -157,7 +158,7 @@ Upload your phylogenetic tree by clicking on “+ Add tree” in the upper right
 - **Step 1: Add data from text or file.**
 Here, you can paste a text string of your tree or upload a tree from a file. Newick, extended newick and phyloxml files are accepted.
 
-- **Step 2: Select the tree format **
+- **Step 2: Select the tree format**
 - **Step 3 (Optional): Add a Mapping file.** Mapping files contain additional data which can be displayed on the phylogenetic tree. This can be used for coloring leaves and/or branches of the tree.  Mapping file requirements:
   - Must be in csv or tsv format 
   - Must contain column headers as the first row 

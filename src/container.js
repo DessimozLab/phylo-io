@@ -56,6 +56,7 @@ export default class Container {
         return this.history_actions.pop()
     }
 
+
     // create and add Model() configure with params
     add_tree(data, settings, from_raw_data=true){
         this.models.push(new Model(data, settings, from_raw_data))
