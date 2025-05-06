@@ -9,26 +9,59 @@ For any bugs, features requests or help for integration please contact us throug
 
 ## Quick Start
 
-**CDN:** TODO 
+**CDN:** The easiest way to get started is to use the CDN. You need to first import the two worker files then the main
+phylo.js file. You also need to import the CSS file for the UI icon. 
 
+
+```html
+  <!-- Boostrap Icon  -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+<!-- Phylo.io Bundle  -->
+<script src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@master/dist/src_worker_bcn_js.phylo.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@master/dist/src_worker_distance_js.phylo.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@master/dist/phylo.js"></script>
+
+```
+
+ 
 **Easy:** Import all the pre generated js files from the dist/ folder frm this repository. 
 The main library is bundle into phylo.js. The two other files  src_worker_*.js contains
 the web workers for the distance and bcn algorithms.  
 
 ```html
-<script src="path/to/dist/phylo.js"></script>
+
+  <!-- Boostrap Icon  -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
 <script src="path/to/dist/src_worker_bcn_js.js"></script>
 <script src="path/to/dist/src_worker_distance_js.js"></script>
+<script src="path/to/dist/phylo.js"></script>
+
 ```
 
 **Local build:** If you need to modify part of the source code or simply
-want to build the package from source, you can use the following command
+want to build the package from source, you can use the following command.
 
 ```bash
 npm run-script build
 ```
- 
+
 This will build the dist/ folder where you can import the *.js files as shown above.
+
+
+**npm install** You can also use npm (https://www.npmjs.com/package/phyloio) to install the package for your project 
+
+```bash
+npm install phyloio
+```
+
+Then you can import the library in your code:
+```js 
+import { PhyloIO } from 'phyloio';
+```
+
+
 
 
 ## Initialisation
@@ -158,7 +191,7 @@ Upload your phylogenetic tree by clicking on “+ Add tree” in the upper right
 - **Step 1: Add data from text or file.**
 Here, you can paste a text string of your tree or upload a tree from a file. Newick, extended newick and phyloxml files are accepted.
 
-- **Step 2: Select the tree format**
+- **Step 2: Select the tree format.**
 - **Step 3 (Optional): Add a Mapping file.** Mapping files contain additional data which can be displayed on the phylogenetic tree. This can be used for coloring leaves and/or branches of the tree.  Mapping file requirements:
   - Must be in csv or tsv format 
   - Must contain column headers as the first row 
@@ -169,7 +202,7 @@ Here, you can paste a text string of your tree or upload a tree from a file. New
 ####  Navigating the Tree
 
 Once the tree is loaded and displayed, the tree can be navigated by panning, or zooming in/out with the mouse or by the buttons on the lower right side.
-Searching the tree it possible using the search box in the upper right corner.
+Searching the tree is possible using the search box in the upper right corner.
 
 ####  Customizing the Tree
 
