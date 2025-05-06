@@ -224,13 +224,13 @@
                 </div>
                 <div class="modal-body">
                     <br>
-                    <div class=" gap-2 col-8 mx-auto">
+                    <div class="gap-1 col-10 mx-auto">
                         <div style="margin-bottom: 32px">
 
                             <div class="card text-center" style="margin-left: 24px" >
                                 <div class="card-body">
 
-                                    <div class="row">
+                                    <div class="row" id="share_link_row">
                                         <div class="col-1">
                                             <i class="bi-link-45deg" ></i>
                                         </div>
@@ -242,6 +242,14 @@
                                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="copy_clipboard('share_link', 'href')">copy</button>
                                         </div>
                                     </div>
+                                    <div class="row" id="share_error_row" style="display: none;">
+
+                                        <div class="gap-1 col-9" style="overflow: scroll;">
+                                            <p id="share_error" style="white-space: nowrap; font-weight: bold; color: red;"></p>
+                                        </div>
+
+                                    </div>
+
 
 
                                 </div>
