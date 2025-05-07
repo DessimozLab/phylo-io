@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Phylo.io</title>
+    <meta charset="UTF-8">
+    <title>Phylo.io - Phylogenetic tree viewer</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <meta name="description" content="Phylo.io let you visualize, compare and modify phylogenetic trees in an interactive tool and allows you to share them with peers.">
+    <meta name="keywords" content="phylogenetic trees,visualization,gene tree,species tree,tree distances,comparing phylogenetic trees">
 
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
@@ -13,6 +14,7 @@
     <link rel="stylesheet" href="./phyloio.css">
 
     <!-- JavaScript Bundle with Popper  <script src="../../dist/phylo.js"></script>  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
     <script src="./phylo.js"></script>
 
@@ -94,7 +96,7 @@
 
 
 
-        <a href="https://zoo.vital-it.ch/viewer/" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
+        <a href="#" class="d-block p-3 link-dark text-decoration-none" title="" style="text-align: center">
             <img src="./svg.svg"  style="width: 48px;">
 
             <small style="font-size: xx-small; color: white">PHYLO.IO</small>
@@ -310,8 +312,8 @@
                     <h5 class="modal-title">Keyboard shorcuts  </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
 
+                <div class="modal-body">
                     <h5>General actions</h5>
                     <p><strong>Distance: </strong> Use <kbd>t</kbd> to start phylogenetic distance computation<br>
                     <p><strong>Viewer Mode: </strong> Use <kbd>g</kbd> to switch between single tree mode or compare mode<br>
@@ -332,14 +334,13 @@
                     <p><strong>Tree Selection: </strong> Use <kbd>u</kbd> or <kbd>o</kbd> to change tree<br>
                     <p><strong>Automatic Collapsing: </strong> Use <kbd>z</kbd> to fit the tree in the viewer by collapsing and zooming in/out. <br>
                     <p><strong>Automatic Zoom: </strong> Use <kbd>h</kbd> to fit the tree in the viewer by zooming in/out.<br>
+                </div>
 
-
-                    </div>
                 <div class="modal-footer">
                     <button type="button"  class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
     <div class="modal" id="modal_screenshot" tabindex="-1">
@@ -388,7 +389,7 @@
 
        var copyText = document.getElementById(div_id);
 
-       if (type == 'href'){
+       if (type === 'href'){
            navigator.clipboard.writeText(copyText.href);
        }
        else {
@@ -429,9 +430,8 @@
             document.getElementById("li_lock").style.display = 'none'
         }
         else if (document.getElementById("li_distance").style.display === 'none'){
-            $('#li_distance').fadeIn(500);
-            $('#li_lock').fadeIn(500);
-
+            document.getElementById("li_distance").style.display = 'block';
+            document.getElementById("li_lock").style.display = 'block';
         }
 
         update_lock()
@@ -497,8 +497,7 @@
     };
 
     document.getElementById("menu_help").onclick = function() {
-
-        var url = 'https://github.com/DessimozLab/phylo-io?tab=readme-ov-file#phyloio'
+        let url = 'https://github.com/DessimozLab/phylo-io?tab=readme-ov-file#phyloio'
         window.open(url, '_blank').focus();
     };
 
@@ -618,28 +617,22 @@
     };
 
 
-    var myModalEl = document.getElementById('modal_share')
+    let myModalEl = document.getElementById('modal_share');
     myModalEl.addEventListener('shown.bs.modal', function (event) {
-
-        phylo.generate_share_link()
-
-        var s_url = JSON.parse(JSON.stringify(phylo.session_url));
-
-        refresh()
-
-        phylo.session_url = s_url
-
-        if (phylo.session_url == 'ERROR_SIZE'){
-            document.getElementById("share_link").innerText = "Your data exceed the size limit, we can't generate a link for this session"
-            document.getElementById("share_link").href = ''
-        }
-
-        else{
-            document.getElementById("share_link").innerText = phylo.session_url
-            document.getElementById("share_link").href = phylo.session_url
-        }
-
-
+        phylo.session_url = null;
+        phylo.session_answer = null;
+        phylo.generate_share_link( function() {
+            if (phylo.session_answer && phylo.session_answer.result === "OK"){
+                document.getElementById("share_link_row").style.display = "block";
+                document.getElementById("share_link").innerText = phylo.session_url
+                document.getElementById("share_link").href = phylo.session_url
+                document.getElementById("share_error_row").style.display = 'none';
+            } else {
+                document.getElementById("share_link_row").style.display = "none";
+                document.getElementById("share_error_row").style.display = 'block';
+                document.getElementById("share_error").innerText = phylo.session_answer.message || "We cannot upload the session data for some unknown reason."
+            }
+        })
 
     })
 
@@ -768,7 +761,7 @@
 
                 try {
 
-                    if (JSON.parse(d).result == 'Error'){
+                    if (JSON.parse(d).result === 'Error'){
                         throw new Error('Empty received data');
                     }
                     l(d)
