@@ -432,20 +432,9 @@
     var compare = false;
     const phylo = PhyloIO.init()
 
-    /*
-
-    const tooltip_object = []
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        tooltip_object.push(new bootstrap.Tooltip(tooltipTriggerEl));
-    })
-
-    */
-
     if (!compare){
         document.getElementById("li_distance").style.display = 'none'
         document.getElementById("li_lock").style.display = 'none'
-
         update_lock()
     }
 
@@ -457,7 +446,6 @@
 
     document.getElementById("menu_share").onclick = function() {
         $('#modal_share').modal('show');
-        //$('#modal_phylo_session').modal('show');
     };
 
     document.getElementById("menu_distance").onclick = function() {
@@ -861,6 +849,13 @@
 
         start_phylo(phylo.settings.compareMode)
 
+        // if version is not define or under 1 display error message
+        if (json.settings.version == undefined || json.settings.version < phylo.settings.version){
+            var message = '<strong>OUPS!</strong>  It seems your data is not compatible with the current version of phylo.io.'
+            error_loading_session(message)
+            return
+        }
+
         phylo.set_color_scales(json.color_scales)
 
         let cs = Object.values(json.containers)
@@ -889,16 +884,8 @@
 
                 } catch (error) {
 
-                    document.getElementById("error_remote_data").style.display = 'block';
+                    error_loading_session('<strong>OUPS!</strong>  It seems the data is corrupted or obselete.')
 
-                    var message = ' <strong>OUPS!</strong>  It seems the data is corrupted or obselete.'
-
-                    create_alert('error_remote_data', message)
-                    console.log(error)
-
-
-                    csp[i].current_model = 0
-                    csp[i].remove_all_trees()
             }
 
             }
@@ -909,6 +896,19 @@
 
         display_distance_menu(phylo.settings.compareMode)
 
+    }
+
+    function error_loading_session(msg){
+
+        document.getElementById("error_remote_data").style.display = 'block';
+
+        create_alert('error_remote_data', msg)
+
+        console.log(msg)
+
+
+        //csp[i].current_model = 0
+        //csp[i].remove_all_trees()
     }
 
     function refresh(){

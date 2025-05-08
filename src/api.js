@@ -11,6 +11,7 @@ export default class API {
     constructor() {
 
         this.settings = {
+            'version' : 1,
             'phylostratigraphy' : false,
             'share_phylo': ' https://beta.phylo.io/viewer/',
             'share_post': ' https://beta.phylo.io/sharing/create/',
