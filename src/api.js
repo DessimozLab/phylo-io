@@ -60,6 +60,7 @@ export default class API {
         this.bound_container = [] // pair of container used for distance computation
         this.session_token = null // unique session token for cloud saving
         this.session_url = null // url for cloud saving
+        this.session_answer = null; // data from reply when generating session
         this.phylo_embedded = false // phylo.io website mode
         this.distance = {
             'RF' : false,
@@ -419,7 +420,7 @@ export default class API {
 
     screen_shot(params){screen_shot(params)}
 
-    generate_share_link(){
+    generate_share_link(callback){
 
         var that = this
         var xhr = new XMLHttpRequest();
@@ -429,22 +430,30 @@ export default class API {
             if (this.readyState != 4) return;
 
             else if (this.status == 201) {
-                var data = JSON.parse(this.responseText);
-
-                if (data.result = 'OK'){
-                    that.session_token = data.session
-                    that.session_url = that.settings.share_phylo + '?session=' + that.session_token
+                let data = JSON.parse(this.responseText);
+                that.session_answer = data;
+                if (data.result === 'OK'){
+                    that.token = data.session;
+                    that.session_url = that.settings.share_phylo + '?session=' + data.session;
                 }
             }
 
             else if (this.status == 413) {
-                that.session_token = 'ERROR_SIZE';
-                return
+                let data = JSON.parse(this.responseText);
+                that.session_url = 'ERROR_SIZE';
+                that.session_answer = data;
             }
 
             else if (this.status == 400) {
-                return
+                let data = JSON.parse(this.responseText) | {result: "Error", message: "The server does not accept this session data"};
+                that.session_answer = data
+                that.session_url = ""
             }
+            else {
+                that.session_answer = {result: "Error", message: "The server is currently not available."}
+                that.session_url = ""
+            }
+            callback(that)
         };
 
         xhr.open("POST", this.settings.share_post, false);
