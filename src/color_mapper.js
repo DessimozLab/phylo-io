@@ -7,13 +7,12 @@ export default class Color_mapper {
 
         this.cpt = 1
 
-        this.scheme = d3.scaleSequential(d3.interpolateRainbow)
-        this.scheme_name = 'Viridis'
-
-        this.scale = this.scheme
-            .domain([0, this.cpt/2, this.cpt])
+        this.scheme = d3.interpolateRainbow
+        this.scheme_name = 'Rainbow'
 
         this.domain_mapping = {}
+
+        this.scale = d3.scaleSequential(this.scheme).domain([0, this.cpt])
 
     }
 
@@ -34,7 +33,7 @@ export default class Color_mapper {
     }
 
     update(){
-        this.scale = d3.scaleSequential(this.scheme).domain([0, this.cpt/2, this.cpt])
+        this.scale = d3.scaleSequential(this.scheme).domain([0, this.cpt])
 
     }
 
